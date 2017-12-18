@@ -74,6 +74,7 @@
 	# This is the stuff in \enduser-functions
 	FunctionsToExport = @(
 		'Get-DbcConfig',
+		'Get-DbcConfigValue',
 		'Set-DbcConfig',
 		'Invoke-DbcCheck'
 	)
