@@ -15,8 +15,8 @@ When you import, it'll auto-import
 ## Getting started
 
 ```
-Set-DbaConfig -Name SqlInstance -Value sql2016, sql2017, sqlcluster
-Get-DbaConfig
+Set-DbcConfig -Name SqlInstance -Value sql2016, sql2017, sqlcluster
+Get-DbcConfig
 Invoke-DbcCheck
 ```
 
