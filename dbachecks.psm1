@@ -35,3 +35,8 @@ foreach ($function in (Get-ChildItem "$ModuleRoot\functions\*.ps1"))
 
 # Execute Postimport actions
 . Import-ModuleFile -Path "$ModuleRoot\internal\scripts\postimport.ps1"
+
+# Set default param values if it exists
+if ($streetcred = (Get-DbcConfigValue -Name SqlCredential)) {
+	Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $streetcred }
+}

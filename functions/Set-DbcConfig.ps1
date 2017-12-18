@@ -44,12 +44,16 @@
 	)
 	process {
 		if ($append) {
-			$Value = (Get-DbcConfig -Name $Name), $Value
+			$Value = (Get-DbcConfigValue -Name $Name), $Value
 		}
 		
 		$name = $name.ToLower()
-		
 		Set-PSFConfig -Module dbachecks -Name $name -Value $Value
 		Register-PSFConfig -FullName dbachecks.$name -WarningAction SilentlyContinue
+		
+		# Still unsure if I'll persist it here - wondering if this impacts global or keeps local
+		if ($name -eq 'sqlcredential') {
+			Set-Variable -Scope 1 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $value }
+		}
 	}
 }
