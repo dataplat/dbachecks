@@ -1,12 +1,37 @@
-# All internal functions privately available within the toolset - for developers - smaller modules may not have any
-# But basically, these are functions that are shared between the exported commands, that you don't nessarily want end users to use
-foreach ($function in (Get-ChildItem "$PSScriptRoot\internal\*.ps1"))
+﻿$script:ModuleRoot = $PSScriptRoot
+
+function Import-ModuleFile
 {
-	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($function))), $null, $null)
+	[CmdletBinding()]
+	Param (
+		[string]
+		$Path
+	)
+	
+	if ($doDotSource) { . $Path }
+	else { $ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($Path))), $null, $null) }
 }
 
-# All exported functions - for end users
-foreach ($function in (Get-ChildItem "$PSScriptRoot\functions\*.ps1"))
+# Detect whether at some level dotsourcing was enforced
+$script:doDotSource = $false
+if ($dbachecks_dotsourcemodule) { $script:doDotSource = $true }
+if ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsPowerShell\dbachecks\System" -Name "DoDotSource" -ErrorAction Ignore).DoDotSource) { $script:doDotSource = $true }
+if ((Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\WindowsPowerShell\dbachecks\System" -Name "DoDotSource" -ErrorAction Ignore).DoDotSource) { $script:doDotSource = $true }
+
+# Execute Preimport actions
+. Import-ModuleFile -Path "$ModuleRoot\internal\scripts\preimport.ps1"
+
+# Import all internal functions
+foreach ($function in (Get-ChildItem "$ModuleRoot\internal\functions\*.ps1"))
 {
-	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($function))), $null, $null)
+	. Import-ModuleFile -Path $function.FullName
 }
+
+# Import all public functions
+foreach ($function in (Get-ChildItem "$ModuleRoot\functions\*.ps1"))
+{
+	. Import-ModuleFile -Path $function.FullName
+}
+
+# Execute Postimport actions
+. Import-ModuleFile -Path "$ModuleRoot\internal\scripts\postimport.ps1"

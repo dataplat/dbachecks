@@ -1,0 +1,11 @@
+﻿TOPIC
+	about_dbachecks
+	
+SHORT DESCRIPTION
+	Explains how to use the dbachecks powershell module
+	
+LONG DESCRIPTION
+	<Insert Content here>
+
+KEYWORDS
+	dbachecks
