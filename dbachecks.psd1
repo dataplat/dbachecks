@@ -73,7 +73,9 @@
 	# Functions to export from this module
 	# This is the stuff in \enduser-functions
 	FunctionsToExport = @(
-		''
+		'Get-DbcConfig',
+		'Set-DbcConfig',
+		'Invoke-DbcCheck'
 	)
 	
 	# Cmdlets to export from this module
