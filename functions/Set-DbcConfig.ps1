@@ -47,6 +47,10 @@
 			$Value = (Get-DbcConfig -Name $Name), $Value
 		}
 		
+		$name = $name.ToLower()
+		
 		Set-PSFConfig -Module dbachecks -Name $name -Value $Value
+		
+		Register-PSFConfig -FullName dbachecks.$name
 	}
 }
