@@ -35,7 +35,7 @@ Invoke-DbcCheck
 
 ## Notes
 
-* Set-DbcConfig will persist once Fred makes an update to PSFramework
+* Set-DbcConfig persists the values
 * If you `Set-DbcConfig -Name Setup.sqlcredential -Value (Get-Credential sa)` it'll set the SqlCredential for the whole module! but nothing more. So cool.
 
 Same can't be said for WinCredential right now, unfortunately - becuase we aliased Credential to SqlCredential. Sad face.
