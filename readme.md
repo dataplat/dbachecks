@@ -53,7 +53,7 @@ Invoke-DbcCheck -Tag RecoveryModel
 $sqlinstance = Get-DbaRegisteredServer -SqlInstance sql2017 -Group Express
 Invoke-DbcCheck -Tag Backup
 
-# You can also skip things by
+# You can also modify the params of the actual command that's being executed by
 Set-Variable -Name PSDefaultParameterValues -Value @{ 'Get-DbaDiskSpace:ExcludeDrive' = 'C:\'  } -Scope Global
 Invoke-DbcCheck -Tag Storage
 ```
