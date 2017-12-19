@@ -3,7 +3,7 @@
 Checkin pester stuff. This module will only be available for PS 5+ and in the Gallery. 
 No GitHub support download install will be possible since it has dependencies.
 
-## Getting started
+## Prereqs
 
 When you install from the Gallery, it'll auto-install:
 
@@ -17,7 +17,7 @@ When you import, it'll auto-import
 * Pester
 * PSFramework
 
-## Getting started for real
+## Getting started
 
 ```
 # Set the servers you'll be working with
