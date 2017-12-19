@@ -13,3 +13,4 @@ Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Ini
 Set-PSFConfig -Module dbachecks -Name policy.backupfullmaxdays -Value 1 -Initialize -Description "Maxmimum number of days before Full Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backupdiffmaxhours -Value 25 -Initialize -Description "Maxmimum number of hours before Diff Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backuplogmaxminutes -Value 15 -Initialize -Description "Maxmimum number of minutes before Log Backups are considered outdated"
+Set-PSFConfig -Module dbachecks -Name policy.integritycheckmaxdays -Value 7 -Initialize -Description "Maxmimum number of days before DBCC CHECKDB is considered outdated"
