@@ -28,6 +28,12 @@
 	process {
 		$Name = $Name.ToLower()
 		$results = [PSFramework.Configuration.ConfigurationHost]::Configurations.Values | Where-Object { ($_.Name -like $Name) -and ($_.Module -like $Module) -and ((-not $_.Hidden) -or ($Force)) } | Sort-Object Module, Name
-		$results | Select-Object Name, Value, Description
+		
+		if ($Name -in 'setup.sqlinstance', 'setup.computername', 'setup.testrepo') {
+			$results | Select-Object Name, @{ Name = "Value"; Expression = { $_.Value -split ',' } }, Description
+		}
+		else {
+			$results | Select-Object Name, Value, Description
+		}
 	}
 }

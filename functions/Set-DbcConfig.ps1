@@ -37,7 +37,8 @@
 		[string]$Name,
 		[AllowNull()]
 		[AllowEmptyCollection()]
-		[AllowEmptyString()]$Value,
+		[AllowEmptyString()]
+		$Value,
 		[System.Management.Automation.ScriptBlock]$Handler,
 		[switch]$Append,
 		[switch]$EnableException
@@ -47,9 +48,14 @@
 			$Value = (Get-DbcConfigValue -Name $Name), $Value
 		}
 		
-		$name = $name.ToLower()
+		$Name = $Name.ToLower()
+		
+		if ($Name -in 'setup.sqlinstance', 'setup.computername', 'setup.testrepo') {
+			$Value = ($Value -join ',')
+		}
+		
 		Set-PSFConfig -Module dbachecks -Name $name -Value $Value
-		Register-PSFConfig -FullName dbachecks.$name -WarningAction SilentlyContinue
+		Register-PSFConfig -FullName dbachecks.$name #-WarningAction SilentlyContinue
 		
 		# Still unsure if I'll persist it here - wondering if this impacts global or keeps local
 		if ($name -eq 'setup.sqlcredential') {
