@@ -4,8 +4,10 @@ Describe 'Testing Full Recovery Model' -Tags Backup, Database, DISA, RecoveryMod
 	(Get-SqlInstance).ForEach{
 		$results = Get-DbaDbRecoveryModel -SqlInstance $psitem
 		foreach ($result in $results) {
-			It "$result on $psitem should be set to the Full recovery model" {
-				$result.RecoveryModel -eq (Get-DbcConfigValue policy.recoverymodel) | Should be $true
+			if ($result.Name -ne 'tempdb') {
+				It "$result on $psitem should be set to the Full recovery model" {
+					$result.RecoveryModel -eq (Get-DbcConfigValue policy.recoverymodel) | Should be $true
+				}
 			}
 		}
 	}

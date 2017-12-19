@@ -5,10 +5,14 @@ Set-PSFConfig -Module dbachecks -Name setup.testrepo -Value "$script:ModuleRoot\
 Set-PSFConfig -Module dbachecks -Name setup.sqlcredential -Value $null -Initialize -Description "The universal SQL credential if Trusted/Windows Authentication is not used"
 Set-PSFConfig -Module dbachecks -Name setup.wincredential -Value $null -Initialize -Description "The universal Windows if default Windows Authentication is not used"
 Set-PSFConfig -Module dbachecks -Name setup.backuppath -Value $null -Initialize -Description "Enables tests to check if servers have access to centralized backup location"
+Set-PSFConfig -Module dbachecks -Name setup.backuptestserver -Value $null -Initialize -Description "Destination server for backuptests"
+Set-PSFConfig -Module dbachecks -Name setup.backupdatadir -Value $null -Initialize -Description "Destination server data directory"
+Set-PSFConfig -Module dbachecks -Name setup.backuplogdir -Value $null -Initialize -Description "Destination server log directory"
 
 # skips
 Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Value $false -Initialize
+Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Value $true -Initialize
 
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"
