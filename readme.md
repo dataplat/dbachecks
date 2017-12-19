@@ -21,12 +21,13 @@ When you import, it'll auto-import
 
 ```
 # Set the servers you'll be working with
-Set-DbcConfig -Name SqlInstance -Value sql2016, sql2017, sqlcluster
+Set-DbcConfig -Name Setup.SqlInstance -Value sql2016, sql2017, sql2008, sql2008\express
+Set-DbcConfig -Name Setup.ComputerName -Value sql2016, sql2017, sql2008
 
 # Look at the current configs
 Get-DbcConfig
 
-# Invoke the one test I wrote so far
+# Invoke the tests written so far
 Invoke-DbcCheck
 ```
 
@@ -35,7 +36,7 @@ Invoke-DbcCheck
 ## Notes
 
 * Set-DbcConfig will persist once Fred makes an update to PSFramework
-* If you `Set-DbcConfig -Name sqlcredential -Value (Get-Credential sa)` it'll set the SqlCredential for the whole module! but nothing more. So cool.
+* If you `Set-DbcConfig -Name Setup.sqlcredential -Value (Get-Credential sa)` it'll set the SqlCredential for the whole module! but nothing more. So cool.
 
 Same can't be said for WinCredential right now, unfortunately - becuase we aliased Credential to SqlCredential. Sad face.
 

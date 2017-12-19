@@ -330,7 +330,7 @@ New-PesterOption
 	param (
 		[Parameter(Position = 0, Mandatory = 0)]
 		[Alias('Path', 'relative_path')]
-		[object[]]$Script = "$script:ModuleRoot\tests-external",
+		[object[]]$Script,
 		[Parameter(Position = 1, Mandatory = 0)]
 		[Alias("Name")]
 		[string[]]$TestName,
