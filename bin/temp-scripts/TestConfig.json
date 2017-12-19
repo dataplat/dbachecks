@@ -1,0 +1,96 @@
+{
+        "XMLHTML":{
+            "Path": "c:\\temp\\BackupTests\\"  ,
+            "FileName": "TestResults",
+            "PesterLocation":"GIT:\\dbatools-scripts-stuttgart",
+           "Skip":true
+        },
+    "BackupShare":{
+            "BackupShare": "C:\\MSSQL\\Backup"  ,
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016",
+           "Skip":false
+
+        },
+       "CollationDatabase": {
+            "HyperV": "beardnuc",
+            "NameSearch":"ROB-XPS",
+           "Skip":true
+        },
+    "CollationDatabaseDetailed": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016",
+           "Skip":true
+        },
+    "CollationServer": {
+            "HyperV": "beardnuc",
+            "NameSearch":"DAVE",
+           "Skip":true
+        },
+    "IdentityColumn": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016",
+            "Percent": 90,
+           "Skip":true
+        },
+            "IdentityDatabase": {
+            "HyperV": "beardnuc",
+            "NameSearch":"DAVE",
+            "Percent": 1,
+           "Skip":true
+        },
+          "IdentityServer": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016",
+            "Percent": 1,
+           "Skip":false
+        },
+            "LastBackup": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016",
+            "TestServer":"ROB-XPS\\DAVE",
+            "DaysOld":7,
+           "Skip":false
+        },
+        "DBCCdatabase": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016n3",
+            "DaysOld":7,
+          "Skip":true
+        },
+        "DBCCServerTime": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016n3",
+            "DaysOld":7,
+          "Skip":true
+        },
+         "DBCCServer": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016",
+          "Skip":false
+        },
+         "SPN": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL",
+            "DomainName":"THEBEARD.Local",
+          "Skip":true
+        },
+         "TempDb": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL2016",
+            "DomainName":"THEBEARD.Local",
+            "Skip118":false,
+            "SkipNumberofFiles":false,
+            "SkipFileGrowthPercent":false,
+            "SkipFilesonC":true,
+            "SkipFileMaxSize":false,    
+          "Skip":false
+        },
+        "Network": {
+            "HyperV": "beardnuc",
+            "NameSearch":"SQL",
+            "DomainName":"THEBEARD.Local",
+            "Latency":40,
+          "Skip":false
+        }      
+}
