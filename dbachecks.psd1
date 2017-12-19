@@ -76,7 +76,10 @@
 		'Get-DbcConfig',
 		'Get-DbcConfigValue',
 		'Set-DbcConfig',
-		'Invoke-DbcCheck'
+		'Invoke-DbcCheck',
+		'Invoke-DbcConfigFile',
+		'Import-DbcConfig',
+		'Export-DbcConfig'
 	)
 	
 	# Cmdlets to export from this module

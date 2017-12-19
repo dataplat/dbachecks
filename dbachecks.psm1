@@ -1,6 +1,10 @@
 ﻿$script:ModuleRoot = $PSScriptRoot
 $script:localapp = "$env:localappdata\dbachecks"
 
+if (-not (Test-Path -Path $script:localapp)) {
+	New-Item -ItemType Directory -Path $script:localapp
+}
+
 function Import-ModuleFile
 {
 	[CmdletBinding()]
@@ -44,7 +48,8 @@ Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $PSDefaultParameterV
 # Set default param values if it exists
 if ($streetcred = (Get-DbcConfigValue -Name Setup.SqlCredential)) {
 	if ($PSDefaultParameterValues) {
-		Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $PSDefaultParameterValues += @{ '*:SqlCredential' = $streetcred }
+		$newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $streetcred }
+		Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
 	}
 	else
 	{
