@@ -357,7 +357,7 @@ New-PesterOption
 	)
 	
 	process {
-		Push-Location -Path "$script:ModuleRoot\tests-external"
+		Push-Location -Path "$script:ModuleRoot\checks"
 		Invoke-Pester @PSBoundParameters
 		Pop-Location
 	}
