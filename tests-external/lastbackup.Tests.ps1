@@ -1,8 +1,9 @@
-﻿$maxfull = Get-DbcConfigValue policy.backupfullmaxdays
+﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+$maxfull = Get-DbcConfigValue policy.backupfullmaxdays
 $maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
 $maxlog  = Get-DbcConfigValue policy.backuplogmaxminutes
 
-Describe 'Testing Last Backup Times' -Tags Backup, Database, DISA {
+Describe 'Testing Last Backup Times' -Tags Backup, Database, DISA, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing backups on $psitem" {
 			$results = Get-DbaDatabase -SqlInstance $psitem

@@ -1,4 +1,5 @@
 ﻿$script:ModuleRoot = $PSScriptRoot
+$script:localapp = "$env:localappdata\dbachecks"
 
 function Import-ModuleFile
 {
