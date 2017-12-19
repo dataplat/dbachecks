@@ -361,7 +361,7 @@ New-PesterOption
 			Invoke-Pester @PSBoundParameters
 		}
 		else {
-			Invoke-Pester @PSBoundParameters -Script "$script:ModuleRoot\tests-external"
+			Invoke-Pester @PSBoundParameters -Script (Get-DbcConfigValue setup.testrepo)
 		}
 	}
 }
