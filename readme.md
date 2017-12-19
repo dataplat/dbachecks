@@ -30,6 +30,8 @@ Get-DbcConfig
 Invoke-DbcCheck
 ```
 
+![image](https://user-images.githubusercontent.com/8278033/34134078-bb26459e-e458-11e7-8e87-9289ab65ba8e.png)
+
 ## Notes
 
 * Set-DbcConfig will persist once Fred makes an update to PSFramework
