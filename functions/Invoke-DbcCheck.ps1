@@ -358,12 +358,7 @@ New-PesterOption
 	
 	process {
 		Push-Location -Path "$script:ModuleRoot\tests-external"
-		If (Test-PSFParameterBinding -ParameterName Script) {
-			Invoke-Pester @PSBoundParameters
-		}
-		else {
-			Invoke-Pester @PSBoundParameters -Script (Get-DbcConfigValue setup.testrepo)
-		}
+		Invoke-Pester @PSBoundParameters
 		Pop-Location
 	}
 }

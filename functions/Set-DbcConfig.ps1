@@ -50,10 +50,6 @@
 		
 		$Name = $Name.ToLower()
 		
-		if ($Name -in 'setup.sqlinstance', 'setup.computername', 'setup.testrepo') {
-			$Value = ($Value -join ',')
-		}
-		
 		Set-PSFConfig -Module dbachecks -Name $name -Value $Value
 		Register-PSFConfig -FullName dbachecks.$name #-WarningAction SilentlyContinue
 		
@@ -61,5 +57,7 @@
 		if ($name -eq 'setup.sqlcredential') {
 			Set-Variable -Scope 1 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $value }
 		}
+		
+		Get-DbcConfig -Name $name
 	}
 }

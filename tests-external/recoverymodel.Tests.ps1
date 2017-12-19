@@ -1,5 +1,5 @@
-﻿Describe 'Testing FullRecovery Model' -Tags Backup, Database, DISA {
-	(Get-DbcConfigValue Setup.SqlInstance).ForEach{
+﻿Describe 'Testing FullRecovery Model' -Tags Backup, Database, DISA, RecoveryModel {
+	(Get-SqlInstance).ForEach{
 		Context "Testing recovery models for $psitem" {
 			$results = Get-DbaDbRecoveryModel -SqlInstance $psitem
 			foreach ($result in $results) {

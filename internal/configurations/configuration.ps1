@@ -6,7 +6,7 @@ Set-PSFConfig -Module dbachecks -Name setup.sqlcredential -Value $null -Initiali
 Set-PSFConfig -Module dbachecks -Name setup.wincredential -Value $null -Initialize -Description "The universal Windows if default Windows Authentication is not used"
 
 # skips
-Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize -Description "If you don't use diffs in your enviornment, you can skip this"
+Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize
 
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"

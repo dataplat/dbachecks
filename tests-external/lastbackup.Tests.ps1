@@ -3,12 +3,10 @@ $maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
 $maxlog  = Get-DbcConfigValue policy.backuplogmaxminutes
 
 Describe 'Testing Last Backup Times' -Tags Backup, Database, DISA {
-	(Get-DbcConfigValue Setup.SqlInstance).ForEach{
+	(Get-SqlInstance).ForEach{
 		Context "Testing backups on $psitem" {
 			$results = Get-DbaDatabase -SqlInstance $psitem
-			
 			foreach ($result in $results) {
-			
 				if ($result.RecoveryModel -ne 'Simple') {
 					It "full backups for $result should be less than $maxfull days" {
 						$result.LastFullBackup -ge (Get-Date).AddDays(-($maxfull)) | Should be $true
