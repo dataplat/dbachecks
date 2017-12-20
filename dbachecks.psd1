@@ -81,7 +81,7 @@
 		'Import-DbcConfig',
 		'Export-DbcConfig',
 		'Start-DbcPowerBi',
-		'New-DbcPowerBiJson'
+		'Update-DbcPowerBiDataSource'
 	)
 	
 	# Cmdlets to export from this module

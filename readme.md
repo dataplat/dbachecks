@@ -76,12 +76,13 @@ We've also included a precreated PowerBI report! To run, you must first export t
 
 ```
 # Run tests and export its json
-New-DbcPowerBiJson
+Update-DbcPowerBiDataSource
 
 # Launch PowerBi then hit refresh
 Start-DbcPowerBi
 ```
 
+Now, the New-DbcPowerBiJson 
 #### Sending mail
 
 So far, this is ugly as hell but I'm working on it. [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) dev smtp server is awesome.
