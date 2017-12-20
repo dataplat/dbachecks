@@ -15,7 +15,7 @@ Have questions about development? Please visit our [Wiki](https://github.com/pot
 
 ## Prereqs
 
-PowerShell 5+ is required. Automatic installation will only be provided via the [PowerShell Gallery](https://wwww.powershellgallery.com).
+PowerShell 5+ is required. Automatic installation will only be provided via the [PowerShell Gallery](https://www.powershellgallery.com).
 
 When you install from the Gallery, it'll auto-install:
 
