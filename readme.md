@@ -128,7 +128,11 @@ Need to skip a whole test? Just use the `-ExcludeTag` which is auto populated wi
 
 Set-DbcConfig persists the values. If you `Set-DbcConfig -Name Setup.sqlcredential -Value (Get-Credential sa)` it'll set the SqlCredential for the whole module! but nothing more. So cool.
 
-Same can't be said for WinCredential right now, unfortunately - because we aliased Credential to SqlCredential. Sad face.
+You can also manually change the SqlCredential or Credential by specifying it in `Invoke-DbaCheck` like:
+
+```
+Invoke-DbaCheck -SqlInstance sql2017 -SqlCredential (Get-Credential sqladmin) -Tag maxmemory
+```
 
 #### Manipulating the underlying commands 
 
