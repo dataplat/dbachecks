@@ -47,7 +47,7 @@
 			if (-not $InputObject) {
 				$InputObject = Invoke-DbcCheck -Show Summary -PassThru
 			}
-			$InputObject.TestResult | ConvertTo-Json -Depth 5 | Out-File -FilePath $Path
+			$InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $Path
 		}
 		catch {
 			Stop-PSFFunction -Message "Failure" -Exception $_
