@@ -48,6 +48,8 @@ Get-DbcConfig
 Invoke-DbcCheck
 ```
 
+#### What it looks like
+
 ![image](https://user-images.githubusercontent.com/8278033/34208143-93e4ae9a-e58d-11e7-90bb-448e2342ba39.png)
 
 Alternatively, pass a list of servers and to `Invoke-DbcCheck`
@@ -64,13 +66,13 @@ Invoke-DbcCheck -Tag Storage -ComputerName server1, server2
 
 ## Going more advanced
 
-### Setting a global SQL credential
+#### Setting a global SQL credential
 
 Set-DbcConfig persists the values. If you `Set-DbcConfig -Name Setup.sqlcredential -Value (Get-Credential sa)` it'll set the SqlCredential for the whole module! but nothing more. So cool.
 
 Same can't be said for WinCredential right now, unfortunately - because we aliased Credential to SqlCredential. Sad face.
 
-### Manipulating the underlying commands 
+#### Manipulating the underlying commands 
 
 You can also modify the params of the actual command that's being executed by
 
