@@ -13,6 +13,8 @@ Set-PSFConfig -Module dbachecks -Name setup.backuplogdir -Value $null -Initializ
 Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Value $false -Initialize
 Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Value $true -Initialize
+Set-PSFConfig -Module dbachecks -Name skip.dbownershouldnot -Value $true -Initialize
+Set-PSFConfig -Module dbachecks -Name skip.dbownershould -Value $false -Initialize
 
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"
@@ -23,3 +25,5 @@ Set-PSFConfig -Module dbachecks -Name policy.integritycheckmaxdays -Value 7 -Ini
 Set-PSFConfig -Module dbachecks -Name policy.identityusagepercent -Value 90 -Initialize -Description "Maxmimum percentage of max of identity column"
 Set-PSFConfig -Module dbachecks -Name policy.networklatencymsmax -Value 40 -Initialize -Description "Max network latency average"
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value Full -Initialize -Description "Standard recovery model"
+Set-PSFConfig -Module dbachecks -Name policy.dbownershould -Value sa -Initialize -Description "The database owner account should be this user"
+Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value sa -Initialize -Description "The database owner account should not be this user"
