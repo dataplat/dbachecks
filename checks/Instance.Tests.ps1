@@ -58,3 +58,13 @@ Describe 'Testing DAC' -Tags DAC, $filename {
         }
     }
 }
+
+$max = Get-DbcConfigValue policy.networklatencymsmax
+Describe 'Testing network latency' -Tags Network, $filename {
+	(Get-SqlInstance).ForEach{
+		$results = Test-DbaNetworkLatency -SqlInstance $psitem
+		It "network latency for $psitem should be less than $max ms" {
+			$results.Average.TotalMilliseconds -lt $max | Should be $true
+		}
+	}
+}
