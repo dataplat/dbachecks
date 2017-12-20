@@ -1,10 +1,10 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-$DAC = Get-DbcConfigValue -Name policy.DACAllowed
+$dac = Get-DbcConfigValue -Name policy.dacallowed
 Describe 'Testing DAC' -Tags DAC, $filename {
     (Get-SqlInstance).ForEach{
-        Context "Testing $_" {
-            It "$psitem Should have DAC enabled $DAC" {
-                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'RemoteDACConnectionsEnabled').ConfiguredValue -eq 1  | Should Be $DAC
+        Context "Testing $psitem" {
+			It "$psitem Should have DAC enabled $dac" {
+                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'RemoteDACConnectionsEnabled').ConfiguredValue -eq 1  | Should Be $dac
             }
         }
     }
