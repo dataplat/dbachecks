@@ -2,7 +2,7 @@
 
 dbachecks is a framework created by and for SQL Server pros who need to validate their enviornments. Basically, we all share similar checklists and mostly just the server names and RPO/RTO/etc change.
 
-This open source module allows us to crowdsource our checklists using Pester tests. Such checks include:
+This open source module allows us to crowdsource our checklists using [Pester](https://github.com/Pester/Pester) tests. Such checks include:
 
 * Backups are being performed
 * Identity columns are not about to max out
@@ -28,7 +28,7 @@ When you import, it'll auto-import
 
 ## Getting started
 
-Checks are performed using `Invoke-DbcCheck` which is basically a wrapper for `Invoke-Pester`.
+Checks are performed using `Invoke-DbcCheck` which is basically a wrapper for [Invoke-Pester](https://github.com/pester/Pester/wiki/Invoke-Pester). This means that supported `Invoke-Pester` parameters work against `Invoke-DbcCheck`.
 
 #### Making server lists
 
@@ -65,6 +65,19 @@ Invoke-DbcCheck -Tag Backup -SqlInstance $sqlinstance
 
 Invoke-DbcCheck -Tag Storage -ComputerName server1, server2
 ````
+
+## Tag and ExcludeTag
+
+We tag each of our checks using singular descriptions such as Backup, Database or Storage. Each check can have multiple tags. In addition, each command name is automatically 
+added to the tag so you can use that to either include (`-Tag`) or Exclude (`-ExcludeTag`) in your results. The Exclude will always take precendence.
+
+For example, the Database tag runs a number of checks including backup checks. The command below will run all Databse commands except for the backup checks.
+
+```
+Invoke-DbcCheck -Tag Database -ExcludeTag Backup -SqlInstance sql2016
+```
+
+All valid [Pester](https://github.com/Pester/Pester) syntax is valid for dbachecks so if you'd like to know more, check out their documentation.
 
 ## Reporting on the data
 
