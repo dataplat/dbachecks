@@ -17,8 +17,7 @@ Set-PSFConfig -Module dbachecks -Name skip.TempDb118 -Value $false -Initialize -
 Set-PSFConfig -Module dbachecks -Name skip.TempDbFileGrowthPercent -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
 Set-PSFConfig -Module dbachecks -Name skip.TempDbFilesonC -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
 Set-PSFConfig -Module dbachecks -Name skip.TempDbFileMaxSize -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
-
-
+Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Value $false -Initialize -Description "Skip PowerShell remoting"
 
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"
@@ -31,7 +30,8 @@ Set-PSFConfig -Module dbachecks -Name policy.networklatencymsmax -Value 40 -Init
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value Full -Initialize -Description "Standard recovery model"
 Set-PSFConfig -Module dbachecks -Name policy.dbownershould -Value sa -Initialize -Description "The database owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value sa -Initialize -Description "The database owner account should not be this user"
-Set-PSFConfig -Module dbachecks -Name policy.DACAllowed -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false "
+Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
+Set-PSFConfig -Module dbachecks -Name policy.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
 
 # some configs to help with autocompletes and other module level stuff
-Set-PSFConfig -Module dbachecks -Name autocomplete.pestertags -Value $null -Hidden -Initialize -Description "Autocomplete pester tags"
+Set-PSFConfig -Module dbachecks -Name autocomplete.pestertags -Value $null -Initialize -Description "Autocomplete pester tags" -Hidden

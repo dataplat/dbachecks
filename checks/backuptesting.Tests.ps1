@@ -1,5 +1,4 @@
 ﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-
 if (-not (Get-DbcConfigValue skip.backuptesting)) {
 	$destserver = Get-DbcConfigValue setup.backuptestserver
 	$destdata = Get-DbcConfigValue setup.backupdatadir
