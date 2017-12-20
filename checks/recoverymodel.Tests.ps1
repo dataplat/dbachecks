@@ -1,5 +1,4 @@
 ﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-$recoverymodel =
 Describe 'Testing Full Recovery Model' -Tags Backup, Database, DISA, RecoveryModel, $filename {
 	(Get-SqlInstance).ForEach{
 		$results = Get-DbaDbRecoveryModel -SqlInstance $psitem
