@@ -24,7 +24,7 @@
 		Runs default tests, saves to json to "$env:windir\temp\dbachecks.json"
 	
 		.EXAMPLE
-		PS C:\> Invoke-DbcCheck -SqlInstance sql2017 -Tag Backup -Show Summary -PassThru | Update-DbcPowerBiDataSource
+		PS C:\> Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
 		
 		Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks.json"
 
