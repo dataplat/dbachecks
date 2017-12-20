@@ -4,7 +4,7 @@ $datapurity = Get-DbcConfigValue skip.datapuritycheck
 
 Describe 'Testing last good DBCC CHECKDB' -Tags Database, Corruption, Integrity, DBCC, $filename {
     (Get-SqlInstance).ForEach{
-        Context "Testing $_ " {
+        Context "Testing $psitem " {
             $results = Get-DbaLastGoodCheckDb -SqlInstance $psitem
             foreach ($result in $results) {
                 if ($result.Database -ne 'tempdb') {

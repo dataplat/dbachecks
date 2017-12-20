@@ -1,23 +1,25 @@
 ﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+$skipremote = Get-DbcConfigValue skip.remotingcheck
+$authscheme = Get-DbcConfigValue policy.authscheme
+
 Describe "Testing Instance Connectionn" -Tag Instance, Connection {
     (Get-ComputerName).ForEach{
-        Context "$_ Connection Tests" {
+        Context "$psitem Connection Tests" {
             BeforeAll {
-                $Connection = Test-DbaConnection -SqlInstance $_ 
+                $Connection = Test-DbaConnection -SqlInstance $psitem 
             }
-            It "$_ Connects successfully" {
+            It "$psitem Connects successfully" {
                 $Connection.connectsuccess | Should BE $true
             }
-            It "$_ AUth Scheme should be NTLM" {
-                $connection.AuthScheme | Should Be "NTLM"
+            It "$psitem Auth Scheme should be $authscheme" {
+                $connection.AuthScheme | Should Be $authscheme
             }
-            It "$_ Is pingable" {
-                $Connection.IsPingable | Should be $True
+            It "$psitem Is pingable" {
+                $Connection.IsPingable | Should be $true
             }
-            It "$_ Is PSRemotebale" {
+            It -Skip:$skipremote "$psitem Is PSRemotebale" {
                 $Connection.PSRemotingAccessible | Should Be $True
             }
         }
     }
-
 }
