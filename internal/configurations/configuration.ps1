@@ -14,7 +14,6 @@ Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initia
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
 
-
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"
 Set-PSFConfig -Module dbachecks -Name policy.backupfullmaxdays -Value 1 -Initialize -Description "Maxmimum number of days before Full Backups are considered outdated"
@@ -29,4 +28,4 @@ Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value sa -Initial
 Set-PSFConfig -Module dbachecks -Name policy.DACAllowed -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false "
 
 # some configs to help with autocompletes and other module level stuff
-Set-PSFConfig -Module dbachecks -Name autocomplete.pestertags -Value $null -Hidden -Initialize -Description "Autocomplete pester tags"
+Set-PSFConfig -Module dbachecks -Name autocomplete.pestertags -Value $null -Initialize -Description "Autocomplete pester tags" -Hidden

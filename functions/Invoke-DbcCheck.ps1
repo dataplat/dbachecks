@@ -369,7 +369,7 @@ New-PesterOption
 		$null = $PSBoundParameters.Remove('SqlInstance')
 		$null = $PSBoundParameters.Remove('ComputerName')
 		
-		Push-Location -Path "$script:ModuleRoot\checks"
+		Push-Location -Path (Get-DbcConfigValue -Name setup.testrepo)
 		Invoke-Pester @PSBoundParameters
 		Pop-Location
 	}

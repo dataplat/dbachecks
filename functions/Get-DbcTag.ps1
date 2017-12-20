@@ -26,6 +26,6 @@
 	)
 	
 	process {
-		Get-PSFConfig -Module dbachecks -Name autocomplete.pestertags #| Where-Object { $_ -like $name } | Select-Object -ExpandProperty Value | Sort-Object
+		(Get-PSFConfigValue -FullName dbachecks.autocomplete.pestertags).ToLower() | Where-Object { $_ -like $name } | Sort-Object | Select-Object -Unique
 	}
 }
