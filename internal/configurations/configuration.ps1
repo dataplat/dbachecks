@@ -13,6 +13,10 @@ Set-PSFConfig -Module dbachecks -Name setup.backuplogdir -Value $null -Initializ
 Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize -Description "Skip diff check in backups"
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
+Set-PSFConfig -Module dbachecks -Name skip.TempDb118 -Value $false -Initialize -Description "Don't run test for Trace Flag 118"
+Set-PSFConfig -Module dbachecks -Name skip.TempDbFileGrowthPercent -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
+Set-PSFConfig -Module dbachecks -Name skip.TempDbFilesonC -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
+Set-PSFConfig -Module dbachecks -Name skip.TempDbFileMaxSize -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
 Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Value $false -Initialize -Description "Skip PowerShell remoting"
 
 # Policy
