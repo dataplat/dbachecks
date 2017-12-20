@@ -80,3 +80,18 @@ Describe 'Testing last good DBCC CHECKDB' -Tags Database, Corruption, Integrity,
         }
     }
 }
+$maxpercentage = Get-DbcConfigValue policy.identityusagepercent
+
+Describe 'Testing Column Identity Usage' -Tags Database, Identity ,$filename {
+	(Get-SqlInstance).ForEach{
+		$results = Test-DbaIdentityUsage -SqlInstance $psitem
+		foreach ($result in $results) {
+			if ($result.Database -ne 'tempdb') {
+				$columnfqdn = "$($result.Database).$($result.Schema).$($result.Table).$($result.Column)" 
+				It "usage for $columnfqdn on $psitem should be less than $maxpercentage percent" {
+					$result.PercentUsed -lt $maxpercentage | Should be $true
+				}
+			}
+		}
+	}
+}
