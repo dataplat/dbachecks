@@ -11,6 +11,8 @@ This open source module allows us to crowdsource our checklists using [Pester](h
 * Disk space is not about to run out
 * All enabled jobs have succeeded
 
+Have questions about development? Please visit our [Wiki](https://github.com/potatoqualitee/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
+
 ## Prereqs
 
 PowerShell 5+ is required. Automatic installation will only be provided via the [PowerShell Gallery](https://wwww.powershellgallery.com).
