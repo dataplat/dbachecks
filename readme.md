@@ -52,7 +52,9 @@ Invoke-DbcCheck
 
 ![image](https://user-images.githubusercontent.com/8278033/34208143-93e4ae9a-e58d-11e7-90bb-448e2342ba39.png)
 
-Alternatively, pass a list of servers and to `Invoke-DbcCheck`
+#### Other ways to execute checks against specific servers
+
+Alternatively, you can provide a list of servers and to `Invoke-DbcCheck`
 
 ````
 Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
@@ -64,7 +66,35 @@ Invoke-DbcCheck -Tag Backup -SqlInstance $sqlinstance
 Invoke-DbcCheck -Tag Storage -ComputerName server1, server2
 ````
 
-## Going more advanced
+## Reporting on the data
+
+Since this is just PowerShell/Pester, results can be exported and easily converted to pretty reports. We've provided one way (via PowerBI) and are currently working on mail.
+
+#### PowerBI Visualizations!
+
+We've also included a precreated PowerBI report! To run, you must first export the json in the required location, then launch the pbix. Once the PowerBI report is open, just hit refresh.
+
+```
+# Run tests and export its json
+New-DbcPowerBiJson
+
+# Launch PowerBi then hit refresh
+Start-DbcPowerBi
+```
+
+#### Sending mail
+
+So far, this is ugly as hell but I'm working on it. [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) dev smtp server is awesome.
+
+```
+$fromto = "get@papercut.ongithub.com"
+$smtpserver = "localhost"
+$result = Invoke-DbcCheck -Show Summary -PassThru
+$resultHTML = $result.TestResult | ConvertTo-Html | Out-String
+Send-MailMessage -From $fromto -Subject 'SQL Server Validation Report' -body $resultHTML -BodyAsHtml -To $fromto -SmtpServer $smtpserver
+```
+
+## Advanced usage
 
 #### Setting a global SQL credential
 
@@ -81,33 +111,9 @@ Set-Variable -Name PSDefaultParameterValues -Value @{ 'Get-DbaDiskSpace:ExcludeD
 Invoke-DbcCheck -Tag Storage
 ```
 
-## Getting pretty
+## I don't have access to the PowerShell Gallery, how can I download this?
 
-We've also made this pretty and included a PowerBI report! To run, you must first export the json in the required location, then launch the pbix.
-
-
-```
-# Run tests and export its json
-New-DbcPowerBiJson
-
-# Launch PowerBi then hit refresh
-Start-DbcPowerBi
-```
-
-## Sending mail
-
-So far, this is ugly as hell but I'm working on it. [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) dev smtp server is awesome.
-
-```
-$fromto = "get@papercut.ongithub.com"
-$smtpserver = "localhost"
-$result = Invoke-DbcCheck -Show Summary -PassThru
-$resultHTML = $result.TestResult | ConvertTo-Html | Out-String
-Send-MailMessage -From $fromto -Subject 'SQL Server Validation Report' -body $resultHTML -BodyAsHtml -To $fromto -SmtpServer $smtpserver
-```
-
-## How can I download?
-No GitHub support download install will be possible since it has dependencies.
+No GitHub support download install will be possible since it has dependencies. 
 
 ## Party
 
