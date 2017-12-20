@@ -46,14 +46,14 @@ $PSDefaultParameterValues = (Get-Variable -Scope Global -Name PSDefaultParameter
 Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $PSDefaultParameterValues
 
 # Set default param values if it exists
-if ($streetcred = (Get-DbcConfigValue -Name Setup.SqlCredential)) {
+if ($credential = (Get-DbcConfigValue -Name Setup.SqlCredential)) {
 	if ($PSDefaultParameterValues) {
-		$newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $streetcred }
+		$newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $credential }
 		Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
 	}
 	else
 	{
-		Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $streetcred }
+		Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $credential }
 	}
 }
 
