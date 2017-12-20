@@ -76,6 +76,18 @@ New-DbcPowerBiJson
 Show-DbcPowerBi
 ```
 
+## Sending mail
+
+So far, this is ugly as hell but I'm working on it. [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) dev smtp server is awesome.
+
+```
+$fromto = "get@papercut.ongithub.com"
+$smtpserver = "localhost"
+$result = Invoke-DbcCheck -Show Summary -PassThru
+$resultHTML = $result.TestResult | ConvertTo-Html | Out-String
+Send-MailMessage -From $fromto -Subject 'SQL Server Validation Report' -body $resultHTML -BodyAsHtml -To $fromto -SmtpServer $smtpserver
+```
+
 ## Party
 
 Nice work!
