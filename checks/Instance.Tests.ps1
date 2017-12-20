@@ -48,3 +48,13 @@ Describe 'Testing access to backup path' -Tags Storage, DISA, $filename {
 		}
 	}
 }
+
+Describe 'Testing DAC' -Tags DAC, $filename {
+    (Get-SqlInstance).ForEach{
+        Context "Testing $psitem" {
+			It "$psitem Should have DAC enabled $dac" {
+                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'RemoteDACConnectionsEnabled').ConfiguredValue -eq 1  | Should Be $dac
+            }
+        }
+    }
+}
