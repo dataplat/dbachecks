@@ -56,3 +56,6 @@ if ($streetcred = (Get-DbcConfigValue -Name Setup.SqlCredential)) {
 		Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $streetcred }
 	}
 }
+
+# Load up tepp
+$null = Get-DbcConfig
