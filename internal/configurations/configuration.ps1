@@ -9,12 +9,11 @@ Set-PSFConfig -Module dbachecks -Name setup.backuptestserver -Value $null -Initi
 Set-PSFConfig -Module dbachecks -Name setup.backupdatadir -Value $null -Initialize -Description "Destination server data directory"
 Set-PSFConfig -Module dbachecks -Name setup.backuplogdir -Value $null -Initialize -Description "Destination server log directory"
 
-# skips
-Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize
-Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Value $false -Initialize
-Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Value $true -Initialize
-Set-PSFConfig -Module dbachecks -Name skip.dbownershouldnot -Value $true -Initialize
-Set-PSFConfig -Module dbachecks -Name skip.dbownershould -Value $false -Initialize
+# skips - these are for whole checks (mytest.Tests.ps1) that should not run by default or internal commands that can't be skipped using ExcludeTag
+Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize -Description "Skip diff check in backups"
+Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
+Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
+
 
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"
@@ -27,3 +26,6 @@ Set-PSFConfig -Module dbachecks -Name policy.networklatencymsmax -Value 40 -Init
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value Full -Initialize -Description "Standard recovery model"
 Set-PSFConfig -Module dbachecks -Name policy.dbownershould -Value sa -Initialize -Description "The database owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value sa -Initialize -Description "The database owner account should not be this user"
+
+# some configs to help with autocompletes and other module level stuff
+Set-PSFConfig -Module dbachecks -Name autocomplete.pestertags -Value $null -Hidden -Initialize -Description "Autocomplete pester tags"

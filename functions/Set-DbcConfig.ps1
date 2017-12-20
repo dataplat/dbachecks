@@ -44,6 +44,11 @@
 		[switch]$EnableException
 	)
 	process {
+		if (-not (Get-DbcConfig -Name $Name)) {
+			Stop-PSFFunction -Message "Setting named $Name does not exist. If you'd like us to support an additional setting, please file a GitHub issue."
+			return
+		}
+		
 		if ($append) {
 			$Value = (Get-DbcConfigValue -Name $Name), $Value
 		}
