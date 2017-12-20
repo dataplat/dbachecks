@@ -1,6 +1,6 @@
 # dbachecks
 
-dbachecks is a framework created by and for SQL Server pros who need to validate their enviornments. Basically, we all share similar checklists and just the server names change.
+dbachecks is a framework created by and for SQL Server pros who need to validate their enviornments. Basically, we all share similar checklists and mostly just the server names and RPO/RTO/etc change.
 
 This open source module allows us to crowdsource our checklists using Pester tests. Such checks include:
 
@@ -48,9 +48,9 @@ Get-DbcConfig
 Invoke-DbcCheck
 ```
 
-![image](https://user-images.githubusercontent.com/8278033/34134078-bb26459e-e458-11e7-8e87-9289ab65ba8e.png)
+![image](https://user-images.githubusercontent.com/8278033/34208143-93e4ae9a-e58d-11e7-90bb-448e2342ba39.png)
 
-Alternatively, you can create a list and pass it to  `Invoke-DbcCheck`
+Alternatively, pass a list of servers and to `Invoke-DbcCheck`
 
 ````
 Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
@@ -64,32 +64,32 @@ Invoke-DbcCheck -Tag Storage -ComputerName server1, server2
 
 ## Going more advanced
 
-* Set-DbcConfig persists the values. If you `Set-DbcConfig -Name Setup.sqlcredential -Value (Get-Credential sa)` it'll set the SqlCredential for the whole module! but nothing more. So cool.
+### Setting a global SQL credential
+
+Set-DbcConfig persists the values. If you `Set-DbcConfig -Name Setup.sqlcredential -Value (Get-Credential sa)` it'll set the SqlCredential for the whole module! but nothing more. So cool.
 
 Same can't be said for WinCredential right now, unfortunately - because we aliased Credential to SqlCredential. Sad face.
 
+### Manipulating the underlying commands 
+
+You can also modify the params of the actual command that's being executed by
+
 ```
-# You can also modify the params of the actual command that's being executed by
 Set-Variable -Name PSDefaultParameterValues -Value @{ 'Get-DbaDiskSpace:ExcludeDrive' = 'C:\'  } -Scope Global
 Invoke-DbcCheck -Tag Storage
 ```
 
 ## Getting pretty
 
-```
-# https://sqldbawithabeard.com/2017/10/29/a-pretty-powerbi-pester-results-template-file/
-$results = Invoke-DbcCheck -Show Summary -PassThru
-$results.TestResult | ConvertTo-Json -Depth 5 | Out-File "$env:windir\temp\dbachecks.json"
-```
+We've also made this pretty and included a PowerBI report! To run, you must first export the json in the required location, then launch the pbix.
 
-Or use these poorly named commands
 
 ```
 # Run tests and export its json
 New-DbcPowerBiJson
 
 # Launch PowerBi then hit refresh
-Show-DbcPowerBi
+Start-DbcPowerBi
 ```
 
 ## Sending mail

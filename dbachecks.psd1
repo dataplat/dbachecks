@@ -80,7 +80,7 @@
 		'Invoke-DbcConfigFile',
 		'Import-DbcConfig',
 		'Export-DbcConfig',
-		'Show-DbcPowerBi',
+		'Start-DbcPowerBi',
 		'New-DbcPowerBiJson'
 	)
 	

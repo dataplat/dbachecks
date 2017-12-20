@@ -1,4 +1,4 @@
-﻿function Show-DbcPowerBi {
+﻿function Start-DbcPowerBi {
 	<#
 		.SYNOPSIS
 			Launches the PowerBi Template for dbachecks
@@ -10,12 +10,12 @@
 		If you've moved it
 	
 		.EXAMPLE
-		PS C:\> Show-DbcPowerBi
+		PS C:\> Start-DbcPowerBi
 		
 		Shows PowerBi from "$script:ModuleRoot\bin\dbachecks.pbix"
 
 		.EXAMPLE
-		PS C:\> Show-DbcPowerBi -Path \\nas\projects\dbachecks.pbix
+		PS C:\> Start-DbcPowerBi -Path \\nas\projects\dbachecks.pbix
 		
 		Imports config from \\nas\projects\dbachecks.pbix
     #>
