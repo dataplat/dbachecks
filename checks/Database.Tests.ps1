@@ -1,4 +1,4 @@
-﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Describe 'Testing Database Collation' -Tags Database, Collation, $filename {
 	(Get-SqlInstance).ForEach{
 		$results = Test-DbaDatabaseCollation -SqlInstance $psitem
