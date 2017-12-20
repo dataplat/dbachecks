@@ -133,6 +133,12 @@ A list of SQL Servers to run the tests against. If this is not provided, it will
 A list of computers to run the tests against. If this is not provided, it will be gathered from: 
 	Get-DbaConfig -Name setup.computername
 	
+.PARAMETER SqlCredential
+Alternate SQL Server-based credential.
+	
+.PARAMETER Credential
+Alternate Windows credential.
+	
 .PARAMETER CodeCoverage
 Adds a code coverage report to the Pester tests. Takes strings or hash table values.
 
@@ -347,6 +353,8 @@ New-PesterOption
 		[switch]$PassThru,
 		[DbaInstance[]]$SqlInstance,
 		[DbaInstance[]]$ComputerName,
+		[PSCredential]$SqlCredential,
+		[PSCredential]$Credential,
 		[object[]]$CodeCoverage = @(),
 		[string]$CodeCoverageOutputFile,
 		[ValidateSet('JaCoCo')]
@@ -365,9 +373,13 @@ New-PesterOption
 	process {
 		Set-Variable -Scope 0 -Name SqlInstance -Value $SqlInstance
 		Set-Variable -Scope 0 -Name ComputerName -Value $ComputerName
+		Set-Variable -Scope 0 -Name SqlCredential -Value $SqlCredential
+		Set-Variable -Scope 0 -Name Credential -Value $Credential
 		
 		$null = $PSBoundParameters.Remove('SqlInstance')
 		$null = $PSBoundParameters.Remove('ComputerName')
+		$null = $PSBoundParameters.Remove('SqlCredential')
+		$null = $PSBoundParameters.Remove('Credential')
 		
 		Push-Location -Path (Get-DbcConfigValue -Name setup.testrepo)
 		Invoke-Pester @PSBoundParameters
