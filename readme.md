@@ -113,6 +113,17 @@ Send-MailMessage -From $fromto -Subject 'SQL Server Validation Report' -body $re
 
 ## Advanced usage
 
+## Skipping some internal tests
+
+The check `lastbackup` checks for diffs, but some environments don't backup diffs, just nightly fulls. If a diff check needs to be skipped, just:
+
+```
+Get-DbcConfig *skip*
+Set-DbcConfig -Name skip.backupdiffcheck -Value $true
+```
+
+Need to skip a whole test? Just use the `-ExcludeTag` which is auto populated with both check names and Pester test tags
+
 #### Setting a global SQL credential
 
 Set-DbcConfig persists the values. If you `Set-DbcConfig -Name Setup.sqlcredential -Value (Get-Credential sa)` it'll set the SqlCredential for the whole module! but nothing more. So cool.
