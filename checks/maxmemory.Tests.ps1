@@ -7,4 +7,5 @@ Describe 'Testing MaxMemory' -Tags Memory, $filename {
 				$result.SqlMaxMb | Should BeLessThan $result.TotalMB
 			}
 		}
-	}
+    }
+}
