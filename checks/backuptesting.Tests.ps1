@@ -1,9 +1,9 @@
 ﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-$destserver = Get-DbcConfigValue setup.backuptestserver
-$destdata = Get-DbcConfigValue setup.backupdatadir
-$destlog = Get-DbcConfigValue setup.backuplogdir
 
 if (-not (Get-DbcConfigValue skip.backuptesting)) {
+	$destserver = Get-DbcConfigValue setup.backuptestserver
+	$destdata = Get-DbcConfigValue setup.backupdatadir
+	$destlog = Get-DbcConfigValue setup.backuplogdir
 	Describe 'Testing backups' -Tags Backup, Database, $filename {
 		(Get-SqlInstance).ForEach{
 			foreach ($result in (Test-DbaLastBackup -SqlInstance $psitem -Destination $destserver -LogDirectory $destlog -DataDirectory $destdata )) {
