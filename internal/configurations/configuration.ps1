@@ -26,6 +26,7 @@ Set-PSFConfig -Module dbachecks -Name policy.networklatencymsmax -Value 40 -Init
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value Full -Initialize -Description "Standard recovery model"
 Set-PSFConfig -Module dbachecks -Name policy.dbownershould -Value sa -Initialize -Description "The database owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value sa -Initialize -Description "The database owner account should not be this user"
+Set-PSFConfig -Module dbachecks -Name policy.DACAllowed -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false "
 
 # some configs to help with autocompletes and other module level stuff
 Set-PSFConfig -Module dbachecks -Name autocomplete.pestertags -Value $null -Hidden -Initialize -Description "Autocomplete pester tags"

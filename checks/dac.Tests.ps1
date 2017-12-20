@@ -1,4 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+$DAC = Get-DbcConfigValue -Name policy.DACAllowed
 Describe 'Testing DAC' -Tags DAC, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing $_" {
