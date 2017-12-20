@@ -365,6 +365,10 @@ New-PesterOption
 	process {
 		Set-Variable -Scope 0 -Name SqlInstance -Value $SqlInstance
 		Set-Variable -Scope 0 -Name ComputerName -Value $ComputerName
+		
+		$null = $PSBoundParameters.Remove('SqlInstance')
+		$null = $PSBoundParameters.Remove('ComputerName')
+		
 		Push-Location -Path "$script:ModuleRoot\checks"
 		Invoke-Pester @PSBoundParameters
 		Pop-Location
