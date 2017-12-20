@@ -6,7 +6,7 @@ Describe 'Testing Column Identity Usage' -Tags Database, $filename {
 		$results = Test-DbaIdentityUsage -SqlInstance $psitem
 		foreach ($result in $results) {
 			if ($result.Database -ne 'tempdb') {
-				$columnfqdn = "$($result.Database).$($result.Schema)).$($result.Table)).$($result.Column))"
+				$columnfqdn = "$($result.Database).$($result.Schema).$($result.Table).$($result.Column)" 
 				It "usage for $columnfqdn on $psitem should be less than $maxpercentage percent" {
 					$result.PercentUsed -lt $maxpercentage | Should be $true
 				}
