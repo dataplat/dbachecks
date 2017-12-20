@@ -79,7 +79,9 @@
 		'Invoke-DbcCheck',
 		'Invoke-DbcConfigFile',
 		'Import-DbcConfig',
-		'Export-DbcConfig'
+		'Export-DbcConfig',
+		'Show-DbcPowerBi',
+		'New-DbcPowerBiJson'
 	)
 	
 	# Cmdlets to export from this module

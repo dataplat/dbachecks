@@ -58,6 +58,24 @@ Set-Variable -Name PSDefaultParameterValues -Value @{ 'Get-DbaDiskSpace:ExcludeD
 Invoke-DbcCheck -Tag Storage
 ```
 
+## Getting pretty
+
+```
+# https://sqldbawithabeard.com/2017/10/29/a-pretty-powerbi-pester-results-template-file/
+$results = Invoke-DbcCheck -Show Summary -PassThru
+$results.TestResult | ConvertTo-Json -Depth 5 | Out-File "$env:windir\temp\dbachecks.json"
+```
+
+Or use these poorly named commands
+
+```
+# Run tests and export its json
+New-DbcPowerBiJson
+
+# Launch PowerBi then hit refresh
+Show-DbcPowerBi
+```
+
 ## Party
 
 Nice work!
