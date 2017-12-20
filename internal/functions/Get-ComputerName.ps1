@@ -1,5 +1,5 @@
 ﻿function Get-ComputerName {
-	if ($computername) {
+	if ($null -ne $computername) {
 		return $computername
 	}
 	else {

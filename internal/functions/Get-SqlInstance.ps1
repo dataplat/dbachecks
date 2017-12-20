@@ -1,5 +1,5 @@
 ﻿function Get-SqlInstance {
-	if ($sqlinstance) {
+	if ($null -ne $sqlinstance) {
 		return $sqlinstance
 	}
 	else {

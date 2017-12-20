@@ -44,14 +44,14 @@ Same can't be said for WinCredential right now, unfortunately - because we alias
 
 ```
 # You can also use $sqlinstance to change checks on the fly
-$sqlinstance = "sql2016"
-Invoke-DbcCheck -Tag Backup
+Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
 
-$sqlinstance = "sql2017", "sqlcluster"
-Invoke-DbcCheck -Tag RecoveryModel
+Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster
 
 $sqlinstance = Get-DbaRegisteredServer -SqlInstance sql2017 -Group Express
-Invoke-DbcCheck -Tag Backup
+Invoke-DbcCheck -Tag Backup -SqlInstance $sqlinstance
+
+Invoke-DbcCheck -Tag Storage -ComputerName server1, server2
 
 # You can also modify the params of the actual command that's being executed by
 Set-Variable -Name PSDefaultParameterValues -Value @{ 'Get-DbaDiskSpace:ExcludeDrive' = 'C:\'  } -Scope Global

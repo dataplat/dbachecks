@@ -125,6 +125,14 @@ use the PassThru parameter.
 
 To suppress the host output, use the Quiet parameter.
 
+.PARAMETER SqlInstance
+A list of SQL Servers to run the tests against. If this is not provided, it will be gathered from: 
+	Get-DbaConfig -Name setup.sqlinstance
+	
+.PARAMETER ComputerName
+A list of computers to run the tests against. If this is not provided, it will be gathered from: 
+	Get-DbaConfig -Name setup.computername
+	
 .PARAMETER CodeCoverage
 Adds a code coverage report to the Pester tests. Takes strings or hash table values.
 
@@ -328,19 +336,17 @@ New-PesterOption
 #>
 	[CmdletBinding(DefaultParameterSetName = 'Default')]
 	param (
-		[Parameter(Position = 0, Mandatory = 0)]
 		[Alias('Path', 'relative_path')]
 		[object[]]$Script,
-		[Parameter(Position = 1, Mandatory = 0)]
 		[Alias("Name")]
 		[string[]]$TestName,
-		[Parameter(Position = 2, Mandatory = 0)]
 		[switch]$EnableExit,
-		[Parameter(Position = 4, Mandatory = 0)]
 		[Alias('Tags')]
 		[string[]]$Tag,
 		[string[]]$ExcludeTag,
 		[switch]$PassThru,
+		[DbaInstance[]]$SqlInstance,
+		[DbaInstance[]]$ComputerName,
 		[object[]]$CodeCoverage = @(),
 		[string]$CodeCoverageOutputFile,
 		[ValidateSet('JaCoCo')]
@@ -357,6 +363,8 @@ New-PesterOption
 	)
 	
 	process {
+		Set-Variable -Scope 0 -Name SqlInstance -Value $SqlInstance
+		Set-Variable -Scope 0 -Name ComputerName -Value $ComputerName
 		Push-Location -Path "$script:ModuleRoot\checks"
 		Invoke-Pester @PSBoundParameters
 		Pop-Location
