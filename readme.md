@@ -9,6 +9,7 @@ This open source module allows us to crowdsource our checklists using [Pester](h
 * Servers have access to backup paths
 * Database integrity checks are being performed and corruption does not exist
 * Disk space is not about to run out
+* All enabled jobs have succeeded
 
 ## Prereqs
 
