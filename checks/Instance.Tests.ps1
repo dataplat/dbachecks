@@ -11,13 +11,13 @@ Describe 'Testing TempDB Configuration' -Tag TempDB, Instance , $filename {
             }
             It "$psitem should not have TempDB Files autogrowth set to percent" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileGrowthPercent) {
                 $TempDbTests[2].CurrentSetting | Should Be $TempDbTests[2].Recommended
-            }      
+            }
             It "$psitem should not have TempDB Files on the C Drive" -Skip:(Get-DbcConfigValue -Name skip.TempDbFilesonC) {
                 $TempDbTests[3].CurrentSetting | Should Be $TempDbTests[3].Recommended
-            }   
+            }
             It "$psitem should not have TempDB Files with MaxSize Set" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileMaxSize) {
                 $TempDbTests[4].CurrentSetting | Should Be $TempDbTests[4].Recommended
-            }      
+            }
         }
     }
 }
@@ -42,7 +42,7 @@ Describe 'Testing access to backup path' -Tags Storage, DISA, $filename {
 		else {
 			$backuppath = Get-DbcConfigValue setup.backuppath
 		}
-		
+
 		It "$psitem access to the backup path ($backuppath)" {
 			Test-DbaSqlPath -SqlInstance $psitem -Path $backuppath | Should be $true
 		}
@@ -64,7 +64,7 @@ Describe 'Testing network latency' -Tags Network, $filename {
 	(Get-SqlInstance).ForEach{
 		$results = Test-DbaNetworkLatency -SqlInstance $psitem
 		It "network latency for $psitem should be less than $max ms" {
-			$results.Average.TotalMilliseconds -lt $max | Should be $true
+			$results.Average.TotalMilliseconds | Should BeLessThan $max
 		}
 	}
 }
@@ -72,10 +72,10 @@ Describe 'Testing network latency' -Tags Network, $filename {
 Describe 'Testing Linked Servers' -Tag LinkedServer, Instance, $filename {
 	(Get-SqlInstance).ForEach{
         Context "Testing $psitem" {
-            $Results = Test-DbaLinkedServerConnection -SqlInstance $psitem 
+            $Results = Test-DbaLinkedServerConnection -SqlInstance $psitem
             $Results.ForEach{
                 It "Linked Server $($psitem.LinkedServerName) Should Be Connectable" {
-                    $psitem.Connectivity | SHould be $True
+                    $psitem.Connectivity | Should be $True
                 }
             }
         }
@@ -99,7 +99,7 @@ Describe 'Testing Full Recovery Model' -Tags Database, DISA, RecoveryModel, $fil
             foreach ($result in $results) {
                 if ($result.Name -ne 'tempdb') {
                     It "$($result.Name) on $psitem should be set to the Full recovery model" {
-                        $result.RecoveryModel -eq (Get-DbcConfigValue policy.recoverymodel) | Should be $true
+                        $result.RecoveryModel | Should be (Get-DbcConfigValue policy.recoverymodel)
                     }
                 }
             }
