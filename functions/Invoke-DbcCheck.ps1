@@ -147,6 +147,9 @@ A list of databases to include if your check is database centric.
 .PARAMETER ExcludeDatabase
 A list of databases to exclude if your check is database centric.
 	
+.PARAMETER Value
+A value.. it's hard to explain
+	
 .PARAMETER CodeCoverage
 Adds a code coverage report to the Pester tests. Takes strings or hash table values.
 
@@ -365,6 +368,7 @@ New-PesterOption
 		[PSCredential]$Credential,
 		[object[]]$Database,
 		[object[]]$ExcludeDatabase,
+		[string[]]$Value,
 		[object[]]$CodeCoverage = @(),
 		[string]$CodeCoverageOutputFile,
 		[ValidateSet('JaCoCo')]
@@ -381,20 +385,17 @@ New-PesterOption
 	)
 	
 	process {
-		Set-Variable -Scope 0 -Name SqlInstance -Value $SqlInstance
-		Set-Variable -Scope 0 -Name ComputerName -Value $ComputerName
-		Set-Variable -Scope 0 -Name SqlCredential -Value $SqlCredential
-		Set-Variable -Scope 0 -Name Credential -Value $Credential
-		Set-Variable -Scope 0 -Name Database -Value $Database
-		Set-Variable -Scope 0 -Name ExcludeDatabase -Value $ExcludeDatabase
-		# Then we'll need a generic param passer that doesnt require global params cuz thats hard
 		
-		$null = $PSBoundParameters.Remove('SqlInstance')
-		$null = $PSBoundParameters.Remove('ComputerName')
-		$null = $PSBoundParameters.Remove('SqlCredential')
-		$null = $PSBoundParameters.Remove('Credential')
-		$null = $PSBoundParameters.Remove('Database')
-		$null = $PSBoundParameters.Remove('ExcludeDatabase')
+		$customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
+		
+		foreach ($param in $customparam) {
+			$v = Get-Variable -Name $param
+			Set-Variable -Scope 0 -Name $param -Value $v
+			$null = $PSBoundParameters.Remove($param)
+		}
+		
+		# Then we'll need a generic param passer that doesnt require global params 
+		# cuz global params are hard
 		
 		Push-Location -Path (Get-DbcConfigValue -Name setup.testrepo)
 		Invoke-Pester @PSBoundParameters
