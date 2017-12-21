@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe 'Testing TempDB Configuration' -Tag TempDB, $filename {
+Describe "TempDB Configuration" -Tag TempDB, $filename {
     (Get-SQLInstance).ForEach{
         Context "Testing $psitem" {
             $TempDbTests = Test-DBATempDbConfiguration -SqlServer $psitem
@@ -23,7 +23,7 @@ Describe 'Testing TempDB Configuration' -Tag TempDB, $filename {
     }
 }
 
-Describe 'Testing Optimise for AdHoc Workloads setting' -Tag AdHoc, $filename{
+Describe "AdHoc Workload Optimization" -Tag AdHoc, $filename{
     (Get-SQLInstance).ForEach{
         Context "Testing $psitem" {
             It "Should be Optimised for AdHocworkloads" {
@@ -34,7 +34,7 @@ Describe 'Testing Optimise for AdHoc Workloads setting' -Tag AdHoc, $filename{
     }
 }
 
-Describe 'Testing access to backup path' -Tags Storage, DISA, Backup, Permission, $filename {
+Describe "Backup Path Access" -Tag Storage, DISA, Backup, BackupPath, $filename {
 	(Get-SqlInstance).ForEach{
 		if (-not (Get-DbcConfigValue setup.backuppath)) {
 			$backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
@@ -49,7 +49,7 @@ Describe 'Testing access to backup path' -Tags Storage, DISA, Backup, Permission
 	}
 }
 
-Describe 'Testing DAC' -Tags DAC, $filename {
+Describe "DAC" -Tag DAC, $filename {
     $dac = Get-DbcConfigValue policy.dacallowed
     (Get-SqlInstance).ForEach{
         Context "Testing $psitem" {
@@ -60,7 +60,7 @@ Describe 'Testing DAC' -Tags DAC, $filename {
     }
 }
 
-Describe 'Testing network latency' -Tags Network, Latency, NetworkLatency, $filename {
+Describe "Ntwork Latency" -Tag Network, Latency, NetworkLatency, $filename {
 	$max = Get-DbcConfigValue policy.networklatencymsmax
 	(Get-SqlInstance).ForEach{
 		$results = Test-DbaNetworkLatency -SqlInstance $psitem
@@ -70,19 +70,20 @@ Describe 'Testing network latency' -Tags Network, Latency, NetworkLatency, $file
 	}
 }
 
-Describe 'Testing Linked Servers' -Tag LinkedServer, $filename {
+Describe "Linked Servers" -Tag LinkedServer, $filename {
 	(Get-SqlInstance).ForEach{
-        Context "Testing $psitem" {
-            $Results = Test-DbaLinkedServerConnection -SqlInstance $psitem
-            $Results.ForEach{
-                It "Linked Server $($psitem.LinkedServerName) Should Be Connectable" {
-                    $psitem.Connectivity | Should be $True
-                }
-            }
-        }
-    }
+		Context "Testing $psitem" {
+			$Results = Test-DbaLinkedServerConnection -SqlInstance $psitem
+			$Results.ForEach{
+				It "Linked Server $($psitem.LinkedServerName) Should Be Connectable" {
+					$psitem.Connectivity | Should be $True
+				}
+			}
+		}
+	}
 }
-Describe 'Testing Max Memory' -Tag MaxMemory, Memory, $filename {
+
+Describe "Max Memory" -Tag MaxMemory, Memory, $filename {
 	(Get-SqlInstance).ForEach{
         Context "Testing $PSItem" {
             It "Max Memory setting should be correct" {

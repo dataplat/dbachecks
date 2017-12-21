@@ -1,4 +1,4 @@
-﻿Describe 'Testing Disk Space' -Tags Storage, DISA, $filename {
+﻿Describe "Disk Space Usage" -Tag Storage, DISA, $filename {
 	$max = Get-DbcConfigValue policy.diskspacepercentfree
 	(Get-ComputerName).ForEach{
 		$results = Get-DbaDiskSpace -ComputerName $psitem
