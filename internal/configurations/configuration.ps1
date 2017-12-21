@@ -37,6 +37,10 @@ Set-PSFConfig -Module dbachecks -Name policy.hadrclustername -Value "ClusterName
 Set-PSFConfig -Module dbachecks -Name policy.hadrfqdn -Value "FQDN" -Initialize -Description "The FQDN for the Cluster Check"
 Set-PSFConfig -Module dbachecks -Name policy.hadrtcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 
+# domain?
+Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"
+Set-PSFConfig -Module dbachecks -Name domain.organizationalunit -Value $null -Initialize -Description "The OU that your server should be a part of"
+Set-PSFConfig -Module dbachecks -Name domain.domaincontroller -Value $null -Initialize -Description "The domain controller to process your requests"
 
 # some configs to help with autocompletes and other module level stuff
 Set-PSFConfig -Module dbachecks -Name autocomplete.pestertags -Value $null -Initialize -Description "Autocomplete pester tags" -Hidden
