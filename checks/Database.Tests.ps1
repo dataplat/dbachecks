@@ -46,7 +46,7 @@ Describe "Database Owners" -Tag DatabaseOwner, $filename {
 	}
 }
 
-Describe "Database Owners" -Tag NotDatabaseOwner, $filename {
+Describe "Not Database Owners" -Tag NotDatabaseOwner, $filename {
 	$targetowner = Get-DbcConfigValue policy.dbownershouldnot
 	(Get-SqlInstance).ForEach{
 		Context "Testing $psitem for Database Owners" {
@@ -139,4 +139,18 @@ Describe "Last Backup Times" -Tag Backup, DISA, LastBackup, $filename {
 			}
 		}
 	}
+}
+
+
+Describe "Duplicate Index" -Tag Index, $filename {
+    (Get-SqlInstance).ForEach{
+        $servername = $psitem
+        Context "Testing $servername for duplicate indexes" {
+            (Get-DbaDatabase -SqlInstance $servername).ForEach{
+                It "$psitem should not have duplicate indexes" {
+                    Find-SqlDuplicateIndex -SqlInstance $servername -Database $psitem.Name | Should Be $null
+                }
+            }
+        }
+    }
 }
