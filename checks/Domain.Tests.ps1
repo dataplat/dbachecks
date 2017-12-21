@@ -13,10 +13,10 @@ Describe "Active Directory Domain Name Check" -Tags ProperDomain, $filename {
 Describe "Active Directory" -Tags OrganizationalUnit, $filename {
 	$dc = Get-DbcConfig -Name domain.domaincontroller
 	(Get-ComputerName).ForEach{
-		It -Skip 'Server should be in the right OU' {
-			if (-not $value) {
-				$value = Get-DbcConfig -Name domain.organizationalunit
-			}
+		if (-not $value) { # Can be passed by Invoke-DbcCheck -Value
+			$value = Get-DbcConfig -Name domain.organizationalunit
+		}
+		It -Skip '$psitem should be in the right OU ($value)' {
 			(Get-ADComputer $psitem -Properties CanonicalName -Server $dc).CanonicalName | Should be $value
 		}
 	}
