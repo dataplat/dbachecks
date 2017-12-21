@@ -75,7 +75,7 @@ Describe 'Testing Linked Servers' -Tag LinkedServer, Instance, $filename {
             $Results = Test-DbaLinkedServerConnection -SqlInstance $psitem 
             $Results.ForEach{
                 It "Linked Server $($psitem.LinkedServerName) Should Be Connectable" {
-                    $psitem.Connectivity | SHould be $True
+                    $psitem.Connectivity | Should be $True
                 }
             }
         }
