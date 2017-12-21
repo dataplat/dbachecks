@@ -18,6 +18,7 @@ Set-PSFConfig -Module dbachecks -Name skip.TempDbFileGrowthPercent -Value $false
 Set-PSFConfig -Module dbachecks -Name skip.TempDbFilesonC -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
 Set-PSFConfig -Module dbachecks -Name skip.TempDbFileMaxSize -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
 Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Value $false -Initialize -Description "Skip PowerShell remoting"
+Set-PSFConfig -Module dbachecks -Name skip.HADRcheck -Value $true -Initialize -Description "Skip the HADR Tests"
 
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"
