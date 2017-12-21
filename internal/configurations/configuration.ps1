@@ -10,15 +10,15 @@ Set-PSFConfig -Module dbachecks -Name setup.backupdatadir -Value $null -Initiali
 Set-PSFConfig -Module dbachecks -Name setup.backuplogdir -Value $null -Initialize -Description "Destination server log directory"
 
 # skips - these are for whole checks (mytest.Tests.ps1) that should not run by default or internal commands that can't be skipped using ExcludeTag
-Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize -Description "Skip diff check in backups"
-Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
-Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
-Set-PSFConfig -Module dbachecks -Name skip.tempdb118 -Value $false -Initialize -Description "Don't run test for Trace Flag 118"
-Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
-Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
-Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesizemax -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
-Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Value $false -Initialize -Description "Skip PowerShell remoting"
-Set-PSFConfig -Module dbachecks -Name skip.hadr -Value $true -Initialize -Description "Skip the HADR Tests"
+Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Validation bool -Value $false -Initialize -Description "Skip diff check in backups"
+Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
+Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
+Set-PSFConfig -Module dbachecks -Name skip.tempdb118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 118"
+Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
+Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
+Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesizemax -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
+Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Validation bool -Value $false -Initialize -Description "Skip PowerShell remoting"
+Set-PSFConfig -Module dbachecks -Name skip.hadr -Validation bool -Value $true -Initialize -Description "Skip the HADR Tests"
 
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"
@@ -31,7 +31,7 @@ Set-PSFConfig -Module dbachecks -Name policy.networklatencymsmax -Value 40 -Init
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value Full -Initialize -Description "Standard recovery model"
 Set-PSFConfig -Module dbachecks -Name policy.dbownershould -Value sa -Initialize -Description "The database owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value sa -Initialize -Description "The database owner account should not be this user"
-Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
+Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
 Set-PSFConfig -Module dbachecks -Name policy.hadrclustername -Value "ClusterName" -Initialize -Description "The DNS Name of the Cluster(s) to check "
 Set-PSFConfig -Module dbachecks -Name policy.hadrfqdn -Value "FQDN" -Initialize -Description "The FQDN for the Cluster Check"
