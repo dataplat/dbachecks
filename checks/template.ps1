@@ -1,6 +1,5 @@
-﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-$max = Get-DbcConfigValue policy.diskspacepercentfree
-Describe 'Testing Disk Space' -Tags Storage, DISA, $filename {
+﻿Describe 'Testing Disk Space' -Tags Storage, DISA, $filename {
+	$max = Get-DbcConfigValue policy.diskspacepercentfree
 	(Get-ComputerName).ForEach{
 		$results = Get-DbaDiskSpace -ComputerName $psitem
 		foreach ($result in $results) {

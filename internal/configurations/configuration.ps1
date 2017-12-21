@@ -13,12 +13,12 @@ Set-PSFConfig -Module dbachecks -Name setup.backuplogdir -Value $null -Initializ
 Set-PSFConfig -Module dbachecks -Name skip.backupdiffcheck -Value $false -Initialize -Description "Skip diff check in backups"
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
-Set-PSFConfig -Module dbachecks -Name skip.TempDb118 -Value $false -Initialize -Description "Don't run test for Trace Flag 118"
-Set-PSFConfig -Module dbachecks -Name skip.TempDbFileGrowthPercent -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
-Set-PSFConfig -Module dbachecks -Name skip.TempDbFilesonC -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
-Set-PSFConfig -Module dbachecks -Name skip.TempDbFileMaxSize -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
+Set-PSFConfig -Module dbachecks -Name skip.tempdb118 -Value $false -Initialize -Description "Don't run test for Trace Flag 118"
+Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
+Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
+Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesizemax -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
 Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Value $false -Initialize -Description "Skip PowerShell remoting"
-Set-PSFConfig -Module dbachecks -Name skip.HADRcheck -Value $true -Initialize -Description "Skip the HADR Tests"
+Set-PSFConfig -Module dbachecks -Name skip.hadr -Value $true -Initialize -Description "Skip the HADR Tests"
 
 # Policy
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Value 20 -Initialize -Description "Percent disk free"
@@ -33,9 +33,9 @@ Set-PSFConfig -Module dbachecks -Name policy.dbownershould -Value sa -Initialize
 Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value sa -Initialize -Description "The database owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
-Set-PSFConfig -Module dbachecks -Name policy.HADRClusterName -Value "ClusterName" -Initialize -Description "The DNS Name of the Cluster(s) to check "
-Set-PSFConfig -Module dbachecks -Name policy.HADRFQDN -Value "FQDN" -Initialize -Description "The FQDN for the Cluster Check"
-Set-PSFConfig -Module dbachecks -Name policy.HADRTCPPort -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
+Set-PSFConfig -Module dbachecks -Name policy.hadrclustername -Value "ClusterName" -Initialize -Description "The DNS Name of the Cluster(s) to check "
+Set-PSFConfig -Module dbachecks -Name policy.hadrfqdn -Value "FQDN" -Initialize -Description "The FQDN for the Cluster Check"
+Set-PSFConfig -Module dbachecks -Name policy.hadrtcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 
 
 # some configs to help with autocompletes and other module level stuff

@@ -1,5 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-Describe 'Testing Server PowerPlan Configuration' -Tag PowerPlan, Server, $filename {
+
+Describe 'Testing Server PowerPlan Configuration' -Tag PowerPlan, $filename {
     (Get-ComputerName).ForEach{
         Context "Testing $_" {
             It "Server PowerPlan should be High Performance" {
@@ -9,11 +10,10 @@ Describe 'Testing Server PowerPlan Configuration' -Tag PowerPlan, Server, $filen
     }
 }
 
-$skipremote = Get-DbcConfigValue skip.remotingcheck
-$authscheme = Get-DbcConfigValue policy.authscheme
-
-Describe "Testing Instance Connectionn" -Tag Instance, Connection {
-    (Get-ComputerName).ForEach{
+Describe "Testing Instance Connectionn" -Tags Instance, Connection, $filename {
+	$skipremote = Get-DbcConfigValue skip.remotingcheck
+	$authscheme = Get-DbcConfigValue policy.authscheme
+	(Get-ComputerName).ForEach{
         Context "$psitem Connection Tests" {
             BeforeAll {
                 $Connection = Test-DbaConnection -SqlInstance $psitem 
@@ -45,8 +45,8 @@ Describe 'Testing SPNs' -Tags SPN, $filename {
 	}
 }
 
-$free = Get-DbcConfigValue policy.diskspacepercentfree
-Describe 'Testing Disk Space' -Tags Storage, DISA, $filename {
+Describe 'Testing Disk Space' -Tags Storage, DISA, DiskSpace, $filename {
+	$free = Get-DbcConfigValue policy.diskspacepercentfree
 	(Get-ComputerName).ForEach{
 		$results = Get-DbaDiskSpace -ComputerName $psitem
 		foreach ($result in $results) {
