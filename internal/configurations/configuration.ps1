@@ -33,6 +33,10 @@ Set-PSFConfig -Module dbachecks -Name policy.dbownershould -Value sa -Initialize
 Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value sa -Initialize -Description "The database owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
+Set-PSFConfig -Module dbachecks -Name policy.HADRClusterName -Value "ClusterName" -Initialize -Description "The DNS Name of the Cluster(s) to check "
+Set-PSFConfig -Module dbachecks -Name policy.HADRFQDN -Value "FQDN" -Initialize -Description "The FQDN for the Cluster Check"
+Set-PSFConfig -Module dbachecks -Name policy.HADRTCPPort -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
+
 
 # some configs to help with autocompletes and other module level stuff
 Set-PSFConfig -Module dbachecks -Name autocomplete.pestertags -Value $null -Initialize -Description "Autocomplete pester tags" -Hidden
