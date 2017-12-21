@@ -50,6 +50,7 @@ Describe 'Testing access to backup path' -Tags Storage, DISA, $filename {
 }
 
 Describe 'Testing DAC' -Tags DAC, $filename {
+    $dac = Get-DbcConfigValue policy.dacallowed
     (Get-SqlInstance).ForEach{
         Context "Testing $psitem" {
 			It "$psitem Should have DAC enabled $dac" {
