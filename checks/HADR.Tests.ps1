@@ -1,4 +1,4 @@
-if (-not (Get-DbcConfigValue HADRcheck)) {
+if (-not (Get-DbcConfigValue skip.HADRcheck)) {
     Import-Module FailoverClusters
 
     $ClusterNames = Get-DbcConfigValue policy.HADRClusterName
