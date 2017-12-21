@@ -71,8 +71,10 @@ Invoke-DbcCheck -Tag Storage -ComputerName server1, server2
 
 ## Tag and ExcludeTag
 
-We tag each of our checks using singular descriptions such as Backup, Database or Storage. Each check can have multiple tags. In addition, each command name is automatically 
-added to the tag so you can use that to either include (`-Tag`) or Exclude (`-ExcludeTag`) in your results. The Exclude will always take precendence.
+We tag each of our checks using singular descriptions such as Backup, Database or Storage. You can see all tags using `Get-DbcTag`. 
+
+
+Each check generally has a few tags but at least one tag is unique. This allows us to essentially name a check and using these tags, you can either include (`-Tag`) or Exclude (`-ExcludeTag`) in your results. The Exclude will always take precendence.
 
 For example, the Database tag runs a number of checks including backup checks. The command below will run all Database commands except for the backup checks.
 
