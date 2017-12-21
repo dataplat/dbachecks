@@ -10,7 +10,7 @@ Describe "Active Directory Domain Name Check" -Tags ProperDomain, $filename {
 }
 
 # Skipping this for now until we get AdsiPS command equiv
-Describe "Active Directory" -Tags ProperDomain, $filename {
+Describe "Active Directory" -Tags OrganizationalUnit, $filename {
 	$dc = Get-DbcConfig -Name domain.domaincontroller
 	(Get-ComputerName).ForEach{
 		It -Skip 'Server should be in the right OU' {
