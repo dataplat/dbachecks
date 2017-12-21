@@ -1,19 +1,21 @@
 ﻿function Invoke-DbcCheck {
 <#
 .SYNOPSIS
-Invoke-Pester wrapper that sets the dbachecks location for tests automatically
+Invoke-DbcCheck is a SQL-centric Invoke-Pester wrapper
 
 .DESCRIPTION
-The Invoke-Pester function runs Pester tests, including *.Tests.ps1 files and
+The Invoke-DbcCheck function runs Pester tests, including *.Tests.ps1 files and
 Pester tests in PowerShell scripts.
 
+Extended description about Pester:
+	
 You can run scripts that include Pester tests just as you would any other
 Windows PowerShell script, including typing the full path at the command line
-and running in a script editing program. Typically, you use Invoke-Pester to run
+and running in a script editing program. Typically, you use Invoke-DbcCheck to run
 all Pester tests in a directory, or to use its many helpful parameters,
 including parameters that generate custom objects or XML files.
 
-By default, Invoke-Pester runs all *.Tests.ps1 files in the current directory
+By default, Invoke-DbcCheck runs all *.Tests.ps1 files in the checks directory
 and all subdirectories recursively. You can use its parameters to select tests
 by file name, test name, or tag.
 
@@ -32,7 +34,7 @@ You can also use the Strict parameter to fail all pending and skipped tests.
 This feature is ideal for build systems and other processes that require success
 on every test.
 
-To help with test design, Invoke-Pester includes a CodeCoverage parameter that
+To help with test design, Invoke-DbcCheck includes a CodeCoverage parameter that
 lists commands, functions, and lines of code that did not run during test
 execution and returns the code that ran as a percentage of all tested code.
 
@@ -46,7 +48,7 @@ to pass parameter names and values to a script that contains Pester tests. The
 value of the Script parameter can be a string, a hash table, or a collection
 of hash tables and strings. Wildcard characters are supported.
 
-The Script parameter is optional. If you omit it, Invoke-Pester runs all
+The Script parameter is optional. If you omit it, Invoke-DbcCheck runs all
 *.Tests.ps1 files in the local directory and its subdirectories recursively.
 
 To run tests in other files, such as .ps1 files, enter the path and file name of
@@ -73,15 +75,15 @@ value of the script parameter. The keys in the hash table are:
 Runs only tests in Describe blocks that have the specified name or name pattern.
 Wildcard characters are supported.
 
-If you specify multiple TestName values, Invoke-Pester runs tests that have any
+If you specify multiple TestName values, Invoke-DbcCheck runs tests that have any
 of the values in the Describe name (it ORs the TestName values).
 
 .PARAMETER EnableExit
-Will cause Invoke-Pester to exit with a exit code equal to the number of failed
+Will cause Invoke-DbcCheck to exit with a exit code equal to the number of failed
 tests once all tests have been run. Use this to "fail" a build when any tests fail.
 
 .PARAMETER OutputFile
-The path where Invoke-Pester will save formatted test results log file.
+The path where Invoke-DbcCheck will save formatted test results log file.
 
 The path must include the location and name of the folder and file name with
 the xml extension.
@@ -97,9 +99,9 @@ Runs only tests in Describe blocks with the specified Tag parameter values.
 Wildcard characters and Tag values that include spaces or whitespace characters
 are not supported.
 
-When you specify multiple Tag values, Invoke-Pester runs tests that have any
+When you specify multiple Tag values, Invoke-DbcCheck runs tests that have any
 of the listed tags (it ORs the tags). However, when you specify TestName
-and Tag values, Invoke-Pester runs only describe blocks that have one of the
+and Tag values, Invoke-DbcCheck runs only describe blocks that have one of the
 specified TestName values and one of the specified Tag values.
 
 If you use both Tag and ExcludeTag, ExcludeTag takes precedence.
@@ -109,9 +111,9 @@ Omits tests in Describe blocks with the specified Tag parameter values. Wildcard
 characters and Tag values that include spaces or whitespace characters are not
 supported.
 
-When you specify multiple ExcludeTag values, Invoke-Pester omits tests that have
+When you specify multiple ExcludeTag values, Invoke-DbcCheck omits tests that have
 any of the listed tags (it ORs the tags). However, when you specify TestName
-and ExcludeTag values, Invoke-Pester omits only describe blocks that have one
+and ExcludeTag values, Invoke-DbcCheck omits only describe blocks that have one
 of the specified TestName values and one of the specified Tag values.
 
 If you use both Tag and ExcludeTag, ExcludeTag takes precedence
@@ -119,7 +121,7 @@ If you use both Tag and ExcludeTag, ExcludeTag takes precedence
 .PARAMETER PassThru
 Returns a custom object (PSCustomObject) that contains the test results.
 
-By default, Invoke-Pester writes to the host program, not to the output stream (stdout).
+By default, Invoke-DbcCheck writes to the host program, not to the output stream (stdout).
 If you try to save the result in a variable, the variable is empty unless you
 use the PassThru parameter.
 
@@ -139,6 +141,12 @@ Alternate SQL Server-based credential.
 .PARAMETER Credential
 Alternate Windows credential.
 	
+.PARAMETER Database
+A list of databases to include if your check is database centric.
+
+.PARAMETER ExcludeDatabase
+A list of databases to exclude if your check is database centric.
+	
 .PARAMETER CodeCoverage
 Adds a code coverage report to the Pester tests. Takes strings or hash table values.
 
@@ -148,7 +156,7 @@ the code ran during the test.
 
 By default, the code coverage report is written to the host program
 (like Write-Host). When you use the PassThru parameter, the custom object
-that Invoke-Pester returns has an additional CodeCoverage property that contains
+that Invoke-DbcCheck returns has an additional CodeCoverage property that contains
 a custom object with detailed results of the code coverage test, including lines
 hit, lines missed, and helpful statistics.
 
@@ -178,7 +186,7 @@ One of the following: Function or StartLine/EndLine
    Default is the last line of the script.
 
 .PARAMETER CodeCoverageOutputFile
-The path where Invoke-Pester will save formatted code coverage results file.
+The path where Invoke-DbcCheck will save formatted code coverage results file.
 
 The path must include the location and name of the folder and file name with
 a required extension (usually the xml).
@@ -231,30 +239,30 @@ in which the keys are option names and the values are option values.
 For more information on the options available, see the help for New-PesterOption.
 
 .Example
-Invoke-Pester
+Invoke-DbcCheck
 
 This command runs all *.Tests.ps1 files in the current directory and its subdirectories.
 
 .Example
-Invoke-Pester -Script .\Util*
+Invoke-DbcCheck -Script .\Util*
 
 This commands runs all *.Tests.ps1 files in subdirectories with names that begin
 with 'Util' and their subdirectories.
 
 .Example
-Invoke-Pester -Script D:\MyModule, @{ Path = '.\Tests\Utility\ModuleUnit.Tests.ps1'; Parameters = @{ Name = 'User01' }; Arguments = srvNano16  }
+Invoke-DbcCheck -Script D:\MyModule, @{ Path = '.\Tests\Utility\ModuleUnit.Tests.ps1'; Parameters = @{ Name = 'User01' }; Arguments = srvNano16  }
 
 This command runs all *.Tests.ps1 files in D:\MyModule and its subdirectories.
 It also runs the tests in the ModuleUnit.Tests.ps1 file using the following
 parameters: .\Tests\Utility\ModuleUnit.Tests.ps1 srvNano16 -Name User01
 
 .Example
-Invoke-Pester -TestName "Add Numbers"
+Invoke-DbcCheck -TestName "Add Numbers"
 
 This command runs only the tests in the Describe block named "Add Numbers".
 
 .EXAMPLE
-$results = Invoke-Pester -Script D:\MyModule -PassThru -Show None
+$results = Invoke-DbcCheck -Script D:\MyModule -PassThru -Show None
 $failed = $results.TestResult | where Result -eq 'Failed'
 
 $failed.Name
@@ -279,10 +287,10 @@ ParameterizedSuiteName :
 Parameters             : {}
 
 This examples uses the PassThru parameter to return a custom object with the
-Pester test results. By default, Invoke-Pester writes to the host program, but not
+Pester test results. By default, Invoke-DbcCheck writes to the host program, but not
 to the output stream. It also uses the Quiet parameter to suppress the host output.
 
-The first command runs Invoke-Pester with the PassThru and Quiet parameters and
+The first command runs Invoke-DbcCheck with the PassThru and Quiet parameters and
 saves the PassThru output in the $results variable.
 
 The second command gets only failing results and saves them in the $failed variable.
@@ -295,39 +303,39 @@ property values describe the test, the expected result, the actual result, and
 useful values, including a stack trace.
 
 .Example
-Invoke-Pester -EnableExit -OutputFile ".\artifacts\TestResults.xml" -OutputFormat NUnitXml
+Invoke-DbcCheck -EnableExit -OutputFile ".\artifacts\TestResults.xml" -OutputFormat NUnitXml
 
 This command runs all tests in the current directory and its subdirectories. It
 writes the results to the TestResults.xml file using the NUnitXml schema. The
 test returns an exit code equal to the number of test failures.
 
  .EXAMPLE
-Invoke-Pester -CodeCoverage 'ScriptUnderTest.ps1'
+Invoke-DbcCheck -CodeCoverage 'ScriptUnderTest.ps1'
 
 Runs all *.Tests.ps1 scripts in the current directory, and generates a coverage
 report for all commands in the "ScriptUnderTest.ps1" file.
 
 .EXAMPLE
-Invoke-Pester -CodeCoverage @{ Path = 'ScriptUnderTest.ps1'; Function = 'FunctionUnderTest' }
+Invoke-DbcCheck -CodeCoverage @{ Path = 'ScriptUnderTest.ps1'; Function = 'FunctionUnderTest' }
 
 Runs all *.Tests.ps1 scripts in the current directory, and generates a coverage
 report for all commands in the "FunctionUnderTest" function in the "ScriptUnderTest.ps1" file.
 
  .EXAMPLE
-Invoke-Pester -CodeCoverage 'ScriptUnderTest.ps1' -CodeCoverageOutputFile '.\artifacts\TestOutput.xml'
+Invoke-DbcCheck -CodeCoverage 'ScriptUnderTest.ps1' -CodeCoverageOutputFile '.\artifacts\TestOutput.xml'
 
 Runs all *.Tests.ps1 scripts in the current directory, and generates a coverage
 report for all commands in the "ScriptUnderTest.ps1" file, and writes the coverage report to TestOutput.xml
 file using the JaCoCo XML Report DTD.
 
 .EXAMPLE
-Invoke-Pester -CodeCoverage @{ Path = 'ScriptUnderTest.ps1'; StartLine = 10; EndLine = 20 }
+Invoke-DbcCheck -CodeCoverage @{ Path = 'ScriptUnderTest.ps1'; StartLine = 10; EndLine = 20 }
 
 Runs all *.Tests.ps1 scripts in the current directory, and generates a coverage
 report for all commands on lines 10 through 20 in the "ScriptUnderTest.ps1" file.
 
 .EXAMPLE
-Invoke-Pester -Script C:\Tests -Tag UnitTest, Newest -ExcludeTag Bug
+Invoke-DbcCheck -Script C:\Tests -Tag UnitTest, Newest -ExcludeTag Bug
 
 This command runs *.Tests.ps1 files in C:\Tests and its subdirectories. In those
 files, it runs only tests that have UnitTest or Newest tags, unless the test
@@ -355,6 +363,8 @@ New-PesterOption
 		[DbaInstance[]]$ComputerName,
 		[PSCredential]$SqlCredential,
 		[PSCredential]$Credential,
+		[object[]]$Database,
+		[object[]]$ExcludeDatabase,
 		[object[]]$CodeCoverage = @(),
 		[string]$CodeCoverageOutputFile,
 		[ValidateSet('JaCoCo')]
@@ -375,11 +385,16 @@ New-PesterOption
 		Set-Variable -Scope 0 -Name ComputerName -Value $ComputerName
 		Set-Variable -Scope 0 -Name SqlCredential -Value $SqlCredential
 		Set-Variable -Scope 0 -Name Credential -Value $Credential
+		Set-Variable -Scope 0 -Name Database -Value $Database
+		Set-Variable -Scope 0 -Name ExcludeDatabase -Value $ExcludeDatabase
+		# Then we'll need a generic param passer that doesnt require global params cuz thats hard
 		
 		$null = $PSBoundParameters.Remove('SqlInstance')
 		$null = $PSBoundParameters.Remove('ComputerName')
 		$null = $PSBoundParameters.Remove('SqlCredential')
 		$null = $PSBoundParameters.Remove('Credential')
+		$null = $PSBoundParameters.Remove('Database')
+		$null = $PSBoundParameters.Remove('ExcludeDatabase')
 		
 		Push-Location -Path (Get-DbcConfigValue -Name setup.testrepo)
 		Invoke-Pester @PSBoundParameters
