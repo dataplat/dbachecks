@@ -1,5 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-Describe 'Testing TempDB Configuration' -Tag TempDB, Instance , $filename {
+
+Describe 'Testing TempDB Configuration' -Tag TempDB, $filename {
     (Get-SQLInstance).ForEach{
         Context "Testing $psitem" {
             $TempDbTests = Test-DBATempDbConfiguration -SqlServer $psitem
@@ -22,8 +23,7 @@ Describe 'Testing TempDB Configuration' -Tag TempDB, Instance , $filename {
     }
 }
 
-Describe 'Testing Optimise for AdHoc Workloads setting' -Tag AdHoc, Instance , $filename{
-
+Describe 'Testing Optimise for AdHoc Workloads setting' -Tag AdHoc, $filename{
     (Get-SQLInstance).ForEach{
         Context "Testing $psitem" {
             It "Should be Optimised for AdHocworkloads" {
@@ -34,7 +34,7 @@ Describe 'Testing Optimise for AdHoc Workloads setting' -Tag AdHoc, Instance , $
     }
 }
 
-Describe 'Testing access to backup path' -Tags Storage, DISA, $filename {
+Describe 'Testing access to backup path' -Tags Storage, DISA, Backup, Permission, $filename {
 	(Get-SqlInstance).ForEach{
 		if (-not (Get-DbcConfigValue setup.backuppath)) {
 			$backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
@@ -59,8 +59,8 @@ Describe 'Testing DAC' -Tags DAC, $filename {
     }
 }
 
-$max = Get-DbcConfigValue policy.networklatencymsmax
-Describe 'Testing network latency' -Tags Network, $filename {
+Describe 'Testing network latency' -Tags Network, Latency, NetworkLatency, $filename {
+	$max = Get-DbcConfigValue policy.networklatencymsmax
 	(Get-SqlInstance).ForEach{
 		$results = Test-DbaNetworkLatency -SqlInstance $psitem
 		It "network latency for $psitem should be less than $max ms" {
@@ -69,7 +69,7 @@ Describe 'Testing network latency' -Tags Network, $filename {
 	}
 }
 
-Describe 'Testing Linked Servers' -Tag LinkedServer, Instance, $filename {
+Describe 'Testing Linked Servers' -Tag LinkedServer, $filename {
 	(Get-SqlInstance).ForEach{
         Context "Testing $psitem" {
             $Results = Test-DbaLinkedServerConnection -SqlInstance $psitem
@@ -81,27 +81,12 @@ Describe 'Testing Linked Servers' -Tag LinkedServer, Instance, $filename {
         }
     }
 }
-Describe 'Testing Max Memory' -Tag Memory, Instance, $filename {
+Describe 'Testing Max Memory' -Tag MaxMemory, Memory, $filename {
 	(Get-SqlInstance).ForEach{
         Context "Testing $PSItem" {
             It "Max Memory setting should be correct" {
                 $Results = Test-DbaMaxMemory -SqlInstance $PSItem
                 $Results.SqlMaxMB | Should BeLessThan ($Results.RecommendedMB + 379)
-            }
-        }
-    }
-}
-
-Describe 'Testing Full Recovery Model' -Tags Database, DISA, RecoveryModel, $filename {
-    (Get-SqlInstance).ForEach{
-        Context "Testing $psitem" {
-            $results = Get-DbaDbRecoveryModel -SqlInstance $psitem
-            foreach ($result in $results) {
-                if ($result.Name -ne 'tempdb') {
-                    It "$($result.Name) on $psitem should be set to the Full recovery model" {
-                        $result.RecoveryModel | Should be (Get-DbcConfigValue policy.recoverymodel)
-                    }
-                }
             }
         }
     }
