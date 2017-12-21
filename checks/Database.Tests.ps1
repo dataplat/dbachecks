@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe 'Testing Database Collation' -Tags Collation, $filename {
+Describe "Database Collation" -Tag Collation, $filename {
 	(Get-SqlInstance).ForEach{
 		$results = Test-DbaDatabaseCollation -SqlInstance $psitem
 		foreach ($result in $results) {
@@ -11,7 +11,7 @@ Describe 'Testing Database Collation' -Tags Collation, $filename {
 	}
 }
 
-Describe 'Testing backups' -Tags Backup, BackupTest, $filename {
+Describe "Last Backup Restore & Integrity Checks" -Tag Backup, BackupTest, $filename {
 	if (-not (Get-DbcConfigValue skip.backuptesting)) {
 		$destserver = Get-DbcConfigValue setup.backuptestserver
 		$destdata = Get-DbcConfigValue setup.backupdatadir
@@ -32,7 +32,7 @@ Describe 'Testing backups' -Tags Backup, BackupTest, $filename {
 	}
 }
 
-Describe 'Testing Database Owners' -Tags DatabaseOwner, $filename {
+Describe "Database Owners" -Tag DatabaseOwner, $filename {
 	$targetowner = Get-DbcConfigValue policy.dbownershould
     (Get-SqlInstance).ForEach{
         Context "Testing $psitem for Database Owners" {
@@ -46,7 +46,7 @@ Describe 'Testing Database Owners' -Tags DatabaseOwner, $filename {
     }
 }
 
-Describe 'Testing Database Owners' -Tags NotDatabaseOwner, $filename {
+Describe "Database Owners" -Tag NotDatabaseOwner, $filename {
 	$targetowner = Get-DbcConfigValue policy.dbownershouldnot
     (Get-SqlInstance).ForEach{
         Context "Testing $psitem for Database Owners" {
@@ -60,7 +60,7 @@ Describe 'Testing Database Owners' -Tags NotDatabaseOwner, $filename {
     }
 }
 
-Describe 'Testing last good DBCC CHECKDB' -Tags Corruption, Integrity, DBCC, $filename {
+Describe "last good DBCC CHECKDB" -Tag Corruption, Integrity, DBCC, $filename {
 	$maxdays = Get-DbcConfigValue policy.integritycheckmaxdays
 	$datapurity = Get-DbcConfigValue skip.datapuritycheck
     (Get-SqlInstance).ForEach{
@@ -81,7 +81,7 @@ Describe 'Testing last good DBCC CHECKDB' -Tags Corruption, Integrity, DBCC, $fi
     }
 }
 
-Describe 'Testing Column Identity Usage' -Tags Identity, $filename {
+Describe "Column Identity Usage" -Tag Identity, $filename {
 	$maxpercentage = Get-DbcConfigValue policy.identityusagepercent
 	(Get-SqlInstance).ForEach{
 		$results = Test-DbaIdentityUsage -SqlInstance $psitem
@@ -97,7 +97,7 @@ Describe 'Testing Column Identity Usage' -Tags Identity, $filename {
 }
 
 
-Describe 'Testing Full Recovery Model' -Tags Database, DISA, RecoveryModel, $filename {
+Describe "Full Recovery Model" -Tag Database, DISA, RecoveryModel, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing $psitem" {
 			$results = Get-DbaDbRecoveryModel -SqlInstance $psitem
@@ -112,7 +112,7 @@ Describe 'Testing Full Recovery Model' -Tags Database, DISA, RecoveryModel, $fil
 	}
 }
 
-Describe 'Testing Last Backup Times' -Tags Backup, DISA, LastBackup, $filename {
+Describe "Last Backup Times" -Tag Backup, DISA, LastBackup, $filename {
 	(Get-SqlInstance).ForEach{
 		$maxfull = Get-DbcConfigValue policy.backupfullmaxdays
 		$maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
