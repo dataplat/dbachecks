@@ -25,7 +25,7 @@ if (-not (Get-DbcConfigValue HADRcheck)) {
         $Return.SQLTestListeners = $Listeners.ForEach{Test-DbaConnection -SqlInstance $_}
         $Return.SQLTestReplicas = $Return.AGReplica.ForEach{Test-DbaConnection -SqlInstance $_.Name}
 
-        Describe "Testing $ClusterName Cluster" {
+        Describe "Testing $ClusterName Cluster" -Tags HADR, Cluster, $filename  {
             Context "Cluster Nodes" {
                 $Return.Nodes.ForEach{
                     It "Node $($_.Name) should be Up" {
@@ -49,7 +49,7 @@ if (-not (Get-DbcConfigValue HADRcheck)) {
             }
         }
 
-        Describe "SQL" {
+        Describe "SQL" -Tags HADR, AG, $filename {
             Context "SQL Status" {
                 $Return.SQLTestListeners.ForEach{
                     It "Listener $($_.SQLInstance) Should be Pingable" {
