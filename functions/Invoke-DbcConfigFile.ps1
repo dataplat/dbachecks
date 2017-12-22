@@ -10,7 +10,7 @@
 			The path to open, by default is "$script:localapp\config.json"
 	
 		.EXAMPLE
-			PS C:\> Invoke-DbcConfigFile
+			Invoke-DbcConfigFile
 		
 			Opens "$script:localapp\config.json" for editing. Follow with Import-DbcConfig.
     #>
