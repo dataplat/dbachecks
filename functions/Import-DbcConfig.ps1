@@ -7,22 +7,23 @@
 			Imports the Config from a JSON file
 	
 		.PARAMETER Path
-		The path to import from, by default is "$script:localapp\config.json"
+			The path to import from, by default is "$script:localapp\config.json"
 	
 		.EXAMPLE
-		PS C:\> Import-DbcConfig
+			PS C:\> Import-DbcConfig
 		
-		Imports config from "$script:localapp\config.json"
+			Imports config from "$script:localapp\config.json"
 
 		.EXAMPLE
-		PS C:\> Import-DbcConfig -Path \\nas\projects\config.json
+			PS C:\> Import-DbcConfig -Path \\nas\projects\config.json
 		
-		Imports config from \\nas\projects\config.json
+			Imports config from \\nas\projects\config.json
     #>
 	[CmdletBinding()]
 	param (
 		[string]$Path = "$script:localapp\config.json"
 	)
+
 	process {
 		if (-not (Test-Path -Path $Path)) {
 			Stop-PSFFunction -Message "$Path does not exist. Run Export-DbcConfig to create."

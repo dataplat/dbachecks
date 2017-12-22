@@ -1,40 +1,40 @@
 ﻿function Update-DbcPowerBiDataSource {
 	<#
 		.SYNOPSIS
-		Converts Pester results and exports file in required format for launching the PowerBi command
+			Converts Pester results and exports file in required format for launching the PowerBi command
 		
 		.DESCRIPTION
-		Converts Pester results and exports file in required format for launching the PowerBi command
+			Converts Pester results and exports file in required format for launching the PowerBi command
 	
-		Basically does this:
-			$InputObject.TestResult | Select-Object -First 20 | ConvertTo-Json -Depth 3 | Out-File "$env:windir\temp\dbachecks.json"
+			Basically does this:
+				$InputObject.TestResult | Select-Object -First 20 | ConvertTo-Json -Depth 3 | Out-File "$env:windir\temp\dbachecks.json"
 
 		.PARAMETER InputObject
-		Required. Resultset from Invoke-DbcCheck. If InputObject is not provided, it will be generated using a very generic resultset:
+			Required. Resultset from Invoke-DbcCheck. If InputObject is not provided, it will be generated using a very generic resultset:
 	
-		Invoke-DbcCheck -Show Summary -PassThru
+			Invoke-DbcCheck -Show Summary -PassThru
 	
 		.PARAMETER Path
-		The directory to store your JSON files. "C:\windows\temp\dbachecks\*.json" by default
+			The directory to store your JSON files. "C:\windows\temp\dbachecks\*.json" by default
 	
 		PARAMETER Environment
-		Tag your JSON filename with an enviornment
+			Tag your JSON filename with an enviornment
 	
 		.EXAMPLE
-		PS C:\> Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
+			PS C:\> Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
 		
-		Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
+			Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
 	
 		.EXAMPLE
-		PS C:\> Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
+			PS C:\> Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
 		
-		Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
+			Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
 
 		.EXAMPLE
-		PS C:\> Invoke-DbcCheck -SqlInstance sql2017 -Tag Backup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Path \\nas\projects\dbachecks.json
-		PS C:\> Start-DbcPowerBi -Path \\nas\projects\dbachecks.json
+			PS C:\> Invoke-DbcCheck -SqlInstance sql2017 -Tag Backup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Path \\nas\projects\dbachecks.json
+			PS C:\> Start-DbcPowerBi -Path \\nas\projects\dbachecks.json
 		
-		Runs tests, saves to json to \\nas\projects\dbachecks.json but then you'll have to change your data source in Power BI because by default it points to C:\Windows\Temp (limitation of Power BI)
+			Runs tests, saves to json to \\nas\projects\dbachecks.json but then you'll have to change your data source in Power BI because by default it points to C:\Windows\Temp (limitation of Power BI)
     #>
 	[CmdletBinding()]
 	param (
@@ -43,6 +43,7 @@
 		[string]$Path = "$env:windir\temp\dbachecks",
 		[string]$Enviornment
 	)
+
 	process {
 		try {
 			if (-not (Test-Path -Path $Path)) {
