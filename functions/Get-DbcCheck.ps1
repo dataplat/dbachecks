@@ -4,6 +4,7 @@
 			Lists all checks, tags and unique identifiers
 	
 		.DESCRIPTION
+			Lists all checks, tags and unique identifiers
 			
 		.PARAMETER Pattern
 			May be any string, supports wildcards.

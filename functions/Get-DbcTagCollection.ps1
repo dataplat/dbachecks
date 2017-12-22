@@ -4,9 +4,11 @@
 			Retrieves a list of all available tags. Simplisitic, similar to Get-Verb.
 	
 		.DESCRIPTION
+			Retrieves a list of all available tags. Simplisitic, similar to Get-Verb.
 			
 		.PARAMETER Name
 			Default: "*"
+			
 			The name of the tag to retrieve.
 			May be any string, supports wildcards.
 
