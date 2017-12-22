@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "Database Collation" -Tag Collation, $filename {
+Describe "Database Collation" -Tags DatabaseCollation, $filename {
 	(Get-SqlInstance).ForEach{
 		$results = Test-DbaDatabaseCollation -SqlInstance $psitem
 		foreach ($result in $results) {
@@ -11,7 +11,7 @@ Describe "Database Collation" -Tag Collation, $filename {
 	}
 }
 
-Describe "Last Backup Restore & Integrity Checks" -Tag Backup, BackupTest, $filename {
+Describe "Last Backup Restore & Integrity Checks" -Tags Backup, TestLastBackup, $filename {
 	if (-not (Get-DbcConfigValue skip.backuptesting)) {
 		$destserver = Get-DbcConfigValue setup.backuptestserver
 		$destdata = Get-DbcConfigValue setup.backupdatadir
@@ -32,7 +32,7 @@ Describe "Last Backup Restore & Integrity Checks" -Tag Backup, BackupTest, $file
 	}
 }
 
-Describe "Database Owners" -Tag DatabaseOwner, $filename {
+Describe "Database Owners" -Tags DatabaseOwner, $filename {
 	$targetowner = Get-DbcConfigValue policy.dbownershould
 	(Get-SqlInstance).ForEach{
 		Context "Testing $psitem for Database Owners" {
@@ -46,7 +46,7 @@ Describe "Database Owners" -Tag DatabaseOwner, $filename {
 	}
 }
 
-Describe "Not Database Owners" -Tag NotDatabaseOwner, $filename {
+Describe "Not Database Owners" -Tags NotDatabaseOwner, $filename {
 	$targetowner = Get-DbcConfigValue policy.dbownershouldnot
 	(Get-SqlInstance).ForEach{
 		Context "Testing $psitem for Database Owners" {
@@ -60,7 +60,7 @@ Describe "Not Database Owners" -Tag NotDatabaseOwner, $filename {
 	}
 }
 
-Describe "last good DBCC CHECKDB" -Tag Corruption, Integrity, DBCC, $filename {
+Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 	$maxdays = Get-DbcConfigValue policy.integritycheckmaxdays
 	$datapurity = Get-DbcConfigValue skip.datapuritycheck
 	(Get-SqlInstance).ForEach{
@@ -69,7 +69,7 @@ Describe "last good DBCC CHECKDB" -Tag Corruption, Integrity, DBCC, $filename {
 			foreach ($result in $results) {
 				if ($result.Database -ne 'tempdb') {
 					It "last good integrity check for $($result.Database) on $psitem should be less than $maxdays" {
-						$result.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(-($maxdays))
+						$result.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
 					}
 					
 					It -Skip:$datapurity "last good integrity check for $($result.Database) on $psitem has Data Purity Enabled" {
@@ -81,7 +81,7 @@ Describe "last good DBCC CHECKDB" -Tag Corruption, Integrity, DBCC, $filename {
 	}
 }
 
-Describe "Column Identity Usage" -Tag Identity, $filename {
+Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
 	$maxpercentage = Get-DbcConfigValue policy.identityusagepercent
 	(Get-SqlInstance).ForEach{
 		$results = Test-DbaIdentityUsage -SqlInstance $psitem
@@ -97,13 +97,13 @@ Describe "Column Identity Usage" -Tag Identity, $filename {
 }
 
 
-Describe "Full Recovery Model" -Tag Database, DISA, RecoveryModel, $filename {
+Describe "Recovery Model" -Tags DISA, RecoveryModel, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing $psitem" {
 			$results = Get-DbaDbRecoveryModel -SqlInstance $psitem
 			foreach ($result in $results) {
 				if ($result.Name -ne 'tempdb') {
-					It "$($result.Name) on $psitem should be set to the Full recovery model" {
+					It "$($result.Name) on $psitem should be set to the proper recovery model" {
 						$result.RecoveryModel | Should be (Get-DbcConfigValue policy.recoverymodel)
 					}
 				}
@@ -112,7 +112,7 @@ Describe "Full Recovery Model" -Tag Database, DISA, RecoveryModel, $filename {
 	}
 }
 
-Describe "Last Backup Times" -Tag Backup, DISA, LastBackup, $filename {
+Describe "Last Backup Times" -Tags Backup, DISA, LastBackup, $filename {
 	(Get-SqlInstance).ForEach{
 		$maxfull = Get-DbcConfigValue policy.backupfullmaxdays
 		$maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
@@ -124,16 +124,16 @@ Describe "Last Backup Times" -Tag Backup, DISA, LastBackup, $filename {
 			foreach ($result in $results) {
 				
 				It "full backups for $result should be less than $maxfull days" {
-					$result.LastFullBackup -ge (Get-Date).AddDays(-($maxfull)) | Should be $true
+					$result.LastFullBackup -ge (Get-Date).AddDays(- ($maxfull)) | Should be $true
 				}
 				
 				It -Skip:$diffskip "diff backups for $result should be less than $maxdiff hours" {
-					$result.LastDiffBackup -ge (Get-Date).AddHours(-($maxdiff)) | Should be $true
+					$result.LastDiffBackup -ge (Get-Date).AddHours(- ($maxdiff)) | Should be $true
 				}
 				
 				if ($result.RecoveryModel -ne 'Simple') {
 					It "log backups for $result should be less than $maxlog minutes" {
-						$result.LastLogBackup -ge (Get-Date).AddMinutes(-($maxlog)) | Should be $true
+						$result.LastLogBackup -ge (Get-Date).AddMinutes(- ($maxlog)) | Should be $true
 					}
 				}
 			}
@@ -141,16 +141,15 @@ Describe "Last Backup Times" -Tag Backup, DISA, LastBackup, $filename {
 	}
 }
 
-
-Describe "Duplicate Index" -Tag Index, $filename {
-    (Get-SqlInstance).ForEach{
-        $servername = $psitem
-        Context "Testing $servername for duplicate indexes" {
-            (Get-DbaDatabase -SqlInstance $servername).ForEach{
-                It "$psitem should not have duplicate indexes" {
-                    Find-SqlDuplicateIndex -SqlInstance $servername -Database $psitem.Name | Should Be $null
-                }
-            }
-        }
-    }
+Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
+	(Get-SqlInstance).ForEach{
+		$servername = $psitem
+		Context "Testing $servername for duplicate indexes" {
+			(Get-DbaDatabase -SqlInstance $servername).ForEach{
+				It "$psitem should not have duplicate indexes" {
+					Find-SqlDuplicateIndex -SqlInstance $servername -Database $psitem.Name | Should Be $null
+				}
+			}
+		}
+	}
 }
