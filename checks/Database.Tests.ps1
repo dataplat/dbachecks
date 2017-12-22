@@ -4,7 +4,7 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing database collation on $psitem" {
 			(Test-DbaDatabaseCollation -SqlInstance $psitem).ForEach{
-				It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $instance" {
+				It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database)" {
 					$psitem.ServerCollation -eq $psitem.DatabaseCollation | Should be $true
 				}
 			}
@@ -16,7 +16,7 @@ Describe 'Suspect Page' -Tags SuspectPage, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing suspect pages on $psitem" {
 			(Get-DbaSuspectPage -SqlInstance $psitem).ForEach{
-				It "Suspect Page has been found on database $psitem.DatabaseName" {
+				It "Suspect Page has been found on database $($psitem.DatabaseName)" {
 					$psitem.ErrorCount -eq 0 | Should be $true
 				}
 			}
@@ -130,16 +130,16 @@ Describe "Last Backup Times" -Tags LastBackup, Backup, DISA, $filename {
 		Context "Testing last backups on $psitem" {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "full backups should be less than $maxfull days" {
-					$psitem.LastFullBackup -ge (Get-Date).AddDays(-($maxfull)) | Should be $true
+					$psitem.LastFullBackup -ge (Get-Date).AddDays(- ($maxfull)) | Should be $true
 				}
 				
 				It -Skip:$diffskip "diff backups should be less than $maxdiff hours" {
-					$psitem.LastDiffBackup -ge (Get-Date).AddHours(-($maxdiff)) | Should be $true
+					$psitem.LastDiffBackup -ge (Get-Date).AddHours(- ($maxdiff)) | Should be $true
 				}
 				
 				if ($psitem.RecoveryModel -ne 'Simple') {
 					It "log backups should be less than $maxlog minutes" {
-						$psitem.LastLogBackup -ge (Get-Date).AddMinutes(-($maxlog)) | Should be $true
+						$psitem.LastLogBackup -ge (Get-Date).AddMinutes(- ($maxlog)) | Should be $true
 					}
 				}
 			}
