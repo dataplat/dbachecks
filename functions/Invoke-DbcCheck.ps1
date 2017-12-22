@@ -406,7 +406,7 @@ New-PesterOption
 			return
 		}
 		
-		$repos = Get-DbcConfigValue -Name app.checkrepo
+		$repos = Get-DbcConfigValue -Name app.checkrepos
 		foreach ($repo in $repos) {
 			if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
 				Push-Location -Path $repo

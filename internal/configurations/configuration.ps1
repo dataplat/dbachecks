@@ -49,4 +49,4 @@ Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initi
 # some configs to help with autocompletes and other module level stuff
 Set-PSFConfig -Module dbachecks -Name app.pestertags -Value $null -Initialize -Description "Autocomplete pester tags" -Hidden
 Set-PSFConfig -Module dbachecks -Name app.checknames -Value $null -Initialize -Description "Names of checks (Describe)" -Hidden
-Set-PSFConfig -Module dbachecks -Name app.checkrepo -Value "$script:ModuleRoot\checks" -Initialize -Description "Where tests are stored"
+Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value "$script:ModuleRoot\checks" -Initialize -Description "Where tests are stored"
