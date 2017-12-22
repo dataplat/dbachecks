@@ -6,7 +6,7 @@ foreach ($file in (Get-ChildItem "$ModuleRoot\internal\configurations\*.ps1")) {
 }
 
 # This is an abomination, but works
-$repo = Get-DbcConfigValue -Name app.checkreposs
+$repo = Get-DbcConfigValue -Name app.checkrepos
 $alltags = (Get-ChildItem -Path "$repo\*Tests.ps1").Name.Replace(".Tests.ps1", "")
 $content = Get-Content "$repo\*Tests.ps1" | Where-Object { $_ -match "-Tag" }
 $parsedtags = Get-Content "$repo\*.Tests.ps1" | Where-Object { $_ -match "-Tag" } | Select-String -Pattern '-Tag[\s]*(.+)[\s]*\$filename' | ForEach-Object { $_.matches.Groups[1].Value }
