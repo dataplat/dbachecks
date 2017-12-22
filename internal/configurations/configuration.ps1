@@ -47,6 +47,4 @@ Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initi
 Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
 
 # some configs to help with autocompletes and other module level stuff
-Set-PSFConfig -Module dbachecks -Name app.pestertags -Value $null -Initialize -Description "Autocomplete pester tags" -Hidden
-Set-PSFConfig -Module dbachecks -Name app.checknames -Value $null -Initialize -Description "Names of checks (Describe)" -Hidden
 Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value "$script:ModuleRoot\checks" -Initialize -Description "Where tests are stored"

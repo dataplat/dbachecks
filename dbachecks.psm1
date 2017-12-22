@@ -59,6 +59,3 @@ if ($credential = (Get-DbcConfigValue -Name Setup.SqlCredential)) {
 
 # Load up tepp
 $null = Get-DbcConfig
-
-# need to delete once we move to public - this is to reset an old bad value
-Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value "$script:ModuleRoot\checks"

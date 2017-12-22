@@ -1,4 +1,4 @@
-﻿function Get-DbcTag {
+﻿function Get-DbcTagCollection {
 	<#
 		.SYNOPSIS
 			Retrieves a list of all available tags. Simplisitic, similar to Get-Verb.
@@ -26,6 +26,7 @@
 	)
 	
 	process {
-		Get-PSFConfigValue -FullName dbachecks.app.pestertags | Where-Object { $_ -like $name } | Sort-Object | Select-Object -Unique
+		$alltags = (Get-Content "$script:localapp\checks.json" | ConvertFrom-Json) | Select-Object -ExpandProperty Tags
+		($alltags -split ",").Trim() | Where-Object { $_ -like $name } | Sort-Object | Select-Object -Unique
 	}
 }

@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "Active Directory Domain Name Check" -Tags ProperDomain, $filename {
+Describe "Active Directory Domain Name Check" -Tag ProperDomain, $filename {
 	$domain = Get-DbcConfig -Name domain.name
 	(Get-ComputerName).ForEach{
 		It 'Should be on the Domain $domain' {
@@ -10,7 +10,7 @@ Describe "Active Directory Domain Name Check" -Tags ProperDomain, $filename {
 }
 
 # Skipping this for now until we get AdsiPS command equiv
-Describe "Active Directory" -Tags OrganizationalUnit, $filename {
+Describe "Active Directory" -Tag OrganizationalUnit, $filename {
 	$dc = Get-DbcConfig -Name domain.domaincontroller
 	(Get-ComputerName).ForEach{
 		if (-not $value) { # Can be passed by Invoke-DbcCheck -Value

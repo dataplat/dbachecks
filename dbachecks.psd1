@@ -82,7 +82,8 @@
 		'Export-DbcConfig',
 		'Start-DbcPowerBi',
 		'Update-DbcPowerBiDataSource',
-		'Get-DbcTag'
+		'Get-DbcTagCollection',
+		'Get-DbcCheck'
 	)
 	
 	# Cmdlets to export from this module
