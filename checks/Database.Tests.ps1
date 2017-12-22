@@ -11,6 +11,16 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
 	}
 }
 
+Describe 'Testing Suspect Page' -Tags SuspectPage, $filename {
+	(Get-SqlInstance).ForEach{
+		$results = Get-DbaSuspectPage -SqlInstance $psitem
+		foreach ($result in $results) {
+			It "Suspect Page has been found on $psitem on database $result.DatabaseName" {
+				$result.ErrorCount -eq 0 | Should be $true
+			}
+		}
+	}
+}
 Describe "Last Backup Restore & Integrity Checks" -Tags Backup, TestLastBackup, $filename {
 	if (-not (Get-DbcConfigValue skip.backuptesting)) {
 		$destserver = Get-DbcConfigValue setup.backuptestserver
