@@ -15,7 +15,7 @@
 			May be any string, supports wildcards.
 		
 		.EXAMPLE
-			PS C:\> Get-DbcConfig Lists.SqlServers
+			Get-DbcConfig Lists.SqlServers
 			
 			Retrieves the configuration element for the key "Lists.SqlServers"
     #>
