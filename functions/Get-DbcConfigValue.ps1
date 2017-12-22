@@ -5,10 +5,12 @@
 		
 		.DESCRIPTION
 			Retrieves configuration element values by name.
+			
 			Can be used to search the existing configuration list.
 	
 		.PARAMETER Name
 			Default: "*"
+			
 			The name of the configuration element(s) to retrieve.
 			May be any string, supports wildcards.
 		
@@ -18,7 +20,7 @@
 			Retrieves the configuration element for the key "Lists.SqlServers"
     #>
 	[CmdletBinding()]
-	Param (
+	param (
 		[string]$Name = "*"
 	)
 	
