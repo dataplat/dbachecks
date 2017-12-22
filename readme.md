@@ -145,6 +145,10 @@ Set-Variable -Name PSDefaultParameterValues -Value @{ 'Get-DbaDiskSpace:ExcludeD
 Invoke-DbcCheck -Tag Storage
 ```
 
+## Can I run tests not in the module?
+
+Yes, xyz
+
 ## I don't have access to the PowerShell Gallery, how can I download this?
 
 No GitHub support download install will be possible since it has dependencies. 
