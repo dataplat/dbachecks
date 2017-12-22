@@ -12,7 +12,7 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
 	}
 }
 
-Describe 'Suspect Page' -Tags SuspectPage, $filename {
+Describe "Suspect Page" -Tags SuspectPage, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing suspect pages on $psitem" {
 			(Get-DbaSuspectPage -SqlInstance $psitem).ForEach{
