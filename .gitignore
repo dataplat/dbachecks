@@ -5,3 +5,5 @@ config.json
 # ignore files for VS and VS Code
 .vs/*
 .vscode/*
+*.pssproj
+*.sln
