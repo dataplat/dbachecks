@@ -10,12 +10,12 @@
 			The path to import from, by default is "$script:localapp\config.json"
 	
 		.EXAMPLE
-			PS C:\> Import-DbcConfig
+			Import-DbcConfig
 		
 			Imports config from "$script:localapp\config.json"
 
 		.EXAMPLE
-			PS C:\> Import-DbcConfig -Path \\nas\projects\config.json
+			Import-DbcConfig -Path \\nas\projects\config.json
 		
 			Imports config from \\nas\projects\config.json
     #>
