@@ -1,5 +1,43 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
+Describe "SQL Engine Service Account" -Tag ServiceAccount, SQLEngine, $filename {
+    (Get-SQLInstance).ForEach{
+        Context "Testing $psitem" {
+        $results = Get-DbaSqlService -ComputerName $psitem -Type Engine
+        	It "SQL agent service account should be running on $psitem" {
+				$results.State | Should be "Running"
+			}
+			It "SQL agent service account should have a start mode of Automatic on $psitem" {
+				$results.StartMode | Should be "Automatic"
+			}
+		}
+	}
+}
+
+Describe "SQL Browser Service Account" -Tag ServiceAccount, SQLEngine, $filename {
+    (Get-SQLInstance).ForEach{
+        Context "Testing $psitem" {
+        $results = Get-DbaSqlService -ComputerName $psitem
+        	It "SQL browser service should be Stopped on $psitem unless multiple instances are installed" {
+				if (($r.ServiceType -eq "Engine").count -eq 1) 
+                {
+                    $results.State | Should be "Stopped"
+                } else {
+                    $results.State | Should be "Running"
+                }
+			}
+			It "SQL browser service startmode should be Disabled on $psitem unless multiple instances are installed" {
+				if (($r.ServiceType -eq "Engine").count -eq 1) 
+                {
+				    $results.StartMode | Should be "Disabled"
+                } else {
+                    $results.StartMode | Should be "Automatic"
+                }
+			}
+		}
+	}
+}
+
 Describe "TempDB Configuration" -Tag TempDB, $filename {
     (Get-SQLInstance).ForEach{
         Context "Testing $psitem" {
