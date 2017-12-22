@@ -1,14 +1,13 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
-	(Get-SQLInstance).ForEach{
-		$instance = $psitem
+	(Get-SqlInstance).ForEach{
 		Context "Testing SQL Engine Service on $psitem" {
 			(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
-				It "SQL agent service account should be running on $instance" {
+				It "SQL agent service account should be running" {
 					$psitem.State | Should be "Running"
 				}
-				It "SQL agent service account should have a start mode of Automatic on $instance" {
+				It "SQL agent service account should have a start mode of Automatic" {
 					$psitem.StartMode | Should be "Automatic"
 				}
 			}
@@ -17,11 +16,10 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
-	(Get-SQLInstance).ForEach{
-		$instance = $psitem
-		Context "Testing SQL Browser Service on $instance" {
-			(Get-DbaSqlService -ComputerName $instance).ForEach{
-				It "SQL browser service should be Stopped unless multiple instances are installed on $instance" {
+	(Get-ComputerName).ForEach{
+		Context "Testing SQL Browser Service on $psitem" {
+			(Get-DbaSqlService -ComputerName $psitem).ForEach{
+				It "SQL browser service should be Stopped unless multiple instances are installed" {
 					if (($psitem.ServiceType -eq "Engine").count -eq 1) {
 						$psitem.State | Should be "Stopped"
 					}
@@ -29,7 +27,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 						$psitem.State | Should be "Running"
 					}
 				}
-				It "SQL browser service startmode should be Disabled on $instance unless multiple instances are installed" {
+				It "SQL browser service startmode should be Disabled unless multiple instances are installed" {
 					if (($psitem.ServiceType -eq "Engine").count -eq 1) {
 						$psitem.StartMode | Should be "Disabled"
 					}
@@ -43,23 +41,22 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 }
 
 Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
-	(Get-SQLInstance).ForEach{
-		$instance = $psitem
+	(Get-SqlInstance).ForEach{
 		Context "Testing TempDB Configuration on $psitem" {
-			(Test-DBATempDbConfiguration -SqlServer $psitem).ForEach{
-				It "$instance should have TF118 enabled" -Skip:$($Config.TempDb.Skip118) {
+			(Test-DbaTempDbConfiguration -SqlServer $psitem).ForEach{
+				It "should have TF118 enabled" -Skip:$($Config.TempDb.Skip118) {
 					$psitem[0].CurrentSetting | Should Be $psitem[0].Recommended
 				}
-				It "$instance should have $($psitem[1].Recommended) TempDB Files" -Skip:(Get-DbcConfigValue -Name skip.TempDb118) {
+				It "should have $($psitem[1].Recommended) TempDB Files" -Skip:(Get-DbcConfigValue -Name skip.TempDb118) {
 					$psitem[1].CurrentSetting | Should Be $psitem[1].Recommended
 				}
-				It "$instance should not have TempDB Files autogrowth set to percent" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileGrowthPercent) {
+				It "should not have TempDB Files autogrowth set to percent" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileGrowthPercent) {
 					$psitem[2].CurrentSetting | Should Be $psitem[2].Recommended
 				}
-				It "$instance should not have TempDB Files on the C Drive" -Skip:(Get-DbcConfigValue -Name skip.TempDbFilesonC) {
+				It "should not have TempDB Files on the C Drive" -Skip:(Get-DbcConfigValue -Name skip.TempDbFilesonC) {
 					$psitem[3].CurrentSetting | Should Be $psitem[3].Recommended
 				}
-				It "$instance should not have TempDB Files with MaxSize Set" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileMaxSize) {
+				It "should not have TempDB Files with MaxSize Set" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileMaxSize) {
 					$psitem[4].CurrentSetting | Should Be $psitem[4].Recommended
 				}
 			}
@@ -68,11 +65,10 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
 }
 
 Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
-	(Get-SQLInstance).ForEach{
-		$instance = $psitem
-		Context "Testing Ad Hoc Workload Optimization on $instance" {
+	(Get-SqlInstance).ForEach{
+		Context "Testing Ad Hoc Workload Optimization on $psitem" {
 			It "Should be Optimised for Ad Hoc workloads" {
-				(Test-DbaOptimizeForAdHoc -SqlInstance $instance).ForEach{
+				(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
 					$psitem.CurrentOptimizeAdHoc | Should be $psitem.RecommendedOptimizeAdHoc
 				}
 			}
@@ -90,10 +86,9 @@ Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
 				$backuppath = Get-DbcConfigValue setup.backuppath
 			}
 			
-			It "$psitem access to the backup path ($backuppath)" {
+			It "can access backup path ($backuppath)" {
 				Test-DbaSqlPath -SqlInstance $psitem -Path $backuppath | Should be $true
 			}
-			
 		}
 	}
 }
@@ -112,10 +107,9 @@ Describe "Dedicated Administrator Connection" -Tags DAC, $filename {
 Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
 	$max = Get-DbcConfigValue policy.networklatencymsmax
 	(Get-SqlInstance).ForEach{
-		$instance = $psitem
-		Context "Testing Network Latency on $instance" {
+		Context "Testing Network Latency on $psitem" {
 			(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
-				It "network latency should be less than $max ms on $instance" {
+				It "network latency should be less than $max ms" {
 					$psitem.Average.TotalMilliseconds | Should BeLessThan $max
 				}
 			}
@@ -125,11 +119,10 @@ Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
 
 Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename {
 	(Get-SqlInstance).ForEach{
-		$instance = $psitem
-		Context "Testing Linked Servers on $instance" {
-			(Get-SqlInstance).ForEach{
-				It "Linked Server $($psitem.LinkedServerName) Should Be Connectable" {
-					$psitem.Connectivity | Should be $True
+		Context "Testing Linked Servers on $psitem" {
+			(Test-DbaLinkedServerConnection -SqlInstance $psitem).ForEach{
+				It "Linked Server $($psitem.LinkedServerName) has connectivity" {
+					$psitem.Connectivity | Should be $true
 				}
 			}
 		}
@@ -138,10 +131,9 @@ Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename 
 
 Describe "Max Memory" -Tags MaxMemory, $filename {
 	(Get-SqlInstance).ForEach{
-		$instance = $psitem
-		Context "Testing Max Memory on $PSItem" {
+		Context "Testing Max Memory on $psitem" {
 			It "Max Memory setting should be correct" {
-				(Test-DbaMaxMemory -SqlInstance $instance).ForEach{
+				(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
 					$psitem.SqlMaxMB | Should BeLessThan ($psitem.RecommendedMB + 379)
 				}
 			}
