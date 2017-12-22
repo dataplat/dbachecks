@@ -1,5 +1,20 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
+Describe "SQL Agent Service Account" -Tag ServiceAccount, SQLAgent, $filename {
+    (Get-SQLInstance).ForEach{
+        Context "Testing $psitem" {
+        $results = Get-DbaSqlService -ComputerName $psitem -Type Agent
+        	It "SQL agent service account should be running on $psitem" {
+				$results.State | Should be "Running"
+			}
+			It "SQL agent service account should have a start mode of Automatic on $psitem" {
+				$results.StartMode | Should be "Automatic"
+			}
+		}
+	}
+}
+
+
 Describe "DBA Operators" -Tag Operators, $filename {
     (Get-SQLInstance).ForEach{
         Context "Testing $psitem" {
