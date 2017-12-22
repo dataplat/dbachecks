@@ -26,6 +26,6 @@
 	)
 	
 	process {
-		Get-PSFConfigValue -FullName dbachecks.autocomplete.pestertags | Where-Object { $_ -like $name } | Sort-Object | Select-Object -Unique
+		Get-PSFConfigValue -FullName dbachecks.app.pestertags | Where-Object { $_ -like $name } | Sort-Object | Select-Object -Unique
 	}
 }
