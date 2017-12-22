@@ -61,4 +61,4 @@ if ($credential = (Get-DbcConfigValue -Name Setup.SqlCredential)) {
 $null = Get-DbcConfig
 
 # need to delete once we move to public - this is to reset an old bad value
-Set-PSFConfig -Module dbachecks -Name setup.testrepo -Value "$script:ModuleRoot\checks"
+Set-PSFConfig -Module dbachecks -Name app.checkrepo -Value "$script:ModuleRoot\checks"

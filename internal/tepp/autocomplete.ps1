@@ -2,7 +2,7 @@
 Register-PSFTeppScriptblock -Name SqlInstance -ScriptBlock { Get-PSFConfig -Module dbachecks -Name SqlInstance }
 Register-PSFTeppScriptblock -Name ComputerName -ScriptBlock { Get-PSFConfig -Module dbachecks -Name ComputerName }
 Register-PSFTeppScriptblock -Name confignames -ScriptBlock { (Get-PSFConfig -Module dbachecks).Name }
-Register-PSFTeppScriptblock -Name tags -ScriptBlock { Get-PSFConfigValue -FullName dbachecks.autocomplete.pestertags }
+Register-PSFTeppScriptblock -Name tags -ScriptBlock { Get-PSFConfigValue -FullName dbachecks.app.pestertags }
 Register-PSFTeppScriptblock -Name enviornments -ScriptBlock { "Production", "Development", "Test" }
 
 # Register the actual auto completer
