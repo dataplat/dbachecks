@@ -31,8 +31,8 @@ if (-not (Get-DbcConfigValue skip.hadrcheck)) {
 		$return.AGDatabasesSecSync = $synchronoussecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
 		$asyncsecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'AsynchronousCommit' }.Name
 		$return.AGDatabasesSecASync = $asyncsecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
-		$return.SQLTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
-		$return.SQLTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
+		$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
+		$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
 		
 		Describe "Cluster Server Health" -Tags ClusterServerHealth, $filename {
 			Context "Cluster Nodes" {
@@ -60,31 +60,31 @@ if (-not (Get-DbcConfigValue skip.hadrcheck)) {
 		
 		Describe "Cluster Network Health" -Tags ClusterNetworkHealth, $filename {
 			Context "Cluster Connectivity" {
-				$return.SQLTestListeners.ForEach{
-					It "Listener $($psitem.SQLInstance) Should be Pingable" {
+				$return.SqlTestListeners.ForEach{
+					It "Listener $($psitem.SqlInstance) Should be Pingable" {
 						$psitem.IsPingable | Should Be $true
 					}
-					It "Listener $($psitem.SQLInstance) Should be Connectable" {
+					It "Listener $($psitem.SqlInstance) Should be Connectable" {
 						$psitem.ConnectSuccess | Should Be $true
 					}
-					It "Listener $($psitem.SQLInstance) Domain Name Should Be $domainname" {
+					It "Listener $($psitem.SqlInstance) Domain Name Should Be $domainname" {
 						$psitem.DomainName | Should Be $domainname
 					}
-					It "Listener $($psitem.SQLInstance) TCP Port Should Be $tcpport" {
+					It "Listener $($psitem.SqlInstance) TCP Port Should Be $tcpport" {
 						$psitem.TCPPort | Should Be $tcpport
 					}
 				}
-				$return.SQLTestReplicas.ForEach{
-					It "Replica $($psitem.SQLInstance) Should be Pingable" {
+				$return.SqlTestReplicas.ForEach{
+					It "Replica $($psitem.SqlInstance) Should be Pingable" {
 						$psitem.IsPingable | Should Be $true
 					}
-					It "Replica $($psitem.SQLInstance) Should be Connectable" {
+					It "Replica $($psitem.SqlInstance) Should be Connectable" {
 						$psitem.ConnectSuccess | Should Be $true
 					}
-					It "Replica $($psitem.SQLInstance) Domain Name Should Be $domainname" {
+					It "Replica $($psitem.SqlInstance) Domain Name Should Be $domainname" {
 						$psitem.DomainName | Should Be $domainname
 					}
-					It "Replica $($psitem.SQLInstance) TCP Port Should Be $tcpport" {
+					It "Replica $($psitem.SqlInstance) TCP Port Should Be $tcpport" {
 						$psitem.TCPPort | Should Be $tcpport
 					}
 				}
