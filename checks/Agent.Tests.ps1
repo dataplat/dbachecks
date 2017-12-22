@@ -1,13 +1,13 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "SQL Agent Service Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
+Describe "SQL Agent Service" -Tags AgentServiceAccount, ServiceAccount, $filename {
 	(Get-SQLInstance).ForEach{
-		Context "Testing $psitem" {
+		Context "Testing SQL Agent Service service is running on $psitem" {
 			$results = Get-DbaSqlService -ComputerName $psitem -Type Agent
-			It "SQL agent service account should be running on $psitem" {
+			It "SQL agent service should be running on $psitem" {
 				$results.State | Should be "Running"
 			}
-			It "SQL agent service account should have a start mode of Automatic on $psitem" {
+			It "SQL agent service should have a start mode of Automatic on $psitem" {
 				$results.StartMode | Should be "Automatic"
 			}
 		}
@@ -16,7 +16,7 @@ Describe "SQL Agent Service Account" -Tags AgentServiceAccount, ServiceAccount, 
 
 Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 	(Get-SQLInstance).ForEach{
-		Context "Testing $psitem" {
+		Context "Testing DBA Operators exists on $psitem" {
 			$operatorname = Get-DbcConfigValue  agent.dbaoperatorname
 			$operatoremail = Get-DbcConfigValue  agent.dbaoperatoremail
 			$results = Get-DbaAgentOperator -SqlInstance $psitem | Where-Object { $_.Name -eq $operatorname }
@@ -32,7 +32,7 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 	(Get-SQLInstance).ForEach{
-		Context "Testing $psitem" {
+		Context "Testing failsafe operator exists on $psitem" {
 			$failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
 			$fsosrv = Connect-DbaSqlServer -SqlInstance $psitem
 			$result = $fsosrv.JobServer.AlertSystem.FailSafeOperator
