@@ -1,43 +1,46 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "SQL Agent Service" -Tags AgentServiceAccount, ServiceAccount, $filename {
-	(Get-SQLInstance).ForEach{
-		Context "Testing SQL Agent Service service is running on $psitem" {
-			$results = Get-DbaSqlService -ComputerName $psitem -Type Agent
-			It "SQL agent service should be running on $psitem" {
-				$results.State | Should be "Running"
-			}
-			It "SQL agent service should have a start mode of Automatic on $psitem" {
-				$results.StartMode | Should be "Automatic"
+	(Get-SqlInstance).ForEach{
+		$instance = $psitem
+		Context "Testing SQL Agent is running on $instance" {
+			(Get-DbaSqlService -ComputerName $instance -Type Agent).ForEach{
+				It "SQL Agent should be running on $instance" {
+					$psitem.State | Should be "Running"
+				}
+				It "SQL Agent service should have a start mode of Automatic on $instance" {
+					$psitem.StartMode | Should be "Automatic"
+				}
 			}
 		}
 	}
 }
 
 Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
-	(Get-SQLInstance).ForEach{
-		Context "Testing DBA Operators exists on $psitem" {
+	(Get-SqlInstance).ForEach{
+		$instance = $psitem
+		Context "Testing DBA Operators exists on $instance" {
 			$operatorname = Get-DbcConfigValue  agent.dbaoperatorname
 			$operatoremail = Get-DbcConfigValue  agent.dbaoperatoremail
-			$results = Get-DbaAgentOperator -SqlInstance $psitem | Where-Object { $_.Name -eq $operatorname }
-			It "Should have an operator called $operatorname on $psitem" {
-				$results.Name | Should be $operatorname
-			}
-			It "$operatorname should have an email address of $operatoremail on $psitem" {
-				$results.EmailAddress | Should be $operatoremail
+			(Get-DbaAgentOperator -SqlInstance $instance | Where-Object { $_.Name -eq $operatorname }).ForEach{
+				It "Should have an operator called $operatorname on $instance" {
+					$psitem.Name | Should be $operatorname
+				}
+				It "$operatorname should have an email address of $operatoremail on $instance" {
+					$psitem.EmailAddress | Should be $operatoremail
+				}
 			}
 		}
 	}
 }
 
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
-	(Get-SQLInstance).ForEach{
+	(Get-SqlInstance).ForEach{
 		Context "Testing failsafe operator exists on $psitem" {
 			$failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
-			$fsosrv = Connect-DbaSqlServer -SqlInstance $psitem
-			$result = $fsosrv.JobServer.AlertSystem.FailSafeOperator
+			$server = Connect-DbaSqlServer -SqlInstance $psitem
 			It "$psitem should have a failsafe operator of $failsafeoperator" {
-				$result | Should be $failsafeoperator
+				$server.JobServer.AlertSystem.FailSafeOperator | Should be $failsafeoperator
 			}
 		}
 	}
