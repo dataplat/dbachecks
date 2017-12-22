@@ -108,7 +108,7 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
 	}
 }
 
-Describe "Recovery Model" -Tags DISA, RecoveryModel, $filename {
+Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing Recovery Model on $psitem" {
 			(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
