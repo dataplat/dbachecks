@@ -1,10 +1,10 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "SQL Agent Service Account" -Tag ServiceAccount, SQLAgent, $filename {
-    (Get-SQLInstance).ForEach{
-        Context "Testing $psitem" {
-        $results = Get-DbaSqlService -ComputerName $psitem -Type Agent
-        	It "SQL agent service account should be running on $psitem" {
+Describe "SQL Agent Service Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
+	(Get-SQLInstance).ForEach{
+		Context "Testing $psitem" {
+			$results = Get-DbaSqlService -ComputerName $psitem -Type Agent
+			It "SQL agent service account should be running on $psitem" {
 				$results.State | Should be "Running"
 			}
 			It "SQL agent service account should have a start mode of Automatic on $psitem" {
@@ -14,13 +14,12 @@ Describe "SQL Agent Service Account" -Tag ServiceAccount, SQLAgent, $filename {
 	}
 }
 
-
-Describe "DBA Operators" -Tag Operators, $filename {
-    (Get-SQLInstance).ForEach{
-        Context "Testing $psitem" {
-        $operatorname = Get-DbcConfigValue  agent.dbaoperatorname		
-        $operatoremail = Get-DbcConfigValue  agent.dbaoperatoremail
-        $results = Get-DbaAgentOperator -SqlInstance $psitem | Where {$_.Name -eq $operatorname}
+Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
+	(Get-SQLInstance).ForEach{
+		Context "Testing $psitem" {
+			$operatorname = Get-DbcConfigValue  agent.dbaoperatorname
+			$operatoremail = Get-DbcConfigValue  agent.dbaoperatoremail
+			$results = Get-DbaAgentOperator -SqlInstance $psitem | Where-Object { $_.Name -eq $operatorname }
 			It "Should have an operator called $operatorname on $psitem" {
 				$results.Name | Should be $operatorname
 			}
@@ -31,12 +30,12 @@ Describe "DBA Operators" -Tag Operators, $filename {
 	}
 }
 
-Describe "Failsafe Operator" -Tag Operators, $filename {
-    (Get-SQLInstance).ForEach{
-        Context "Testing $psitem" {
-        $failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
-        $fsosrv = Connect-DbaSqlServer -SqlInstance $psitem 
-        $result = $fsosrv.JobServer.AlertSystem.FailSafeOperator
+Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
+	(Get-SQLInstance).ForEach{
+		Context "Testing $psitem" {
+			$failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
+			$fsosrv = Connect-DbaSqlServer -SqlInstance $psitem
+			$result = $fsosrv.JobServer.AlertSystem.FailSafeOperator
 			It "$psitem should have a failsafe operator of $failsafeoperator" {
 				$result | Should be $failsafeoperator
 			}

@@ -8,14 +8,18 @@ foreach ($file in (Get-ChildItem "$ModuleRoot\internal\configurations\*.ps1")) {
 # Parse repo for tags and descriptions then write json
 $repo = Get-DbcConfigValue -Name app.checkrepos
 $collection = @()
-$strings = Get-Content "$repo\*.Tests.ps1" | Where-Object { $_ -match "-Tag" }
-foreach ($string in $strings) {
-	$describe = Select-String -InputObject $string -Pattern 'Describe\ \"[\s]*(.+)[\s]*\"\ \-Tag' | ForEach-Object { $_.matches.Groups[1].Value }
-	$tags = Select-String -InputObject $string -Pattern '-Tag[\s]*(.+)[\s]*\, \$filename' | ForEach-Object { $_.matches.Groups[1].Value }
-	$collection += [pscustomobject]@{
-		Name		   = $describe
-		UniqueTag	   = $null
-		AllTags	       = $tags
+foreach ($file in (Get-ChildItem "$repo\*.Tests.ps1")) {
+	$filename = $file.Name.Replace(".Tests.ps1", "")
+	$strings = Get-Content $file | Where-Object { $_ -match "-Tags" }
+	foreach ($string in $strings) {
+		$describe = Select-String -InputObject $string -Pattern 'Describe\ \"[\s]*(.+)[\s]*\"\ \-Tags' | ForEach-Object { $_.matches.Groups[1].Value }
+		$tags = Select-String -InputObject $string -Pattern '-Tags[\s]*(.+)[\s]*\, \$filename' | ForEach-Object { $_.matches.Groups[1].Value }
+		$collection += [pscustomobject]@{
+			Group			    = $filename
+			Description		    = $describe
+			UniqueTag		    = $null
+			AllTags			    = "$tags, $filename"
+		}
 	}
 }
 
