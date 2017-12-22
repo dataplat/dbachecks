@@ -25,12 +25,12 @@
 			Use this if you want the function to throw terminating errors you want to catch.
 
 		.EXAMPLE
-			PS C:\> Set-DbcConfig -Name Lists.SqlServers -Value sql2016, sql2017, sqlcluster
+			Set-DbcConfig -Name Lists.SqlServers -Value sql2016, sql2017, sqlcluster
 		
 			Resets the lists.sqlservers entry to sql2016, sql2017, sqlcluster
 	
 		.EXAMPLE
-			PS C:\> Set-DbcConfig -Name Lists.SqlServers -Value sql2016, sql2017, sqlcluster -Append
+			Set-DbcConfig -Name Lists.SqlServers -Value sql2016, sql2017, sqlcluster -Append
 		
 			Addds on to the current lists.sqlservers entry with sql2016, sql2017, sqlcluster
 	#>

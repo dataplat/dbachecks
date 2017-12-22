@@ -13,12 +13,12 @@
 			May be any string, supports wildcards.
 
 		.EXAMPLE
-			PS C:\> Get-DbcTag
+			Get-DbcTag
 			
 			Retrieves all of the available tags for -Tag and -ExcludeTag
 
 		.EXAMPLE
-			PS C:\> Get-DbcTag backups
+			Get-DbcTag backups
 			
 			Retrieves all of the available tags for -Tag and -ExcludeTag that are -like backups
     #>
