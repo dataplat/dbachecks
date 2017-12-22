@@ -10,12 +10,12 @@
 			The path to export to, by default is "$script:localapp\config.json"
 	
 		.EXAMPLE
-			PS C:\> Export-DbcConfig
+			Export-DbcConfig
 			
 			Exports config to "$script:localapp\config.json"
 	
 		.EXAMPLE
-			PS C:\> Export-DbcConfig -Path \\nfs\projects\config.json
+			Export-DbcConfig -Path \\nfs\projects\config.json
 			
 			Exports config to \\nfs\projects\config.json
     #>
