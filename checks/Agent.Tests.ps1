@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "Operators" -Tag Operators, $filename {
+Describe "DBA Operators" -Tag Operators, $filename {
     (Get-SQLInstance).ForEach{
         Context "Testing $psitem" {
         $operatorname = Get-DbcConfigValue  agent.dbaoperatorname		
@@ -16,3 +16,15 @@ Describe "Operators" -Tag Operators, $filename {
 	}
 }
 
+Describe "Failsafe Operator" -Tag Operators, $filename {
+    (Get-SQLInstance).ForEach{
+        Context "Testing $psitem" {
+        $failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
+        $fsosrv = Connect-DbaSqlServer -SqlInstance $psitem 
+        $result = $fsosrv.JobServer.AlertSystem.FailSafeOperator
+			It "$psitem should have a failsafe operator of $failsafeoperator" {
+				$result | Should be $failsafeoperator
+			}
+		}
+	}
+}
