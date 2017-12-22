@@ -30,7 +30,7 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 	}
 }
 
-Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
+Describe "Failsafe Operators" -Tags FailsafeOperator, Operator, $filename {
 	(Get-SQLInstance).ForEach{
 		Context "Testing failsafe operator is configured on $psitem" {
 			$failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
