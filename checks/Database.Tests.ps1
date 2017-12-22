@@ -51,7 +51,7 @@ Describe "Last Backup Restore & Integrity Checks" -Tags Backup, TestLastBackup, 
 Describe "Database Owners" -Tags DatabaseOwner, $filename {
     $targetowner = Get-DbcConfigValue policy.dbownershould
     (Get-SqlInstance).ForEach{
-        Context "Testing Database Owners $psitem" {
+        Context "Testing Database Owners on $psitem" {
             $results = Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner
             $results.ForEach{
                 It "$($psitem.Database) Owner should be $targetowner" {
@@ -65,7 +65,7 @@ Describe "Database Owners" -Tags DatabaseOwner, $filename {
 Describe "Not Database Owners" -Tags NotDatabaseOwner, $filename {
     $targetowner = Get-DbcConfigValue policy.dbownershouldnot
     (Get-SqlInstance).ForEach{
-        Context "Testing $psitem for Database Owners" {
+        Context "Testing Database Owners on $psitem" {
             $results = Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner
             $results.ForEach{
                 It "$($psitem.Database) Owner should Not be $targetowner" {
@@ -80,7 +80,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
     $maxdays = Get-DbcConfigValue policy.integritycheckmaxdays
     $datapurity = Get-DbcConfigValue skip.datapuritycheck
     (Get-SqlInstance).ForEach{
-        Context "Testing $psitem " {
+        Context "Testing Last Good DBCC CHECKDB on $psitem" {
             $results = Get-DbaLastGoodCheckDb -SqlInstance $psitem
             foreach ($result in $results) {
                 if ($result.Database -ne 'tempdb') {
@@ -101,11 +101,13 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
     $maxpercentage = Get-DbcConfigValue policy.identityusagepercent
     (Get-SqlInstance).ForEach{
         $results = Test-DbaIdentityUsage -SqlInstance $psitem
-        foreach ($result in $results) {
-            if ($result.Database -ne 'tempdb') {
-                $columnfqdn = "$($result.Database).$($result.Schema).$($result.Table).$($result.Column)"
-                It "usage for $columnfqdn on $psitem should be less than $maxpercentage percent" {
-                    $result.PercentUsed -lt $maxpercentage | Should be $true
+        Context "Testing Column Identity Usage on $psitem" {
+            foreach ($result in $results) {
+                if ($result.Database -ne 'tempdb') {
+                    $columnfqdn = "$($result.Database).$($result.Schema).$($result.Table).$($result.Column)"
+                    It "usage for $columnfqdn on $psitem should be less than $maxpercentage percent" {
+                        $result.PercentUsed -lt $maxpercentage | Should be $true
+                    }
                 }
             }
         }
@@ -115,7 +117,7 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
 
 Describe "Recovery Model" -Tags DISA, RecoveryModel, $filename {
     (Get-SqlInstance).ForEach{
-        Context "Testing $psitem" {
+        Context "Testing Recovery Model on $psitem" {
             $results = Get-DbaDbRecoveryModel -SqlInstance $psitem
             foreach ($result in $results) {
                 if ($result.Name -ne 'tempdb') {
@@ -135,7 +137,7 @@ Describe "Last Backup Times" -Tags Backup, DISA, LastBackup, $filename {
         $maxlog = Get-DbcConfigValue policy.backuplogmaxminutes
         $diffskip = Get-DbcConfigValue skip.backupdiffcheck
 
-        Context "Testing backups on $psitem" {
+        Context "Testing last backups on $psitem" {
             $results = Get-DbaDatabase -SqlInstance $psitem
             foreach ($result in $results) {
 
@@ -160,7 +162,7 @@ Describe "Last Backup Times" -Tags Backup, DISA, LastBackup, $filename {
 Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
     (Get-SqlInstance).ForEach{
         $servername = $psitem
-        Context "Testing $servername for duplicate indexes" {
+        Context "Testing duplicate indexes on $servername" {
             (Get-DbaDatabase -SqlInstance $servername).ForEach{
                 It "$psitem should not have duplicate indexes" {
                     Find-SqlDuplicateIndex -SqlInstance $servername -Database $psitem.Name | Should Be $null
