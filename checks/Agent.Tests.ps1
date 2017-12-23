@@ -43,7 +43,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 	}
 }
 
-Describe "Failed Jobs" -Tags FailedJobs, $filename {
+Describe "Failed Jobs" -Tags FailedJob, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Checking for failed enabled jobs on $psitem" {
 			(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
