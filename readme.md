@@ -169,6 +169,8 @@ Set-DbcConfig -Name app.checkrepos -Value C:\temp\checks -Append
 
 Then add additional checks. We recommend using the [development guidelines for dbachecks](https://github.com/potatoqualitee/dbachecks/wiki).
 
+![image](https://user-images.githubusercontent.com/8278033/34320819-07fe939c-e802-11e7-8203-a82740cc8f19.png)
+
 ## I don't have access to the PowerShell Gallery, how can I download this?
 
 No GitHub support download install will be possible since it has dependencies. 
