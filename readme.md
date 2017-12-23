@@ -108,7 +108,7 @@ Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Upd
 Start-DbcPowerBi
 ```
 
-Now, the New-DbcPowerBiJson 
+Now, the Update-DbcPowerBiDataSource 
 #### Sending mail
 
 So far, this is ugly as hell but I'm working on it. [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) dev smtp server is awesome.
