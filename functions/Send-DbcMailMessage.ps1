@@ -82,20 +82,10 @@ Uses the Secure Sockets Layer (SSL) protocol to establish a connection to the re
 default, SSL is not used.
 
 .EXAMPLE
-Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Send-DbcMailMessage
+Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru | Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
+	
+Runs two tests against sql2017 and sends a mail message
 
-Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
-
-.EXAMPLE
-Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Send-DbcMailMessage
-
-Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
-
-.EXAMPLE
-Invoke-DbcCheck -SqlInstance sql2017 -Tag Backup -Show Summary -PassThru | Send-DbcMailMessage -Path \\nas\projects\dbachecks.json
-Start-DbcPowerBi -Path \\nas\projects\dbachecks.json
-
-Runs tests, saves to json to \\nas\projects\dbachecks.json but then you'll have to change your data source in Power BI because by default it points to C:\Windows\Temp (limitation of Power BI)
 #>
 	[CmdletBinding()]
 	param (
@@ -114,13 +104,24 @@ Runs tests, saves to json to \\nas\projects\dbachecks.json but then you'll have 
 		[string[]]$Cc,
 		[switch]$BodyAsHtml,
 		[PSCredential]$Credential,
-		[string]$DeliveryNotificationOption, # None | OnSuccess | OnFailure | Delay | Never
+		[string]$DeliveryNotificationOption,
+		# None | OnSuccess | OnFailure | Delay | Never
+
 		[string]$Encoding,
 		[switch]$UseSsl,
 		[string]$EnableException
 	)
 	begin {
+		if (Test-PSFParameterBinding -ParameterName Subject -Not) {
+			$PSBoundParameters['Subject'] = "dbachecks results"
+		}
+	}
+	process {
 		$directory = "$env:windir\temp\dbachecks.mail"
+		$path = "$directory\report.xml"
+		$outputpath = "$directory\index.html"
+		$reportunit = "$script:ModuleRoot\bin\ReportUnit.exe"
+		
 		if (-not (Test-Path -Path $directory)) {
 			try {
 				$null = New-Item -ItemType Directory -Path $directory
@@ -131,24 +132,11 @@ Runs tests, saves to json to \\nas\projects\dbachecks.json but then you'll have 
 			}
 		}
 		
-		if (Test-PSFParameterBinding -ParameterName Subject -Not) {
-			$PSBoundParameters['Subject'] = "dbachecks results"
-		}
-	}
-	process {
-		$path = "$directory\report.xml"
-		$outputpath = "$directory\index.html"
-		$reportunit = "$script:ModuleRoot\bin\ReportUnit.exe"
-		
-		if (-not (Test-Path -Path $directory)) {
-			Stop-PSFFunction -Message "Oops, $directory does not exist"
+		if (-not (Test-Path -Path $path)) {
+			Stop-PSFFunction -Message "Oops, $path does not exist"
 			return
 		}
 		
-		if (-not $InputObject.TestResult -and -not (Test-Path -Path $path)) {
-			Stop-PSFFunction -Message "InputObject does not contain a TestResult"
-			return
-		}
 		try {
 			# Output report
 			& $reportunit $directory
@@ -167,6 +155,9 @@ Runs tests, saves to json to \\nas\projects\dbachecks.json but then you'll have 
 			Stop-PSFFunction -Message "Failure" -Exception $_
 			return
 		}
+		
+		Remove-Item -Path $path -ErrorAction SilentlyContinue
+		Remove-Item -Path $outputpath -ErrorAction SilentlyContinue
 	}
 	end {
 		if (-not $InputObject) {
