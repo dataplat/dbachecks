@@ -15,7 +15,7 @@ Have questions about development? Please visit our [Wiki](https://github.com/pot
 
 ## Prereqs
 
-PowerShell 5+ is required. Automatic installation will only be provided via the [PowerShell Gallery](https://www.powershellgallery.com).
+PowerShell 4+ is required. Automatic installation will only be provided via the [PowerShell Gallery](https://www.powershellgallery.com).
 
 When you install from the Gallery, it'll auto-install:
 
@@ -33,11 +33,19 @@ When you import, it'll auto-import
 
 Checks are performed using `Invoke-DbcCheck` which is basically a wrapper for [Invoke-Pester](https://github.com/pester/Pester/wiki/Invoke-Pester). This means that supported `Invoke-Pester` parameters work against `Invoke-DbcCheck`.
 
+Basically, you **Invoke-DbcCheck**, then specify a Check or, in Pester terms, "Tag". You can see a list of available list of checks using `Get-DbcCheck`. 
+
+![image](https://user-images.githubusercontent.com/8278033/34315601-6a93672e-e782-11e7-9688-1d361d8597e1.png)
+
+Once you've decided on the Check or Checks you want to run, it's time to ensure you've got a list of servers to run the checks against.
+
 #### Making server lists
 
-If you have a simplified (single) environment, you can set a permanent list of servers. "Servers" include both SQL Server instances and Windows servers.
+Like [dbatools](https://dbatools.io), dbachecks accepts `-SqlInstance` and `-ComputerName` parameters. 
 
-Checks that access Windows Server (such as disk space checks) use `-ComputerName`. Pure SQL-based commands (such as backup checks) use `-SqlInstance`
+`Invoke-DbcCheck -SqlInstance $servers -Tags SuspectPage, LastBackup`
+
+If you have a simplified (single) environment, however, you can set a permanent list of servers. "Servers" include both SQL Server instances and Windows servers.Checks that access Windows Server (such as disk space checks) use `-ComputerName`. Pure SQL-based commands (such as backup checks) use `-SqlInstance`
 
 ```
 # Set the servers you'll be working with
