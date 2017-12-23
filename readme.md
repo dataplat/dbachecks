@@ -1,8 +1,10 @@
 # dbachecks
 
+<img align="left" src="https://user-images.githubusercontent.com/8278033/34322840-ed09114e-e832-11e7-9670-9baa686ade71.png"> 
+
 dbachecks is a framework created by and for SQL Server pros who need to validate their enviornments. Basically, we all share similar checklists and mostly just the server names and RPO/RTO/etc change.
 
-This open source module allows us to crowdsource our checklists using [Pester](https://github.com/Pester/Pester) tests. Such checks include:
+This open source module allows us to crowdsource our checklists using [Pester](https://github.com/Pester/Pester) tests. Such checks include: <br>&nbsp;<br>
 
 * Backups are being performed
 * Identity columns are not about to max out
