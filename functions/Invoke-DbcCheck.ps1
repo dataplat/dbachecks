@@ -306,7 +306,7 @@
 		[Alias("Name")]
 		[string[]]$TestName,
 		[switch]$EnableExit,
-		[Alias('Tags')]
+		[Alias("Tags","Check")]
 		[string[]]$Tag,
 		[string[]]$ExcludeTag,
 		[switch]$PassThru,
