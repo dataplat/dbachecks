@@ -11,3 +11,4 @@ Register-PSFTeppArgumentCompleter -Command Invoke-DbcCheck -Parameter Tag -Name 
 Register-PSFTeppArgumentCompleter -Command Invoke-DbcCheck -Parameter ExcludeTag -Name tags
 Register-PSFTeppArgumentCompleter -Command Get-DbcConfig -Parameter Name -Name confignames
 Register-PSFTeppArgumentCompleter -Command Set-DbcConfig -Parameter Name -Name confignames
+Register-PSFTeppArgumentCompleter -Command Get-DbcTagCollection -Parameter Name -Name tags

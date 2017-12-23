@@ -28,7 +28,7 @@
 	)
 	
 	process {
-		$alltags = (Get-Content "$script:localapp\checks.json" | ConvertFrom-Json) | Select-Object -ExpandProperty Tags
+		$alltags = (Get-Content "$script:localapp\checks.json" | ConvertFrom-Json) | Select-Object -ExpandProperty AllTags
 		($alltags -split ",").Trim() | Where-Object { $_ -like $name } | Sort-Object | Select-Object -Unique
 	}
 }
