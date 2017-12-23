@@ -61,11 +61,11 @@ Invoke-DbcCheck -Tags SuspectPage, LastBackup
 
 #### What it looks like
 
-![image](https://user-images.githubusercontent.com/8278033/34208143-93e4ae9a-e58d-11e7-90bb-448e2342ba39.png)
+![image](https://user-images.githubusercontent.com/8278033/34315954-431d0b16-e78a-11e7-8f6d-c87b40ed90b2.png)
 
 #### Other ways to execute checks against specific servers
 
-Alternatively, you can provide a list of servers and to `Invoke-DbcCheck`
+Here are additional `Invoke-DbcCheck` examples
 
 ````
 Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
@@ -79,7 +79,7 @@ Invoke-DbcCheck -Tag Storage -ComputerName server1, server2
 
 ## Tag and ExcludeTag
 
-We tag each of our checks using singular descriptions such as Backup, Database or Storage. You can see all tags using `Get-DbcTag`. 
+We tag each of our checks using singular descriptions such as Backup, Database or Storage. You can see all tags using `Get-DbcTagCollection` or `Get-DbcCheck`. 
 
 
 Each check generally has a few tags but at least one tag is unique. This allows us to essentially name a check and using these tags, you can either include (`-Tag`) or Exclude (`-ExcludeTag`) in your results. The Exclude will always take precendence.
@@ -87,7 +87,7 @@ Each check generally has a few tags but at least one tag is unique. This allows 
 For example, the Database tag runs a number of checks including backup checks. The command below will run all Database commands except for the backup checks.
 
 ```
-Invoke-DbcCheck -Tag Database -ExcludeTag Backup -SqlInstance sql2016
+Invoke-DbcCheck -Tag Database -ExcludeTag Backup -SqlInstance sql2016 -SqlCredential (Get-Credential sqladmin)
 ```
 
 All valid [Pester](https://github.com/Pester/Pester) syntax is valid for dbachecks so if you'd like to know more, check out their documentation.
@@ -108,7 +108,8 @@ Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Upd
 Start-DbcPowerBi
 ```
 
-Now, the Update-DbcPowerBiDataSource 
+Cool! 
+
 #### Sending mail
 
 So far, this is ugly as hell but I'm working on it. [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) dev smtp server is awesome.
