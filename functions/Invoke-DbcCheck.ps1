@@ -338,7 +338,10 @@
 		
 		foreach ($param in $customparam) {
 			if (Test-PSFParameterBinding -ParameterName $param) {
-				Set-Variable -Scope 0 -Name $param -Value (Get-Variable -Name $param) -ErrorAction SilentlyContinue
+				$value = Get-Variable -Name $param
+				if ($value.InputObject) {
+					Set-Variable -Scope 0 -Name $param -Value $value.InputObject -ErrorAction SilentlyContinue
+				}
 			}
 			$null = $PSBoundParameters.Remove($param)
 		}
