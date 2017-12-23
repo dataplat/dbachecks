@@ -101,8 +101,8 @@ Since this is just PowerShell/Pester, results can be exported and easily convert
 We've also included a precreated PowerBI report! To run, you must first export the json in the required location, then launch the pbix. Once the PowerBI report is open, just hit refresh.
 
 ```
-# Run tests and export its json
-Update-DbcPowerBiDataSource
+# Run checks and export its json
+Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
 
 # Launch PowerBi then hit refresh
 Start-DbcPowerBi
