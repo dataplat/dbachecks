@@ -15,9 +15,10 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
 Describe "Suspect Page" -Tags SuspectPage, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing suspect pages on $psitem" {
-			(Get-DbaSuspectPage -SqlInstance $psitem).ForEach{
-				It "Suspect Page has been found on database $($psitem.DatabaseName)" {
-					$psitem.ErrorCount -eq 0 | Should be $true
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				$results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
+				It "$psitem should return 0 suspect pages" {
+					$results.Count -eq 0 | Should be $true
 				}
 			}
 		}

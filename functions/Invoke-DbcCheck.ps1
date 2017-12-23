@@ -338,6 +338,15 @@
 	process {
 		$customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
 		
+		$PSDefaultParameterValues = @{
+			'*:SqlInstance'	     = $SqlInstance
+			'*:ComputerName'	 = $ComputerName
+			'*:SqlCredential'    = $SqlCredential
+			'*:Credential'	     = $Credential
+			'*:Database'		 = $Database
+			'*:ExcludeDatabase'  = $ExcludeDatabase
+		}
+		
 		foreach ($param in $customparam) {
 			if (Test-PSFParameterBinding -ParameterName $param) {
 				$value = Get-Variable -Name $param
