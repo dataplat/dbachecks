@@ -113,7 +113,7 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing Recovery Model on $psitem" {
 			(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
-				It "$($psitem.Name) should be set to the proper recovery model" {
+				It "$($psitem.Name) should be set to $((Get-DbcConfigValue policy.recoverymodel))" {
 					$psitem.RecoveryModel | Should be (Get-DbcConfigValue policy.recoverymodel)
 				}
 			}
