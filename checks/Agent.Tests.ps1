@@ -42,3 +42,22 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 		}
 	}
 }
+
+Describe "Failed Jobs" -Tags FailedJobs, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Checking for failed enabled jobs on $psitem" {
+			(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
+				if ($psitem.LastRunOutcome -eq "Unknown") {
+					It -Skip "$psitem's last run outcome is unknown" {
+						$psitem.LastRunOutcome | Should Be "Succeeded"
+					}
+				}
+				else {
+					It "$psitem's last run outcome is success" {
+						$psitem.LastRunOutcome | Should Be "Succeeded"
+					}
+				}
+			}
+		}
+	}
+}
