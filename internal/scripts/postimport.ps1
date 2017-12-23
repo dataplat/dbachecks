@@ -6,9 +6,13 @@ foreach ($file in (Get-ChildItem "$ModuleRoot\internal\configurations\*.ps1")) {
 }
 
 # Parse repo for tags and descriptions then write json
-$repo = Get-DbcConfigValue -Name app.checkrepos
-$collection = @()
-foreach ($file in (Get-ChildItem "$repo\*.Tests.ps1")) {
+$repos = Get-CheckRepo
+$collection = $repofiles = @()
+foreach ($repo in $repos) {
+	$repofiles += Get-ChildItem "$repo\*.Tests.ps1"
+}
+
+foreach ($file in $repofiles) {
 	$filename = $file.Name.Replace(".Tests.ps1", "")
 	$strings = Get-Content $file | Where-Object { $_ -match "-Tags" }
 	foreach ($string in $strings) {
