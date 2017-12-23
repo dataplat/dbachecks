@@ -157,7 +157,17 @@ Invoke-DbcCheck -Tag Storage
 
 ## Can I run tests not in the module?
 
-Yes, xyz
+If you have super specialized checks to run, you can add a new repo, update the `app.checkrepos` config and this will make all of your tests available to `Invoke-DbcCheck`. From here, you can pipe to `Send-DbcMailMessage` or `Update-DbcPowerBiDataSource` or parse however you'd parse Pester results.
+
+![image](https://user-images.githubusercontent.com/8278033/34320729-aeacb72a-e800-11e7-8278-a83de46afcc6.png)
+
+So first, add your repo
+
+```
+Set-DbcConfig -Name app.checkrepos -Value C:\temp\checks -Append
+```
+
+Then add additional checks. We recommend using the [development guidelines for dbachecks](https://github.com/potatoqualitee/dbachecks/wiki).
 
 ## I don't have access to the PowerShell Gallery, how can I download this?
 
