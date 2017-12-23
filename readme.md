@@ -112,15 +112,16 @@ Cool!
 
 #### Sending mail
 
-So far, this is ugly as hell but I'm working on it. [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) dev smtp server is awesome.
+Got a new command for this! [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) dev smtp server is awesome, btw.
 
 ```
-$fromto = "get@papercut.ongithub.com"
-$smtpserver = "localhost"
-$result = Invoke-DbcCheck -Show Summary -PassThru
-$resultHTML = $result.TestResult | ConvertTo-Html | Out-String
-Send-MailMessage -From $fromto -Subject 'SQL Server Validation Report' -body $resultHTML -BodyAsHtml -To $fromto -SmtpServer $smtpserver
+Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru | 
+Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
 ```
+
+![image](https://user-images.githubusercontent.com/8278033/34316816-cc157d04-e79e-11e7-971d-1cfee90b2e11.png)
+
+😍😍😍
 
 ## Advanced usage
 
