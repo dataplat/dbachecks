@@ -23,6 +23,7 @@
 	param (
 		[string]$Path = "$script:localapp\config.json"
 	)
-
+	
 	Get-DbcConfig | Select-Object * | ConvertTo-Json -Depth 10 | Out-File -FilePath $Path
+	Write-PSFMessage -Message "Wrote file to $Path" -Level Output
 }
