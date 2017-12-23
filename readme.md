@@ -55,8 +55,8 @@ Set-DbcConfig -Name Setup.ComputerName -Value sql2016, sql2017, sql2008
 # Look at the current configs
 Get-DbcConfig
 
-# Invoke the tests written so far
-Invoke-DbcCheck
+# Invoke a few tests
+Invoke-DbcCheck -Tags SuspectPage, LastBackup
 ```
 
 #### What it looks like
