@@ -41,7 +41,5 @@
 		foreach ($result in $results) {
 			Set-DbcConfig -Name $result.Name -Value $result.Value
 		}
-		
-		$results
 	}
 }
