@@ -363,7 +363,7 @@
 		$s = Get-PSFConfigValue -FullName dbachecks.setup.sqlinstance
 		$c = Get-PSFConfigValue -FullName dbachecks.setup.computername
 		
-		if (-not $SqlInstance -and -not $ComputerInstance -and -not $s -and -not $c) {
+		if (-not $SqlInstance -and -not $ComputerName -and -not $s -and -not $c) {
 			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
 			return
 		}
