@@ -9,6 +9,11 @@
 		.PARAMETER Path
 			The location of the pbix file. "$script:ModuleRoot\bin\dbachecks.pbix" by default.
 	
+		.PARAMETER EnableException
+			By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
+			This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
+			Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
+			
 		.EXAMPLE
 			Start-DbcPowerBi
 		
@@ -27,7 +32,8 @@
 	[CmdletBinding()]
 	param (
 		[string]$Path = "$script:ModuleRoot\bin\dbachecks.pbix",
-		[string]$DataSource = "C:\windows\Temp\dbachecks.json"
+		[string]$DataSource = "C:\windows\Temp\dbachecks.json",
+		[switch]$EnableException
 	)
 
 	process {
