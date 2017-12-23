@@ -60,7 +60,13 @@
 		$Name = $Name.ToLower()
 		
 		Set-PSFConfig -Module dbachecks -Name $name -Value $Value
-		Register-PSFConfig -FullName dbachecks.$name #-WarningAction SilentlyContinue
+		try {
+			Register-PSFConfig -FullName dbachecks.$name -EnableException -WarningAction SilentlyContinue
+		}
+		catch {
+			Set-PSFConfig -Module dbachecks -Name $name -Value ($Value -join ", ")
+			Register-PSFConfig -FullName dbachecks.$name
+		}
 		
 		# Still unsure if I'll persist it here - wondering if this impacts global or keeps local
 		if ($name -eq 'setup.sqlcredential') {

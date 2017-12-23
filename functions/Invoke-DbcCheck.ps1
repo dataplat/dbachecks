@@ -363,12 +363,12 @@
 		$s = Get-PSFConfigValue -FullName dbachecks.setup.sqlinstance
 		$c = Get-PSFConfigValue -FullName dbachecks.setup.computername
 		
-		if ((Test-PSFParameterBinding -ParameterName SqlInstance -Not) -and (Test-PSFParameterBinding -Not -ParameterName ComputerInstance) -and -not $s -and -not $c) {
+		if (-not $SqlInstance -and -not $ComputerInstance -and -not $s -and -not $c) {
 			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
 			return
 		}
 		
-		$repos = Get-DbcConfigValue -Name app.checkrepos
+		$repos = Get-CheckRepo
 		foreach ($repo in $repos) {
 			if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
 				Push-Location -Path $repo
