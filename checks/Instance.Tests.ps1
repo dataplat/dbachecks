@@ -140,3 +140,13 @@ Describe "Max Memory" -Tags MaxMemory, $filename {
 		}
 	}
 }
+
+Describe "Orphaned Files" -Tags OrphanedFile, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Checking for orphaned database files on $psitem" {
+			It "doesn't have orphan files" {
+				(Find-DbaOrphanedFile -SqlInstance $psitem).Count | Should Be 0
+			}
+		}
+	}
+}
