@@ -150,3 +150,24 @@ Describe "Orphaned Files" -Tags OrphanedFile, $filename {
 		}
 	}
 }
+
+Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Testing $psitem's instance name matches Windows name" {
+			It "doesn't require rename" {
+				(Test-DbaServerName -SqlInstance $psitem).RenameRequired | Should Be $false
+			}
+		}
+	}
+}
+
+Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
+	$maxdumps = Get-DbcConfigValue -Name policy.maxdumpcount
+	(Get-SqlInstance).ForEach{
+		Context "Checking that dumps on $psitem do not exceed $maxdumps" {
+			It "dump count does not exceed $maxdumps" {
+				(Get-DbaDump -SqlInstance $psitem).Count -le $maxdumps | Should Be $true
+			}
+		}
+	}
+}
