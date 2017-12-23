@@ -83,7 +83,8 @@
 		'Start-DbcPowerBi',
 		'Update-DbcPowerBiDataSource',
 		'Get-DbcTagCollection',
-		'Get-DbcCheck'
+		'Get-DbcCheck',
+		'Send-DbcMailMessage'
 	)
 	
 	# Cmdlets to export from this module

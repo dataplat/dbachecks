@@ -306,7 +306,7 @@
 		[Alias("Name")]
 		[string[]]$TestName,
 		[switch]$EnableExit,
-		[Alias("Tags","Check")]
+		[Alias("Tags", "Check")]
 		[string[]]$Tag,
 		[string[]]$ExcludeTag,
 		[switch]$PassThru,
@@ -324,16 +324,18 @@
 		[Switch]$Strict,
 		[Parameter(Mandatory = $true, ParameterSetName = 'NewOutputSet')]
 		[string]$OutputFile,
-		[Parameter(ParameterSetName = 'NewOutputSet')]
 		[ValidateSet('NUnitXml')]
 		[string]$OutputFormat = 'NUnitXml',
 		[Switch]$Quiet,
 		[object]$PesterOption,
 		[Pester.OutputTypes]$Show = 'All'
 	)
-	
+	begin {
+		if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
+			$PSBoundParameters['OutputFile'] = "$env:windir\temp\dbachecks.mail\report.xml"
+		}
+	}
 	process {
-		
 		$customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
 		
 		foreach ($param in $customparam) {
