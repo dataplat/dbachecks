@@ -117,7 +117,7 @@ The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
 
 ```powershell
 # Run checks and export its JSON
-Invoke-DbcCheck -SqlInstance $prod -Tags LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Environment Prod
+Invoke-DbcCheck -SqlInstance $prod -Tags LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Enviornment Prod
 ```
 
 ### Sending mail
