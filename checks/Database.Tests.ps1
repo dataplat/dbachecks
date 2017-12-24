@@ -5,7 +5,7 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
 		Context "Testing database collation on $psitem" {
 			(Test-DbaDatabaseCollation -SqlInstance $psitem).ForEach{
 				It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database)" {
-					$psitem.ServerCollation -eq $psitem.DatabaseCollation | Should be $true
+					$psitem.ServerCollation | Should Be $psitem.DatabaseCollation
 				}
 			}
 		}
@@ -18,7 +18,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				$results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
 				It "$psitem should return 0 suspect pages" {
-					$results.Count -eq 0 | Should be $true
+					$results.Count | Should Be 0
 				}
 			}
 		}
