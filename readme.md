@@ -105,7 +105,7 @@ To use the Power BI report, you must first export the JSON to the required locat
 
 ```powershell
 # Run checks and export its JSON
-Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
+Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
 
 # Launch Power BI then hit refresh
 Start-DbcPowerBi
