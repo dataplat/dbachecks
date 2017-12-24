@@ -160,7 +160,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 	}
 }
 
-Describe "Page Verify " -Tags PageVerify, $filename {
+Describe "Page Verify" -Tags PageVerify, $filename {
 	$pageverify = Get-DbcConfigValue policy.pageverify
 	(Get-SqlInstance).ForEach{
 		Context "Testing page verify on $psitem" {
