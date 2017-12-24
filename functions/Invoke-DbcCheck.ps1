@@ -338,21 +338,17 @@
 	process {
 		$customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
 		
-		$PSDefaultParameterValues = @{
-			'*:SqlInstance'	     = $SqlInstance
-			'*:ComputerName'	 = $ComputerName
-			'*:SqlCredential'    = $SqlCredential
-			'*:Credential'	     = $Credential
-			'*:Database'		 = $Database
-			'*:ExcludeDatabase'  = $ExcludeDatabase
-		}
 		
 		foreach ($param in $customparam) {
 			if (Test-PSFParameterBinding -ParameterName $param) {
 				$value = Get-Variable -Name $param
 				if ($value.InputObject) {
 					Set-Variable -Scope 0 -Name $param -Value $value.InputObject -ErrorAction SilentlyContinue
+					$PSDefaultParameterValues.Add({ "*-Dba*:$param", $value.InputObject })
 				}
+			}
+			else {
+				$PSDefaultParameterValues.Remove({ "*-Dba*:$param" })
 			}
 			$null = $PSBoundParameters.Remove($param)
 		}
@@ -367,6 +363,7 @@
 			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
 			return
 		}
+		#>
 		
 		$repos = Get-CheckRepo
 		foreach ($repo in $repos) {
