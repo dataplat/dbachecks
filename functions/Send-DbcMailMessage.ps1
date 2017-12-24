@@ -117,12 +117,11 @@
 		[switch]$UseSsl,
 		[string]$EnableException
 	)
-	begin {
+	end {
 		if (Test-PSFParameterBinding -ParameterName Subject -Not) {
 			$PSBoundParameters['Subject'] = "dbachecks results"
 		}
-	}
-	process {
+		
 		$outputpath = "$script:maildirectory\index.html"
 		$reportunit = "$script:ModuleRoot\bin\ReportUnit.exe"
 		
@@ -172,8 +171,6 @@
 			
 			Get-ChildItem -Path "$script:maildirectory\*.*" | Remove-Item -ErrorAction SilentlyContinue
 		}
-	}
-	end {
 		if (-not $InputObject) {
 			Stop-PSFFunction -Message "InputObject is null. Did you forget to specify -Passthru for your previous command?"
 			return
