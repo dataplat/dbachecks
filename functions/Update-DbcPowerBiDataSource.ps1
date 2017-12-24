@@ -20,6 +20,9 @@
 		.PARAMETER Environment
 			Tag your JSON filename with an enviornment
 
+		.PARAMETER Append
+			Don't delete previous jsons. Ideal for multiple enviroments.
+	
 		.PARAMETER EnableException
 			By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
 			This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -46,16 +49,17 @@
 		[parameter(ValueFromPipeline, Mandatory)]
 		[pscustomobject]$InputObject,
 		[string]$Path = "$env:windir\temp\dbachecks",
-		[string]$Enviornment,
+		[string]$Enviornment = "Default",
+		[switch]$Append,
 		[switch]$EnableException
 	)
-	
-	end {
-		if ($InputObject.TotalCount -isnot [int]) {
-			Stop-PSFFunction -Message "Invalid TestResult"
-			return
+	begin {
+		if (-not $Append) {
+			Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
 		}
-		
+	}
+	process {
+		++$i
 		try {
 			if (-not (Test-Path -Path $Path)) {
 				New-Item -ItemType Directory -Path $Path -ErrorAction Stop
@@ -66,7 +70,7 @@
 			return
 		}
 		
-		$basename = "dbachecks"
+		$basename = "dbachecks_$i"
 		if ($InputObject.TagFilter) {
 			$basename = "$basename`_$($InputObject.TagFilter -join "_")"
 		}
@@ -77,17 +81,20 @@
 		
 		$filename = "$Path\$basename.json"
 		
-		try {
-			$InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $filename
-			Write-PSFMessage -Level Output -Message "Wrote results to $filename"
+		if ($InputObject.TotalCount -gt 0) {
+			try {
+				$InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $filename
+				Write-PSFMessage -Level Output -Message "Wrote results to $filename"
+			}
+			catch {
+				Stop-PSFFunction -Message "Failure" -Exception $_
+				return
+			}
 		}
-		catch {
-			Stop-PSFFunction -Message "Failure" -Exception $_
-			return
-		}
-		
-		if (-not $InputObject) {
-			Stop-PSFFunction -Message "InputObject is null. Did you forget to specify -Passthru for your previous command?"
+	}
+	end {
+		if ($InputObject.TotalCount -isnot [int]) {
+			Stop-PSFFunction -Message "Invalid TestResult"
 			return
 		}
 	}
