@@ -21,7 +21,10 @@
 			Tag your JSON filename with an enviornment
 
 		.PARAMETER Append
-			Don't delete previous jsons. Ideal for multiple enviroments.
+			Don't delete previous default data sources.
+	
+		.PARAMETER Force
+			Delete all json files in the data source folder.
 	
 		.PARAMETER EnableException
 			By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
@@ -51,10 +54,14 @@
 		[string]$Path = "$env:windir\temp\dbachecks",
 		[string]$Enviornment = "Default",
 		[switch]$Append,
+		[switch]$Force,
 		[switch]$EnableException
 	)
 	begin {
-		if (-not $Append) {
+		if ($Environment -ne "Default" -and -not $Append) {
+			Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
+		}
+		if ($Force) {
 			Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
 		}
 	}
