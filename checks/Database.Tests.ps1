@@ -160,10 +160,10 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 	}
 }
 
-Describe "Page Verify " -Tags DuplicateIndex, $filename {
+Describe "Page Verify " -Tags PageVerify, $filename {
 	$pageverify = Get-DbcConfigValue policy.pageverify
 	(Get-SqlInstance).ForEach{
-		Context "Testing page veriify on $psitem" {
+		Context "Testing page verify on $psitem" {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should has page verify set to $pageverify" {
 					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).PageVerify | Should Be $pageverify
@@ -173,3 +173,15 @@ Describe "Page Verify " -Tags DuplicateIndex, $filename {
 	}
 }
 
+Describe "Auto Close" -Tags AutoClose, $filename {
+	$autoclose = Get-DbcConfigValue policy.autoclose
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Close on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Close set to $autoclose" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).Autoclose | Should Be $autoclose
+				}
+			}
+		}
+	}
+}
