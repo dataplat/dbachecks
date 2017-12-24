@@ -20,6 +20,12 @@
 		.PARAMETER Environment
 			Tag your JSON filename with an enviornment
 
+		.PARAMETER Append
+			Don't delete previous default data sources.
+	
+		.PARAMETER Force
+			Delete all json files in the data source folder.
+	
 		.PARAMETER EnableException
 			By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
 			This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -46,11 +52,21 @@
 		[parameter(ValueFromPipeline, Mandatory)]
 		[pscustomobject]$InputObject,
 		[string]$Path = "$env:windir\temp\dbachecks",
-		[string]$Enviornment,
+		[string]$Enviornment = "Default",
+		[switch]$Append,
+		[switch]$Force,
 		[switch]$EnableException
 	)
-
+	begin {
+		if ($Environment -ne "Default" -and -not $Append) {
+			Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
+		}
+		if ($Force) {
+			Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
+		}
+	}
 	process {
+		++$i
 		try {
 			if (-not (Test-Path -Path $Path)) {
 				New-Item -ItemType Directory -Path $Path -ErrorAction Stop
@@ -60,35 +76,32 @@
 			Stop-PSFFunction -Message "Failure" -Exception $_
 			return
 		}
-
-		if (-not $InputObject.TestResult) {
-			Stop-PSFFunction -Message "InputObject does not contain a TestResult"
-			return
-		}
-
-		$basename = "dbachecks"
+		
+		$basename = "dbachecks_$i"
 		if ($InputObject.TagFilter) {
 			$basename = "$basename`_$($InputObject.TagFilter -join "_")"
 		}
-
+		
 		if ($Enviornment) {
 			$basename = "$basename`_$Enviornment"
 		}
-
+		
 		$filename = "$Path\$basename.json"
-
-		try {
-			$InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $filename
-			Write-PSFMessage -Level Output -Message "Wrote results to $filename"
-		}
-		catch {
-			Stop-PSFFunction -Message "Failure" -Exception $_
-			return
+		
+		if ($InputObject.TotalCount -gt 0) {
+			try {
+				$InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $filename
+				Write-PSFMessage -Level Output -Message "Wrote results to $filename"
+			}
+			catch {
+				Stop-PSFFunction -Message "Failure" -Exception $_
+				return
+			}
 		}
 	}
 	end {
-		if (-not $InputObject) {
-			Stop-PSFFunction -Message "InputObject is null. Did you forget to specify -Passthru for your previous command?"
+		if ($InputObject.TotalCount -isnot [int]) {
+			Stop-PSFFunction -Message "Invalid TestResult"
 			return
 		}
 	}
