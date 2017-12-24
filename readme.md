@@ -38,7 +38,7 @@ Checks are performed using `Invoke-DbcCheck` which is basically a wrapper for [I
 
 In this module, a "Check" is synonymous with a "Tag" in Pester. So you can **Invoke-DbcCheck** and specify a Check that you want to run. You can see a list of the available Checks with **Get-DbcCheck**.
 
-![image](https://user-images.githubusercontent.com/8278033/34315601-6a93672e-e782-11e7-9688-1d361d8597e1.png)
+![image](https://user-images.githubusercontent.com/8278033/34329332-57f40a1c-e8fc-11e7-8526-178c415b09bf.png)
 
 Once you've decided on the Check(s) you want to run, it's time to ensure you have a list of servers to run the checks against.
 
