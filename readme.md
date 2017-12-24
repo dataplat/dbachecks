@@ -111,6 +111,13 @@ Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary
 Start-DbcPowerBi
 ```
 
+The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
+
+```powershell
+# Run checks and export its JSON
+Invoke-DbcCheck -SqlInstance $prod -Tags LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Environment Prod
+```
+
 ![image](https://user-images.githubusercontent.com/8278033/34328998-27351f80-e8f0-11e7-83eb-7912c45b99ad.png)
 
 ### Sending mail
