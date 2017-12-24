@@ -30,6 +30,11 @@
 		[switch]$EnableException
 	)
 	
-	Get-DbcConfig | Select-Object * | ConvertTo-Json -Depth 10 | Out-File -FilePath $Path
-	Write-PSFMessage -Message "Wrote file to $Path" -Level Output
+	try {
+		Get-DbcConfig | Select-Object * | ConvertTo-Json -Depth 10 | Out-File -FilePath $Path -ErrorAction Stop
+		Write-PSFMessage -Message "Wrote file to $Path" -Level Output
+	}
+	catch {
+		Stop-PSFFunction -Message $_ -Target $Path
+	}
 }
