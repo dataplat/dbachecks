@@ -1,8 +1,13 @@
 ﻿$script:ModuleRoot = $PSScriptRoot
 $script:localapp = "$env:localappdata\dbachecks"
+$script:maildirectory = "$script:localapp\dbachecks.mail"
 
 if (-not (Test-Path -Path $script:localapp)) {
 	New-Item -ItemType Directory -Path $script:localapp
+}
+
+if (-not (Test-Path -Path $script:maildirectory)) {
+	New-Item -ItemType Directory -Path $script:maildirectory
 }
 
 function Import-ModuleFile

@@ -330,10 +330,12 @@
 		[object]$PesterOption,
 		[Pester.OutputTypes]$Show = 'All'
 	)
-	begin {
-		 
-		if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
-			$PSBoundParameters['OutputFile'] = "$env:windir\temp\dbachecks.mail\report.xml"
+	
+	process {
+		
+		if (-not $SqlInstance.InputObject -and -not $ComputerName.InputObject -and -not (Get-PSFConfigValue -FullName dbachecks.setup.sqlinstance) -and -not (Get-PSFConfigValue -FullName dbachecks.setup.computername)) {
+			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
+			return
 		}
 		
 		$customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
@@ -355,24 +357,13 @@
 		# Then we'll need a generic param passer that doesnt require global params 
 		# cuz global params are hard
 		
-		$s = Get-PSFConfigValue -FullName dbachecks.setup.sqlinstance
-		$c = Get-PSFConfigValue -FullName dbachecks.setup.computername
-		
-	}
-	process {
-		if (-not $Script -and -not $TestName) {
-			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
-			return
-		}
-		
-		if (-not $SqlInstance -and -not $ComputerName -and -not $s -and -not $c) {
-			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
-			return
-		}
-		
 		$repos = Get-CheckRepo
 		foreach ($repo in $repos) {
 			if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
+				if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
+					$number = $repos.IndexOf($repo)
+					$PSBoundParameters['OutputFile'] = "$script:maildirectory\report$number.xml"
+				}
 				Push-Location -Path $repo
 				Invoke-Pester @PSBoundParameters
 				Pop-Location

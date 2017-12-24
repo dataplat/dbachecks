@@ -87,7 +87,8 @@
 	Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 		
 	.EXAMPLE
-	Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru | Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
+	Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru | 
+	Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
 		
 	Runs two tests against sql2017 and sends a mail message
 
@@ -122,47 +123,55 @@
 		}
 	}
 	process {
-		$directory = "$env:windir\temp\dbachecks.mail"
-		$path = "$directory\report.xml"
-		$outputpath = "$directory\index.html"
+		$outputpath = "$script:maildirectory\index.html"
 		$reportunit = "$script:ModuleRoot\bin\ReportUnit.exe"
 		
-		if (-not (Test-Path -Path $directory)) {
+		if (-not (Test-Path -Path $script:maildirectory)) {
 			try {
-				$null = New-Item -ItemType Directory -Path $directory
+				$null = New-Item -ItemType Directory -Path $script:maildirectory
 			}
 			catch {
-				Stop-PSFFunction -Message "Failure" -Exception $_
+				Stop-PSFFunction -Message "Failure" -ErrorRecord $_
 				return
 			}
 		}
 		
-		if (-not (Test-Path -Path $path)) {
-			Stop-PSFFunction -Message "Oops, $path does not exist"
+		if (-not ($files = Get-ChildItem -Path "$script:maildirectory\*.xml")) {
+			Stop-PSFFunction -Message "Oops, $("$script:maildirectory\*.xml") does not exist"
 			return
 		}
 		
-		try {
-			# Output report
-			& $reportunit $directory
-			
-			# Get HTML varaible
-			$htmlbody = Get-Content -Path $outputpath -ErrorAction Stop | Out-String
-			
-			# Modify the params as required
-			$null = $PSBoundParameters.Remove("InputObject")
-			$PSBoundParameters['Body'] = $htmlbody
-			$PSBoundParameters['BodyAsHtml'] = $true
-			
-			Send-MailMessage @PSBoundParameters
-		}
-		catch {
-			Stop-PSFFunction -Message "Failure" -Exception $_
-			return
+		foreach ($file in $files) {
+			$xml = [xml](Get-Content $file.FullName)
+			$total = $xml.'test-results'.Total
+			if ($total -eq 0) {
+				$file | Remove-Item -ErrorAction SilentlyContinue
+				Write-PSFMessage -Level Warning "Removed $file because it contained 0 total test results"
+			}
 		}
 		
-		Remove-Item -Path $path -ErrorAction SilentlyContinue
-		Remove-Item -Path $outputpath -ErrorAction SilentlyContinue
+		if (Get-ChildItem -Path "$script:maildirectory\*.xml") {
+			try {
+				# Output report
+				& $reportunit $script:maildirectory
+				
+				# Get HTML varaible
+				$htmlbody = Get-Content -Path $outputpath -ErrorAction SilentlyContinue | Out-String
+				
+				# Modify the params as required
+				$null = $PSBoundParameters.Remove("InputObject")
+				$PSBoundParameters['Body'] = $htmlbody
+				$PSBoundParameters['BodyAsHtml'] = $true
+				
+				Send-MailMessage @PSBoundParameters
+			}
+			catch {
+				Stop-PSFFunction -Message "Failure" -ErrorRecord $_
+				return
+			}
+			
+			Get-ChildItem -Path "$script:maildirectory\*.*" | Remove-Item -ErrorAction SilentlyContinue
+		}
 	}
 	end {
 		if (-not $InputObject) {
