@@ -49,8 +49,13 @@
 		[string]$Enviornment,
 		[switch]$EnableException
 	)
-
-	process {
+	
+	end {
+		if ($InputObject.TotalCount -isnot [int]) {
+			Stop-PSFFunction -Message "Invalid TestResult"
+			return
+		}
+		
 		try {
 			if (-not (Test-Path -Path $Path)) {
 				New-Item -ItemType Directory -Path $Path -ErrorAction Stop
@@ -60,23 +65,18 @@
 			Stop-PSFFunction -Message "Failure" -Exception $_
 			return
 		}
-
-		if (-not $InputObject.TestResult) {
-			Stop-PSFFunction -Message "InputObject does not contain a TestResult"
-			return
-		}
-
+		
 		$basename = "dbachecks"
 		if ($InputObject.TagFilter) {
 			$basename = "$basename`_$($InputObject.TagFilter -join "_")"
 		}
-
+		
 		if ($Enviornment) {
 			$basename = "$basename`_$Enviornment"
 		}
-
+		
 		$filename = "$Path\$basename.json"
-
+		
 		try {
 			$InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $filename
 			Write-PSFMessage -Level Output -Message "Wrote results to $filename"
@@ -85,8 +85,7 @@
 			Stop-PSFFunction -Message "Failure" -Exception $_
 			return
 		}
-	}
-	end {
+		
 		if (-not $InputObject) {
 			Stop-PSFFunction -Message "InputObject is null. Did you forget to specify -Passthru for your previous command?"
 			return
