@@ -83,7 +83,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 					It "last good integrity check for $($psitem.Database) should be less than $maxdays" {
 						$psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
 					}
-
+					
 					It -Skip:$datapurity "last good integrity check for $($psitem.Database) has Data Purity Enabled" {
 						$psitem.DataPurityEnabled | Should Be $true
 					}
@@ -115,33 +115,6 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 			(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
 				It "$($psitem.Name) should be set to $((Get-DbcConfigValue policy.recoverymodel))" {
 					$psitem.RecoveryModel | Should be (Get-DbcConfigValue policy.recoverymodel)
-				}
-			}
-		}
-	}
-}
-
-Describe "Last Backup Times" -Tags LastBackup, Backup, DISA, $filename {
-	(Get-SqlInstance).ForEach{
-		$maxfull = Get-DbcConfigValue policy.backupfullmaxdays
-		$maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
-		$maxlog = Get-DbcConfigValue policy.backuplogmaxminutes
-		$diffskip = Get-DbcConfigValue skip.backupdiffcheck
-
-		Context "Testing last backups on $psitem" {
-			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "full backups should be less than $maxfull days" {
-					$psitem.LastFullBackup -ge (Get-Date).AddDays(- ($maxfull)) | Should be $true
-				}
-
-				It -Skip:$diffskip "diff backups should be less than $maxdiff hours" {
-					$psitem.LastDiffBackup -ge (Get-Date).AddHours(- ($maxdiff)) | Should be $true
-				}
-
-				if ($psitem.RecoveryModel -ne 'Simple') {
-					It "log backups should be less than $maxlog minutes" {
-						$psitem.LastLogBackup -ge (Get-Date).AddMinutes(- ($maxlog)) | Should be $true
-					}
 				}
 			}
 		}
@@ -194,6 +167,48 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
 				It "$psitem should has Auto Shrink set to $autoshrink" {
 					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoShrink | Should Be $autoshrink
 				}
+			}
+		}
+	}
+}
+
+Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA, $filename {
+	$maxfull = Get-DbcConfigValue policy.backupfullmaxdays
+	(Get-SqlInstance).ForEach{
+		Context "Testing last full backups on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
+				It "$($psitem.Name) full backups should be less than $maxfull days" {
+					$psitem.LastFullBackup | Should BeGreaterThan (Get-Date).AddDays(-($maxfull))
+				}
+			}
+		}
+	}
+}
+
+Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA, $filename {
+	$maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
+	(Get-SqlInstance).ForEach{
+		Context "Testing last diff backups on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem | Where {-not $psitem.IsSystemObject}).ForEach{
+				It "$($psitem.Name) diff backups should be less than $maxdiff hours" {
+					$psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours(-($maxdiff))
+				}
+			}
+		}
+	}
+}
+
+Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, $filename {
+	$maxlog = Get-DbcConfigValue policy.backuplogmaxminutes
+	(Get-SqlInstance).ForEach{
+		Context "Testing last log backups on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject }).ForEach{
+				if ($psitem.RecoveryModel -ne 'Simple') {
+					It "$($psitem.Name) log backups should be less than $maxlog minutes" {
+						$psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes(-($maxlog)+1)
+					}
+				}
+				
 			}
 		}
 	}
