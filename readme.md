@@ -111,7 +111,7 @@ Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Upd
 Start-DbcPowerBi
 ```
 
-![](https://user-images.githubusercontent.com/11204251/34324053-038f9ce0-e828-11e7-9c43-2e220e095a30.png)
+![image](https://user-images.githubusercontent.com/8278033/34328998-27351f80-e8f0-11e7-83eb-7912c45b99ad.png)
 
 ### Sending mail
 
