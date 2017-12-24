@@ -83,7 +83,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 					It "last good integrity check for $($psitem.Database) should be less than $maxdays" {
 						$psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
 					}
-					
+
 					It -Skip:$datapurity "last good integrity check for $($psitem.Database) has Data Purity Enabled" {
 						$psitem.DataPurityEnabled | Should Be $true
 					}
@@ -127,17 +127,17 @@ Describe "Last Backup Times" -Tags LastBackup, Backup, DISA, $filename {
 		$maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
 		$maxlog = Get-DbcConfigValue policy.backuplogmaxminutes
 		$diffskip = Get-DbcConfigValue skip.backupdiffcheck
-		
+
 		Context "Testing last backups on $psitem" {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "full backups should be less than $maxfull days" {
 					$psitem.LastFullBackup -ge (Get-Date).AddDays(- ($maxfull)) | Should be $true
 				}
-				
+
 				It -Skip:$diffskip "diff backups should be less than $maxdiff hours" {
 					$psitem.LastDiffBackup -ge (Get-Date).AddHours(- ($maxdiff)) | Should be $true
 				}
-				
+
 				if ($psitem.RecoveryModel -ne 'Simple') {
 					It "log backups should be less than $maxlog minutes" {
 						$psitem.LastLogBackup -ge (Get-Date).AddMinutes(- ($maxlog)) | Should be $true
@@ -159,3 +159,17 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 		}
 	}
 }
+
+Describe "Page Verify " -Tags DuplicateIndex, $filename {
+	$pageverify = Get-DbcConfigValue policy.pageverify
+	(Get-SqlInstance).ForEach{
+		Context "Testing page veriify on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has page verify set to $pageverify" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).PageVerify | Should Be $pageverify
+				}
+			}
+		}
+	}
+}
+
