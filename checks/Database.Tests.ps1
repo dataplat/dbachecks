@@ -179,7 +179,20 @@ Describe "Auto Close" -Tags AutoClose, $filename {
 		Context "Testing Auto Close on $psitem" {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should has Auto Close set to $autoclose" {
-					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).Autoclose | Should Be $autoclose
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoClose | Should Be $autoclose
+				}
+			}
+		}
+	}
+}
+
+Describe "Auto Shrink" -Tags AutoShrink, $filename {
+	$autoshrink = Get-DbcConfigValue policy.autoshrink
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Shrink on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Shrink set to $autoshrink" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoShrink | Should Be $autoshrink
 				}
 			}
 		}
