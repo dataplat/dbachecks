@@ -36,6 +36,7 @@ Set-PSFConfig -Module dbachecks -Name policy.hadrclustername -Value "ClusterName
 Set-PSFConfig -Module dbachecks -Name policy.hadrfqdn -Value "FQDN" -Initialize -Description "The FQDN for the Cluster Check"
 Set-PSFConfig -Module dbachecks -Name policy.hadrtcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
+Set-PSFConfig -Module dbachecks -Name policy.pageverify -Validation integer -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 
 # domain?
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"
