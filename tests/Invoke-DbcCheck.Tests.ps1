@@ -4,7 +4,7 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 	Context "Command executes properly and returns proper info" {
-		It -Skip "runs a check" {
+		It "runs a check" {
 			$results = Invoke-DbcCheck -ComputerName localhost -Tag DiskCapacity -Passthru
 			$results.TestResult | Should Not Be $null # Because nothing else works right now
 		}
