@@ -5,7 +5,7 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
 		Context "Testing database collation on $psitem" {
 			(Test-DbaDatabaseCollation -SqlInstance $psitem).ForEach{
 				It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database)" {
-					$psitem.ServerCollation -eq $psitem.DatabaseCollation | Should be $true
+					$psitem.ServerCollation | Should Be $psitem.DatabaseCollation
 				}
 			}
 		}
@@ -18,7 +18,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				$results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
 				It "$psitem should return 0 suspect pages" {
-					$results.Count -eq 0 | Should be $true
+					$results.Count | Should Be 0
 				}
 			}
 		}
@@ -83,7 +83,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 					It "last good integrity check for $($psitem.Database) should be less than $maxdays" {
 						$psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
 					}
-					
+
 					It -Skip:$datapurity "last good integrity check for $($psitem.Database) has Data Purity Enabled" {
 						$psitem.DataPurityEnabled | Should Be $true
 					}
@@ -127,17 +127,17 @@ Describe "Last Backup Times" -Tags LastBackup, Backup, DISA, $filename {
 		$maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
 		$maxlog = Get-DbcConfigValue policy.backuplogmaxminutes
 		$diffskip = Get-DbcConfigValue skip.backupdiffcheck
-		
+
 		Context "Testing last backups on $psitem" {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "full backups should be less than $maxfull days" {
 					$psitem.LastFullBackup -ge (Get-Date).AddDays(- ($maxfull)) | Should be $true
 				}
-				
+
 				It -Skip:$diffskip "diff backups should be less than $maxdiff hours" {
 					$psitem.LastDiffBackup -ge (Get-Date).AddHours(- ($maxdiff)) | Should be $true
 				}
-				
+
 				if ($psitem.RecoveryModel -ne 'Simple') {
 					It "log backups should be less than $maxlog minutes" {
 						$psitem.LastLogBackup -ge (Get-Date).AddMinutes(- ($maxlog)) | Should be $true
@@ -154,6 +154,45 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should not have duplicate indexes" {
 					Find-SqlDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name | Should Be $null
+				}
+			}
+		}
+	}
+}
+
+Describe "Page Verify" -Tags PageVerify, $filename {
+	$pageverify = Get-DbcConfigValue policy.pageverify
+	(Get-SqlInstance).ForEach{
+		Context "Testing page verify on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has page verify set to $pageverify" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).PageVerify | Should Be $pageverify
+				}
+			}
+		}
+	}
+}
+
+Describe "Auto Close" -Tags AutoClose, $filename {
+	$autoclose = Get-DbcConfigValue policy.autoclose
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Close on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Close set to $autoclose" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoClose | Should Be $autoclose
+				}
+			}
+		}
+	}
+}
+
+Describe "Auto Shrink" -Tags AutoShrink, $filename {
+	$autoshrink = Get-DbcConfigValue policy.autoshrink
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Shrink on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Shrink set to $autoshrink" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoShrink | Should Be $autoshrink
 				}
 			}
 		}
