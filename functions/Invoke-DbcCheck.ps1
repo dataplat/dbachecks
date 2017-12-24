@@ -331,13 +331,12 @@
 		[Pester.OutputTypes]$Show = 'All'
 	)
 	begin {
+		 
 		if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
 			$PSBoundParameters['OutputFile'] = "$env:windir\temp\dbachecks.mail\report.xml"
 		}
-	}
-	process {
-		$customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
 		
+		$customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
 		
 		foreach ($param in $customparam) {
 			if (Test-PSFParameterBinding -ParameterName $param) {
@@ -359,11 +358,17 @@
 		$s = Get-PSFConfigValue -FullName dbachecks.setup.sqlinstance
 		$c = Get-PSFConfigValue -FullName dbachecks.setup.computername
 		
+	}
+	process {
+		if (-not $Script -and -not $TestName) {
+			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
+			return
+		}
+		
 		if (-not $SqlInstance -and -not $ComputerName -and -not $s -and -not $c) {
 			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
 			return
 		}
-		#>
 		
 		$repos = Get-CheckRepo
 		foreach ($repo in $repos) {
