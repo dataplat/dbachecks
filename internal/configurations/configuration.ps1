@@ -37,6 +37,7 @@ Set-PSFConfig -Module dbachecks -Name policy.hadrfqdn -Value "FQDN" -Initialize 
 Set-PSFConfig -Module dbachecks -Name policy.hadrtcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Validation integer -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
+Set-PSFConfig -Module dbachecks -Name policy.autoclose -Validation integer -Value $false -Initialize -Description "Alters the AutoClose check to say if it should be allowed `$true or dissalower `$false"
 
 # domain?
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"
