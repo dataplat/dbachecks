@@ -69,7 +69,7 @@
 		}
 		
 		# Still unsure if I'll persist it here - wondering if this impacts global or keeps local
-		if ($name -eq 'setup.sqlcredential') {
+		if ($name -eq 'app.sqlcredential') {
 			Set-Variable -Scope 1 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $value }
 		}
 		
