@@ -52,8 +52,8 @@ If you have a simplified (single) environment, however, you can set a permanent 
 
 ```powershell
 # Set the servers you'll be working with
-Set-DbcConfig -Name Setup.SqlInstance -Value sql2016, sql2017, sql2008, sql2008\express
-Set-DbcConfig -Name Setup.ComputerName -Value sql2016, sql2017, sql2008
+Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sql2008, sql2008\express
+Set-DbcConfig -Name app.computername -Value sql2016, sql2017, sql2008
 
 # Look at the current configs
 Get-DbcConfig
@@ -141,7 +141,7 @@ Need to skip a whole test? Just use the `-ExcludeTag` which is auto-populated wi
 
 ### Setting a global SQL Credential
 
-`Set-DbcConfig` persists the values. If you `Set-DbcConfig -Name Setup.sqlcredential -Value (Get-Credential sa)` it will set the `SqlCredential` for the whole module, but nothing more! So cool.
+`Set-DbcConfig` persists the values. If you `Set-DbcConfig -Name app.sqlcredential -Value (Get-Credential sa)` it will set the `SqlCredential` for the whole module, but nothing more! So cool.
 
 You can also manually change the `SqlCredential` or `Credential` by specifying it in `Invoke-DbaCheck`:
 

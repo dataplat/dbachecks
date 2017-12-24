@@ -84,11 +84,11 @@
 
 		.PARAMETER SqlInstance
 			A list of SQL Servers to run the tests against. If this is not provided, it will be gathered from:
-				Get-DbaConfig -Name setup.sqlinstance
+				Get-DbaConfig -Name app.sqlinstance
 	
 		.PARAMETER ComputerName
 			A list of computers to run the tests against. If this is not provided, it will be gathered from:
-				Get-DbaConfig -Name setup.computername
+				Get-DbaConfig -Name app.computername
 	
 		.PARAMETER SqlCredential
 			Alternate SQL Server-based credential.
@@ -333,7 +333,7 @@
 	
 	process {
 		
-		if (-not $SqlInstance.InputObject -and -not $ComputerName.InputObject -and -not (Get-PSFConfigValue -FullName dbachecks.setup.sqlinstance) -and -not (Get-PSFConfigValue -FullName dbachecks.setup.computername)) {
+		if (-not $SqlInstance.InputObject -and -not $ComputerName.InputObject -and -not (Get-PSFConfigValue -FullName dbachecks.app.sqlinstance) -and -not (Get-PSFConfigValue -FullName dbachecks.app.computername)) {
 			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
 			return
 		}

@@ -3,6 +3,6 @@
 		return $sqlinstance
 	}
 	else {
-		return (Get-DbcConfigValue Setup.SqlInstance)
+		return (Get-DbcConfigValue app.sqlinstance)
 	}
 }

@@ -3,6 +3,6 @@
 		return $computername
 	}
 	else {
-		return (Get-DbcConfigValue Setup.ComputerName)
+		return (Get-DbcConfigValue app.computername)
 	}
 }
