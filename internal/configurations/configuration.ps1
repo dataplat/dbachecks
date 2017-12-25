@@ -22,8 +22,6 @@ Set-PSFConfig -Module dbachecks -Name policy.dbownershould -Value "sa" -Initiali
 Set-PSFConfig -Module dbachecks -Name policy.dbownershouldnot -Value "sa" -Initialize -Description "The database owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
-Set-PSFConfig -Module dbachecks -Name policy.hadrclustername -Value "ClusterName" -Initialize -Description "The DNS Name of the Cluster(s) to check "
-Set-PSFConfig -Module dbachecks -Name policy.hadrfqdn -Value "FQDN" -Initialize -Description "The FQDN for the Cluster Check"
 Set-PSFConfig -Module dbachecks -Name policy.hadrtcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
