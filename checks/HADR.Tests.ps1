@@ -10,18 +10,17 @@ if (-not (Get-DbcConfigValue skip.hadrcheck)) {
 		return
 	}
 	
-	$clusternames = Get-DbcConfigValue policy.hadrclustername
-	$domainname = Get-DbcConfigValue policy.hadrfqdn
+	$domainname = Get-DbcConfigValue domain.name
 	$tcpport = Get-DbcConfigValue policy.hadrtcpport
 	
-	foreach ($cluster in $clusters) {
+	foreach ($cluster in (Get-ComputerName)) {
 		[pscustomobject]$return = @{ }
 		$return.Cluster = (Get-Cluster -Name $cluster)
 		$return.Nodes = (Get-ClusterNode -Cluster $cluster)
 		$return.Resources = (Get-ClusterResource -Cluster $cluster)
 		$return.Network = (Get-ClusterNetwork -Cluster $cluster)
 		$return.Groups = (Get-ClusterGroup -Cluster $cluster)
-		$listeneripaddress = (Get-ClusterResource -Cluster $cluster -inputobject (Get-ClusterResource -cluster $cluster | where-object { $psitem.ResourceType -like "SQL Server Availability Group" }).OwnerGroup)
+		$listeneripaddress = (Get-ClusterResource -Cluster $cluster -InputObject (Get-ClusterResource -Cluster $cluster | Where-Object { $psitem.ResourceType -like "SQL Server Availability Group" }).OwnerGroup)
 		$return.AGOwner = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }.OwnerNode
 		$return.AGStatus = (Get-DbaAvailabilityGroup -SqlInstance $return.AGOwner.Name)
 		$listeners = $return.AGStatus.AvailabilityGroupListeners.Name

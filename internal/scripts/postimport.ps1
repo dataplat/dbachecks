@@ -32,6 +32,7 @@ foreach ($file in $repofiles) {
 		
 		$describe = Select-String -InputObject $string -Pattern 'Describe\ \"[\s]*(.+)[\s]*\"\ \-Tags' | ForEach-Object { $_.matches.Groups[1].Value }
 		$tags = Select-String -InputObject $string -Pattern '-Tags[\s]*(.+)[\s]*\, \$filename' | ForEach-Object { $_.matches.Groups[1].Value }
+		if ($filename -eq "HADR" -and $type -eq $null) { $type = "ComputerName" }
 		$collection += [pscustomobject]@{
 			Group			   = $filename
 			Type			   = $type
