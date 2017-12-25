@@ -120,9 +120,11 @@ The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
 Invoke-DbcCheck -SqlInstance $prod -Tags LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Enviornment Prod
 ```
 
+😍😍😍
+
 ### Sending mail
 
-We utilize [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) which is just a quick email viewer that happens to have a built-in SMTP server. It provides awesome, built-in functionality so you can send the reports!
+We even included a command to make emailing the results easier!
 
 ```powershell
 Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru |
@@ -131,7 +133,7 @@ Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServ
 
 ![image](https://user-images.githubusercontent.com/8278033/34316816-cc157d04-e79e-11e7-971d-1cfee90b2e11.png)
 
-😍😍😍
+If you'd like to test locally, check out [PaperCut](https://github.com/ChangemakerStudios/Papercut/releases) which is just a quick email viewer that happens to have a built-in SMTP server. It provides awesome, built-in functionality so you can send the reports!
 
 ## Advanced usage
 
@@ -148,7 +150,7 @@ Need to skip a whole test? Just use the `-ExcludeTag` which is auto-populated wi
 
 ### Setting a global SQL Credential
 
-`Set-DbcConfig` persists the values. If you `Set-DbcConfig -Name app.sqlcredential -Value (Get-Credential sa)` it will set the `SqlCredential` for the whole module, but nothing more! So cool.
+`Set-DbcConfig` persists the values. If you `Set-DbcConfig -Name app.sqlcredential -Value (Get-Credential sa)` it will set the `SqlCredential` for the whole module, but not your local console! So cool.
 
 You can also manually change the `SqlCredential` or `Credential` by specifying it in `Invoke-DbaCheck`:
 
@@ -183,7 +185,11 @@ Then add additional checks. We recommend using the [development guidelines for d
 
 ## I don't have access to the PowerShell Gallery, how can I download this?
 
-No GitHub support download install will be possible since it has dependencies.
+This module has a number of dependencies which makes creating a GitHub-centric installer a bit of a pain. We suggest you use a machine with [PowerShellGet](https://docs.microsoft.com/en-us/powershell/gallery/psget/get_psget_module) installed and Save all the modules you need
+
+```powershell
+Save-Module -Name dbatools, PSFramework, Pester -Path C:\temp
+```
 
 ## Party
 
