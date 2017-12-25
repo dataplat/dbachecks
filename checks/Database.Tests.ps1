@@ -220,10 +220,23 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
 			(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject }).ForEach{
 				if ($psitem.RecoveryModel -ne 'Simple') {
 					It "$($psitem.Name) log backups should be less than $maxlog minutes" {
-						$psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes(-($maxlog)+1)
+						$psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes(- ($maxlog) + 1)
 					}
 				}
 				
+			}
+		}
+	}
+}
+
+Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
+	$vlfmax = Get-DbcConfigValue policy.virtuallogfilemax
+	(Get-SqlInstance).ForEach{
+		Context "Testing Database VLFs on $psitem" {
+			(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{
+				It "$($psitem.Database) VLF count should be less than $vlfmax" {
+					$psitem.Total | Should BeLessThan $vlfmax
+				}
 			}
 		}
 	}

@@ -29,6 +29,7 @@ Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -V
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 Set-PSFConfig -Module dbachecks -Name policy.autoclose -Validation bool -Value $false -Initialize -Description "Alters the Auto Close check to say if it should be allowed `$true or dissalower `$false"
 Set-PSFConfig -Module dbachecks -Name policy.autoshrink -Validation bool -Value $false -Initialize -Description "Alters the Auto Shrink check to say if it should be allowed `$true or dissalower `$false"
+Set-PSFConfig -Module dbachecks -Name policy.virtuallogfilemax -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
