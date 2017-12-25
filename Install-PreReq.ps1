@@ -52,17 +52,20 @@ Function Install-PreReq{
                     Write-Warning -Message "Using a non standard repository, cannot guarantee you'll get the right modules"
                 }
                 Write-Output "Installing $($Module.ModuleName)"
-                try {
-                    Install-Module -Name $Module.ModuleName -MinimumVersion $Module.ModuleVersion 
-                }
-                catch {
-                    if ($_.exception.Message -like '*No match was found for the specified search criteria and module name*'){
-                        Write-Warning -Message "Module $($Module.ModuleName) version $($Module.ModuleVersion) could not be installed " 
+                if ($pscmdlet.ShouldProcess("Install $($Module.ModuleName) version $($Module.ModuleVersion) from repository")) {
+
+                    try {
+                        Install-Module -Name $Module.ModuleName -MinimumVersion $Module.ModuleVersion 
                     }
-                    else {
-                        Write-Warning -Message "Error installing module $($Module.ModuleName): $_"
+                    catch {
+                        if ($_.exception.Message -like '*No match was found for the specified search criteria and module name*'){
+                            Write-Warning -Message "Module $($Module.ModuleName) version $($Module.ModuleVersion) could not be installed " 
+                        }
+                        else {
+                            Write-Warning -Message "Error installing module $($Module.ModuleName): $_"
+                        }
+                        continue            
                     }
-                    continue            
                 }
                 try {
                     $Output = Import-Module $Module.ModuleName -MinimumVersion $Module.ModuleVersion -force -ErrorAction Stop
