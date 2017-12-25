@@ -17,8 +17,8 @@ Function Install-PreReq{
     .NOTES
     General notes
     #>
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param(
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "High")]
+	param(
     
         [validateset('Global','Local')]
         [String]$Scope
@@ -53,7 +53,7 @@ Function Install-PreReq{
                 }
                 Write-Output "Installing $($Module.ModuleName)"
                 try {
-                    Install-Module -Name $Module.ModuleName -MinimumVersion $Module.ModuleVersion -ErrorAction Stop
+                    Install-Module -Name $Module.ModuleName -MinimumVersion $Module.ModuleVersion 
                 }
                 catch {
                     if ($_.exception.Message -like '*No match was found for the specified search criteria and module name*'){
