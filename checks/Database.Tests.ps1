@@ -25,7 +25,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
 	}
 }
 
-Describe "Last Backup Restore & Integrity Checks" -Tags TestLastBackup, Backup, $filename {
+Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
 	if (-not (Get-DbcConfigValue skip.backuptesting)) {
 		$destserver = Get-DbcConfigValue policy.backuptestserver
 		$destdata = Get-DbcConfigValue policy.backupdatadir
@@ -47,7 +47,7 @@ Describe "Last Backup Restore & Integrity Checks" -Tags TestLastBackup, Backup, 
 	}
 }
 
-Describe "Last Backup Restore & Integrity Checks (VerifyOnly)" -Tags TestLastBackupVerifyOnly, Backup, $filename {
+Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "VerifyOnly tests of last backups on $psitem" {
 			(Test-DbaLastBackup -SqlInstance $psitem -VerifyOnly).ForEach{
