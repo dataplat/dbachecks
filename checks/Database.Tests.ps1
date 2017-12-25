@@ -47,6 +47,21 @@ Describe "Last Backup Restore & Integrity Checks" -Tags TestLastBackup, Backup, 
 	}
 }
 
+Describe "Last Backup Restore & Integrity Checks (VerifyOnly)" -Tags TestLastBackupVerifyOnly, Backup, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "VerifyOnly tests of last backups on $psitem" {
+			(Test-DbaLastBackup -SqlInstance $psitem -VerifyOnly).ForEach{
+				It "restore for $($psitem.Database) should be success" {
+					$psitem.RestoreResult | Should Be 'Success'
+				}
+				It "file exists for last backup of $($psitem.Database)" {
+					$psitem.FileExists | Should Be $true
+				}
+			}
+		}
+	}
+}
+
 Describe "Database Owners" -Tags DatabaseOwner, $filename {
 	$targetowner = Get-DbcConfigValue policy.dbownershould
 	(Get-SqlInstance).ForEach{
