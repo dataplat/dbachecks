@@ -1,4 +1,4 @@
-Function Install-PreReq{
+
     <#
     .SYNOPSIS
         Installs prerequisites for the DbaCheck module
@@ -7,27 +7,22 @@ Function Install-PreReq{
     .DESCRIPTION
         Parses the module manifest and installs any prerquisites
     
-    .PARAMETER Scope
-
+    .PARAMETER Force
+        Forces installation of module from remote repository without confirmation of trust. BEWARE!
 
 
     .EXAMPLE
-    An example
+        Install-PreReq
+
+        Will try to install and import all the required modules for the DbaChecks Module
     
     .NOTES
     General notes
     #>
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "High")]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
 	param(
-    
-        [validateset('Global','Local')]
-        [String]$Scope
+        [switch]$force
     )
-    BEGIN {
-        $isElevated = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-    }
-
-    PROCESS {
         if ( -not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
             Write-warning -Message "Must be run as administrator, exiting"
             return
@@ -55,7 +50,7 @@ Function Install-PreReq{
                 if ($pscmdlet.ShouldProcess("Install $($Module.ModuleName) version $($Module.ModuleVersion) from repository")) {
 
                     try {
-                        Install-Module -Name $Module.ModuleName -MinimumVersion $Module.ModuleVersion 
+                        Install-Module -Name $Module.ModuleName -MinimumVersion $Module.ModuleVersion -Force:$force
                     }
                     catch {
                         if ($_.exception.Message -like '*No match was found for the specified search criteria and module name*'){
@@ -75,5 +70,3 @@ Function Install-PreReq{
                 }
             }
         }
-    }
-}
