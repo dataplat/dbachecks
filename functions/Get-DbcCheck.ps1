@@ -31,17 +31,22 @@
 	)
 	
 	process {
-		
-		if (Test-PSFParameterBinding -ParameterName Pattern) {
-			foreach ($result in (Get-Content "$script:localapp\checks.json" | ConvertFrom-Json)) {
-				$result | Where-Object {
+		if ($Pattern) {
+			@(Get-Content "$script:localapp\checks.json" | ConvertFrom-Json).ForEach{
+				$output = $psitem | Where-Object {
 					$_.Group -match $Pattern -or $_.Description -match $Pattern -or
 					$_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern
+				}
+				@($output).ForEach{
+					Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'Description', 'UniqueTag', 'AllTags'
 				}
 			}
 		}
 		else {
-			Get-Content "$script:localapp\checks.json" | ConvertFrom-Json
+			$output = Get-Content "$script:localapp\checks.json" | ConvertFrom-Json
+			$output.ForEach{
+				Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'Description', 'UniqueTag', 'AllTags'
+			}
 		}
 	}
 }
