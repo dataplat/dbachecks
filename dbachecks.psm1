@@ -62,5 +62,7 @@ if ($credential = (Get-DbcConfigValue -Name app.sqlcredential)) {
 	}
 }
 
+$PSDefaultParameterValues += @{ '*-Dba*:EnableException' = $true }
+
 # Load up tepp
 $null = Get-DbcConfig
