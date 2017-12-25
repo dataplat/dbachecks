@@ -17,11 +17,11 @@ Function Install-PreReq{
     .NOTES
     General notes
     #>
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param(
     
         [validateset('Global','Local')]
-        [String]$Scope,
-        [switch]$confirm
+        [String]$Scope
     )
     BEGIN {
         $isElevated = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
