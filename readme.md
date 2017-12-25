@@ -167,7 +167,7 @@ Set-Variable -Name PSDefaultParameterValues -Value @{ 'Get-DbaDiskSpace:ExcludeD
 Invoke-DbcCheck -Tag Storage
 ```
 
-## Can I run tests, not in the module?
+## Can I run tests not included the module?
 
 If you have super specialized checks to run, you can add a new repository, update the `app.checkrepos` config and this will make all of your tests available to `Invoke-DbcCheck`. From here, you can pipe to `Send-DbcMailMessage`, `Update-DbcPowerBiDataSource` or parse however you would parse Pester results.
 
