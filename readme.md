@@ -137,11 +137,11 @@ Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServ
 
 ### Skipping some internal tests
 
-The Check `LastBackup` includes checking for differentials (diffs) backups. You may be in an environment that only utilizes nightly full backups. If a diff check needs to be skipped, you can do the following:
+The Check `LastGoodCheckDb` includes a test for data purity. You may be in an environment that can't support data purity. If this check needs to be skipped, you can do the following:
 
 ```powershell
 Get-DbcConfig *skip*
-Set-DbcConfig -Name skip.backupdiffcheck -Value $true
+Set-DbcConfig -Name skip.datapuritycheck -Value $true
 ```
 
 Need to skip a whole test? Just use the `-ExcludeTag` which is auto-populated with both Check names and Pester Tags.
