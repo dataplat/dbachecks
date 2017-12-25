@@ -29,10 +29,10 @@ Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -V
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 Set-PSFConfig -Module dbachecks -Name policy.autoclose -Validation bool -Value $false -Initialize -Description "Alters the Auto Close check to say if it should be allowed `$true or dissalower `$false"
 Set-PSFConfig -Module dbachecks -Name policy.autoshrink -Validation bool -Value $false -Initialize -Description "Alters the Auto Shrink check to say if it should be allowed `$true or dissalower `$false"
-Set-PSFConfig -Module dbachecks -Name policy.verifyonly -Validation bool -Value $true -Initialize -Description "For the Test-DbaLastBackup, just VerifyOnly"
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
+Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
 Set-PSFConfig -Module dbachecks -Name skip.tempdb118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 118"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"

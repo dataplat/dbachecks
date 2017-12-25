@@ -26,19 +26,20 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
 }
 
 Describe "Last Backup Restore & Integrity Checks" -Tags TestLastBackup, Backup, $filename {
-	$verifyonly = Get-DbcConfigValue policy.verifyonly
-	$destserver = Get-DbcConfigValue policy.backuptestserver
-	$destdata = Get-DbcConfigValue policy.backupdatadir
-	$destlog = Get-DbcConfigValue policy.backuplogdir
-	(Get-SqlInstance).ForEach{
-		Context "Testing Backup Restore & Integrity Checks (VerifyOnly = $verifyonly) on $psitem" {
-			(Test-DbaLastBackup -SqlInstance $psitem -Destination $destserver -LogDirectory $destlog -DataDirectory $destdata -VerifyOnly:$verifyonly).ForEach{
-				if ($psitem.DBCCResult -notmatch 'skipped for restored master') {
-					It "DBCC for $($psitem.Database) should be success" {
-						$psitem.DBCCResult | Should Be 'Success'
-					}
-					It "restore for $($psitem.Database) should be success" {
-						$psitem.RestoreResult | Should Be 'Success'
+	if (-not (Get-DbcConfigValue skip.backuptesting)) {
+		$destserver = Get-DbcConfigValue policy.backuptestserver
+		$destdata = Get-DbcConfigValue policy.backupdatadir
+		$destlog = Get-DbcConfigValue policy.backuplogdir
+		(Get-SqlInstance).ForEach{
+			Context "Testing Backup Restore & Integrity Checks on $psitem" {
+				(Test-DbaLastBackup -SqlInstance $psitem -Destination $destserver -LogDirectory $destlog -DataDirectory $destdata).ForEach{
+					if ($psitem.DBCCResult -notmatch 'skipped for restored master') {
+						It "DBCC for $($psitem.Database) should be success" {
+							$psitem.DBCCResult | Should Be 'Success'
+						}
+						It "restore for $($psitem.Database) should be success" {
+							$psitem.RestoreResult | Should Be 'Success'
+						}
 					}
 				}
 			}
