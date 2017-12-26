@@ -58,8 +58,8 @@ ForEach ($Module in $Modules){
     }
 
     $dbatools_copydllmode = $true
-    $module = Import-Module -Name $Module.ModuleName -ErrorAction SilentlyContinue
-    $localpath = $module.ModuleBase
+    $Impmodule = Import-Module -Name $Module.ModuleName -ErrorAction SilentlyContinue
+    $localpath = $Impmodule.ModuleBase
 
     if ($null -eq $localpath) {
         $localpath = "$HOME\Documents\WindowsPowerShell\Modules\$($Module.ModuleName)"
