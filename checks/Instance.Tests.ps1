@@ -182,3 +182,14 @@ Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
 		}
 	}
 }
+
+Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Checking that sa login on $psitem has been renamed" {
+			$results = Get-DbaLogin -SqlInstance $psitem -Login sa
+			It "returns no results" {
+				$results -eq $null | Should Be $true
+			}
+		}
+	}
+}
