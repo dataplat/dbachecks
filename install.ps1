@@ -33,9 +33,9 @@ function Write-LocalMessage {
 
 #Sort ourselves out first:
 $modules = @(
-    @{ ModuleName = 'dbachecks'; URL='https://github.com/potatoqualitee/dbachecks/archive/master.zip'}.
+    @{ ModuleName = 'dbachecks'; URL='https://github.com/potatoqualitee/dbachecks/archive/master.zip'},
     @{ ModuleName = 'Pester'; ModuleVersion = '4.1.1'; URL='https://dbatools.io/zip' },
-    @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.139'; URL='https://github.com/pester/Pester/archive/master.zip' }
+    @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.139'; URL='https://github.com/pester/Pester/archive/master.zip' },
     @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.5.10'; URL='https://github.com/PowershellFrameworkCollective/psframework/archive/master.zip' }
 )
 $RequiredModules = (Import-PowerShellDataFile -path .\dbachecks.psd1).RequiredModules
@@ -106,13 +106,13 @@ ForEach ($Module in $Modules){
     $zipfile = "$temp\$($Module.ModuleName).zip"
     Write-LocalMessage -Message "Downloading archive from github"
     try {
-        (New-Object System.Net.WebClient).DownloadFile($url, $zipfile)
+        (New-Object System.Net.WebClient).DownloadFile($Module.url, $zipfile)
     }
     catch {
         #try with default proxy and usersettings
         Write-LocalMessage -Message "Probably using a proxy for internet access, trying default proxy settings"
         $wc = (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
-        $wc.DownloadFile($url, $zipfile)
+        $wc.DownloadFile($Module.url, $zipfile)
     }
 
     # Unblock if there's a block
