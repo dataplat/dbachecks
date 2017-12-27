@@ -89,8 +89,8 @@ ForEach ($Module in $Modules){
     $destinationFolder.CopyHere($zipPackage.Items())
 
 
-    $PSD = Get-ChildItem  "$temp\$($Module.ModuleName)-master\" -file -Filter '*.psd1' -Recurse
-    $ModuleDetails = $PSD
+    $PSD = Get-ChildItem  "$temp\$($Module.ModuleName)-master\" -file -Filter "$($Module.ModuleName).psd1" -Recurse
+    $ModuleDetails = Import-PowerShellDataFile -Path $PSD
     $ModuleVersion  = $Moduledetails.ModuleVersion    
 
     if ($null -eq $localpath) {
@@ -171,10 +171,12 @@ ForEach ($Module in $Modules){
 "@
     }
     else {
-        Import-Module $PSd -Force
+        $ImportPsd  = Get-ChildItem  $path -file -Filter "$($Module.ModuleName).psd1" -Recurse
+   
+        Import-Module $ImportPSd -Force
         Write-LocalMessage @"
 
-    dbatools v $((Get-Module $Module.ModuleName).Version)
+    $($Module.ModuleName) v $((Get-Module $Module.ModuleName).Version)
     # Commands available: $((Get-Command -Module $Module.ModuleName -CommandType Function | Measure-Object).Count)
 
 "@
