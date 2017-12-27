@@ -334,6 +334,11 @@
 	
 	process {
 		
+		if (-not $Script -and -not $TestName -and -not $Tag -and -not $ExcludeTag) {
+			Stop-PSFFunction -Message "Please specify Tag, ExcludeTag, Script or TestName"
+			return
+		}
+		
 		if (-not $SqlInstance.InputObject -and -not $ComputerName.InputObject -and -not (Get-PSFConfigValue -FullName dbachecks.app.sqlinstance) -and -not (Get-PSFConfigValue -FullName dbachecks.app.computername)) {
 			Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
 			return
