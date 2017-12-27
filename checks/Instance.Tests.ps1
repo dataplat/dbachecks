@@ -58,7 +58,7 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
             }
             It "should not have TempDB Files with MaxSize Set" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileMaxSize) {
                 $TempDBTest[4].CurrentSetting | Should Be $TempDBTest[4].Recommended
-            }	
+            }
         }
     }
 }
@@ -84,7 +84,7 @@ Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
             else {
                 $backuppath = Get-DbcConfigValue policy.backuppath
             }
-			
+
             It "can access backup path ($backuppath)" {
                 Test-DbaSqlPath -SqlInstance $psitem -Path $backuppath | Should be $true
             }
@@ -191,4 +191,15 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
             }
         }
     }
+}
+
+Describe "Default Backup Compression" -Tags DAC, $filename {
+	$defaultbackupcompreesion = Get-DbcConfigValue policy.defaultbackupcompreesion
+	(Get-SqlInstance).ForEach{
+		Context "Testing Default Backup Compression on $psitem" {
+			It "Default Backup Compression is set to $defaultbackupcompreesion on $psitem" {
+				(Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'DefaultBackupCompression').ConfiguredValue -eq 1 | Should Be $defaultbackupcompreesion
+			}
+		}
+	}
 }
