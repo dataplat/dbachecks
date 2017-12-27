@@ -37,7 +37,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 		Context "Testing failsafe operator exists on $psitem" {
 			$failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
 			It "failsafe operator is $failsafeoperator" {
-				(Connect-DbaSqlServer -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should be $failsafeoperator
+				(Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should be $failsafeoperator
 			}
 		}
 	}
