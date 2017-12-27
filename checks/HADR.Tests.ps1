@@ -56,7 +56,7 @@ foreach ($cluster in (Get-ComputerName)) {
 		}
 	}
 	
-	Describe "Cluster Network Health" -Tags ClusterNetworkHealth, HADR, AvailabilityGroup, $filename {
+	Describe "Cluster Network Health" -Tags ClusterNetworkHealth, AvailabilityGroup, $filename {
 		Context "Cluster Connectivity" {
 			$return.SqlTestListeners.ForEach{
 				It "Listener $($psitem.SqlInstance) Should be Pingable" {
