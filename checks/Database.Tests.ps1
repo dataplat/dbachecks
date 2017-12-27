@@ -98,7 +98,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 					It "last good integrity check for $($psitem.Database) should be less than $maxdays" {
 						$psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
 					}
-					
+
 					It -Skip:$datapurity "last good integrity check for $($psitem.Database) has Data Purity Enabled" {
 						$psitem.DataPurityEnabled | Should Be $true
 					}
@@ -223,7 +223,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
 						$psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes(- ($maxlog) + 1)
 					}
 				}
-				
+
 			}
 		}
 	}
@@ -236,6 +236,45 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
 			(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{
 				It "$($psitem.Database) VLF count should be less than $vlfmax" {
 					$psitem.Total | Should BeLessThan $vlfmax
+				}
+			}
+		}
+	}
+}
+
+Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
+	$autocreatestatistics = Get-DbcConfigValue policy.autocreatestatistics
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Create Statistics on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Create Statistics set to $autocreatestatistics" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoCreateStatisticsEnabled | Should Be $autocreatestatistics
+				}
+			}
+		}
+	}
+}
+
+Describe "Auto Update Statistics" -Tags autoupdatestatistics, $filename {
+	$autoupdatestatistics = Get-DbcConfigValue policy.autoupdatestatistics
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Update Statistics on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Update Statistics set to $autoupdatestatistics" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoUpdateStatisticsEnabled | Should Be $autoupdatestatistics
+				}
+			}
+		}
+	}
+}
+
+Describe "Auto Update Statistics Asynchronously" -Tags autoupdatestatisticsasynchronously, $filename {
+	$autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.autoupdatestatisticsasynchronously
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Update Statistics Asynchronously on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoUpdateStatisticsAsync | Should Be $autoupdatestatisticsasynchronously
 				}
 			}
 		}

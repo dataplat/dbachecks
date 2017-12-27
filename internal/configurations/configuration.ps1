@@ -30,6 +30,9 @@ Set-PSFConfig -Module dbachecks -Name policy.autoshrink -Validation bool -Value 
 Set-PSFConfig -Module dbachecks -Name policy.virtuallogfilemax -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
 Set-PSFConfig -Module dbachecks -Name policy.pingmsmax -Validation integer -Value 10 -Initialize -Description "Maximum response time in ms"
 Set-PSFConfig -Module dbachecks -Name policy.pingcount -Validation integer -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
+Set-PSFConfig -Module dbachecks -Name policy.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Create Statistics check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Update Statistics check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Alters the Auto Update Statistics Asynchronously check to say if it should be enabled `$true or disabled `$false"
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
