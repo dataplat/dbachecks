@@ -3,7 +3,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing SQL Engine Service on $psitem" {
-            (Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
+            @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
                 It "SQL agent service account should be running" {
                     $psitem.State | Should be "Running"
                 }
@@ -18,7 +18,7 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
     (Get-ComputerName).ForEach{
         Context "Testing SQL Browser Service on $psitem" {
-            (Get-DbaSqlService -ComputerName $psitem).ForEach{
+            @(Get-DbaSqlService -ComputerName $psitem).ForEach{
                 It "SQL browser service should be Stopped unless multiple instances are installed" {
                     if (($psitem.ServiceType -eq "Engine").count -eq 1) {
                         $psitem.State | Should be "Stopped"
@@ -67,7 +67,7 @@ Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Ad Hoc Workload Optimization on $psitem" {
             It "Should be Optimised for Ad Hoc workloads" {
-                (Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
+                @(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
                     $psitem.CurrentOptimizeAdHoc | Should be $psitem.RecommendedOptimizeAdHoc
                 }
             }
@@ -107,7 +107,7 @@ Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
     $max = Get-DbcConfigValue policy.networklatencymsmax
     (Get-SqlInstance).ForEach{
         Context "Testing Network Latency on $psitem" {
-            (Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
+            @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
                 It "network latency should be less than $max ms" {
                     $psitem.Average.TotalMilliseconds | Should BeLessThan $max
                 }
@@ -119,7 +119,7 @@ Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
 Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Linked Servers on $psitem" {
-            (Test-DbaLinkedServerConnection -SqlInstance $psitem).ForEach{
+            @(Test-DbaLinkedServerConnection -SqlInstance $psitem).ForEach{
                 It "Linked Server $($psitem.LinkedServerName) has connectivity" {
                     $psitem.Connectivity | Should be $true
                 }
@@ -132,7 +132,7 @@ Describe "Max Memory" -Tags MaxMemory, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Max Memory on $psitem" {
             It "Max Memory setting should be correct" {
-                (Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
+                @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
                     $psitem.SqlMaxMB | Should BeLessThan ($psitem.RecommendedMB + 379)
                 }
             }
@@ -193,7 +193,7 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
     }
 }
 
-Describe "Default Backup Compression" -Tags DAC, $filename {
+Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
 	$defaultbackupcompreesion = Get-DbcConfigValue policy.defaultbackupcompreesion
 	(Get-SqlInstance).ForEach{
 		Context "Testing Default Backup Compression on $psitem" {
