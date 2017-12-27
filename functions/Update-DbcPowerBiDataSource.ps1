@@ -59,17 +59,17 @@
 	)
 	begin {
 		if ($Environment -ne "Default" -and -not $Append) {
-			Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
+			$null = Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
 		}
 		if ($Force) {
-			Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
+			$null = Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
 		}
 	}
 	process {
 		++$i
 		try {
 			if (-not (Test-Path -Path $Path)) {
-				New-Item -ItemType Directory -Path $Path -ErrorAction Stop
+				$null = New-Item -ItemType Directory -Path $Path -ErrorAction Stop
 			}
 		}
 		catch {
