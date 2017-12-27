@@ -90,7 +90,7 @@ ForEach ($Module in $Modules){
 
 
     $PSD = Get-ChildItem  "$temp\$($Module.ModuleName)-master\" -file -Filter "$($Module.ModuleName).psd1" -Recurse
-    $ModuleDetails = Import-PowerShellDataFile -Path $PSD
+    $ModuleDetails = Import-PowerShellDataFile -Path $PSD.fullname
     $ModuleVersion  = $Moduledetails.ModuleVersion    
 
     if ($null -eq $localpath) {
@@ -171,6 +171,7 @@ ForEach ($Module in $Modules){
 "@
     }
     else {
+        Write-LocalMessage -Message "Debug - Path = $path"
         $ImportPsd  = Get-ChildItem  $path -file -Filter "$($Module.ModuleName).psd1" -Recurse
    
         Import-Module $ImportPSd -Force
