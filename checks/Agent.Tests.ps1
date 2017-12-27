@@ -20,17 +20,17 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 		Context "Testing DBA Operators exists on $psitem" {
 			$operatorname = Get-DbcConfigValue  agent.dbaoperatorname
 			$operatoremail = Get-DbcConfigValue  agent.dbaoperatoremail
-			@(Get-DbaAgentOperator -SqlInstance $psitem | Where-Object { $_.Name -eq $operatorname }).ForEach{
-				It "has an operator called $operatorname" {
-					$psitem.Name | Should be $operatorname
-				}
-				It "$operatorname has an email address of $operatoremail" {
-					$psitem.EmailAddress | Should be $operatoremail
-				}
+			$result = Get-DbaAgentOperator -SqlInstance $psitem -Operator $operatorname
+			It "has an operator called $operatorname" {
+				$result.Name | Should be $operatorname
+			}
+			It "$operatorname has an email address of $operatoremail" {
+				$result.EmailAddress | Should be $operatoremail
 			}
 		}
 	}
 }
+
 
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 	(Get-SqlInstance).ForEach{
