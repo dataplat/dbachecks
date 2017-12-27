@@ -32,9 +32,6 @@ When you import, it'll auto-import
 * Pester
 * PSFramework
 
-### Visualization
-If you want to use the PowerBI dashboards we provide, we strongly recommend that you keep your PowerBI Desktop updated since we can add brand-new stuff that appears on the most recent releases. Please visit [PowerBI Desktop download page](https://powerbi.microsoft.com/en-us/desktop/).
-
 ## Getting started
 
 Checks are performed using `Invoke-DbcCheck` which is basically a wrapper for [Invoke-Pester](https://github.com/pester/Pester/wiki/Invoke-Pester). This means that supported `Invoke-Pester` parameters work against `Invoke-DbcCheck`.
@@ -103,6 +100,8 @@ Since this is just PowerShell and Pester, results can be exported then easily co
 ### Power BI Visualizations!
 
 We've also included a pre-built Power BI Desktop report! You can download Power BI Desktop from [here](https://powerbi.microsoft.com/en-us/downloads/) or it is now offered via the [Microsoft Store on Windows 10](https://www.microsoft.com/store/productId/9NTXR16HNW1T).
+
+Note: We strongly recommend that you keep your PowerBI Desktop updated since we can add brand-new stuff that appears on the most recent releases.
 
 To use the Power BI report, pipe the results of `Invoke-DbcCheck` to `Update-DbcPowerBiDataSource` (defaults to `C:\Windows\temp\dbachecks`), then launch the included `dbachecks.pbix` file using `Start-DbcPowerBi`. Once the Power BI report is open, just hit **refresh**.
 
