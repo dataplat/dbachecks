@@ -44,6 +44,7 @@ Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Validation bool -Valu
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesizemax -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
 Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Validation bool -Value $false -Initialize -Description "Skip PowerShell remoting"
 Set-PSFConfig -Module dbachecks -Name skip.hadrcheck -Validation bool -Value $true -Initialize -Description "Skip the HADR Tests"
+Set-PSFConfig -Module dbachecks -Name skip.sp_WhoIsActive -Validation bool -Value $true -Initialize -Description "Skip the sp_WhoIsActive Tests"
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
@@ -54,3 +55,6 @@ Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initi
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"
 Set-PSFConfig -Module dbachecks -Name domain.organizationalunit -Value $null -Initialize -Description "The OU that your server should be a part of"
 Set-PSFConfig -Module dbachecks -Name domain.domaincontroller -Value $null -Initialize -Description "The domain controller to process your requests"
+
+# sp_WhoIsActive
+Set-PSFConfig -Module dbachecks -Name sp_WhoIsActive.database -Value "master" -Initialize -Description "Which database should contains the sp_WhoIsActive stored procedure"
