@@ -30,12 +30,12 @@ function Write-LocalMessage {
 	if (Test-Path function:Write-Message) { Write-Message -Level Output -Message $Message }
 	else { Write-Host $Message }
 }
-
+#    @{ ModuleName = 'dbachecks'; URL='https://github.com/potatoqualitee/dbachecks/archive/master.zip'},
 #Sort ourselves out first:
 $modules = @(
-    @{ ModuleName = 'dbachecks'; URL='https://github.com/potatoqualitee/dbachecks/archive/master.zip'},
-    @{ ModuleName = 'Pester'; ModuleVersion = '4.1.1'; URL='https://dbatools.io/zip' },
-    @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.139'; URL='https://github.com/pester/Pester/archive/master.zip' },
+
+    @{ ModuleName = 'Pester'; ModuleVersion = '4.1.1'; URL= 'https://github.com/pester/Pester/archive/master.zip'},
+    @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.139'; URL= 'https://dbatools.io/zip'},
     @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.5.10'; URL='https://github.com/PowershellFrameworkCollective/psframework/archive/master.zip' }
 )
 $RequiredModules = (Import-PowerShellDataFile -path .\dbachecks.psd1).RequiredModules
@@ -61,8 +61,40 @@ ForEach ($Module in $Modules){
     $Impmodule = Import-Module -Name $Module.ModuleName -ErrorAction SilentlyContinue
     $localpath = $Impmodule.ModuleBase
 
+        $temp = ([System.IO.Path]::GetTempPath()).TrimEnd("\")
+    $zipfile = "$temp\$($Module.ModuleName).zip"
+    Write-LocalMessage -Message "Downloading archive from github"
+    try {
+        (New-Object System.Net.WebClient).DownloadFile($Module.url, $zipfile)
+    }
+    catch {
+        #try with default proxy and usersettings
+        Write-LocalMessage -Message "Probably using a proxy for internet access, trying default proxy settings"
+        $wc = (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+        $wc.DownloadFile($Module.url, $zipfile)
+    }
+
+
+    # Unblock if there's a block
+    Unblock-File $zipfile -ErrorAction SilentlyContinue
+
+    Write-LocalMessage -Message "Unzipping"
+
+    # Keep it backwards compatible
+    Remove-Item -ErrorAction SilentlyContinue "$temp\$($Module.ModuleName)-old" -Recurse -Force
+    $null = New-Item "$temp\$($Module.ModuleName)-old" -ItemType Directory
+    $shell = New-Object -ComObject Shell.Application
+    $zipPackage = $shell.NameSpace($zipfile)
+    $destinationFolder = $shell.NameSpace($temp)
+    $destinationFolder.CopyHere($zipPackage.Items())
+
+
+    $PSD = Get-ChildItem  "$temp\$($Module.ModuleName)-master\" -file -Filter '*.psd1' -Recurse
+    $ModuleDetails = $PSD
+    $ModuleVersion  = $Moduledetails.ModuleVersion    
+
     if ($null -eq $localpath) {
-        $localpath = "$HOME\Documents\WindowsPowerShell\Modules\$($Module.ModuleName)"
+        $localpath = "$HOME\Documents\WindowsPowerShell\Modules\$($Module.ModuleName)\$ModuleVersion"
     }
     else {
         Write-LocalMessage -Message "Updating current install of $($Module.ModuleName)"
@@ -102,32 +134,6 @@ ForEach ($Module in $Modules){
         }
     }
 
-    $temp = ([System.IO.Path]::GetTempPath()).TrimEnd("\")
-    $zipfile = "$temp\$($Module.ModuleName).zip"
-    Write-LocalMessage -Message "Downloading archive from github"
-    try {
-        (New-Object System.Net.WebClient).DownloadFile($Module.url, $zipfile)
-    }
-    catch {
-        #try with default proxy and usersettings
-        Write-LocalMessage -Message "Probably using a proxy for internet access, trying default proxy settings"
-        $wc = (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
-        $wc.DownloadFile($Module.url, $zipfile)
-    }
-
-    # Unblock if there's a block
-    Unblock-File $zipfile -ErrorAction SilentlyContinue
-
-    Write-LocalMessage -Message "Unzipping"
-
-    # Keep it backwards compatible
-    Remove-Item -ErrorAction SilentlyContinue "$temp\$($Module.ModuleName)-old" -Recurse -Force
-    $null = New-Item "$temp\$($Module.ModuleName)-old" -ItemType Directory
-    $shell = New-Object -ComObject Shell.Application
-    $zipPackage = $shell.NameSpace($zipfile)
-    $destinationFolder = $shell.NameSpace($temp)
-    $destinationFolder.CopyHere($zipPackage.Items())
-
     Write-LocalMessage -Message "Applying Update"
     Write-LocalMessage -Message "1) Backing up previous installation"
     Copy-Item -Path "$Path\*" -Destination "$temp\$($Module.ModuleName)-old" -ErrorAction Stop
@@ -149,8 +155,13 @@ ForEach ($Module in $Modules){
         Remove-Item "$temp\$($Module.ModuleName)-old" -Recurse -Force
         return
     }
-    Remove-Item "$temp\$($Module.ModuleName)-old" -Recurse -Force
+    Write-LocalMessage -Message "3) Setting up current version"
+    Move-Item -Path "$temp\\$($Module.ModuleName)-master\*" -Destination $path -ErrorAction SilentlyContinue -Force
+    Remove-Item -Path "$temp\\$($Module.ModuleName)-master" -Recurse -Force
+    #Remove-Item "destinationFolder" -Recurse -Force
     Remove-Item -Path $zipfile -Recurse -Force
+    Remove-Item "$temp\$($Module.ModuleName)-old" -Recurse -Force
+    #Remove-Item -Path $zipfile -Recurse -Force
 
     Write-LocalMessage -Message "Module $($Module.ModuleName) now installed"
     if (Get-Module $Module.ModuleName) {
@@ -160,7 +171,7 @@ ForEach ($Module in $Modules){
 "@
     }
     else {
-        Import-Module "$path\$($Module.ModuleName).psd1" -Force
+        Import-Module $PSd -Force
         Write-LocalMessage @"
 
     dbatools v $((Get-Module $Module.ModuleName).Version)
@@ -168,6 +179,6 @@ ForEach ($Module in $Modules){
 
 "@
     }
-
+    remove-variable path
 
 }
