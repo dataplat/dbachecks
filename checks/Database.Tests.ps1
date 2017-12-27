@@ -267,3 +267,16 @@ Describe "Auto Update Statistics" -Tags autoupdatestatistics, $filename {
 		}
 	}
 }
+
+Describe "Auto Update Statistics Asynchronously" -Tags autoupdatestatisticsasynchronously, $filename {
+	$autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.autoupdatestatisticsasynchronously
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Update Statistics Asynchronously on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoUpdateStatisticsAsync | Should Be $autoupdatestatisticsasynchronously
+				}
+			}
+		}
+	}
+}
