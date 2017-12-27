@@ -145,7 +145,12 @@
 			$total = $xml.'test-results'.Total
 			if ($total -eq 0) {
 				$file | Remove-Item -ErrorAction SilentlyContinue
-				Write-PSFMessage -Level Warning "Removed $file because it contained 0 total test results"
+				Write-PSFMessage -Level Verbose -Message "Removed $file because it contained 0 total test results"
+			}
+			else {
+				# I give up trynna parse this to CSV
+				#$xml.'test-results'.'test-suite'.results
+				$Attachments += $file
 			}
 		}
 		
@@ -161,7 +166,9 @@
 				$null = $PSBoundParameters.Remove("InputObject")
 				$PSBoundParameters['Body'] = $htmlbody
 				$PSBoundParameters['BodyAsHtml'] = $true
-				
+				if ($Attachments) {
+					$PSBoundParameters['Attachments'] = $Attachments
+				}
 				Send-MailMessage @PSBoundParameters
 			}
 			catch {
