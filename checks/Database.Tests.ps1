@@ -139,9 +139,23 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing duplicate indexes on $psitem" {
-			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "$psitem should not have duplicate indexes" {
-					Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name | Should Be $null
+			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+					$results = Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name
+                    It "$psitem should return 0 duplicate indexes" {
+					$results.Count | Should Be 0
+				}
+			}
+		}
+	}
+}
+
+Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Testing database growth event on $psitem" {
+			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+					$results = Find-DbaDatabaseGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
+                    It "$psitem should return 0 database growth events" {
+					$results.Count | Should Be 0
 				}
 			}
 		}
