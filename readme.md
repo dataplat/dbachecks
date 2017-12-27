@@ -32,6 +32,9 @@ When you import, it'll auto-import
 * Pester
 * PSFramework
 
+### Visualization
+If you want to use the PowerBI dashboards we provide, we strongly recommend that you keep your PowerBI Desktop updated since we can add brand-new stuff that appears on the most recent releases. Please visit [PowerBI Desktop download page](https://powerbi.microsoft.com/en-us/desktop/).
+
 ## Getting started
 
 Checks are performed using `Invoke-DbcCheck` which is basically a wrapper for [Invoke-Pester](https://github.com/pester/Pester/wiki/Invoke-Pester). This means that supported `Invoke-Pester` parameters work against `Invoke-DbcCheck`.
