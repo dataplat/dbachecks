@@ -141,7 +141,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 		Context "Testing duplicate indexes on $psitem" {
 			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should not have duplicate indexes" {
-					Find-SqlDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name | Should Be $null
+					Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name | Should Be $null
 				}
 			}
 		}
