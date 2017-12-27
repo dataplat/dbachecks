@@ -33,6 +33,7 @@ Set-PSFConfig -Module dbachecks -Name policy.pingcount -Validation integer -Valu
 Set-PSFConfig -Module dbachecks -Name policy.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Create Statistics check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Update Statistics check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Alters the Auto Update Statistics Asynchronously check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.defaultbackupcompreesion -Validation bool -Value $true -Initialize -Description "Alters the Default Backup Compression check to say if it should be enabled `$true or disabled `$false"
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
