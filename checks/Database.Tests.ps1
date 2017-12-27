@@ -254,3 +254,16 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
 		}
 	}
 }
+
+Describe "Auto Update Statistics" -Tags autoupdatestatistics, $filename {
+	$autoupdatestatistics = Get-DbcConfigValue policy.autoupdatestatistics
+	(Get-SqlInstance).ForEach{
+		Context "Testing Auto Update Statistics on $psitem" {
+			(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				It "$psitem should has Auto Update Statistics set to $autoupdatestatistics" {
+					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoUpdateStatisticsEnabled | Should Be $autoupdatestatistics
+				}
+			}
+		}
+	}
+}
