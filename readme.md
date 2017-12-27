@@ -46,7 +46,7 @@ Once you've decided on the Check(s) you want to run, it's time to ensure you hav
 
 Similar to the [dbatools](https://dbatools.io) module, dbachecks accepts `-SqlInstance` and `-ComputerName` parameters.
 
-`Invoke-DbcCheck -SqlInstance $servers -Tags SuspectPage, LastBackup`
+`Invoke-DbcCheck -SqlInstance $servers -Checks SuspectPage, LastBackup`
 
 If you have a simplified (single) environment, however, you can set a permanent list of servers. "Servers" include both SQL Server instances and Windows servers. Checks that access Windows Server (e.g. disk space checks) will utilize `-ComputerName` parameter. A pure SQL Server command(s) (such as the backup check) utilizes the `-SqlInstance` parameter.
 
@@ -59,7 +59,7 @@ Set-DbcConfig -Name app.computername -Value sql2016, sql2017, sql2008
 Get-DbcConfig
 
 # Invoke a few tests
-Invoke-DbcCheck -Tags SuspectPage, LastBackup
+Invoke-DbcCheck -Checks SuspectPage, LastBackup
 ```
 #### What it looks like
 
@@ -70,25 +70,25 @@ Invoke-DbcCheck -Tags SuspectPage, LastBackup
 Additional `Invoke-DbcCheck` examples:
 
 ```powershell
-Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
-Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster
+Invoke-DbcCheck -Check Backup -SqlInstance sql2016
+Invoke-DbcCheck -Check RecoveryModel -SqlInstance sql2017, sqlcluster
 
 $sqlinstance = Get-DbaRegisteredServer -SqlInstance sql2017 -Group Express
-Invoke-DbcCheck -Tag Backup -SqlInstance $sqlinstance
+Invoke-DbcCheck -Check Backup -SqlInstance $sqlinstance
 
-Invoke-DbcCheck -Tag Storage -ComputerName server1, server2
+Invoke-DbcCheck -Check Storage -ComputerName server1, server2
 ```
 
 ## Tag and ExcludeTag
 
 We tag each of our Checks using singular descriptions such as Backup, Database or Storage. You can see all the Pester related Tags using `Get-DbcTagCollection` or `Get-DbcCheck`.
 
-Each Check generally has a few Tags but at least one Tag is unique. This allows us to essentially name a Check and using these Tags, you can either include (`-Tag`) or Exclude (`-ExcludeTag`) in your results. The Exclude will always take precedence.
+Each Check generally has a few Tags but at least one Tag is unique. This allows us to essentially name a Check and using these Tags, you can either include (`-Check`) or Exclude (`-ExcludeCheck`) in your results. The Exclude will always take precedence.
 
 For example, the Database Tag runs a number of Checks including Backup Checks. The command below will run all Database Checks except for the Backup Checks.
 
 ```powershell
-Invoke-DbcCheck -Tag Database -ExcludeTag Backup -SqlInstance sql2016 -SqlCredential (Get-Credential sqladmin)
+Invoke-DbcCheck -Check Database -ExcludeCheck Backup -SqlInstance sql2016 -SqlCredential (Get-Credential sqladmin)
 ```
 
 All valid [Pester](https://github.com/Pester/Pester) syntax is valid for dbachecks so if you'd like to know more, you can review their documentation.
@@ -107,7 +107,7 @@ To use the Power BI report, pipe the results of `Invoke-DbcCheck` to `Update-Dbc
 
 ```powershell
 # Run checks and export its JSON
-Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
+Invoke-DbcCheck -SqlInstance sql2017 -Checks SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
 
 # Launch Power BI then hit refresh
 Start-DbcPowerBi
@@ -119,7 +119,7 @@ The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
 
 ```powershell
 # Run checks and export its JSON
-Invoke-DbcCheck -SqlInstance $prod -Tags LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Enviornment Prod
+Invoke-DbcCheck -SqlInstance $prod -Checks LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Enviornment Prod
 ```
 
 😍😍😍
@@ -129,7 +129,7 @@ Invoke-DbcCheck -SqlInstance $prod -Tags LastBackup -Show Summary -PassThru | Up
 We even included a command to make emailing the results easier!
 
 ```powershell
-Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru |
+Invoke-DbcCheck -SqlInstance sql2017 -Checks SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru |
 Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
 ```
 
@@ -148,7 +148,7 @@ Get-DbcConfig *skip*
 Set-DbcConfig -Name skip.datapuritycheck -Value $true
 ```
 
-Need to skip a whole test? Just use the `-ExcludeTag` which is auto-populated with both Check names and Pester Tags.
+Need to skip a whole test? Just use the `-ExcludeCheck` which is auto-populated with both Check names and Pester Tags.
 
 ### Setting a global SQL Credential
 
@@ -157,7 +157,7 @@ Need to skip a whole test? Just use the `-ExcludeTag` which is auto-populated wi
 You can also manually change the `SqlCredential` or `Credential` by specifying it in `Invoke-DbaCheck`:
 
 ```powershell
-Invoke-DbaCheck -SqlInstance sql2017 -SqlCredential (Get-Credential sqladmin) -Tag MaxMemory
+Invoke-DbaCheck -SqlInstance sql2017 -SqlCredential (Get-Credential sqladmin) -Check MaxMemory
 ```
 
 ### Manipulating the underlying commands
@@ -166,7 +166,7 @@ You can also modify the parameters of the actual command that's being executed:
 
 ```powershell
 Set-Variable -Name PSDefaultParameterValues -Value @{ 'Get-DbaDiskSpace:ExcludeDrive' = 'C:\' } -Scope Global
-Invoke-DbcCheck -Tag Storage
+Invoke-DbcCheck -Check Storage
 ```
 
 ## Can I run tests not included the module?
