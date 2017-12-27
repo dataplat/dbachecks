@@ -287,7 +287,7 @@ Describe "Auto Update Statistics Asynchronously" -Tags autoupdatestatisticsasync
 	(Get-SqlInstance).ForEach{
 		Context "Testing Auto Update Statistics Asynchronously on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "$psitem should has Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
+				It "$psitem should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
 					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoUpdateStatisticsAsync | Should Be $autoupdatestatisticsasynchronously
 				}
 			}
