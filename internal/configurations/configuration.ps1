@@ -38,7 +38,7 @@ Set-PSFConfig -Module dbachecks -Name policy.defaultbackupcompreesion -Validatio
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
-Set-PSFConfig -Module dbachecks -Name skip.tempdb118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 118"
+Set-PSFConfig -Module dbachecks -Name skip.tempdb1118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 1118"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesizemax -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
