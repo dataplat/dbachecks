@@ -147,6 +147,9 @@
 		.PARAMETER Strict
 			Makes Pending and Skipped tests to Failed tests. Useful for continuous integration where you need to make sure all tests passed.
 
+		.PARAMETER AllChecks
+			In the unlikely event that you'd like to run all checks, specify -AllChecks. These checks still confirm to the skip settings in Get-DbcConfig.
+	
 		.PARAMETER Quiet
 			The parameter Quiet is deprecated since Pester v. 4.0 and will be deleted in the next major version of Pester. Please use the parameter Show with value 'None' instead.
 
@@ -321,21 +324,22 @@
 		[object[]]$CodeCoverage = @(),
 		[string]$CodeCoverageOutputFile,
 		[ValidateSet('JaCoCo')]
-		[String]$CodeCoverageOutputFileFormat = "JaCoCo",
-		[Switch]$Strict,
+		[string]$CodeCoverageOutputFileFormat = "JaCoCo",
+		[switch]$Strict,
 		[Parameter(Mandatory = $true, ParameterSetName = 'NewOutputSet')]
 		[string]$OutputFile,
 		[ValidateSet('NUnitXml')]
 		[string]$OutputFormat = 'NUnitXml',
-		[Switch]$Quiet,
+		[switch]$AllChecks,
+		[switch]$Quiet,
 		[object]$PesterOption,
 		[Pester.OutputTypes]$Show = 'All'
 	)
 	
 	process {
 		
-		if (-not $Script -and -not $TestName -and -not $Tag -and -not $ExcludeTag) {
-			Stop-PSFFunction -Message "Please specify Tag, ExcludeTag, Script or TestName"
+		if (-not $Script -and -not $TestName -and -not $Tag -and -not $ExcludeTag -and -not $AllChecks) {
+			Stop-PSFFunction -Message "Please specify Tag, ExcludeTag, Script, TestName or AllChecks"
 			return
 		}
 		
