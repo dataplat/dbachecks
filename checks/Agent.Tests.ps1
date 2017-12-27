@@ -20,7 +20,7 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 		Context "Testing DBA Operators exists on $psitem" {
 			$operatorname = Get-DbcConfigValue  agent.dbaoperatorname
 			$operatoremail = Get-DbcConfigValue  agent.dbaoperatoremail
-			(Get-DbaAgentOperator -SqlInstance $psitem | Where-Object { $_.Name -eq $operatorname }).ForEach{
+			@(Get-DbaAgentOperator -SqlInstance $psitem | Where-Object { $_.Name -eq $operatorname }).ForEach{
 				It "has an operator called $operatorname" {
 					$psitem.Name | Should be $operatorname
 				}
@@ -46,7 +46,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 Describe "Failed Jobs" -Tags FailedJob, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Checking for failed enabled jobs on $psitem" {
-			(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
+			@(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
 				if ($psitem.LastRunOutcome -eq "Unknown") {
 					It -Skip "$psitem's last run outcome is unknown" {
 						$psitem.LastRunOutcome | Should Be "Succeeded"

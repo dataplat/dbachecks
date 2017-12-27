@@ -152,7 +152,7 @@ Describe "Orphaned Files" -Tags OrphanedFile, $filename {
 
 Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
     (Get-SqlInstance).ForEach{
-        Context "Testing $psitem's instance name matches Windows name" {
+        Context "Testing instance name matches Windows name for $psitem" {
             It "doesn't require rename" {
                 (Test-DbaServerName -SqlInstance $psitem).RenameRequired | Should Be $false
             }
@@ -163,7 +163,7 @@ Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
 Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
     $maxdumps = Get-DbcConfigValue -Name policy.maxdumpcount
     (Get-SqlInstance).ForEach{
-        Context "Checking that dumps on $psitem do not exceed $maxdumps" {
+        Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
             It "dump count does not exceed $maxdumps" {
                 (Get-DbaDump -SqlInstance $psitem).Count -le $maxdumps | Should Be $true
             }
@@ -173,7 +173,7 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
 
 Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
     (Get-SqlInstance).ForEach{
-        Context "Checking that build on $psitem is still supportedby Microsoft" {
+		Context "Checking that build is still supportedby Microsoft for $psitem" {
             $results = Get-DbaSqlBuildReference -SqlInstance $psitem
             It "$($results.Build) is still suported" {
                 $results.SupportedUntil -ge (Get-Date) | Should Be $true
@@ -184,7 +184,7 @@ Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
 
 Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
     (Get-SqlInstance).ForEach{
-        Context "Checking that sa login on $psitem has been renamed" {
+		Context "Checking that sa login has been renamed on $psitem" {
             $results = Get-DbaLogin -SqlInstance $psitem -Login sa
             It "returns no results" {
                 $results -eq $null | Should Be $true
