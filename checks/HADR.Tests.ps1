@@ -57,7 +57,7 @@ if (-not (Get-DbcConfigValue skip.hadrcheck)) {
 			}
 		}
 		
-		Describe "Cluster Network Health" -Tags ClusterNetworkHealth, $filename {
+		Describe "Cluster Network Health" -Tags ClusterNetworkHealth, HADR, AvailabilityGroup, $filename {
 			Context "Cluster Connectivity" {
 				$return.SqlTestListeners.ForEach{
 					It "Listener $($psitem.SqlInstance) Should be Pingable" {
@@ -118,7 +118,7 @@ if (-not (Get-DbcConfigValue skip.hadrcheck)) {
 				}
 				
 			}
-			Context "Datbase AG Status" {
+			Context "Database AG Status" {
 				$return.AGDatabasesPrim.ForEach{
 					It "Database $($psitem.DatabaseName) Should Be Synchronised on the Primary Replica $($psitem.Replica)" {
 						$psitem.SynchronizationState | Should Be 'Synchronized'
@@ -159,6 +159,20 @@ if (-not (Get-DbcConfigValue skip.hadrcheck)) {
 					}
 					It "Database $($psitem.DatabaseName) Should Not Be Suspended on the Secondary Replica $($psitem.Replica)" {
 						$psitem.IsSuspended | Should Be  $False
+					}
+				}
+			}
+			Context "Extended Event Status" {
+				$return.AGReplica.ForEach{
+					$Xevents = Get-DbaXESession -SqlInstance $psitem
+					It "Replica $($psitem) should have an Extended Event Session called AlwaysOn_health" {
+						$Xevents.Name -contains 'AlwaysOn_health' | Should Be True
+					}
+					It "Replica $($psitem) Always On Health XEvent should be Running" {
+						$Xevents.Where{$_.Name -eq 'AlwaysOn_health'}.Status | Should be 'Running'
+					}
+					It "Replica $($psitem) Always On Health XEvent Auto Start Should Be True" {
+						$Xevents.Where{$_.Name -eq 'AlwaysOn_health'}.AutoStart | Should be $true
 					}
 				}
 			}
