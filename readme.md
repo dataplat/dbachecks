@@ -101,6 +101,8 @@ Since this is just PowerShell and Pester, results can be exported then easily co
 
 We've also included a pre-built Power BI Desktop report! You can download Power BI Desktop from [here](https://powerbi.microsoft.com/en-us/downloads/) or it is now offered via the [Microsoft Store on Windows 10](https://www.microsoft.com/store/productId/9NTXR16HNW1T).
 
+Note: We strongly recommend that you keep your PowerBI Desktop updated since we can add brand-new stuff that appears on the most recent releases.
+
 To use the Power BI report, pipe the results of `Invoke-DbcCheck` to `Update-DbcPowerBiDataSource` (defaults to `C:\Windows\temp\dbachecks`), then launch the included `dbachecks.pbix` file using `Start-DbcPowerBi`. Once the Power BI report is open, just hit **refresh**.
 
 ```powershell
