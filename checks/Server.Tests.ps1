@@ -36,7 +36,7 @@ Describe "SPNs" -Tags SPN, $filename {
 	(Get-ComputerName).ForEach{
 		Context "Testing SPNs on $psitem" {
 			$computer = $psitem
-			(Test-DbaSpn -ComputerName $psitem).ForEach{
+			@(Test-DbaSpn -ComputerName $psitem).ForEach{
 				It "$computer should have SPN for $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount)" {
 					$psitem.Error | Should Be 'None'
 				}
@@ -49,7 +49,7 @@ Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
 	$free = Get-DbcConfigValue policy.diskspacepercentfree
 	(Get-ComputerName).ForEach{
 		Context "Testing Disk Space on $psitem" {
-			(Get-DbaDiskSpace -ComputerName $psitem).ForEach{
+			@(Get-DbaDiskSpace -ComputerName $psitem).ForEach{
 				It "$($psitem.Name) should Be at least $free percent free" {
 					$psitem.PercentFree -ge $free | Should Be $true
 				}
