@@ -1,5 +1,5 @@
 ﻿function Invoke-DbcCheck {
-	<#
+		<#
 		.SYNOPSIS
 			Invoke-DbcCheck is a SQL-centric Invoke-Pester wrapper
 
@@ -7,13 +7,13 @@
 			The Invoke-DbcCheck function runs Pester tests, including *.Tests.ps1 files and Pester tests in PowerShell scripts.
 
 			Extended description about Pester: Get-Help -Name Invoke-Pester
-	
+
 		.PARAMETER Check
-		Runs only tests in Describe blocks with the specified Tag parameter values. Wildcard characters and Tag values that include spaces or whitespace characters are not supported.
+			Runs only tests in Describe blocks with the specified Tag parameter values. Wildcard characters and Tag values that include spaces or whitespace characters are not supported.
 
-		When you specify multiple Tag values, Invoke-DbcCheck runs tests that have any of the listed tags (it ORs the tags). However, when you specify TestName and Tag values, Invoke-DbcCheck runs only describe blocks that have one of the specified TestName values and one of the specified Tag values.
+			When you specify multiple Tag values, Invoke-DbcCheck runs tests that have any of the listed tags (it ORs the tags). However, when you specify TestName and Tag values, Invoke-DbcCheck runs only describe blocks that have one of the specified TestName values and one of the specified Tag values.
 
-		If you use both Tag and ExcludeTag, ExcludeTag takes precedence.
+			If you use both Tag and ExcludeTag, ExcludeTag takes precedence.
 
 		.PARAMETER ExcludeCheck
 			Omits tests in Describe blocks with the specified Tag parameter values. Wildcard characters and Tag values that include spaces or whitespace characters are not supported.
@@ -24,24 +24,24 @@
 
 		.PARAMETER SqlInstance
 			A list of SQL Servers to run the tests against. If this is not provided, it will be gathered from:
-				Get-DbaConfig -Name app.sqlinstance
-	
+			Get-DbaConfig -Name app.sqlinstance
+
 		.PARAMETER ComputerName
 			A list of computers to run the tests against. If this is not provided, it will be gathered from:
-				Get-DbaConfig -Name app.computername
-	
+			Get-DbaConfig -Name app.computername
+
 		.PARAMETER SqlCredential
 			Alternate SQL Server-based credential.
-	
+
 		.PARAMETER Credential
 			Alternate Windows credential.
-	
+
 		.PARAMETER Database
 			A list of databases to include if your check is database centric.
 
 		.PARAMETER ExcludeDatabase
 			A list of databases to exclude if your check is database centric.
-	
+
 		.PARAMETER PassThru
 			Returns a custom object (PSCustomObject) that contains the test results.
 
@@ -50,36 +50,36 @@
 			use the PassThru parameter.
 
 			To suppress the host output, use the Quiet parameter.
-	
-		.PARAMETER OutputFormat
-		The format of output. Two formats of output are supported: NUnitXML and LegacyNUnitXML.
 
-			.PARAMETER Strict
+		.PARAMETER OutputFormat
+			The format of output. Two formats of output are supported: NUnitXML and LegacyNUnitXML.
+
+		.PARAMETER Strict
 			Makes Pending and Skipped tests to Failed tests. Useful for continuous integration where you need to make sure all tests passed.
 
 		.PARAMETER AllChecks
 			In the unlikely event that you'd like to run all checks, specify -AllChecks. These checks still confirm to the skip settings in Get-DbcConfig.
-	
+
 		.PARAMETER Quiet
 			The parameter Quiet is deprecated since Pester v. 4.0 and will be deleted in the next major version of Pester. Please use the parameter Show with value 'None' instead.
 
 		.PARAMETER Show
 			Customizes the output Pester writes to the screen. 
-			
+
 			Available options are 
-				None
-				Default
-				Passed
-				Failed
-				Pending
-				Skipped
-				Inconclusive
-				Describe
-				Context
-				Summary
-				Header
-				All
-				Fails
+			None
+			Default
+			Passed
+			Failed
+			Pending
+			Skipped
+			Inconclusive
+			Describe
+			Context
+			Summary
+			Header
+			All
+			Fails
 
 			The options can be combined to define presets.
 
@@ -92,24 +92,27 @@
 			A common setting is also Failed, Summary, to write only failed tests and test summary.
 
 			This parameter does not affect the PassThru custom object or the XML output that is written when you use the Output parameters.
-	
+
 		.PARAMETER Value
 			A value.. it's hard to explain
-	
+
 		.PARAMETER Script
 			Get-Help -Name Invoke-Pester -Parameter Script
-
+	
 		.PARAMETER TestName
 			Get-Help -Name Invoke-Pester -Parameter TestName
-	
+
 		.PARAMETER EnableExit
 			Get-Help -Name Invoke-Pester -Parameter EnableExit
 
 		.PARAMETER OutputFile
 			Get-Help -Name Invoke-Pester -Parameter OutputFile
-	
+
 		.PARAMETER CodeCoverage
 			Get-Help -Name Invoke-Pester -Parameter CodeCoverage
+	
+		.PARAMETER PesterOption
+			Get-Help -Name Invoke-Pester -Parameter PesterOption
 
 		.PARAMETER CodeCoverageOutputFile
 			Get-Help -Name Invoke-Pester -Parameter CodeCoverageOutputFile
@@ -117,88 +120,52 @@
 		.PARAMETER CodeCoverageOutputFileFormat
 			Get-Help -Name Invoke-Pester -Parameter CodeCoverageOutputFileFormat
 
-
-		.PARAMETER PesterOption
-			Get-Help -Name Invoke-Pester -Parameter PesterOption
-
 		.LINK
 			https://github.com/pester/Pester/wiki/Invoke-Pester
 
 			Describe
 			about_Pester
-			New-PesterOption
 
 		.EXAMPLE
-			Invoke-DbcCheck
+			# Set the servers you'll be working with
+			Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sql2008, sql2008\express
+			Set-DbcConfig -Name app.computername -Value sql2016, sql2017, sql2008
 
-			This command runs all *.Tests.ps1 files in the current directory and its subdirectories.
+			# Look at the current configs
+			Get-DbcConfig
+
+			# Invoke a few tests
+			Invoke-DbcCheck -Tags SuspectPage, LastBackup
+	
+			Does this and that
+	
+		.EXAMPLE
+			Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
+			Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster -SqlCredential (Get-Credential sqladmin)
+	
+			Does this
 
 		.EXAMPLE
-			Invoke-DbcCheck -Script .\Util*
-
-			This commands runs all *.Tests.ps1 files in subdirectories with names that begin
-			with 'Util' and their subdirectories.
+			Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink
+			Does that
 
 		.EXAMPLE
-			Invoke-DbcCheck -Script D:\MyModule, @{ Path = '.\Tests\Utility\ModuleUnit.Tests.ps1'; Parameters = @{ Name = 'User01' }; Arguments = srvNano16  }
+			# Run checks and export its JSON
+			Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
 
-			This command runs all *.Tests.ps1 files in D:\MyModule and its subdirectories.
-			It also runs the tests in the ModuleUnit.Tests.ps1 file using the following
-			parameters: .\Tests\Utility\ModuleUnit.Tests.ps1 srvNano16 -Name User01
-
-		.EXAMPLE
-			Invoke-DbcCheck -TestName "Add Numbers"
-
-			This command runs only the tests in the Describe block named "Add Numbers".
+			# Launch Power BI then hit refresh
+			Start-DbcPowerBi
+	
+			Does that
 
 		.EXAMPLE
-			$results = Invoke-DbcCheck -Script D:\MyModule -PassThru -Show None
-			$failed = $results.TestResult | where Result -eq 'Failed'
-
-			$failed.Name
-			cannot find help for parameter: Force : in Compress-Archive
-			help for Force parameter in Compress-Archive has wrong Mandatory value
-			help for Compress-Archive has wrong parameter type for Force
-			help for Update parameter in Compress-Archive has wrong Mandatory value
-			help for DestinationPath parameter in Expand-Archive has wrong Mandatory value
-
-			$failed[0]
-			Describe               : Test help for Compress-Archive in Microsoft.PowerShell.Archive (1.0.0.0)
-			Context                : Test parameter help for Compress-Archive
-			Name                   : cannot find help for parameter: Force : in Compress-Archive
-			Result                 : Failed
-			Passed                 : False
-			Time                   : 00:00:00.0193083
-			FailureMessage         : Expected: value to not be empty
-			StackTrace             : at line: 279 in C:\GitHub\PesterTdd\Module.Help.Tests.ps1
-									 279:                     $parameterHelp.Description.Text | Should Not BeNullOrEmpty
-			ErrorRecord            : Expected: value to not be empty
-			ParameterizedSuiteName :
-			Parameters             : {}
-
-			This examples uses the PassThru parameter to return a custom object with the
-			Pester test results. By default, Invoke-DbcCheck writes to the host program, but not
-			to the output stream. It also uses the Quiet parameter to suppress the host output.
-
-			The first command runs Invoke-DbcCheck with the PassThru and Quiet parameters and
-			saves the PassThru output in the $results variable.
-
-			The second command gets only failing results and saves them in the $failed variable.
-
-			The third command gets the names of the failing results. The result name is the
-			name of the It block that contains the test.
-
-			The fourth command uses an array index to get the first failing result. The
-			property values describe the test, the expected result, the actual result, and
-			useful values, including a stack trace.
-
+			Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru |
+			Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
 
 		.EXAMPLE
-			Invoke-DbcCheck -Script C:\Tests -Check UnitTest, Newest -ExcludeCheck Bug
+			Get-Help -Name Invoke-Pester -Examples
 
-			This command runs *.Tests.ps1 files in C:\Tests and its subdirectories. In those
-			files, it runs only tests that have UnitTest or Newest tags, unless the test
-			also has a Bug tag.
+			Want to get super deep? You can look at Invoke-Pester's example's and run them against Invoke-DbcCheck since it's a wrapper.
 	#>
 	[CmdletBinding(DefaultParameterSetName = 'Default')]
 	param (
