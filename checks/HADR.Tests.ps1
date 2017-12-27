@@ -1,5 +1,7 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
+Describe "Cluster Server Health" -Tags ClusterServerHealth, $filename {
+	
 try {
 	Import-Module FailoverClusters -ErrorAction Stop
 }
@@ -31,7 +33,6 @@ foreach ($cluster in (Get-ComputerName)) {
 	$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
 	$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
 	
-	Describe "Cluster Server Health" -Tags ClusterServerHealth, $filename {
 		Context "Cluster Nodes" {
 			$return.Nodes.ForEach{
 				It "Node $($psitem.Name) should be Up" {
