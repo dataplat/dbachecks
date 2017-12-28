@@ -169,7 +169,13 @@
 				if ($Attachments) {
 					$PSBoundParameters['Attachments'] = $Attachments
 				}
-				Send-MailMessage @PSBoundParameters
+				try {
+					Send-MailMessage -ErrorAction Stop @PSBoundParameters
+				}
+				catch {
+					Stop-PSFFunction -Message "Failure" -ErrorRecord $_
+					return
+				}
 			}
 			catch {
 				Stop-PSFFunction -Message "Failure" -ErrorRecord $_
