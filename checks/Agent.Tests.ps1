@@ -18,14 +18,18 @@ Describe "SQL Agent Service" -Tags AgentServiceAccount, ServiceAccount, $filenam
 Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing DBA Operators exists on $psitem" {
-			$operatorname = Get-DbcConfigValue  agent.dbaoperatorname
-			$operatoremail = Get-DbcConfigValue  agent.dbaoperatoremail
-			$result = Get-DbaAgentOperator -SqlInstance $psitem -Operator $operatorname
-			It "has an operator called $operatorname" {
-				$result.Name | Should be $operatorname
-			}
-			It "$operatorname has an email address of $operatoremail" {
-				$result.EmailAddress | Should be $operatoremail
+			$operatorname = Get-DbcConfigValue agent.dbaoperatorname
+			$operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
+			$results = Get-DbaAgentOperator -SqlInstance $psitem -Operator $operatorname
+			foreach ($result in $results) {
+				It "operator name is in $operatorname" {
+					$result.Name -in $operatorname| Should be $true
+				}
+				if ($operatoremail) {
+					It "operator email is in $operatoremail" {
+						$result.EmailAddress -in $operatoremail | Should be $true
+					}
+				}
 			}
 		}
 	}
