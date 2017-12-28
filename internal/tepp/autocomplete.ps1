@@ -4,6 +4,7 @@ Register-PSFTeppScriptblock -Name ComputerName -ScriptBlock { Get-PSFConfig -Mod
 Register-PSFTeppScriptblock -Name confignames -ScriptBlock { (Get-PSFConfig -Module dbachecks).Name }
 Register-PSFTeppScriptblock -Name tags -ScriptBlock { Get-DbcTagCollection }
 Register-PSFTeppScriptblock -Name enviornments -ScriptBlock { "Production", "Development", "Test" }
+Register-PSFTeppScriptblock -Name policy.datafilegrowthtype -ScriptBlock { "kb", "percent" }
 
 # Register the actual auto completer
 Register-PSFTeppArgumentCompleter -Command Update-DbcPowerBiDataSource -Parameter Enviornment -Name enviornments
@@ -12,3 +13,4 @@ Register-PSFTeppArgumentCompleter -Command Invoke-DbcCheck -Parameter ExcludeTag
 Register-PSFTeppArgumentCompleter -Command Get-DbcConfig -Parameter Name -Name confignames
 Register-PSFTeppArgumentCompleter -Command Set-DbcConfig -Parameter Name -Name confignames
 Register-PSFTeppArgumentCompleter -Command Get-DbcTagCollection -Parameter Name -Name tags
+Register-PSFTeppArgumentCompleter -Command Set-DbcConfig -Parameter Value -Name policy.datafilegrowthtype
