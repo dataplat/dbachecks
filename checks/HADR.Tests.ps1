@@ -1,51 +1,50 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "Cluster Health" -Tags ClusterHealth, $filename {
+	$domainname = Get-DbcConfigValue domain.name
+	$tcpport = Get-DbcConfigValue policy.hadrtcpport
 	
-	function Get-ClusterObject {
-		[CmdletBinding()]
-		param (
-			[string]$Cluster
-		)
-		
-		if (-not (Get-Module FailoverClusters)) {
-			try {
-				Import-Module FailoverClusters -ErrorAction Stop
+	foreach ($cluster in (Get-ComputerName)) {
+		function Get-ClusterObject {
+			[CmdletBinding()]
+			param (
+				[string]$Cluster
+			)
+			
+			if (-not (Get-Module FailoverClusters)) {
+				try {
+					Import-Module FailoverClusters -ErrorAction Stop
+				}
+				catch {
+					Stop-PSFFunction -Message "FailoverClusters module could not load" -ErrorRecord $psitem
+					return
+				}
 			}
-			catch {
-				Stop-PSFFunction -Message "FailoverClusters module could not load" -ErrorRecord $psitem
-				return
-			}
+			
+			[pscustomobject]$return = @{ }
+			$return.Cluster = (Get-Cluster -Name $cluster)
+			$return.Nodes = (Get-ClusterNode -Cluster $cluster)
+			$return.Resources = (Get-ClusterResource -Cluster $cluster)
+			$return.Network = (Get-ClusterNetwork -Cluster $cluster)
+			$listeners = $return.AGStatus.AvailabilityGroupListeners.Name
+			$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
+			$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
+			$return.Groups = (Get-ClusterGroup -Cluster $cluster)
+			$listeneripaddress = (Get-ClusterResource -Cluster $cluster -InputObject (Get-ClusterResource -Cluster $cluster | Where-Object { $psitem.ResourceType -like "SQL Server Availability Group" }).OwnerGroup)
+			$return.AGOwner = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }.OwnerNode
+			$return.AGStatus = (Get-DbaAvailabilityGroup -SqlInstance $return.AGOwner.Name)
+			$listeners = $return.AGStatus.AvailabilityGroupListeners.Name
+			$return.AGReplica = (Get-DbaAgReplica -SqlInstance $return.AGStatus.PrimaryReplica)
+			$return.AGDatabasesPrim = (Get-DbaAgDatabase -SqlInstance $return.AGStatus.PrimaryReplica)
+			$synchronoussecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'SynchronousCommit' }.Name
+			$return.AGDatabasesSecSync = $synchronoussecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
+			$asyncsecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'AsynchronousCommit' }.Name
+			$return.AGDatabasesSecASync = $asyncsecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
+			$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
+			$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
 		}
-		
-		[pscustomobject]$return = @{ }
-		$return.Cluster = (Get-Cluster -Name $cluster)
-		$return.Nodes = (Get-ClusterNode -Cluster $cluster)
-		$return.Resources = (Get-ClusterResource -Cluster $cluster)
-		$return.Network = (Get-ClusterNetwork -Cluster $cluster)
-		$listeners = $return.AGStatus.AvailabilityGroupListeners.Name
-		$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
-		$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
-		$return.Groups = (Get-ClusterGroup -Cluster $cluster)
-		$listeneripaddress = (Get-ClusterResource -Cluster $cluster -InputObject (Get-ClusterResource -Cluster $cluster | Where-Object { $psitem.ResourceType -like "SQL Server Availability Group" }).OwnerGroup)
-		$return.AGOwner = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }.OwnerNode
-		$return.AGStatus = (Get-DbaAvailabilityGroup -SqlInstance $return.AGOwner.Name)
-		$listeners = $return.AGStatus.AvailabilityGroupListeners.Name
-		$return.AGReplica = (Get-DbaAgReplica -SqlInstance $return.AGStatus.PrimaryReplica)
-		$return.AGDatabasesPrim = (Get-DbaAgDatabase -SqlInstance $return.AGStatus.PrimaryReplica)
-		$synchronoussecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'SynchronousCommit' }.Name
-		$return.AGDatabasesSecSync = $synchronoussecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
-		$asyncsecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'AsynchronousCommit' }.Name
-		$return.AGDatabasesSecASync = $asyncsecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
-		$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
-		$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
 	}
-}
-
-$domainname = Get-DbcConfigValue domain.name
-$tcpport = Get-DbcConfigValue policy.hadrtcpport
-
-foreach ($cluster in (Get-ComputerName)) {
+	
 	$return = Get-ClusterObject -Cluster $cluster
 	
 	Describe "Cluster Server Health" -Tags ClusterServerHealth, $filename {
