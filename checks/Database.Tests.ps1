@@ -62,7 +62,7 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
 	}
 }
 
-Describe "Database Owners" -Tags DatabaseOwner, $filename {
+Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
 	$targetowner = Get-DbcConfigValue policy.validdbowner
 	(Get-SqlInstance).ForEach{
 		Context "Testing Database Owners on $psitem" {
@@ -75,7 +75,7 @@ Describe "Database Owners" -Tags DatabaseOwner, $filename {
 	}
 }
 
-Describe "Not Database Owners" -Tags NotDatabaseOwner, $filename {
+Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
 	$targetowner = Get-DbcConfigValue policy.invaliddbowner
 	(Get-SqlInstance).ForEach{
 		Context "Testing Database Owners on $psitem" {
