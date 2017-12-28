@@ -163,9 +163,10 @@ Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
 Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
     $maxdumps = Get-DbcConfigValue -Name policy.maxdumpcount
     (Get-SqlInstance).ForEach{
-        Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
-            It "dump count does not exceed $maxdumps" {
-                (Get-DbaDump -SqlInstance $psitem).Count -le $maxdumps | Should Be $true
+		Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
+			$count = (Get-DbaDump -SqlInstance $psitem).Count
+			It "dump count of $count does not exceed $maxdumps" {
+				$count -le $maxdumps | Should Be $true
             }
         }
     }
