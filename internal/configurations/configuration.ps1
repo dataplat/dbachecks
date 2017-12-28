@@ -34,6 +34,8 @@ Set-PSFConfig -Module dbachecks -Name policy.autocreatestatistics -Validation bo
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Update Statistics check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Alters the Auto Update Statistics Asynchronously check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.defaultbackupcompreesion -Validation bool -Value $true -Initialize -Description "Alters the Default Backup Compression check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthtype -Value "kb" -Initialize -Description "Alters the Growth Type to say if it should be 'kb' or 'percent'"
+Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthvalue -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
@@ -43,6 +45,7 @@ Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Validation b
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files on C"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesizemax -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
 Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Validation bool -Value $false -Initialize -Description "Skip PowerShell remoting"
+Set-PSFConfig -Module dbachecks -Name skip.datafilegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"

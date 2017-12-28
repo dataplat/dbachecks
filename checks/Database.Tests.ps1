@@ -168,7 +168,7 @@ Describe "Page Verify" -Tags PageVerify, $filename {
 		Context "Testing page verify on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should has page verify set to $pageverify" {
-					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).PageVerify | Should Be $pageverify
+					$psitem.PageVerify | Should Be $pageverify
 				}
 			}
 		}
@@ -181,7 +181,7 @@ Describe "Auto Close" -Tags AutoClose, $filename {
 		Context "Testing Auto Close on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should has Auto Close set to $autoclose" {
-					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoClose | Should Be $autoclose
+					$psitem.AutoClose | Should Be $autoclose
 				}
 			}
 		}
@@ -194,7 +194,7 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
 		Context "Testing Auto Shrink on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should has Auto Shrink set to $autoshrink" {
-					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoShrink | Should Be $autoshrink
+					$psitem.AutoShrink | Should Be $autoshrink
 				}
 			}
 		}
@@ -262,7 +262,7 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
 		Context "Testing Auto Create Statistics on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should has Auto Create Statistics set to $autocreatestatistics" {
-					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoCreateStatisticsEnabled | Should Be $autocreatestatistics
+					$psitem.AutoCreateStatisticsEnabled | Should Be $autocreatestatistics
 				}
 			}
 		}
@@ -275,7 +275,7 @@ Describe "Auto Update Statistics" -Tags autoupdatestatistics, $filename {
 		Context "Testing Auto Update Statistics on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should has Auto Update Statistics set to $autoupdatestatistics" {
-					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoUpdateStatisticsEnabled | Should Be $autoupdatestatistics
+					$psitem.AutoUpdateStatisticsEnabled | Should Be $autoupdatestatistics
 				}
 			}
 		}
@@ -288,7 +288,33 @@ Describe "Auto Update Statistics Asynchronously" -Tags autoupdatestatisticsasync
 		Context "Testing Auto Update Statistics Asynchronously on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				It "$psitem should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
-					(Get-DbaDatabase -SqlInstance $psitem.Parent -Database $psitem.Name).AutoUpdateStatisticsAsync | Should Be $autoupdatestatisticsasynchronously
+					$psitem.AutoUpdateStatisticsAsync | Should Be $autoupdatestatisticsasynchronously
+				}
+			}
+		}
+	}
+}
+
+Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $filename {
+    $datafilegrowthtype = Get-DbcConfigValue policy.datafilegrowthtype
+    $datafilegrowthvalue = Get-DbcConfigValue policy.datafilegrowthvalue
+	(Get-SqlInstance).ForEach{
+		Context "Testing datafile growth type on $psitem" {
+			(Get-DbaDatabaseFile -SqlInstance $psitem -SqlCredential $SqlCredential -Database $psitem.Name).ForEach{
+				if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.datafilegrowthdisabled))) {
+					It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype" {
+						$psitem.GrowthType | Should Be $datafilegrowthtype
+					}
+					if ($datafilegrowthtype -eq "kb") {
+						It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue" {
+							$psitem.Growth * 8 | Should BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
+						}
+					}
+					else {
+						It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue" {
+							$psitem.Growth | Should BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
+						}
+					}
 				}
 			}
 		}
