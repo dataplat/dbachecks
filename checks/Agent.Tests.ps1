@@ -39,7 +39,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing failsafe operator exists on $psitem" {
 			$failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
-			It "failsafe operator is $failsafeoperator" {
+			It "failsafe operator on $psitem is $failsafeoperator" {
 				(Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should be $failsafeoperator
 			}
 		}
