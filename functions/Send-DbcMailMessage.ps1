@@ -81,6 +81,9 @@
 	Uses the Secure Sockets Layer (SSL) protocol to establish a connection to the remote computer to send mail. By
 	default, SSL is not used.
 
+	.PARAMETER ExcludeAttachment
+	By default, the raw XML will be attached. Use ExcludeAttachment to send without the raw data.
+	
 	.PARAMETER EnableException
 	By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
 	This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -110,11 +113,10 @@
 		[string[]]$Cc,
 		[switch]$BodyAsHtml,
 		[PSCredential]$Credential,
-		[string]$DeliveryNotificationOption,
-		# None | OnSuccess | OnFailure | Delay | Never
-
+		[string]$DeliveryNotificationOption, # None | OnSuccess | OnFailure | Delay | Never
 		[string]$Encoding,
 		[switch]$UseSsl,
+		[switch]$ExcludeAttachment,
 		[string]$EnableException
 	)
 	end {
@@ -150,7 +152,9 @@
 			else {
 				# I give up trynna parse this to CSV
 				#$xml.'test-results'.'test-suite'.results
-				$Attachments += $file
+				if (-not $ExcludeAttachment) {
+					$Attachments += $file
+				}
 			}
 		}
 		
@@ -164,6 +168,8 @@
 				
 				# Modify the params as required
 				$null = $PSBoundParameters.Remove("InputObject")
+				$null = $PSBoundParameters.Remove("ExcludeAttachment")
+				$null = $PSBoundParameters.Remove("EnableException")
 				$PSBoundParameters['Body'] = $htmlbody
 				$PSBoundParameters['BodyAsHtml'] = $true
 				if ($Attachments) {
