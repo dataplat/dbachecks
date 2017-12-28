@@ -62,11 +62,11 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
 	}
 }
 
-Describe "Database Owners" -Tags DatabaseOwner, $filename {
-	$targetowner = Get-DbcConfigValue policy.dbownershould
+Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
+	$targetowner = Get-DbcConfigValue policy.validdbowner
 	(Get-SqlInstance).ForEach{
 		Context "Testing Database Owners on $psitem" {
-			@(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner).ForEach{
+			@(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -EnableException:$false).ForEach{
 				It "$($psitem.Database) owner should be $targetowner" {
 					$psitem.CurrentOwner | Should Be $psitem.TargetOwner
 				}
@@ -75,11 +75,11 @@ Describe "Database Owners" -Tags DatabaseOwner, $filename {
 	}
 }
 
-Describe "Not Database Owners" -Tags NotDatabaseOwner, $filename {
-	$targetowner = Get-DbcConfigValue policy.dbownershouldnot
+Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
+	$targetowner = Get-DbcConfigValue policy.invaliddbowner
 	(Get-SqlInstance).ForEach{
 		Context "Testing Database Owners on $psitem" {
-			@(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner).ForEach{
+			@(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -EnableException:$false).ForEach{
 				It "$($psitem.Database) owner should Not be $targetowner" {
 					$psitem.CurrentOwner | Should Not Be $psitem.TargetOwner
 				}
