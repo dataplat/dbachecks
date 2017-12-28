@@ -22,11 +22,11 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 			$operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
 			$results = Get-DbaAgentOperator -SqlInstance $psitem -Operator $operatorname
 			foreach ($result in $results) {
-				It "operator name is in $operatorname" {
+				It "operator name on $psitem is in $operatorname" {
 					$result.Name -in $operatorname| Should be $true
 				}
 				if ($operatoremail) {
-					It "operator email is in $operatoremail" {
+					It "operator email on $psitemis in $operatoremail" {
 						$result.EmailAddress -in $operatoremail | Should be $true
 					}
 				}
@@ -51,12 +51,12 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
 		Context "Checking for failed enabled jobs on $psitem" {
 			@(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
 				if ($psitem.LastRunOutcome -eq "Unknown") {
-					It -Skip "$psitem's last run outcome is unknown" {
+					It -Skip "$psitem's last run outcome on $($psitem.Parent) is unknown" {
 						$psitem.LastRunOutcome | Should Be "Succeeded"
 					}
 				}
 				else {
-					It "$psitem's last run outcome is success" {
+					It "$psitem's last run outcome on $($psitem.Parent) is success" {
 						$psitem.LastRunOutcome | Should Be "Succeeded"
 					}
 				}
