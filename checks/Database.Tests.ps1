@@ -294,3 +294,28 @@ Describe "Auto Update Statistics Asynchronously" -Tags autoupdatestatisticsasync
 		}
 	}
 }
+
+Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $filename {
+    $datafilegrowthtype = Get-DbcConfigValue policy.datafilegrowthtype
+    $datafilegrowthvalue = Get-DbcConfigValue policy.datafilegrowthvalue
+	(Get-SqlInstance).ForEach{
+		Context "Testing datafile growth type on $psitem" {
+			(Get-DbaDatabaseFile -SqlInstance $psitem -SqlCredential $SqlCredential -Database $psitem.Name).ForEach{
+                It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype" {
+                    $psitem.GrowthType | Should Be $datafilegrowthtype
+				}
+				if ($datafilegrowthtype -eq "kb") {
+					It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue" {
+						$psitem.Growth * 8 | Should BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
+					}
+				}
+				else {
+					It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue" {
+						$psitem.Growth | Should BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
+					}
+				}
+
+			}
+		}
+	}
+}
