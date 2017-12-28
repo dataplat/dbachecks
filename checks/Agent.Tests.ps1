@@ -51,12 +51,12 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
 		Context "Checking for failed enabled jobs on $psitem" {
 			@(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
 				if ($psitem.LastRunOutcome -eq "Unknown") {
-					It -Skip "$psitem's last run outcome on $($psitem.Parent) is unknown" {
+					It -Skip "$psitem's last run outcome on $($psitem.SqlInstance) is unknown" {
 						$psitem.LastRunOutcome | Should Be "Succeeded"
 					}
 				}
 				else {
-					It "$psitem's last run outcome on $($psitem.Parent) is success" {
+					It "$psitem's last run outcome on $($psitem.SqlInstance) is success" {
 						$psitem.LastRunOutcome | Should Be "Succeeded"
 					}
 				}
