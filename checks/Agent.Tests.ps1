@@ -35,7 +35,6 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 	}
 }
 
-
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing failsafe operator exists on $psitem" {
