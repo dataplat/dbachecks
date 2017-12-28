@@ -79,7 +79,7 @@ Invoke-DbcCheck -Check Backup -SqlInstance $sqlinstance
 Invoke-DbcCheck -Check Storage -ComputerName server1, server2
 ```
 
-## Tag and ExcludeTag
+## Check and ExcludeCheck
 
 We tag each of our Checks using singular descriptions such as Backup, Database or Storage. You can see all the Pester related Tags using `Get-DbcTagCollection` or `Get-DbcCheck`.
 
