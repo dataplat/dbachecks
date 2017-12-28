@@ -66,7 +66,7 @@
 		}
 	}
 	process {
-		++$i
+		
 		try {
 			if (-not (Test-Path -Path $Path)) {
 				$null = New-Item -ItemType Directory -Path $Path -ErrorAction Stop
@@ -77,7 +77,7 @@
 			return
 		}
 		
-		$basename = "dbachecks_$i"
+		$basename = "dbachecks_$(++$i)"
 		if ($InputObject.TagFilter) {
 			$basename = "$basename`_$($InputObject.TagFilter -join "_")"
 		}
@@ -101,7 +101,7 @@
 	}
 	end {
 		if ($InputObject.TotalCount -isnot [int]) {
-			Stop-PSFFunction -Message "Invalid TestResult"
+			Stop-PSFFunction -Message "Invalid TestResult. Did you forget to use -Passthru with Invoke-DbcCheck?"
 			return
 		}
 	}
