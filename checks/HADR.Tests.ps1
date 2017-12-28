@@ -1,63 +1,87 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "Cluster Server Health" -Tags ClusterServerHealth, $filename {
+Describe "Cluster Health" -Tags ClusterHealth, $filename {
 	
-try {
-	Import-Module FailoverClusters -ErrorAction Stop
-}
-catch {
-	Stop-PSFFunction -Message "FailoverClusters module could not load" -ErrorRecord $psitem
-	return
+	function Get-ClusterObject {
+		[CmdletBinding()]
+		param (
+			[string]$Cluster
+		)
+		
+		if (-not (Get-Module FailoverClusters)) {
+			try {
+				Import-Module FailoverClusters -ErrorAction Stop
+			}
+			catch {
+				Stop-PSFFunction -Message "FailoverClusters module could not load" -ErrorRecord $psitem
+				return
+			}
+		}
+		
+		[pscustomobject]$return = @{ }
+		$return.Cluster = (Get-Cluster -Name $cluster)
+		$return.Nodes = (Get-ClusterNode -Cluster $cluster)
+		$return.Resources = (Get-ClusterResource -Cluster $cluster)
+		$return.Network = (Get-ClusterNetwork -Cluster $cluster)
+		$listeners = $return.AGStatus.AvailabilityGroupListeners.Name
+		$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
+		$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
+		$return.Groups = (Get-ClusterGroup -Cluster $cluster)
+		$listeneripaddress = (Get-ClusterResource -Cluster $cluster -InputObject (Get-ClusterResource -Cluster $cluster | Where-Object { $psitem.ResourceType -like "SQL Server Availability Group" }).OwnerGroup)
+		$return.AGOwner = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }.OwnerNode
+		$return.AGStatus = (Get-DbaAvailabilityGroup -SqlInstance $return.AGOwner.Name)
+		$listeners = $return.AGStatus.AvailabilityGroupListeners.Name
+		$return.AGReplica = (Get-DbaAgReplica -SqlInstance $return.AGStatus.PrimaryReplica)
+		$return.AGDatabasesPrim = (Get-DbaAgDatabase -SqlInstance $return.AGStatus.PrimaryReplica)
+		$synchronoussecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'SynchronousCommit' }.Name
+		$return.AGDatabasesSecSync = $synchronoussecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
+		$asyncsecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'AsynchronousCommit' }.Name
+		$return.AGDatabasesSecASync = $asyncsecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
+		$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
+		$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
+	}
 }
 
 $domainname = Get-DbcConfigValue domain.name
 $tcpport = Get-DbcConfigValue policy.hadrtcpport
 
 foreach ($cluster in (Get-ComputerName)) {
-	[pscustomobject]$return = @{ }
-	$return.Cluster = (Get-Cluster -Name $cluster)
-	$return.Nodes = (Get-ClusterNode -Cluster $cluster)
-	$return.Resources = (Get-ClusterResource -Cluster $cluster)
-	$return.Network = (Get-ClusterNetwork -Cluster $cluster)
-	$return.Groups = (Get-ClusterGroup -Cluster $cluster)
-	$listeneripaddress = (Get-ClusterResource -Cluster $cluster -InputObject (Get-ClusterResource -Cluster $cluster | Where-Object { $psitem.ResourceType -like "SQL Server Availability Group" }).OwnerGroup)
-	$return.AGOwner = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }.OwnerNode
-	$return.AGStatus = (Get-DbaAvailabilityGroup -SqlInstance $return.AGOwner.Name)
-	$listeners = $return.AGStatus.AvailabilityGroupListeners.Name
-	$return.AGReplica = (Get-DbaAgReplica -SqlInstance $return.AGStatus.PrimaryReplica)
-	$return.AGDatabasesPrim = (Get-DbaAgDatabase -SqlInstance $return.AGStatus.PrimaryReplica)
-	$synchronoussecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'SynchronousCommit' }.Name
-	$return.AGDatabasesSecSync = $synchronoussecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
-	$asyncsecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'AsynchronousCommit' }.Name
-	$return.AGDatabasesSecASync = $asyncsecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
-	$return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
-	$return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
+	$return = Get-ClusterObject -Cluster $cluster
 	
-		Context "Cluster Nodes" {
+	Describe "Cluster Server Health" -Tags ClusterServerHealth, $filename {
+		Context "Cluster Nodes for $cluster" {
 			$return.Nodes.ForEach{
 				It "Node $($psitem.Name) should be Up" {
 					$psitem.State | Should Be 'Up'
 				}
 			}
 		}
-		Context "Cluster Resources" {
+		Context "Cluster Resources for $cluster" {
 			$return.Resources.foreach{
 				It "Resource $($psitem.Name) Should Be Online" {
 					$psitem.State | Should Be 'Online'
 				}
 			}
 		}
-		Context "Cluster Networks" {
+		Context "Cluster Networks for $cluster" {
 			$return.Network.ForEach{
 				It "$($psitem.Name) Shold Be Up" {
 					$psitem.State | Should Be 'Up'
 				}
 			}
 		}
+		
+		Context "HADR Status for $cluster" {
+			$return.Nodes.ForEach{
+				It "HADR Should Be Enabled on the Server $($psitem.Name)" {
+					(Get-DbaAgHadr -SqlInstance $psitem.Name).IsHadrEnabled | Should Be $true
+				}
+			}
+		}
 	}
 	
 	Describe "Cluster Network Health" -Tags ClusterNetworkHealth, AvailabilityGroup, $filename {
-		Context "Cluster Connectivity" {
+		Context "Cluster Connectivity for $cluster" {
 			$return.SqlTestListeners.ForEach{
 				It "Listener $($psitem.SqlInstance) Should be Pingable" {
 					$psitem.IsPingable | Should Be $true
@@ -87,14 +111,10 @@ foreach ($cluster in (Get-ComputerName)) {
 				}
 			}
 		}
-		Context "HADR Status for Server" {
-			$return.Nodes.ForEach{
-				It "HADR Should Be Enabled on the Server $($psitem.Name)" {
-					(Get-DbaAgHadr -SqlInstance $psitem.Name).IsHadrEnabled | Should Be $true
-				}
-			}
-		}
-		Context "Availability Group Status" {
+	}
+	
+	Describe "Availability Group Health" -Tags AvailabilityGroupHealth, AvailabilityGroup, $filename {
+		Context "Availability Group Status for $cluster" {
 			$return.AGReplica.Where.ForEach{
 				It "$($psitem.Replica) Replica should not be in Unknown Availability Mode" {
 					$psitem.AvailabilityMode | Should Not Be 'Unknown'
@@ -117,7 +137,7 @@ foreach ($cluster in (Get-ComputerName)) {
 			}
 			
 		}
-		Context "Database AG Status" {
+		Context "Database AG Status for $cluster" {
 			$return.AGDatabasesPrim.ForEach{
 				It "Database $($psitem.DatabaseName) Should Be Synchronised on the Primary Replica $($psitem.Replica)" {
 					$psitem.SynchronizationState | Should Be 'Synchronized'
@@ -161,17 +181,17 @@ foreach ($cluster in (Get-ComputerName)) {
 				}
 			}
 		}
-		Context "Extended Event Status" {
+		Context "Extended Event Status for $cluster" {
 			$return.AGReplica.ForEach{
 				$Xevents = Get-DbaXESession -SqlInstance $psitem
 				It "Replica $($psitem) should have an Extended Event Session called AlwaysOn_health" {
 					$Xevents.Name -contains 'AlwaysOn_health' | Should Be True
 				}
 				It "Replica $($psitem) Always On Health XEvent should be Running" {
-					$Xevents.Where{$_.Name -eq 'AlwaysOn_health'}.Status | Should be 'Running'
+					$Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.Status | Should be 'Running'
 				}
 				It "Replica $($psitem) Always On Health XEvent Auto Start Should Be True" {
-					$Xevents.Where{$_.Name -eq 'AlwaysOn_health'}.AutoStart | Should be $true
+					$Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.AutoStart | Should be $true
 				}
 			}
 		}
