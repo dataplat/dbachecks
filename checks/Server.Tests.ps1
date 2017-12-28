@@ -50,7 +50,7 @@ Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
 	(Get-ComputerName).ForEach{
 		Context "Testing Disk Space on $psitem" {
 			@(Get-DbaDiskSpace -ComputerName $psitem).ForEach{
-				It "$($psitem.Name) should Be at least $free percent free" {
+				It "$($psitem.Name) with $($psitem.PercentFree) percent free should be at least $free percent free" {
 					$psitem.PercentFree -ge $free | Should Be $true
 				}
 			}
