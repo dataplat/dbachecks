@@ -113,7 +113,7 @@ Invoke-DbcCheck -SqlInstance sql2017 -Checks SuspectPage, LastBackup -Show Summa
 Start-DbcPowerBi
 ```
 
-![image](https://user-images.githubusercontent.com/8278033/34328998-27351f80-e8f0-11e7-83eb-7912c45b99ad.png)
+![image](https://user-images.githubusercontent.com/19521315/34439975-de894046-eca9-11e7-9a1a-4d1563bae3ef.png)
 
 The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
 
