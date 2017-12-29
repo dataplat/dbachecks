@@ -26,7 +26,7 @@ function Update-DbcRequiredModules {
 		if ($pscmdlet.ShouldProcess("Install $($Module.ModuleName) version $($Module.ModuleVersion) from repository")) {
 			try {
 				Write-PSFMessage -Level Output -Message "Updating $($Module.ModuleName)"
-				Update-Module -Name $Module.ModuleName
+				Update-Module -Name $Module.ModuleName -ErrorAction Stop
 			}
 			catch {
 				Stop-PSFFunction -Message "Failure" -ErrorRecord $_
