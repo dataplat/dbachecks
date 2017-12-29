@@ -17,7 +17,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
 		Context "Testing suspect pages on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				$results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
-				It "$psitem should return 0 suspect pages on $($psitem.InstanceName)" {
+				It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
 					$results.Count | Should Be 0
 				}
 			}
@@ -95,11 +95,11 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 		Context "Testing Last Good DBCC CHECKDB on $psitem" {
 			@(Get-DbaLastGoodCheckDb -SqlInstance $psitem).ForEach{
 				if ($psitem.Database -ne 'tempdb') {
-					It "last good integrity check for $($psitem.Database) on $($psitem.InstanceName) should be less than $maxdays" {
+					It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) should be less than $maxdays" {
 						$psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
 					}
 					
-					It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.InstanceName) has Data Purity Enabled" {
+					It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
 						$psitem.DataPurityEnabled | Should Be $true
 					}
 				}
@@ -115,7 +115,7 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
 			@(Test-DbaIdentityUsage -SqlInstance $psitem).ForEach{
 				if ($psitem.Database -ne 'tempdb') {
 					$columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
-					It "usage for $columnfqdn on $($psitem.InstanceName) should be less than $maxpercentage percent" {
+					It "usage for $columnfqdn on $($psitem.SqlInstance) should be less than $maxpercentage percent" {
 						$psitem.PercentUsed -lt $maxpercentage | Should be $true
 					}
 				}
@@ -128,7 +128,7 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing Recovery Model on $psitem" {
 			@(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
-				It "$($psitem.Name) should be set to $((Get-DbcConfigValue policy.recoverymodel)) on $($psitem.InstanceName)" {
+				It "$($psitem.Name) should be set to $((Get-DbcConfigValue policy.recoverymodel)) on $($psitem.SqlInstance)" {
 					$psitem.RecoveryModel | Should be (Get-DbcConfigValue policy.recoverymodel)
 				}
 			}
@@ -154,7 +154,7 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
 		Context "Testing database growth event on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				$results = Find-DbaDatabaseGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
-				It "$psitem should return 0 database growth events on $($psitem.InstanceName)" {
+				It "$psitem should return 0 database growth events on $($psitem.SqlInstance)" {
 					$results.Count | Should Be 0
 				}
 			}
@@ -167,7 +167,7 @@ Describe "Page Verify" -Tags PageVerify, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing page verify on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "$psitem on $($psitem.InstanceName) should has page verify set to $pageverify" {
+				It "$psitem on $($psitem.SqlInstance) should has page verify set to $pageverify" {
 					$psitem.PageVerify | Should Be $pageverify
 				}
 			}
@@ -180,7 +180,7 @@ Describe "Auto Close" -Tags AutoClose, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing Auto Close on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "$psitem on $($psitem.InstanceName) should has Auto Close set to $autoclose" {
+				It "$psitem on $($psitem.SqlInstance) should has Auto Close set to $autoclose" {
 					$psitem.AutoClose | Should Be $autoclose
 				}
 			}
@@ -193,7 +193,7 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing Auto Shrink on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "$psitem on $($psitem.InstanceName) should has Auto Shrink set to $autoshrink" {
+				It "$psitem on $($psitem.SqlInstance) should has Auto Shrink set to $autoshrink" {
 					$psitem.AutoShrink | Should Be $autoshrink
 				}
 			}
@@ -207,7 +207,7 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
 		Context "Testing last full backups on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
 				$offline = ($psitem.Status -match "Offline")
-				It -Skip:$offline "$($psitem.Name) full backups on $($psitem.InstanceName) should be less than $maxfull days" {
+				It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) should be less than $maxfull days" {
 					$psitem.LastFullBackup | Should BeGreaterThan (Get-Date).AddDays(- ($maxfull))
 				}
 			}
@@ -221,7 +221,7 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
 		Context "Testing last diff backups on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject }).ForEach{
 				$offline = ($psitem.Status -match "Offline")
-				It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.InstanceName) should be less than $maxdiff hours" {
+				It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) should be less than $maxdiff hours" {
 					$psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours(- ($maxdiff))
 				}
 			}
@@ -236,7 +236,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
 			@(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject }).ForEach{
 				if ($psitem.RecoveryModel -ne 'Simple') {
 					$offline = ($psitem.Status -match "Offline")
-					It -Skip:$offline "$($psitem.Name) log backups on $($psitem.InstanceName) should be less than $maxlog minutes" {
+					It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) should be less than $maxlog minutes" {
 						$psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes(- ($maxlog) + 1)
 					}
 				}
@@ -251,7 +251,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing Database VLFs on $psitem" {
 			@(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{
-				It "$($psitem.Database) VLF count on $($psitem.InstanceName) should be less than $vlfmax" {
+				It "$($psitem.Database) VLF count on $($psitem.SqlInstance) should be less than $vlfmax" {
 					$psitem.Total | Should BeLessThan $vlfmax
 				}
 			}
@@ -264,7 +264,7 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing Auto Create Statistics on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "$psitem on $($psitem.InstanceName) should has Auto Create Statistics set to $autocreatestatistics" {
+				It "$psitem on $($psitem.SqlInstance) should has Auto Create Statistics set to $autocreatestatistics" {
 					$psitem.AutoCreateStatisticsEnabled | Should Be $autocreatestatistics
 				}
 			}
@@ -277,7 +277,7 @@ Describe "Auto Update Statistics" -Tags autoupdatestatistics, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing Auto Update Statistics on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "$psitem on $($psitem.InstanceName) should has Auto Update Statistics set to $autoupdatestatistics" {
+				It "$psitem on $($psitem.SqlInstance) should has Auto Update Statistics set to $autoupdatestatistics" {
 					$psitem.AutoUpdateStatisticsEnabled | Should Be $autoupdatestatistics
 				}
 			}
@@ -290,7 +290,7 @@ Describe "Auto Update Statistics Asynchronously" -Tags autoupdatestatisticsasync
 	(Get-SqlInstance).ForEach{
 		Context "Testing Auto Update Statistics Asynchronously on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				It "$psitem on $($psitem.InstanceName) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
+				It "$psitem on $($psitem.SqlInstance) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
 					$psitem.AutoUpdateStatisticsAsync | Should Be $autoupdatestatisticsasynchronously
 				}
 			}
@@ -305,16 +305,16 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
 		Context "Testing datafile growth type on $psitem" {
 			(Get-DbaDatabaseFile -SqlInstance $psitem -SqlCredential $SqlCredential -Database $psitem.Name).ForEach{
 				if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.datafilegrowthdisabled))) {
-					It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.InstanceName)" {
+					It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
 						$psitem.GrowthType | Should Be $datafilegrowthtype
 					}
 					if ($datafilegrowthtype -eq "kb") {
-						It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.InstanceName)" {
+						It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
 							$psitem.Growth * 8 | Should BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
 						}
 					}
 					else {
-						It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.InstanceName)" {
+						It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
 							$psitem.Growth | Should BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
 						}
 					}

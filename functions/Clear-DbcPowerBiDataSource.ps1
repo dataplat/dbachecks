@@ -29,7 +29,6 @@
     #>
 	[CmdletBinding()]
 	param (
-		[parameter(ValueFromPipeline, Mandatory)]
 		[string]$Path = "$env:windir\temp\dbachecks",
 		[string]$Enviornment,
 		[switch]$EnableException
