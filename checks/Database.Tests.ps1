@@ -205,8 +205,9 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
     $maxfull = Get-DbcConfigValue policy.backupfullmaxdays
     (Get-SqlInstance).ForEach{
         Context "Testing last full backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
-                It "$($psitem.Name) full backups on $($psitem.InstanceName) should be less than $maxfull days" {
+			@(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
+				$offline = ($psitem.Status -match "Offline")
+                It -Skip:$offline "$($psitem.Name) full backups on $($psitem.InstanceName) should be less than $maxfull days" {
                     $psitem.LastFullBackup | Should BeGreaterThan (Get-Date).AddDays( - ($maxfull))
                 }
             }
@@ -218,8 +219,9 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
     $maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
     (Get-SqlInstance).ForEach{
         Context "Testing last diff backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object {-not $psitem.IsSystemObject}).ForEach{
-                It "$($psitem.Name) diff backups on $($psitem.InstanceName) should be less than $maxdiff hours" {
+			@(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject }).ForEach{
+				$offline = ($psitem.Status -match "Offline")
+				It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.InstanceName) should be less than $maxdiff hours" {
                     $psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours( - ($maxdiff))
                 }
             }
@@ -233,7 +235,8 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
         Context "Testing last log backups on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject }).ForEach{
                 if ($psitem.RecoveryModel -ne 'Simple') {
-                    It "$($psitem.Name) log backups on $($psitem.InstanceName) should be less than $maxlog minutes" {
+					$offline = ($psitem.Status -match "Offline")
+					It -Skip:$offline "$($psitem.Name) log backups on $($psitem.InstanceName) should be less than $maxlog minutes" {
                         $psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1)
                     }
                 }
