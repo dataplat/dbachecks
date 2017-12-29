@@ -43,7 +43,7 @@
 	ForEach ($module in $modules) {
 		try {
 			Write-PSFMessage -Level Output -Message "Saving $module to $Path"
-			Save-Module -Name $module -Path $path
+			Save-Module -Name $module -Path $path -ErrorAction Stop
 		}
 		catch {
 			Stop-PSFFunction -Message "Failure" -ErrorRecord $_
