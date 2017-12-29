@@ -44,19 +44,19 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing TempDB Configuration on $psitem" {
             $TempDBTest = Test-DbaTempDbConfiguration -SqlServer $psitem
-            It "should have TF1118 enabled on $($psitem.InstanceName)" -Skip:$($Config.TempDb.Skip1118) {
+            It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:$($Config.TempDb.Skip1118) {
                 $TempDBTest[0].CurrentSetting | Should Be $TempDBTest[0].Recommended
             }
-            It "should have $($TempDBTest[1].Recommended) TempDB Files on $($psitem.InstanceName)" -Skip:(Get-DbcConfigValue -Name skip.TempDb1118) {
+            It "should have $($TempDBTest[1].Recommended) TempDB Files on $($TempDBTest[1].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDb1118) {
                 $TempDBTest[1].CurrentSetting | Should Be $TempDBTest[1].Recommended
             }
-            It "should not have TempDB Files autogrowth set to percent on $($psitem.InstanceName)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileGrowthPercent) {
+            It "should not have TempDB Files autogrowth set to percent on $($TempDBTest[2].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileGrowthPercent) {
                 $TempDBTest[2].CurrentSetting | Should Be $TempDBTest[2].Recommended
             }
-            It "should not have TempDB Files on the C Drive on $($psitem.InstanceName)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFilesonC) {
+            It "should not have TempDB Files on the C Drive on $($TempDBTest[3].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFilesonC) {
                 $TempDBTest[3].CurrentSetting | Should Be $TempDBTest[3].Recommended
             }
-            It "should not have TempDB Files with MaxSize Set on $($psitem.InstanceName)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileMaxSize) {
+            It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileMaxSize) {
                 $TempDBTest[4].CurrentSetting | Should Be $TempDBTest[4].Recommended
             }
         }
