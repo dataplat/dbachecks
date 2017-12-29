@@ -84,7 +84,8 @@
 		'Update-DbcPowerBiDataSource',
 		'Get-DbcTagCollection',
 		'Get-DbcCheck',
-		'Send-DbcMailMessage'
+		'Send-DbcMailMessage',
+		'Clear-DbcPowerBiDataSource'
 	)
 	
 	# Cmdlets to export from this module
