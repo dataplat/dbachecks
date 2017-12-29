@@ -13,17 +13,32 @@ foreach ($repo in $repos) {
 }
 
 foreach ($file in $repofiles) {
+	$gets = Select-String -InputObject $file -Pattern 'Get-SqlInstance|Get-ComputerName'
 	$filename = $file.Name.Replace(".Tests.ps1", "")
+	$groups += $filename
 	$strings = Get-Content $file | Where-Object { $_ -match "-Tags" }
 	foreach ($string in $strings) {
+		$rawtype = $gets | Where-Object { $_.LineNumber -gt $string.ReadCount } | Sort-Object LineNumber | Select-Object -First 1
+		
+		if ($rawtype -match "Get-SqlInstance") {
+			$type = "Sqlinstance"
+		}
+		if ($rawtype -match "Get-ComputerName") {
+			$type = "ComputerName"
+		}
+		if ($null -eq $rawtype) {
+			$type = $null
+		}
+		
 		$describe = Select-String -InputObject $string -Pattern 'Describe\ \"[\s]*(.+)[\s]*\"\ \-Tags' | ForEach-Object { $_.matches.Groups[1].Value }
 		$tags = Select-String -InputObject $string -Pattern '-Tags[\s]*(.+)[\s]*\, \$filename' | ForEach-Object { $_.matches.Groups[1].Value }
-		$groups += $filename
+		if ($filename -eq "HADR" -and $type -eq $null) { $type = "ComputerName" }
 		$collection += [pscustomobject]@{
-			Group			    = $filename
-			Description		    = $describe
-			UniqueTag		    = $null
-			AllTags			    = "$tags, $filename"
+			Group			   = $filename
+			Type			   = $type
+			Description	       = $describe
+			UniqueTag		   = $null
+			AllTags		       = "$tags, $filename"
 		}
 	}
 }

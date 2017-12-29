@@ -65,7 +65,7 @@
 	# Format files (xml) to be loaded when importing this module
 	# "xml\dbachecks.Format.ps1xml"
 	# worry about this later
-	FormatsToProcess = @()
+	FormatsToProcess = @("xml\dbachecks.Format.ps1xml")
 	
 	# Modules to import as nested modules of the module specified in ModuleToProcess
 	NestedModules = @()
@@ -84,7 +84,8 @@
 		'Update-DbcPowerBiDataSource',
 		'Get-DbcTagCollection',
 		'Get-DbcCheck',
-		'Send-DbcMailMessage'
+		'Send-DbcMailMessage',
+		'Clear-DbcPowerBiDataSource'
 	)
 	
 	# Cmdlets to export from this module
