@@ -83,6 +83,9 @@
 
 	.PARAMETER ExcludeAttachment
 	By default, the raw XML will be attached. Use ExcludeAttachment to send without the raw data.
+
+	.PARAMETER MaxNotifyInterval
+	Max notify interval in minutes, based on Checks collection.
 	
 	.PARAMETER EnableException
 	By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
@@ -113,13 +116,56 @@
 		[string[]]$Cc,
 		[switch]$BodyAsHtml,
 		[PSCredential]$Credential,
-		[string]$DeliveryNotificationOption, # None | OnSuccess | OnFailure | Delay | Never
+		[string]$DeliveryNotificationOption,
 		[string]$Encoding,
 		[switch]$UseSsl,
 		[switch]$ExcludeAttachment,
+		[int]$MaxNotifyInterval,
 		[string]$EnableException
 	)
+	begin {
+		if ($MaxNotifyInterval) {
+			# Gotta save the values somewhere - put it in wintemp
+			$xmlfile = "$script:maildirectory\notify\max.xml"
+			
+			# Create initial data if it doesn't exist
+			if (-not (Test-Path -Path "$script:maildirectory\notify")) {
+				$null = New-Item -ItemType Directory -Path "$script:maildirectory\notify" -ErrorAction Stop
+			}
+			if (-not (Test-Path -Path $xmlfile)) {
+				Export-Clixml -Path $xmlfile -InputObject $null
+			}
+		}
+	}
 	end {
+		if ($MaxNotifyInterval) {
+			# get old values
+			$notify = Import-Clixml -Path $xmlfile
+			
+			# Create distinct ID
+			$tags = $InputObject.TagFilter -join ', '
+			
+			# See if it exists already in the file
+			$match = $notify | Where-Object TagFilter -eq $tags
+			
+			# Check to see if it's time to send mail again
+			if ($match) {
+				if ($match.NotifyTime.AddMinutes($MaxNotifyInterval) -gt (Get-Date)) {
+					Stop-PSFFunction -Message "Mail for $tags won't be sent again until $($match.NotifyTime.AddMinutes($MaxNotifyInterval))" -Continue
+				}
+			}
+			
+			# Reset values (there's probably a better way to do this)
+			$notify = $notify | Where-Object TagFilter -ne $tags
+			$notify += [pscustomobject]@{
+				TagFilter    = $tags
+				NotifyTime   = (Get-Date)
+			}
+			
+			# Reexport values for next time
+			$null = $notify | Export-Clixml -Path $xmlfile
+		}
+		
 		if (Test-PSFParameterBinding -ParameterName Subject -Not) {
 			$PSBoundParameters['Subject'] = "dbachecks results"
 		}
@@ -170,6 +216,7 @@
 				$null = $PSBoundParameters.Remove("InputObject")
 				$null = $PSBoundParameters.Remove("ExcludeAttachment")
 				$null = $PSBoundParameters.Remove("EnableException")
+				$null = $PSBoundParameters.Remove('MaxNotifyInterval')
 				$PSBoundParameters['Body'] = $htmlbody
 				$PSBoundParameters['BodyAsHtml'] = $true
 				if ($Attachments) {
