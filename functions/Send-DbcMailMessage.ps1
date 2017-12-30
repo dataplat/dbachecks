@@ -81,8 +81,11 @@
 	Uses the Secure Sockets Layer (SSL) protocol to establish a connection to the remote computer to send mail. By
 	default, SSL is not used.
 
-	.PARAMETER ExcludeAttachment
-	By default, the raw XML will be attached. Use ExcludeAttachment to send without the raw data.
+	.PARAMETER ExcludeXmlAttachment
+	By default, the raw XML will be attached. Use ExcludeXmlAttachment to send without the raw xml.
+
+	.PARAMETER ExcludeCsvAttachment
+	By default, a CSV will be attached. Use ExcludeCsvAttachment to send without the CSV data.
 
 	.PARAMETER MaxNotifyInterval
 	Max notify interval in minutes, based on Checks collection.
@@ -119,7 +122,8 @@
 		[string]$DeliveryNotificationOption,
 		[string]$Encoding,
 		[switch]$UseSsl,
-		[switch]$ExcludeAttachment,
+		[switch]$ExcludeXmlAttachment,
+		[switch]$ExcludeCsvAttachment,
 		[int]$MaxNotifyInterval,
 		[string]$EnableException
 	)
@@ -197,9 +201,14 @@
 			}
 			else {
 				# I give up trynna parse this to CSV
-				#$xml.'test-results'.'test-suite'.results
-				if (-not $ExcludeAttachment) {
-					$Attachments += $file
+				$csv = "$script:maildirectory\$($file.basename).csv"
+				$results = $xml.'test-results'.'test-suite'.results.'test-suite'.results.'test-suite'.results.'test-suite'.results.'test-case'
+				$results | Export-Csv -Path $csv
+				if (-not $ExcludeXmlAttachment) {
+					$Attachments += $csv
+				}
+				if (-not $ExcludeCsvAttachment) {
+					$Attachments += $csv
 				}
 			}
 		}
