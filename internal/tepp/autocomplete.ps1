@@ -8,6 +8,7 @@ Register-PSFTeppScriptblock -Name policy.datafilegrowthtype -ScriptBlock { "kb",
 
 # Register the actual auto completer
 Register-PSFTeppArgumentCompleter -Command Update-DbcPowerBiDataSource -Parameter Enviornment -Name enviornments
+Register-PSFTeppArgumentCompleter -Command Clear-DbcPowerBiDataSource -Parameter Enviornment -Name enviornments
 Register-PSFTeppArgumentCompleter -Command Invoke-DbcCheck -Parameter Check -Name tags
 Register-PSFTeppArgumentCompleter -Command Invoke-DbcCheck -Parameter ExcludeCheck  -Name tags
 Register-PSFTeppArgumentCompleter -Command Get-DbcConfig -Parameter Name -Name confignames
