@@ -324,11 +324,11 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
 	}
 }
 
-Describe "Database trustworthy option" -Tags Trustworthy, DISA, $filename {
+Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing database trustworthy option on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase msdb).ForEach{
-				It "$($psitem.Trustworthy) should return trustworthy option False databases on $($psitem.Name)" {
+				It "Trustworthy is set to false on $($psitem.Name)" {
 					$psitem.Trustworthy | Should Be $false
 				}
 			}
