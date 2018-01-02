@@ -10,7 +10,7 @@ Describe "Log Shipping Status Primary" -Tags LogShippingPrimary, $filename {
 		}
 	}
 }
-Describe "Log Shipping Status Primary" -Tags LogShippingSecondary, $filename {
+Describe "Log Shipping Status Secondary" -Tags LogShippingSecondary, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing the secondary databases on $psitem" {
 			@(Test-DbaLogShippingStatus -SqlInstance $psitem -Secondary).ForEach{
