@@ -323,3 +323,18 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
 		}
 	}
 }
+
+Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Testing database orphaned user event on $psitem" {
+			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				$results = Find-DbaDatabaseGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
+				It "$psitem should return 0 database growth events on $($psitem.SqlInstance)" {
+					$results.Count | Should Be 0
+				}
+			}
+		}
+	}
+}
+
+
