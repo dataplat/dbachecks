@@ -149,6 +149,19 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 	}
 }
 
+Describe "Unused Index" -Tags UnusedIndex, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Testing Unused indexes on $psitem" {
+			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				$results = Find-DbaUnusedIndex -SqlInstance $psitem.Parent -Database $psitem.Name
+				It "$psitem on $($psitem.Parent) should return 0 Unused indexes" {
+					$results.Count | Should Be 0
+				}
+			}
+		}
+	}
+}
+
 Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing database growth event on $psitem" {
