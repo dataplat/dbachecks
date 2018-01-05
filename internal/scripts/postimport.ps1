@@ -52,5 +52,22 @@ ConvertTo-Json -InputObject $collection | Out-File "$script:localapp\checks.json
 
 # Load Tab Expansion
 foreach ($file in (Get-ChildItem "$ModuleRoot\internal\tepp\*.ps1")) {
-	. Import-ModuleFile -Path $file.FullName
+    . Import-ModuleFile -Path $file.FullName
 }
+
+# Importing PSDefaultParameterValues
+$PSDefaultParameterValues = $global:PSDefaultParameterValues
+
+# Set default param values if it exists
+if ($credential = (Get-DbcConfigValue -Name app.sqlcredential)) {
+    if ($PSDefaultParameterValues) {
+        $newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $credential }
+        Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
+    }
+    else {
+        Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $credential }
+    }
+}
+
+# EnableException so that failed commands cause failures
+$PSDefaultParameterValues += @{ '*-Dba*:EnableException' = $true }
