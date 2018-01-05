@@ -348,3 +348,15 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
 		}
 	}
 }
+
+
+Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Testing database orphaned user event on $psitem" {
+			$results = Get-DbaOrphanUser -SqlInstance $psitem
+			It "$psitem should return 0 orphaned users" {
+				$results.Count | Should Be 0
+			}
+		}
+	}
+}
