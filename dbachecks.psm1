@@ -1,14 +1,4 @@
 ﻿$script:ModuleRoot = $PSScriptRoot
-$script:localapp = "$env:localappdata\dbachecks"
-$script:maildirectory = "$script:localapp\dbachecks.mail"
-
-if (-not (Test-Path -Path $script:localapp)) {
-	New-Item -ItemType Directory -Path $script:localapp
-}
-
-if (-not (Test-Path -Path $script:maildirectory)) {
-	New-Item -ItemType Directory -Path $script:maildirectory
-}
 
 function Import-ModuleFile
 {
@@ -45,25 +35,3 @@ foreach ($function in (Get-ChildItem "$ModuleRoot\functions\*.ps1"))
 
 # Execute Postimport actions
 . Import-ModuleFile -Path "$ModuleRoot\internal\scripts\postimport.ps1"
-
-# Importing PSDefaultParameterValues
-$PSDefaultParameterValues = (Get-Variable -Scope Global -Name PSDefaultParameterValues).Value
-Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $PSDefaultParameterValues
-
-# Set default param values if it exists
-if ($credential = (Get-DbcConfigValue -Name app.sqlcredential)) {
-	if ($PSDefaultParameterValues) {
-		$newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $credential }
-		Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
-	}
-	else
-	{
-		Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $credential }
-	}
-}
-
-# EnableException so that failed commands cause failures
-$PSDefaultParameterValues += @{ '*-Dba*:EnableException' = $true }
-
-# Load up tepp
-$null = Get-DbcConfig

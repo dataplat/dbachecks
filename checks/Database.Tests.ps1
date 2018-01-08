@@ -149,6 +149,19 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 	}
 }
 
+Describe "Unused Index" -Tags UnusedIndex, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Testing Unused indexes on $psitem" {
+			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+				$results = Find-DbaUnusedIndex -SqlInstance $psitem.Parent -Database $psitem.Name
+				It "$psitem on $($psitem.Parent) should return 0 Unused indexes" {
+					$results.Count | Should Be 0
+				}
+			}
+		}
+	}
+}
+
 Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing database growth event on $psitem" {
@@ -331,6 +344,17 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
 				It "Trustworthy is set to false on $($psitem.Name)" {
 					$psitem.Trustworthy | Should Be $false
 				}
+			}
+		}
+	}
+}
+
+Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Testing database orphaned user event on $psitem" {
+			$results = Get-DbaOrphanUser -SqlInstance $psitem
+			It "$psitem should return 0 orphaned users" {
+				$results.Count | Should Be 0
 			}
 		}
 	}
