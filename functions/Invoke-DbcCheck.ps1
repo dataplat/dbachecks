@@ -208,14 +208,16 @@
 		$RuntimeParamDic = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
 		
 		foreach ($setting in $config) {
+			$name = $setting.Name
+			$name = "Config" + (($name.Split(".") | ForEach-Object { $_.SubString(0, 1).ToUpper() + $_.SubString(1) }) -join '')
 			$ParamAttrib = New-Object System.Management.Automation.ParameterAttribute
 			$ParamAttrib.ParameterSetName = '__AllParameterSets'
 			$AttribColl = New-Object  System.Collections.ObjectModel.Collection[System.Attribute]
 			$AttribColl.Add($ParamAttrib)
 			
-			$RuntimeParam = New-Object System.Management.Automation.RuntimeDefinedParameter("Config$($setting.Name.Replace('.',''))", [object], $AttribColl)
+			$RuntimeParam = New-Object System.Management.Automation.RuntimeDefinedParameter($name, [object], $AttribColl)
 			
-			$RuntimeParamDic.Add("Dbc$($setting.Name.Replace('.', ''))", $RuntimeParam)
+			$RuntimeParamDic.Add($name, $RuntimeParam)
 		}
 		return $RuntimeParamDic
 	}
