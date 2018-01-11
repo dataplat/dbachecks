@@ -202,6 +202,34 @@
 		[Pester.OutputTypes]$Show = 'All'
 	)
 	
+	dynamicparam {
+		$config = Get-PSFConfig -Module dbachecks
+		
+		$RuntimeParamDic = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+		
+		foreach ($setting in $config) {
+			$ParamAttrib = New-Object System.Management.Automation.ParameterAttribute
+			$ParamAttrib.ParameterSetName = '__AllParameterSets'
+			$AttribColl = New-Object  System.Collections.ObjectModel.Collection[System.Attribute]
+			$AttribColl.Add($ParamAttrib)
+			
+			$RuntimeParam = New-Object System.Management.Automation.RuntimeDefinedParameter("Dbc$($setting.Name.Replace('.',''))", [object], $AttribColl)
+			
+			$RuntimeParamDic.Add("Dbc$($setting.Name.Replace('.', ''))", $RuntimeParam)
+		}
+		return $RuntimeParamDic
+	}
+	
+	begin {
+		$config = Get-PSFConfig -Module dbachecks
+		
+		foreach ($key in $PSBoundParameters.Keys | Where-Object { $_ -like "Dbc*" }) {
+			if ($item = $config | Where-Object { "Dbc$($_.Name.Replace('.', ''))" -eq $key }) {
+				Set-PSFConfig -Module dbachecks -Name $item.Name -Value $PSBoundParameters.$key
+			}
+		}
+	}
+	
 	process {
 		
 		if (-not $Script -and -not $TestName -and -not $Check -and -not $ExcludeCheck -and -not $AllChecks) {
