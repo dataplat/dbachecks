@@ -9,6 +9,10 @@
 		.PARAMETER Path
 			The path to import from, by default is "$script:localapp\config.json"
 	
+		.PARAMETER Temporary
+			The settings are not persisted outside the current session.
+			By default, settings will be remembered across all powershell sessions.
+	
 		.PARAMETER EnableException
 			By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
 			This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -27,6 +31,7 @@
 	[CmdletBinding()]
 	param (
 		[string]$Path = "$script:localapp\config.json",
+		[switch]$Temporary,
 		[switch]$EnableException
 	)
 
@@ -45,7 +50,7 @@
 		}
 		
 		foreach ($result in $results) {
-			Set-DbcConfig -Name $result.Name -Value $result.Value
+			Set-DbcConfig -Name $result.Name -Value $result.Value -Temporary:$Temporary
 		}
 	}
 }

@@ -19,6 +19,10 @@
 
 			Is only executed if the validation was successful (assuming there was a validation, of course)
 	
+		.PARAMETER Temporary
+			The setting is not persisted outside the current session.
+			By default, settings will be remembered across all powershell sessions.
+	
 		.PARAMETER EnableException
 			By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
 			This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -44,6 +48,7 @@
 		$Value,
 		[System.Management.Automation.ScriptBlock]$Handler,
 		[switch]$Append,
+		[switch]$Temporary,
 		[switch]$EnableException
 	)
 
@@ -61,11 +66,11 @@
 		
 		Set-PSFConfig -Module dbachecks -Name $name -Value $Value
 		try {
-			Register-PSFConfig -FullName dbachecks.$name -EnableException -WarningAction SilentlyContinue
+			if (-not $Temporary) { Register-PSFConfig -FullName dbachecks.$name -EnableException -WarningAction SilentlyContinue }
 		}
 		catch {
 			Set-PSFConfig -Module dbachecks -Name $name -Value ($Value -join ", ")
-			Register-PSFConfig -FullName dbachecks.$name
+			if (-not $Temporary) { Register-PSFConfig -FullName dbachecks.$name }
 		}
 		
 		# Still unsure if I'll persist it here - wondering if this impacts global or keeps local
