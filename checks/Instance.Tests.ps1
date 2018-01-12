@@ -44,10 +44,10 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing TempDB Configuration on $psitem" {
             $TempDBTest = Test-DbaTempDbConfiguration -SqlServer $psitem
-            It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:$($Config.TempDb.Skip1118) {
+            It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDb1118) {
                 $TempDBTest[0].CurrentSetting | Should Be $TempDBTest[0].Recommended
             }
-            It "should have $($TempDBTest[1].Recommended) TempDB Files on $($TempDBTest[1].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDb1118) {
+            It "should have $($TempDBTest[1].Recommended) TempDB Files on $($TempDBTest[1].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.tempdbfileCount) {
                 $TempDBTest[1].CurrentSetting | Should Be $TempDBTest[1].Recommended
             }
             It "should not have TempDB Files autogrowth set to percent on $($TempDBTest[2].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileGrowthPercent) {
