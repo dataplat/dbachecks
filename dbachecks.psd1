@@ -50,7 +50,7 @@
 	RequiredModules = @(
 		@{ ModuleName = 'Pester'; ModuleVersion = '4.1.1' },
 		@{ ModuleName = 'dbatools'; ModuleVersion = '0.9.150' }
-		@{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.5.10' }
+		@{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.6.12' }
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
