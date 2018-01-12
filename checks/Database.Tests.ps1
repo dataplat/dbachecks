@@ -166,7 +166,7 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing database growth event on $psitem" {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-				$results = Find-DbaDatabaseGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
+				$results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
 				It "$psitem should return 0 database growth events on $($psitem.SqlInstance)" {
 					$results.Count | Should Be 0
 				}
@@ -316,7 +316,7 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
 	$datafilegrowthvalue = Get-DbcConfigValue policy.datafilegrowthvalue
 	(Get-SqlInstance).ForEach{
 		Context "Testing datafile growth type on $psitem" {
-			(Get-DbaDatabaseFile -SqlInstance $psitem -SqlCredential $SqlCredential -Database $psitem.Name).ForEach{
+			(Get-DbaDatabaseFile -SqlInstance $psitem -Database $psitem.Name).ForEach{
 				if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.datafilegrowthdisabled))) {
 					It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
 						$psitem.GrowthType | Should Be $datafilegrowthtype
