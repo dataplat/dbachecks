@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "SQL Agent Service" -Tags AgentServiceAccount, ServiceAccount, $filename {
+Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
 	(Get-SqlInstance).ForEach{
 		Context "Testing SQL Agent is running on $psitem" {
 			@(Get-DbaSqlService -ComputerName $psitem -Type Agent).ForEach{
