@@ -4,7 +4,7 @@ if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
     $ModuleBase = Split-Path $ModuleBase -Parent
 }
 
-Describe "Checking dbachecks test is correctly formatted" {
+Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" {
     $Checks = (Get-ChildItem $ModuleBase\checks).Where{$_.Name -ne 'HADR.Tests.ps1'}
     $Checks.Foreach{
         $Check = Get-Content $Psitem.FullName -Raw
@@ -40,6 +40,7 @@ Describe "Checking dbachecks test is correctly formatted" {
                 It "$title should use a plural for tags" {
                     $PsItem.Tags | Should Not BeNullOrEmpty
                 }
+                # a simple test for no esses apart from statistics and Access!!
                 $PSItem.Tags.Text.Split(',').Trim().Where{($_ -ne '$filename') -and ($_ -notlike '*statistics*') -and ($_ -notlike '*BackupPathAccess*') }.ForEach{
                     It "$PsItem Should Be Singular" {
                         $_.ToString().Endswith('s') | Should Be $False
