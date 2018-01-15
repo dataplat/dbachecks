@@ -36,7 +36,6 @@ Describe "Checking dbachecks test is correctly formatted" {
                 It "$title Should Use a double quote after the Describe" {
                     $PSItem.Name.ToString().Startswith('"')  | Should be $true
                     $PSItem.Name.ToString().Endswith('"')  | Should be $true
-                    # $PSItem.text -Match 'Describe*.''*.''' | Should be $false
                 }
                 It "$title should use a plural for tags" {
                     $PsItem.Tags | Should Not BeNullOrEmpty
