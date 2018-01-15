@@ -52,6 +52,7 @@ Describe "Checking dbachecks test is correctly formatted" {
             }
         }
         Context "$($_.Name) - Checking Contexts" {
+            ## Find the Contexts
             $Contexts = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
             FindAll([Func[Management.Automation.Language.Ast, bool]] {
                     param ($ast)
@@ -74,8 +75,10 @@ Describe "Checking dbachecks test is correctly formatted" {
             }
         }
         Context "$($_.Name) - Checking Code" {
+            ## This just grabs all the code
             $AST = [System.Management.Automation.Language.Parser]::ParseInput($Check, [ref]$null, [ref]$null)
             $Statements = $AST.EndBlock.statements.Extent
+            ## Ignore the filename line
             @($Statements.Where{$_.StartLineNumber -ne 1}).ForEach{
                 $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
                 It "$title Should Use Get-SqlInstance or Get-ComputerName" {
