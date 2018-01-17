@@ -29,45 +29,40 @@
 		
 			Launches \\nas\projects\dbachecks.pbix using "C:\windows\Temp\dbachecks.json" as the datasource
     #>
-	[CmdletBinding()]
-	param (
-		[string]$Path = "$script:ModuleRoot\bin\dbachecks.pbix",
-		[string]$DataSource = "C:\windows\Temp\dbachecks\*.json",
-		[switch]$EnableException
-	)
-
-	process {
-		if (-not (Test-Path -Path $Path)) {
-			Stop-PSFFunction -Message "$Path does not exist"
-			return
-		}
-		
-		if (-not (Test-Path -Path $DataSource)) {
-			Stop-PSFFunction -Message "json file not found. Run Update-DbcPowerBiDataSource to auto generate"
-			return
-		}
-		
-		$association = Get-ItemProperty "Registry::HKEY_Classes_root\.pbix" -ErrorAction SilentlyContinue
-		
-		if (-not $association) {
-			Stop-PSFFunction -Message ".pbix not associated with any program. Please (re)install Power BI"
-			return
-		}
-		
-		if ($Path -match "Program Files") {
-			$newpath = "$script:localapp\dbachecks.pbix"
-			#if ((Test-Path -Path $newpath)) { # Would be nice if we could tell if it needed to be replaced or not
-			#I suppose we could use dbachecks versioning and wintemp?
-			Copy-Item -Path $Path -Destination $newpath -Force -ErrorAction SilentlyContinue
-			$Path = $newpath
-		}
-		
-		try {
-			Invoke-Item -Path $path
-		}
-		catch {
-			Stop-PSFFunction -Message "Failure" -Exception $_
-			return
-		}
-	}
+    [CmdletBinding()]
+    param (
+        [string]$Path = "$script:ModuleRoot\bin\dbachecks.pbix",
+        [string]$DataSource = "C:\windows\Temp\dbachecks\*.json",
+        [switch]$EnableException
+    )
+    
+    process {
+        if (-not (Test-Path -Path $Path)) {
+            Stop-PSFFunction -Message "$Path does not exist"
+            return
+        }
+        
+        $association = Get-ItemProperty "Registry::HKEY_Classes_root\.pbix" -ErrorAction SilentlyContinue
+        
+        if (-not $association) {
+            Stop-PSFFunction -Message ".pbix not associated with any program. Please (re)install Power BI"
+            return
+        }
+        
+        if ($Path -match "Program Files") {
+            $newpath = "$script:localapp\dbachecks.pbix"
+            #if ((Test-Path -Path $newpath)) { # Would be nice if we could tell if it needed to be replaced or not
+            #I suppose we could use dbachecks versioning and wintemp?
+            Copy-Item -Path $Path -Destination $newpath -Force -ErrorAction SilentlyContinue
+            $Path = $newpath
+        }
+        
+        try {
+            Invoke-Item -Path $path
+        }
+        catch {
+            Stop-PSFFunction -Message "Failure" -Exception $_
+            return
+        }
+    }
 }
