@@ -3,7 +3,8 @@ $ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
 if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
     $ModuleBase = Split-Path $ModuleBase -Parent
 }
-
+$tokens = $null
+$errors = $null
 Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" {
     $Checks = (Get-ChildItem $ModuleBase\checks).Where{$_.Name -ne 'HADR.Tests.ps1'}
     $Checks.Foreach{
@@ -11,8 +12,6 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
         Context "$($_.Name) - Checking Describes titles and tags" {
             $UniqueTags = (Get-DbcCheck).UniqueTag
             ## This gets all of the code with a describe
-            $tokens = $null
-            $errors = $null
             $Describes = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
             FindAll([Func[Management.Automation.Language.Ast, bool]] {
                     param ($ast)
