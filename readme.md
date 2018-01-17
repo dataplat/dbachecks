@@ -32,6 +32,19 @@ When you import, it'll auto-import
 * Pester
 * PSFramework
 
+If you have already installed the module and you update it, you may be required to update the Pester or the PSFramework modules before it will import. If you see a message like 
+
+![error](https://user-images.githubusercontent.com/6729780/35032185-dfe988a2-fb5d-11e7-83e3-6a41a9c89b81.png)
+
+Then you need to 
+
+````
+Update-Module Pester -SkipPublisherCheck
+Import-Module Pester -Force
+````
+
+You may need to do the same thing for the PSFramework or dbatools modules also
+
 ## Getting started
 
 Checks are performed using `Invoke-DbcCheck` which is basically a wrapper for [Invoke-Pester](https://github.com/pester/Pester/wiki/Invoke-Pester). This means that supported `Invoke-Pester` parameters work against `Invoke-DbcCheck`.
