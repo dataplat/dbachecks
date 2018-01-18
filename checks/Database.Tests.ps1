@@ -168,7 +168,7 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				$results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
 				It "$psitem should return 0 database growth events on $($psitem.SqlInstance)" {
-					$results.Count | Should Be 0
+					@($results).Count | Should Be 0
 				}
 			}
 		}
