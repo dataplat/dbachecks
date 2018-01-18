@@ -98,7 +98,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 					It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) should be less than $maxdays" {
 						$psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
 					}
-					
+
 					It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
 						$psitem.DataPurityEnabled | Should Be $true
 					}
@@ -253,7 +253,6 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
 						$psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes(- ($maxlog) + 1)
 					}
 				}
-				
 			}
 		}
 	}
@@ -361,13 +360,13 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
 }
 
 Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
-    (Get-SqlInstance).ForEach{
-        Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $PSItem -ExcludeDatabase tempdb).ForEach{
-                It "PseudoSimple recovery model is false on $($psitem.Name)" {
-					(Test-DbaFullRecoveryModel -SqlInstance $psitem.SqlInstance -Database $psitem.Name).ActualRecoveryModel -eq 'pseudo-SIMPLE' | Should -Be $false
+	(Get-SqlInstance).ForEach{
+		Context "Testing database is not in PseudoSimple recovery model on $psitem" {
+			@(Get-DbaDatabase -SqlInstance $PSItem -ExcludeDatabase tempdb).ForEach{
+				It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent)" {
+					(Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq 'pseudo-SIMPLE' | Should -Be $false
 				}
-            }
-        }
-    }
+			}
+		}
+	}
 }
