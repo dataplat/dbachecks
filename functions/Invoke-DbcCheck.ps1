@@ -195,7 +195,7 @@
 		[Parameter(Mandatory = $true, ParameterSetName = 'NewOutputSet')]
 		[string]$OutputFile,
 		[ValidateSet('NUnitXml')]
-		[string]$OutputFormat = 'NUnitXml',
+		[string]$OutputFormat,
 		[switch]$AllChecks,
 		[switch]$Quiet,
 		[object]$PesterOption,
