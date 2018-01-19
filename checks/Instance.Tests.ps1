@@ -238,7 +238,7 @@ Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename 
 Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
     $xesession = Get-DbcConfigValue xevent.validrunningsession
     (Get-SqlInstance).ForEach{
-        Context "Checking running sessions on $psitem" {
+        Context "Checking sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
                 if ($psitem.Name -notin $xesession) {
                     It "session $($psitem.Name) should not be running on $($psitem.InstanceName)" {
