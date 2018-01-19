@@ -208,7 +208,7 @@ Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename 
 Describe "Stopped XE Sessions" -Tags XESessionStopped, ExtendedEvent, $filename {
     $xesession = Get-DbcConfigValue xevent.requiredstoppedsession
     (Get-SqlInstance).ForEach{
-        Context "Checking running sessions on $psitem" {
+        Context "Checking sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
                 if ($psitem.Name -in $xesession) {
                     It "session $($psitem.Name) should not be running on $($psitem.InstanceName)" {
