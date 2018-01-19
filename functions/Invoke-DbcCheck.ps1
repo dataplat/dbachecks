@@ -274,7 +274,7 @@
 		$repos = Get-CheckRepo
 		foreach ($repo in $repos) {
 			if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
-				if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
+				if ((Test-Bound -ParameterName OutputFormat) -and $OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
 					$number = $repos.IndexOf($repo)
 					$PSBoundParameters['OutputFile'] = "$script:maildirectory\report$number.xml"
 				}
