@@ -195,12 +195,57 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
 }
 
 Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
-	$defaultbackupcompreesion = Get-DbcConfigValue policy.defaultbackupcompreesion
-	(Get-SqlInstance).ForEach{
-		Context "Testing Default Backup Compression on $psitem" {
-			It "Default Backup Compression is set to $defaultbackupcompreesion on $psitem" {
-				(Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'DefaultBackupCompression').ConfiguredValue -eq 1 | Should Be $defaultbackupcompreesion
-			}
-		}
-	}
+    $defaultbackupcompreesion = Get-DbcConfigValue policy.defaultbackupcompreesion
+    (Get-SqlInstance).ForEach{
+        Context "Testing Default Backup Compression on $psitem" {
+            It "Default Backup Compression is set to $defaultbackupcompreesion on $psitem" {
+                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'DefaultBackupCompression').ConfiguredValue -eq 1 | Should Be $defaultbackupcompreesion
+            }
+        }
+    }
+}
+
+Describe "Stopped XE Sessions" -Tags XESessionStopped, ExtendedEvent, $filename {
+    $xesession = Get-DbcConfigValue xevent.requiredstoppedsession
+    (Get-SqlInstance).ForEach{
+        Context "Checking running sessions on $psitem" {
+            @(Get-DbaXESession -SqlInstance $psitem).ForEach{
+                if ($psitem.Name -in $xesession) {
+                    It "session $($psitem.Name) should not be running on $($psitem.InstanceName)" {
+                        $psitem.Status | Should Be "Stopped"
+                    }
+                }
+            }
+        }
+    }
+}
+
+Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename {
+    $xesession = Get-DbcConfigValue xevent.requiredrunningsession
+    (Get-SqlInstance).ForEach{
+        Context "Checking running sessions on $psitem" {
+            @(Get-DbaXESession -SqlInstance $psitem).ForEach{
+                if ($psitem.Name -in $xesession) {
+                    It "session $($psitem.Name) should be running on $($psitem.InstanceName)" {
+                        $psitem.Status | Should Be "Running"
+                    }
+                }
+            }
+        }
+    }
+}
+
+Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
+    $xesession = Get-DbcConfigValue xevent.validrunningsession
+    (Get-SqlInstance).ForEach{
+        Context "Checking running sessions on $psitem" {
+            @(Get-DbaXESession -SqlInstance $psitem).ForEach{
+                if ($psitem.Name -notin $xesession) {
+                    It "session $($psitem.Name) should not be running on $($psitem.InstanceName)" {
+                        $psitem.Status | Should Be "Stopped"
+                    }
+                }
+            }
+        }
+    }
 }
