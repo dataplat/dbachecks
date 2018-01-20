@@ -22,7 +22,7 @@ Describe "Active Directory OU" -Tags OrganizationalUnit, $filename {
             }
             It -Skip "$psitem should be in the right OU ($value)" {
                 (Get-ADComputer $psitem -Properties CanonicalName -Server $dc).CanonicalName | Should be $value
-			}
-		}
+            }
+        }
     }
 }
