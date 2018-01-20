@@ -3,17 +3,17 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 . "$PSScriptRoot\constants.ps1"
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
-	Context "Command executes properly and returns proper info" {
-		(Get-DbcCheck).ForEach{
-			It "returns a unique tag" {
-				$psitem.UniqueTag | Should Not Be $null
-			}
-			It "should only have one unique tag" {
-				$psitem.UniqueTag.Count | Should Be 1
-			}
-			It "should have a group" {
-				$psitem.Group | Should Not Be $null
-			}
-		}
-	}
+    Context "Command executes properly and returns proper info" {
+        (Get-DbcCheck).ForEach{
+            It "returns a unique tag" {
+                $psitem.UniqueTag | Should Not Be $null
+            }
+            It "should only have one unique tag" {
+                $psitem.UniqueTag.Count | Should Be 1
+            }
+            It "should have a group" {
+                $psitem.Group | Should Not Be $null
+            }
+        }
+    }
 }

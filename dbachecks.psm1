@@ -1,15 +1,14 @@
 ﻿$script:ModuleRoot = $PSScriptRoot
 
-function Import-ModuleFile
-{
-	[CmdletBinding()]
-	Param (
-		[string]
-		$Path
-	)
-	
-	if ($doDotSource) { . $Path }
-	else { $ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($Path))), $null, $null) }
+function Import-ModuleFile {
+    [CmdletBinding()]
+    Param (
+        [string]
+        $Path
+    )
+    
+    if ($doDotSource) { . $Path }
+    else { $ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($Path))), $null, $null) }
 }
 
 # Detect whether at some level dotsourcing was enforced
@@ -22,15 +21,13 @@ if ((Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\WindowsPowerShell\dbacheck
 . Import-ModuleFile -Path "$ModuleRoot\internal\scripts\preimport.ps1"
 
 # Import all internal functions
-foreach ($function in (Get-ChildItem "$ModuleRoot\internal\functions\*.ps1"))
-{
-	. Import-ModuleFile -Path $function.FullName
+foreach ($function in (Get-ChildItem "$ModuleRoot\internal\functions\*.ps1")) {
+    . Import-ModuleFile -Path $function.FullName
 }
 
 # Import all public functions
-foreach ($function in (Get-ChildItem "$ModuleRoot\functions\*.ps1"))
-{
-	. Import-ModuleFile -Path $function.FullName
+foreach ($function in (Get-ChildItem "$ModuleRoot\functions\*.ps1")) {
+    . Import-ModuleFile -Path $function.FullName
 }
 
 # Execute Postimport actions
