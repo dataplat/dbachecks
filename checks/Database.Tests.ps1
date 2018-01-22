@@ -18,7 +18,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				$results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
 				It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
-					$results.Count | Should Be 0
+					@($results).Count | Should Be 0
 				}
 			}
 		}
@@ -142,7 +142,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				$results = Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name
 				It "$psitem on $($psitem.Parent) should return 0 duplicate indexes" {
-					$results.Count | Should Be 0
+					@($results).Count | Should Be 0
 				}
 			}
 		}
@@ -155,7 +155,7 @@ Describe "Unused Index" -Tags UnusedIndex, $filename {
 			@(Get-DbaDatabase -SqlInstance $psitem).ForEach{
 				$results = Find-DbaUnusedIndex -SqlInstance $psitem.Parent -Database $psitem.Name
 				It "$psitem on $($psitem.Parent) should return 0 Unused indexes" {
-					$results.Count | Should Be 0
+					@($results).Count | Should Be 0
 				}
 			}
 		}
@@ -353,7 +353,7 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
 		Context "Testing database orphaned user event on $psitem" {
 			$results = Get-DbaOrphanUser -SqlInstance $psitem
 			It "$psitem should return 0 orphaned users" {
-				$results.Count | Should Be 0
+				@($results).Count | Should Be 0
 			}
 		}
 	}
