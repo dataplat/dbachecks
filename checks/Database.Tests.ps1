@@ -285,6 +285,26 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     }
 }
 
+Describe "Log File Size and Count Checks" -Tags Logfile, $Filename {
+    $MultipleLogFiles = policy.MultipleLogFiles
+    $LogFileSizePercentage = policy.LogFileSizePercentage
+    $LogFileSizeComparison = policy.LogFileSizeComparison
+    $LogFileCountTest = skip.logfilecounttest
+    $LogFileCount = policy.LogFileCount
+    (Get-SqlInstance).ForEach{
+        (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+            $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
+            $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
+            If (-not $LogFileCountTest) {
+                It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
+                    $LogFiles.Count -le $LogFileCount | Should be $True 
+                }
+            }
+
+        }
+    }
+}
+
 Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
     $autocreatestatistics = Get-DbcConfigValue policy.autocreatestatistics
     (Get-SqlInstance).ForEach{
