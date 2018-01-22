@@ -291,23 +291,24 @@ Describe "Log File Size and Count Checks" -Tags Logfile, $filename {
     $LogFileCountTest = Get-DbcConfigValue skip.logfilecounttest
     $LogFileCount = Get-DbcConfigValue policy.LogFileCount
     (Get-SqlInstance).ForEach{
-        (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
-            $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
-            $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
-            If (-not $LogFileCountTest) {
-                It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
-                    $LogFiles.Count | Should BeLessThan $LogFileCount 
+        Context "Testing Log File count and size for $psitem" {
+            (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+                $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
+                $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
+                If (-not $LogFileCountTest) {
+                    It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
+                        $LogFiles.Count | Should BeLessThan $LogFileCount 
+                    }
+                }
+                $Splat = @{$LogFileSizeComparison = $true;
+                            property = 'size'
+                        }
+                $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
+                $DataFileSize = ($Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Measure-Object @Splat).$LogFileSizeComparison
+                It "$($psitem.Name) on $($psitem.SqlInstance) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
+                    $LogFileSize | Should BeLessThan ($DataFileSize * $LogFileSizePercentage) 
                 }
             }
-            $Splat = @{$LogFileSizeComparison = $true;
-                        property = 'size'
-                    }
-            $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
-            $DataFileSize = ($Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Measure-Object @Splat).$LogFileSizeComparison
-            It "$($psitem.Name) on $($psitem.SqlInstance) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
-                $LogFileSize | Should BeLessThan ($DataFileSize * $LogFileSizePercentage) 
-            }
-
         }
     }
 }
