@@ -285,20 +285,27 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     }
 }
 
-Describe "Log File Size and Count Checks" -Tags Logfile, $Filename {
-    $MultipleLogFiles = policy.MultipleLogFiles
-    $LogFileSizePercentage = policy.LogFileSizePercentage
-    $LogFileSizeComparison = policy.LogFileSizeComparison
-    $LogFileCountTest = skip.logfilecounttest
-    $LogFileCount = policy.LogFileCount
+Describe "Log File Size and Count Checks" -Tags Logfile, $filename {
+    $LogFileSizePercentage = Get-DbcConfigValue policy.logfilesizepercentage
+    $LogFileSizeComparison = Get-DbcConfigValue policy.Logfilesizecomparison
+    $LogFileCountTest = Get-DbcConfigValue skip.logfilecounttest
+    $LogFileCount = Get-DbcConfigValue policy.LogFileCount
     (Get-SqlInstance).ForEach{
         (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
             $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
             $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
             If (-not $LogFileCountTest) {
                 It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
-                    $LogFiles.Count -le $LogFileCount | Should be $True 
+                    $LogFiles.Count | Should BeLessThan $LogFileCount 
                 }
+            }
+            $Splat = @{$LogFileSizeComparison = $true;
+                        property = 'size'
+                    }
+            $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
+            $DataFileSize = ($Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Measure-Object @Splat).$LogFileSizeComparison
+            It "$($psitem.Name) on $($psitem.SqlInstance) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
+                $LogFileSize | Should BeLessThan ($DataFileSize * $LogFileSizePercentage) 
             }
 
         }

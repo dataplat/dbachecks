@@ -42,6 +42,8 @@ Set-PSFConfig -Module dbachecks -Name policy.defaultbackupcompreesion -Validatio
 Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthtype -Value "kb" -Initialize -Description "Alters the Growth Type to say if it should be 'kb' or 'percent'"
 Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthvalue -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
 Set-PSFConfig -Module dbachecks -Name policy.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"
+Set-PSFConfig -Module dbachecks -Name policy.LogFileSizePercentage -Validation integer -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
+Set-PSFConfig -Module dbachecks -Name policy.LogFileSizeComparison -Validation string -Value 'maximum' -Initialize -Description "How to compare data and log file size, options are maximum or average"
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
