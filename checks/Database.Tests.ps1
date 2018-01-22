@@ -18,7 +18,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
-                    $results.Count | Should Be 0
+                    @($results).Count | Should Be 0
                 }
             }
         }
@@ -98,7 +98,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
                     It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) should be less than $maxdays" {
                         $psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
                     }
-                    
+
                     It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
                         $psitem.DataPurityEnabled | Should Be $true
                     }
@@ -142,7 +142,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem on $($psitem.Parent) should return 0 duplicate indexes" {
-                    $results.Count | Should Be 0
+                    @($results).Count | Should Be 0
                 }
             }
         }
@@ -155,7 +155,7 @@ Describe "Unused Index" -Tags UnusedIndex, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Find-DbaUnusedIndex -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem on $($psitem.Parent) should return 0 Unused indexes" {
-                    $results.Count | Should Be 0
+                    @($results).Count | Should Be 0
                 }
             }
         }
@@ -168,7 +168,7 @@ Describe "Disabled Index" -Tags DisabledIndex, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Find-DbaDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem on $($psitem.Parent) should return 0 Disabled indexes" {
-                    $results.Count | Should Be 0
+                    @($results).Count | Should Be 0
                 }
             }
         }
@@ -181,7 +181,7 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem should return 0 database growth events on $($psitem.SqlInstance)" {
-                    $results.Count | Should Be 0
+                    @($results).Count | Should Be 0
                 }
             }
         }
@@ -266,7 +266,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
                         $psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes(- ($maxlog) + 1)
                     }
                 }
-                
+
             }
         }
     }
@@ -329,7 +329,7 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
     $datafilegrowthvalue = Get-DbcConfigValue policy.datafilegrowthvalue
     (Get-SqlInstance).ForEach{
         Context "Testing datafile growth type on $psitem" {
-            (Get-DbaDatabaseFile -SqlInstance $psitem -Database $psitem.Name).ForEach{
+            (Get-DbaDatabaseFile -SqlInstance $psitem).ForEach{
                 if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.datafilegrowthdisabled))) {
                     It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
                         $psitem.GrowthType | Should Be $datafilegrowthtype
@@ -367,7 +367,7 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
         Context "Testing database orphaned user event on $psitem" {
             $results = Get-DbaOrphanUser -SqlInstance $psitem
             It "$psitem should return 0 orphaned users" {
-                $results.Count | Should Be 0
+                @($results).Count | Should Be 0
             }
         }
     }
@@ -377,8 +377,8 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
             @(Get-DbaDatabase -SqlInstance $PSItem -ExcludeDatabase tempdb).ForEach{
-                It "PseudoSimple recovery model is false on $($psitem.Name)" {
-                    (Test-DbaFullRecoveryModel -SqlInstance $psitem.SqlInstance -Database $psitem.Name).ActualRecoveryModel -eq 'pseudo-SIMPLE' | Should -Be $false
+                It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent)" {
+                    (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq 'pseudo-SIMPLE' | Should -Be $false
                 }
             }
         }
