@@ -58,6 +58,7 @@
         }
         
         try {
+			Write-PSFMessage -Level Output -Message "Launching the dbachecks dashboard. This may take a moment."
             Invoke-Item -Path $path
         }
         catch {
