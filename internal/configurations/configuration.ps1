@@ -44,6 +44,7 @@ Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthvalue -Validation int
 Set-PSFConfig -Module dbachecks -Name policy.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"
 Set-PSFConfig -Module dbachecks -Name policy.LogFileSizePercentage -Validation integer -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
 Set-PSFConfig -Module dbachecks -Name policy.LogFileSizeComparison -Validation string -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
+Set-PSFConfig -Module dbachecks -Name policy.filebalancetolerance -Validation integer -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
