@@ -285,21 +285,32 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     }
 }
 
-Describe "Log File Size and Count Checks" -Tags Logfile, $filename {
-    $LogFileSizePercentage = Get-DbcConfigValue policy.logfilesizepercentage
-    $LogFileSizeComparison = Get-DbcConfigValue policy.Logfilesizecomparison
+Describe "Log File Count Checks" -Tags LogfileCount, $filename {
     $LogFileCountTest = Get-DbcConfigValue skip.logfilecounttest
     $LogFileCount = Get-DbcConfigValue policy.LogFileCount
+    If (-not $LogFileCountTest) {
+        (Get-SqlInstance).ForEach{
+            Context "Testing Log File count and size for $psitem" {
+                (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+                    $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
+                    $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
+                    It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
+                        $LogFiles.Count | Should BeLessThan $LogFileCount 
+                    }
+                }
+            }
+        }
+    }
+}
+
+Describe "Log File Size Checks" -Tags LogfileSize, $filename {
+    $LogFileSizePercentage = Get-DbcConfigValue policy.logfilesizepercentage
+    $LogFileSizeComparison = Get-DbcConfigValue policy.Logfilesizecomparison
     (Get-SqlInstance).ForEach{
         Context "Testing Log File count and size for $psitem" {
             (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
-                If (-not $LogFileCountTest) {
-                    It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
-                        $LogFiles.Count | Should BeLessThan $LogFileCount 
-                    }
-                }
                 $Splat = @{$LogFileSizeComparison = $true;
                             property = 'size'
                         }
