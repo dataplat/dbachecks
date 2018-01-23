@@ -106,7 +106,6 @@
     param (
         [parameter(ValueFromPipeline, Mandatory)]
         [pscustomobject]$InputObject,
-        [parameter(Mandatory)]
         [string[]]$To,
         [string]$From,
         [string]$Subject,
@@ -142,6 +141,10 @@
         }
     }
     end {
+        if ($InputObject.FailedCount -lt (Get-DbcConfig mail.failurethreshhold).value){
+            Stop-PSFFunction -Message "Failure count of $($InputObject.FailedCount) is below configured threshold of $((Get-DbcConfig mail.failurethreshhold).value), not sending email" -Continue
+        }
+
         if ($MaxNotifyInterval) {
             # get old values
             $notify = Import-Clixml -Path $xmlfile
@@ -171,7 +174,16 @@
         }
         
         if (Test-PSFParameterBinding -ParameterName Subject -Not) {
-            $PSBoundParameters['Subject'] = "dbachecks results"
+            $PSBoundParameters['Subject'] = (Get-DbcConfig -Name mail.Subject).value
+        }
+        if (Test-PSFParameterBinding -ParameterName To -Not) {
+            $PSBoundParameters['To'] = (Get-DbcConfig -Name mail.To).value
+        }
+        if (Test-PSFParameterBinding -ParameterName smtpserver -Not) {
+            $PSBoundParameters['smtpserver'] = (Get-DbcConfig -Name mail.smtpserver).value
+        }
+        if (Test-PSFParameterBinding -ParameterName from -Not) {
+            $PSBoundParameters['from'] = (Get-DbcConfig -Name mail.from).value
         }
         
         $outputpath = "$script:maildirectory\index.html"
