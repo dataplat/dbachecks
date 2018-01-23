@@ -1,6 +1,10 @@
 ﻿# Fred magic
 #Set-PSFConfig -Handler { if (Get-PSFTaskEngineCache -Module dbachecks -Name module-imported) { Write-PSFMessage -Level Warning -Message "This setting will only take effect on the next console start" } }
 
+#Add some validation for values with limited options
+$sb = { param ([string]$input) if ($input -in ('average','maximum')){ [PsCustomObject]@{Success = $true; value = $input} }else { [PsCustomObject]@{Success = $false; message = "must be average or maximum - $input"} } }
+Register-PSFConfigValidation -Name validation.LogFileComparisonValidations -ScriptBlock $sb
+
 # some configs to help with autocompletes and other module level stuff
 Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value "$script:ModuleRoot\checks" -Initialize -Description "Where Pester tests/checks are stored"
 Set-PSFConfig -Module dbachecks -Name app.sqlinstance -Value $null -Initialize -Description "List of SQL Server instances that SQL-based tests will run against"
@@ -43,7 +47,7 @@ Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthtype -Value "kb" -Ini
 Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthvalue -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
 Set-PSFConfig -Module dbachecks -Name policy.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"
 Set-PSFConfig -Module dbachecks -Name policy.LogFileSizePercentage -Validation integer -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
-Set-PSFConfig -Module dbachecks -Name policy.LogFileSizeComparison -Validation string -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
+Set-PSFConfig -Module dbachecks -Name policy.LogFileSizeComparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
 Set-PSFConfig -Module dbachecks -Name policy.filebalancetolerance -Validation integer -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
