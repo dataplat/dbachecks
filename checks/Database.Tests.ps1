@@ -285,6 +285,67 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     }
 }
 
+Describe "Log File Count Checks" -Tags LogfileCount, $filename {
+    $LogFileCountTest = Get-DbcConfigValue skip.logfilecounttest
+    $LogFileCount = Get-DbcConfigValue policy.LogFileCount
+    If (-not $LogFileCountTest) {
+        (Get-SqlInstance).ForEach{
+            Context "Testing Log File count and size for $psitem" {
+                (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+                    $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
+                    $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
+                    It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
+                        $LogFiles.Count | Should BeLessThan $LogFileCount 
+                    }
+                }
+            }
+        }
+    }
+}
+
+Describe "Log File Size Checks" -Tags LogfileSize, $filename {
+    $LogFileSizePercentage = Get-DbcConfigValue policy.logfilesizepercentage
+    $LogFileSizeComparison = Get-DbcConfigValue policy.Logfilesizecomparison
+    (Get-SqlInstance).ForEach{
+        Context "Testing Log File count and size for $psitem" {
+            (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+                $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
+                $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
+                $Splat = @{$LogFileSizeComparison = $true;
+                            property = 'size'
+                        }
+                $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
+                $DataFileSize = ($Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Measure-Object @Splat).$LogFileSizeComparison
+                It "$($psitem.Name) on $($psitem.SqlInstance) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
+                    $LogFileSize | Should BeLessThan ($DataFileSize * $LogFileSizePercentage) 
+                }
+            }
+        }
+    }
+}
+
+Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
+    $Tolerance = Get-DbcConfigValue policy.filebalancetolerance
+
+    (Get-SqlInstance).ForEach{
+        Context "Tesing for balanced FileGroups on $psitem" {
+            (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+                $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
+                $FileGroups = $Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Group-Object -Property FileGroupName
+                $FileGroups.ForEach{
+                    $Unbalanced = 0
+                    $Average = ($psitem.Group.Size | Measure-Object -Average).Average
+
+                    $Unbalanced = $psitem | Where-Object {$psitem.group.Size -lt ((1-($Tolerance/100)) * $Average) -or $psitem.group.Size -gt ((1+($Tolerance/100)) * $Average)}
+                    It "$($psitem.Name) of $($psitem.Group[0].Database) on $($psitem.Group[0].SqlInstance)  Should have FileGroup members with sizes within 5% of the average" {
+                        $Unbalanced.count | Should Be 0
+                    }
+                }
+            }
+        }
+    }
+}
+
 Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
     $autocreatestatistics = Get-DbcConfigValue policy.autocreatestatistics
     (Get-SqlInstance).ForEach{
