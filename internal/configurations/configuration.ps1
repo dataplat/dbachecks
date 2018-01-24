@@ -2,8 +2,20 @@
 #Set-PSFConfig -Handler { if (Get-PSFTaskEngineCache -Module dbachecks -Name module-imported) { Write-PSFMessage -Level Warning -Message "This setting will only take effect on the next console start" } }
 
 #Add some validation for values with limited options
-$sb = { param ([string]$input) if ($input -in ('average','maximum')){ [PsCustomObject]@{Success = $true; value = $input} }else { [PsCustomObject]@{Success = $false; message = "must be average or maximum - $input"} } }
-Register-PSFConfigValidation -Name validation.LogFileComparisonValidations -ScriptBlock $sb
+$LogFileComparisonValidationssb = { param ([string]$input) if ($input -in ('average','maximum')){ [PsCustomObject]@{Success = $true; value = $input} } else { [PsCustomObject]@{Success = $false; message = "must be average or maximum - $input"} } }
+Register-PSFConfigValidation -Name validation.LogFileComparisonValidations -ScriptBlock $LogFileComparisonValidationssb
+$EmailValidationSb = { 
+    param ([string]$input) 
+    $EmailRegEx = "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
+    if ($input -match $EmailRegEx){ 
+        [PsCustomObject]@{Success = $true; value = $input} 
+    } 
+    else { 
+        [PsCustomObject]@{Success = $false; message = "does not appear to be an email address - $input"} 
+    } 
+}
+Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $EmailValidationSb
+
 
 # some configs to help with autocompletes and other module level stuff
 Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value "$script:ModuleRoot\checks" -Initialize -Description "Where Pester tests/checks are stored"
@@ -83,6 +95,6 @@ Set-PSFConfig -Module dbachecks -Name whoisactive.database -Value "master" -Init
 # email
 Set-PSFConfig -Module dbachecks -Name mail.failurethreshhold -Value 0 -Validation integer -Initialize -Description "Number of errors that must be present to generate an email report"
 Set-PSFConfig -Module dbachecks -Name mail.smtpserver -Value $null -Validation string -Initialize -Description "Store the name of the smtp server to send email reports"
-Set-PSFConfig -Module dbachecks -Name mail.to  -Value $null -Validation stringarray -Initialize -Description "String Array of mail report recipients"
-Set-PSFConfig -Module dbachecks -Name mail.from  -Value $null -Validation string -Initialize -Description "Email address the email reports should come from"
+Set-PSFConfig -Module dbachecks -Name mail.to -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address to send the report to"
+Set-PSFConfig -Module dbachecks -Name mail.from  -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address the email reports should come from"
 Set-PSFConfig -Module dbachecks -Name mail.subject  -Value 'dbachecks results' -Validation String -Initialize -Description "Subject line of the email report"
