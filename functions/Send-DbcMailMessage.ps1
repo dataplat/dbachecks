@@ -177,7 +177,16 @@
             $PSBoundParameters['Subject'] = (Get-DbcConfig -Name mail.Subject).value
         }
         if (Test-PSFParameterBinding -ParameterName To -Not) {
-            $PSBoundParameters['To'] = (Get-DbcConfig -Name mail.To).value
+            $regex = @"
+            ^[a-zA-Z0-9.!£#$%&'^_`{}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$
+"@
+            if ((Get-DbcConfig -Name mail.To).value -match $regex){
+                $PSBoundParameters['To'] = (Get-DbcConfig -Name mail.To).value
+            }
+            else {
+                Stop-PSFFunction -Message "No Valid Email provided" -Continue
+            }
+          
         }
         if (Test-PSFParameterBinding -ParameterName smtpserver -Not) {
             $PSBoundParameters['smtpserver'] = (Get-DbcConfig -Name mail.smtpserver).value

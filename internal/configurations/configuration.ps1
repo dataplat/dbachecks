@@ -74,6 +74,6 @@ Set-PSFConfig -Module dbachecks -Name whoisactive.database -Value "master" -Init
 # email
 Set-PSFConfig -Module dbachecks -Name mail.failurethreshhold -Value 0 -Validation integer -Initialize -Description "Number of errors that must be present to generate an email report"
 Set-PSFConfig -Module dbachecks -Name mail.smtpserver -Value $null -Validation string -Initialize -Description "Store the name of the smtp server to send email reports"
-Set-PSFConfig -Module dbachecks -Name mail.To  -Value $null -Validation stringarray -Initialize -Description "String Array of mail report recipients"
-Set-PSFConfig -Module dbachecks -Name mail.From  -Value $null -Validation string -Initialize -Description "Email address the email reports should come from"
-Set-PSFConfig -Module dbachecks -Name mail.Subject  -Value 'dbachecks results' -Validation String -Initialize -Description "Subject line of the email report"
+Set-PSFConfig -Module dbachecks -Name mail.to  -Value $null -Validation stringarray -Initialize -Description "String Array of mail report recipients"
+Set-PSFConfig -Module dbachecks -Name mail.from  -Value $null -Validation string -Initialize -Description "Email address the email reports should come from"
+Set-PSFConfig -Module dbachecks -Name mail.subject  -Value 'dbachecks results' -Validation String -Initialize -Description "Subject line of the email report"
