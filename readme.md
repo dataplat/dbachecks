@@ -199,6 +199,14 @@ Then add additional checks. We recommend using the [development guidelines for d
 
 ![image](https://user-images.githubusercontent.com/8278033/34320819-07fe939c-e802-11e7-8203-a82740cc8f19.png)
 
+## I'd like to run my checks in SQL Server Agent
+
+Great idea! Remember that this module requires PowerShell version 4.0, which doesn't always mesh with SQL Server's PowerShell Job Step. To run dbachecks, we recommend you use CmdExec. You can read more at [dbatools.io/agent](https://dbatools.io/agent).
+
+If you do choose to use the PowerShell step, don't forget to `Set-Location` somewhere outside of SQLSERVER:, otherwise, you'll get errors similar to this
+
+![image](https://user-images.githubusercontent.com/8771143/35379174-878505fc-01b5-11e8-8731-41be4daff815.png)
+
 ## I don't have access to the PowerShell Gallery, how can I download this?
 
 This module has a number of dependencies which makes creating a GitHub-centric installer a bit of a pain. We suggest you use a machine with [PowerShellGet](https://docs.microsoft.com/en-us/powershell/gallery/psget/get_psget_module) installed and Save all the modules you need:
@@ -208,6 +216,7 @@ Save-Module -Name dbachecks, dbatools, PSFramework, Pester -Path C:\temp
 ```
 
 Then move them to somewhere in your `$env:PSModulePath`, perhaps **Documents\WindowsPowerShell\Modules** or **C:\Program Files\WindowsPowerShell\Modules**.
+
 
 ## Party
 
