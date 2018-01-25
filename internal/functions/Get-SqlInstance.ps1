@@ -1,6 +1,6 @@
 ﻿function Get-SqlInstance {
     if ($null -ne $sqlinstance) {
-        return $sqlinstance
+        return @($sqlinstance)
     }
     else {
         $instances = Get-DbcConfigValue app.sqlinstance
@@ -8,7 +8,7 @@
             Write-PSFMessage -Level Warning -Message "You must specify -SqlInstance or use Set-DbcConfig app.sqlinstance to setup a list of servers"
         }
         else {
-            $instances
+            @($instances)
         }
     }
 }
