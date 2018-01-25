@@ -201,7 +201,7 @@ Then add additional checks. We recommend using the [development guidelines for d
 
 ## I'd like to run my checks in SQL Server Agent
 
-Great idea! Remember that this module requires PowerShell version 4.0, which doesn't always mesh with SQL Server's PowerShell Job Step. To run dbachecks, we recommend you use CmdExec. You can read more at [dbatools.io/agent](https://dbatools.io/agent).
+Great idea! Remember that this module requires PowerShell version 4.0, which doesn't always mesh with SQL Server's PowerShell Job Step. To run dbachecks, **we recommend you use CmdExec**. You can read more at [dbatools.io/agent](https://dbatools.io/agent).
 
 If you do choose to use the PowerShell step, don't forget to `Set-Location` somewhere outside of SQLSERVER:, otherwise, you'll get errors similar to this
 
@@ -216,7 +216,6 @@ Save-Module -Name dbachecks, dbatools, PSFramework, Pester -Path C:\temp
 ```
 
 Then move them to somewhere in your `$env:PSModulePath`, perhaps **Documents\WindowsPowerShell\Modules** or **C:\Program Files\WindowsPowerShell\Modules**.
-
 
 ## Party
 
