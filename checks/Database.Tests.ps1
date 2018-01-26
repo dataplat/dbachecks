@@ -372,7 +372,7 @@ Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
     }
 }
 
-Describe "Auto Update Statistics Asynchronously" -Tags autoupdatestatisticsasynchronously, $filename {
+Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, $filename {
     $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.autoupdatestatisticsasynchronously
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Update Statistics Asynchronously on $psitem" {
