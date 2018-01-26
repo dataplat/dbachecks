@@ -250,17 +250,6 @@ Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEv
     }
 }
 
-Describe "OLE Automation" -Tags OLEAutomation, $filename {
-    $OLEAutomation = Get-DbcConfigValue policy.OLEAutomation
-    (Get-SqlInstance).ForEach{
-        Context "Testing OLE Automation should be enabled on $psitem" {
-            It "OLE Automation is set to $OLEAutomation on $psitem" {
-                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should Be $OLEAutomation
-            }
-        }
-    }
-}
-
 Describe "Trace 3226" -Tags TraceFlag3226, TraceFlags, $filename {
 	$trace3226 = Get-DbcConfigValue policy.Trace3226
 	(Get-SqlInstance).ForEach{
