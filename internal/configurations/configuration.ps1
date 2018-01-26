@@ -99,3 +99,7 @@ Set-PSFConfig -Module dbachecks -Name mail.smtpserver -Value $null -Validation s
 Set-PSFConfig -Module dbachecks -Name mail.to -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address to send the report to"
 Set-PSFConfig -Module dbachecks -Name mail.from  -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address the email reports should come from"
 Set-PSFConfig -Module dbachecks -Name mail.subject  -Value 'dbachecks results' -Validation String -Initialize -Description "Subject line of the email report"
+
+# Trace flags
+Set-PSFConfig -Module dbachecks -Name policy.Trace2371 -Validation bool -Value $true -Initialize -Description "Alters the Trace 2371 check to say if it should be required `$true or not `$false"
+Set-PSFConfig -Module dbachecks -Name policy.Trace3226 -Validation bool -Value $true -Initialize -Description "Alters the Trace 3226 check to say if it should be required `$true or not `$false"
