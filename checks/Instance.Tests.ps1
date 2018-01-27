@@ -165,7 +165,7 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
     (Get-SqlInstance).ForEach{
         Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
             $count = (Get-DbaDump -SqlInstance $psitem).Count
-            It "dump count of $count does not exceed $maxdumps on $psitem" {
+            It "dump count of $count exceeds $maxdumps on $psitem" {
                 $count -le $maxdumps | Should Be $true
             }
         }
