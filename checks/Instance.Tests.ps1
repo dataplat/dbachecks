@@ -249,3 +249,27 @@ Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEv
         }
     }
 }
+
+Describe "Trace 3226" -Tags TraceFlag3226, TraceFlags, $filename {
+	$trace3226 = Get-DbcConfigValue policy.Trace3226
+	(Get-SqlInstance).ForEach{
+		Context "Testing Trace flag 3226 on $psitem"{
+            It "Trace flag 3226 is set at the instance level $trace3226 on $psitem" {
+                $results = Get-DbaTraceFlag $psitem | Where-Object {$_.TraceFlag -eq "3226"} | Measure-Object
+                $results.count -gt 0 | Should be $trace3226
+            }
+		}
+	}
+}
+
+Describe "Trace 2371" -Tags TraceFlag2371, TraceFlags, $filename {
+	$trace2371 = Get-DbcConfigValue policy.Trace2371
+	(Get-SqlInstance).ForEach{
+		Context "Testing Trace flag 2371 on $psitem"{
+            It "Trace flag 2371 is set at the instance level $trace2371 on $psitem" {
+			    $results = Get-DbaTraceFlag $psitem | Where-Object {$_.TraceFlag -eq "2371"} | Measure-Object
+                $results.count -gt 0 -or (Connect-DbaInstance $psitem).VersionMajor -ge 13 | Should be $trace2371                
+            }
+		}
+	}
+}
