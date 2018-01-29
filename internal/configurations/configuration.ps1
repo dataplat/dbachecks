@@ -42,7 +42,7 @@ Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value "Full" -Initia
 Set-PSFConfig -Module dbachecks -Name policy.validdbowner -Value "sa" -Initialize -Description "The database owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner -Value "sa" -Initialize -Description "The database owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
-Set-PSFConfig -Module dbachecks -Name policy.OLEAutomation -Validation bool -Value $true -Initialize -Description "Alters the OLE Automation check to say if it should be allowed `$true or disallowed `$false"
+Set-PSFConfig -Module dbachecks -Name policy.OLEAutomation -Validation bool -Value $false -Initialize -Description "Alters the OLE Automation check to say if it should be allowed `$true or disallowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
 Set-PSFConfig -Module dbachecks -Name policy.hadrtcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
