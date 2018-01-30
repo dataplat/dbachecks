@@ -249,3 +249,14 @@ Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEv
         }
     }
 }
+
+Describe "OLE Automation" -Tags OLEAutomation, $filename {
+    $OLEAutomation = Get-DbcConfigValue policy.oleautomation
+    (Get-SqlInstance).ForEach{
+        Context "Testing OLE Automation should be disabled on $psitem" {
+            It "OLE Automation is set to $OLEAutomation on $psitem" {
+                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should Be $OLEAutomation
+            }
+        }
+    }
+}
