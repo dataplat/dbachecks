@@ -38,9 +38,20 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing failsafe operator exists on $psitem" {
-            $failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
+            $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
             It "failsafe operator on $psitem is $failsafeoperator" {
                 (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should be $failsafeoperator
+            }
+        }
+    }
+}
+
+Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
+    (Get-SqlInstance).ForEach{
+        Context "Testing database mail profile is set on $psitem" {
+            $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
+            It "database mail profile on $psitem is $databasemailprofile" {
+                (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.DatabaseMailProfile | Should be $databasemailprofile
             }
         }
     }
