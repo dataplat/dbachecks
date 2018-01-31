@@ -37,6 +37,11 @@
     )
     
     process {
+        if (Test-Path -Path $Path -PathType Container) {
+            $Path = "$Path\dbachecks.pbix"
+            Write-PSFMessage -Level Output -Message "Path passed in, appending file name to it."
+            Write-PSFMessage -Level Output -Message "New path: $path"
+        }
         if (-not (Test-Path -Path $Path)) {
             Stop-PSFFunction -Message "$Path does not exist"
             return
@@ -62,7 +67,7 @@
             Invoke-Item -Path $path
         }
         catch {
-            Stop-PSFFunction -Message "Failure" -Exception $_
+            Stop-PSFFunction -Message "Failure" -Exception $_.Exception
             return
         }
     }
