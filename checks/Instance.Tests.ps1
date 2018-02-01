@@ -253,11 +253,16 @@ Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEv
 Describe "Trace 3226" -Tags TraceFlag3226, TraceFlags, $filename {
 	$trace3226 = Get-DbcConfigValue policy.Trace3226
 	(Get-SqlInstance).ForEach{
+        $trace = Get-DbaTraceFlag $psitem -TraceFlag 3226
 		Context "Testing Trace flag 3226 on $psitem"{
             It "Trace flag 3226 is set at the instance level $trace3226 on $psitem" {
-                $results = Get-DbaTraceFlag $psitem | Where-Object {$_.TraceFlag -eq "3226"} | Measure-Object
+                $results = $trace | Where-Object Global | Measure-Object
                 $results.count -gt 0 | Should be $trace3226
             }
+            it "Trace flag 3226 is enabled at the instance level $trace3226 on $psitem"{
+                $results = $trace | Where-Object Status | Measure-Object
+                $results.count -gt 0 | Should be $trace3226
+            }            
 		}
 	}
 }
@@ -265,11 +270,49 @@ Describe "Trace 3226" -Tags TraceFlag3226, TraceFlags, $filename {
 Describe "Trace 2371" -Tags TraceFlag2371, TraceFlags, $filename {
 	$trace2371 = Get-DbcConfigValue policy.Trace2371
 	(Get-SqlInstance).ForEach{
-		Context "Testing Trace flag 2371 on $psitem"{
-            It "Trace flag 2371 is set at the instance level $trace2371 on $psitem" {
-			    $results = Get-DbaTraceFlag $psitem | Where-Object {$_.TraceFlag -eq "2371"} | Measure-Object
-                $results.count -gt 0 -or (Connect-DbaInstance $psitem).VersionMajor -ge 13 | Should be $trace2371                
+		Context "Testing Trace flag 2371 on $psitem"{            
+            $trace = Get-DbaTraceFlag $psitem -TraceFlag 2371
+
+            #pre SQL2016            
+            if ((Connect-DbaInstance $psitem).VersionMajor -lt 13) {
+                It "Trace flag 2371 is set at the instance level $trace2371 on $psitem" {
+                    $results = $trace | Where-Object Global | Measure-Object
+                    $results.count -gt 0 | Should be $trace2371
+                }
+                it "Trace flag 2371 is enabled at the instance level $trace2371 on $psitem"{
+                    $results = $trace | Where-Object Status | Measure-Object
+                    $results.count -gt 0 | Should be $trace2371
+                }  
             }
-		}
+            #SQL2016 and beyond !
+            elseif ($trace2371) {
+                if (($trace | Where-Object {$psitem.Global -and $psitem.Status} | Measure-Object).Count -gt 0){
+                    It "Trace flag 2371 is set at the instance level $trace2371 on $psitem" {
+                        $results = $trace | Where-Object Global | Measure-Object
+                        $results.count -gt 0 | Should be $trace2371
+                    }
+                    it "Trace flag 2371 is enabled at the instance level $trace2371 on $psitem"{
+                        $results = $trace | Where-Object Status | Measure-Object
+                        $results.count -gt 0 | Should be $trace2371
+                    } 
+                }
+                else {                
+                    $dbs = Get-DbaDatabase -SqlInstance $psitem | Where-Object {$psitem.CompatibilityLevel -lt 130 }
+                    if ($dbs) {
+                        $dbs.ForEach{ 
+                            $compat = $psitem.CompatibilityLevel.ToString().Replace("Version","")
+                            It "$psitem on $($psitem.SqlInstance) has a compatability level of $compat" {
+                                $compat | should BeGreaterThan 120
+                            }
+                        }
+                    }
+                    else {
+                        It "All databases on $psitem have a compatability of at least 130" {
+                            $true | Should Be $true
+                        }
+                    }
+                }
+            }
+        }
 	}
 }
