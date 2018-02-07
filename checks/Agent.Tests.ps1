@@ -22,11 +22,11 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
             $operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
             $results = Get-DbaAgentOperator -SqlInstance $psitem -Operator $operatorname
             foreach ($result in $results) {
-                It "operator name on $psitem is in $operatorname" {
+                It "operator name on $psitem exists" {
                     $result.Name -in $operatorname| Should be $true
                 }
                 if ($operatoremail) {
-                    It "operator email on $psitemis in $operatoremail" {
+                    It "operator email on $psitem is correct" {
                         $result.EmailAddress -in $operatoremail | Should be $true
                     }
                 }
@@ -39,7 +39,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing failsafe operator exists on $psitem" {
             $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
-            It "failsafe operator on $psitem is $failsafeoperator" {
+            It "failsafe operator on $psitem exists" {
                 (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should be $failsafeoperator
             }
         }
