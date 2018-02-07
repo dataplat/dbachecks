@@ -62,6 +62,27 @@ Set-PSFConfig -Module dbachecks -Name policy.LogFileSizePercentage -Validation i
 Set-PSFConfig -Module dbachecks -Name policy.LogFileSizeComparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
 Set-PSFConfig -Module dbachecks -Name policy.filebalancetolerance -Validation integer -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
 
+# Policy for Ola Hallengren Maintenance Solution
+Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
+Set-PSFConfig -Module dbachecks -Name policy.ola.database -Validation string -Value 'master' -Initialize -Description "The database where Ola's maintenance solution is installed"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullenabled -Validation bool -Value $true -Initialize -Description "Alters the Full System Database Backup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullenabled -Validation bool -Value $true -Initialize -Description "Alters the Full User Database Backup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffenabled -Validation bool -Value $true -Initialize -Description "Alters the Diff User Database Backup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogenabled -Validation bool -Value $true -Initialize -Description "Alters the Log User Database Backup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullscheduled -Validation bool -Value $true -Initialize -Description "Alters the Full System Database Backup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullscheduled -Validation bool -Value $true -Initialize -Description "Alters the Full User Database Backup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffscheduled -Validation bool -Value $true -Initialize -Description "Alters the Diff User Database Backup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogscheduled -Validation bool -Value $true -Initialize -Description "Alters the Log User Database Backup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullretention -Validation integer -Value 192 -Initialize -Description "Alters the Full System Database Backup retention to check the # of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullretention -Validation integer -Value 192 -Initialize -Description "Alters the Full User Database Backup retention to check the # of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffretention -Validation integer -Value 192 -Initialize -Description "Alters the Diff User Database Backup retention to check the # of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogretention -Validation integer -Value 192 -Initialize -Description "Alters the Log User Database Backup retention to check the # of hours"
+
+# The frequency of the Ola Hallengrens User Full backups 
+        # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
+        # for full options
+        # 1 for Sunday 127 for every day
+
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
