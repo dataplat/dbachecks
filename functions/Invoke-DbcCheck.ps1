@@ -52,7 +52,7 @@
             To suppress the host output, use the Quiet parameter.
 
         .PARAMETER OutputFormat
-            The format of output. Two formats of output are supported: NUnitXML and LegacyNUnitXML.
+            The format of output. Currently, only NUnitXML is supported. 
 
         .PARAMETER Strict
             Makes Pending and Skipped tests to Failed tests. Useful for continuous integration where you need to make sure all tests passed.
