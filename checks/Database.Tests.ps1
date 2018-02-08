@@ -231,7 +231,7 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
     $maxfull = Get-DbcConfigValue policy.backupfullmaxdays
     (Get-SqlInstance).ForEach{
         Context "Testing last full backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
+            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -gt (Get-Date).AddDays(-$maxfull)}).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) should be less than $maxfull days" {
                     $psitem.LastFullBackup | Should BeGreaterThan (Get-Date).AddDays(- ($maxfull))
@@ -243,9 +243,10 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
 
 Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA, $filename {
     $maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
+    $maxfull = Get-DbcConfigValue policy.backupfullmaxdays    
     (Get-SqlInstance).ForEach{
         Context "Testing last diff backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject }).ForEach{
+            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject -and $_.CreateDate -gt (Get-Date).AddDays(-$maxfull) }).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) should be less than $maxdiff hours" {
                     $psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours(- ($maxdiff))
@@ -257,9 +258,10 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
 
 Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, $filename {
     $maxlog = Get-DbcConfigValue policy.backuplogmaxminutes
+    $maxfull = Get-DbcConfigValue policy.backupfullmaxdays    
     (Get-SqlInstance).ForEach{
         Context "Testing last log backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject }).ForEach{
+            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject -and $_.CreateDate -gt (Get-Date).AddDays(-$maxfull) }).ForEach{
                 if ($psitem.RecoveryModel -ne 'Simple') {
                     $offline = ($psitem.Status -match "Offline")
                     It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) should be less than $maxlog minutes" {
