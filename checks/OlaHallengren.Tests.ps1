@@ -18,27 +18,29 @@ Describe "Ola maintenance solution installed" -Tags OlaInstalled, $filename{
     }
 }
 
-Class OlaJob
-{
-    [ValidateNotNullOrEmpty()][String]$JobName
-    [ValidateNotNullOrEmpty()][string]$prefix
-    [Bool]
-}
-
 $jobnames = @()
-$jobnames += [OlaJob]@{JobName='DatabaseBackup - SYSTEM_DATABASES - FULL'; prefix='SystemFull'}
-$jobnames += [OlaJob]@{JobName='DatabaseBackup - USER_DATABASES - FULL'; prefix='UserFull'}
-$jobnames += [OlaJob]@{JobName='DatabaseBackup - USER_DATABASES - DIFF'; prefix='UserDiff'}
-$jobnames += [OlaJob]@{JobName='DatabaseBackup - USER_DATABASES - LOG'; prefix='UserLog'}
+$jobnames += [pscustomobject]@{JobName='DatabaseBackup - SYSTEM_DATABASES - FULL';      prefix='SystemFull'}
+$jobnames += [pscustomobject]@{JobName='DatabaseBackup - USER_DATABASES - FULL';        prefix='UserFull'}
+$jobnames += [pscustomobject]@{JobName='DatabaseBackup - USER_DATABASES - DIFF';        prefix='UserDiff'}
+$jobnames += [pscustomobject]@{JobName='DatabaseBackup - USER_DATABASES - LOG';         prefix='UserLog'}
+$jobnames += [pscustomobject]@{JobName='CommandLog Cleanup';                            prefix='CommandLog'}
+$jobnames += [pscustomobject]@{JobName='DatabaseIntegrityCheck - SYSTEM_DATABASES';     prefix='SystemIntegrityCheck'}
+$jobnames += [pscustomobject]@{JobName='DatabaseIntegrityCheck - USER_DATABASES';       prefix='UserIntegrityCheck'}
+$jobnames += [pscustomobject]@{JobName='IndexOptimize - USER_DATABASES';                prefix='UserIndexOptimize'}
+$jobnames += [pscustomobject]@{JobName='Output File Cleanup';                           prefix='OutputFileCleanup'}
+$jobnames += [pscustomobject]@{JobName='sp_delete_backuphistory';                       prefix='DeleteBackupHistory'}
+$jobnames += [pscustomobject]@{JobName='sp_purge_jobhistory';                           prefix='PurgeJobHistory'}
 
 $jobnames | ForEach-Object {    
-    $tagname = "Ola$($JobPrefix)"
-    $JobName = $PSItem.Jobname
     $JobPrefix = $psitem.prefix
+    $tagname = "Ola$($JobPrefix)"
+    $JobName = $PSItem.Jobname    
     $Enabled = Get-DbcConfigValue "policy.ola.$($JobPrefix)enabled"
-    $Scheduled = Get-DbcConfigValue "policy.ola.$($JobPrefix)scheduled"
-    $Retention = Get-DbcConfigValue "policy.ola.$($JobPrefix)retention"
-    
+    $Scheduled = Get-DbcConfigValue "policy.ola.$($JobPrefix)scheduled"    
+    $Retention = Get-DbcConfigValue "policy.ola.$($JobPrefix)retention"     
+
+    Write-PSFMessage -Level Host -Message "$jobname / $JobPrefix / $tagname"
+
     Describe "Ola - $Jobname" -tags $tagname, OlaJobs, $filename {
         (Get-SqlInstance).ForEach{
             $job = Get-DbaAgentJob -SqlInstance $PSItem -Job $JobName
@@ -55,13 +57,16 @@ $jobnames | ForEach-Object {
                     $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object ).Count -gt 0
                     $results | Should BeGreaterThan 0 
                 }
-            }             
-            Context "Checking the backup retention on $psitem" {
-                $results = (($job.JobSteps | Where-Object {$_.SubSystem -eq "CmdExec"}).Command.Split("@") | Where-Object {$_ -match "CleanupTime"}).split("=")[1].split(",").split(" ")[1]
-                It "Is the backup retention set to at least $Retention hours" {
-                    $results | Should BeGreaterThan ($Retention -1 )
+            }      
+
+            if ($Retention) {
+                Context "Checking the backup retention on $psitem" {
+                    $results = (($job.JobSteps | Where-Object {$_.SubSystem -eq "CmdExec"}).Command.Split("@") | Where-Object {$_ -match "CleanupTime"})
+                    It "Is the backup retention set to at least $Retention hours" {                   
+                        $results.split("=")[1].split(",").split(" ")[1] | Should BeGreaterThan ($Retention -1 )
+                    }
                 }
             }
         }
-    }
+    }    
 }

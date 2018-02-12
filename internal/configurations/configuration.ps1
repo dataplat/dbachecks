@@ -77,6 +77,20 @@ Set-PSFConfig -Module dbachecks -name policy.ola.systemfullretention -Validation
 Set-PSFConfig -Module dbachecks -name policy.ola.userfullretention -Validation integer -Value 192 -Initialize -Description "Alters the Full User Database Backup retention to check the # of hours"
 Set-PSFConfig -Module dbachecks -name policy.ola.userdiffretention -Validation integer -Value 192 -Initialize -Description "Alters the Diff User Database Backup retention to check the # of hours"
 Set-PSFConfig -Module dbachecks -name policy.ola.userlogretention -Validation integer -Value 192 -Initialize -Description "Alters the Log User Database Backup retention to check the # of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogenabled -Validation bool -Value $true -Initialize -Description "Alters the CommandLog Cleanup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogscheduled -Validation bool -Value $true -Initialize -Description "Alters the CommandLog Cleanup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Alters the System Database Integrity check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Alters the System Database Integrity check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Alters the User Database Integrity check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Alters the User Database Integrity check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizeenabled -Validation bool -Value $true -Initialize -Description "Alters the User Index Optimization check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizescheduled -Validation bool -Value $true -Initialize -Description "Alters the User Index Optimization check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupenabled -Validation bool -Value $true -Initialize -Description "Alters the Output File Cleanup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupscheduled -Validation bool -Value $true -Initialize -Description "Alters the Output File Cleanup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryenabled -Validation bool -Value $true -Initialize -Description "Alters the Delete Backup History check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryscheduled -Validation bool -Value $true -Initialize -Description "Alters the Delete Backup History check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryenabled -Validation bool -Value $true -Initialize -Description "Alters the Purge Job History check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Validation bool -Value $true -Initialize -Description "Alters the Purge Job History check to say if it should be scheduled `$true or disabled `$false"
 
 # The frequency of the Ola Hallengrens User Full backups 
         # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
