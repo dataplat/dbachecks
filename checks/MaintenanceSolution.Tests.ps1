@@ -39,7 +39,7 @@ $jobnames | ForEach-Object {
     $Scheduled = Get-DbcConfigValue "policy.ola.$($JobPrefix)scheduled"    
     $Retention = Get-DbcConfigValue "policy.ola.$($JobPrefix)retention"     
 
-    Write-PSFMessage -Level Host -Message "$jobname / $JobPrefix / $tagname"
+    #Write-PSFMessage -Level Host -Message "$jobname / $JobPrefix / $tagname"
 
     Describe "Ola - $Jobname" -tags $tagname, OlaJobs, $filename {
         (Get-SqlInstance).ForEach{
