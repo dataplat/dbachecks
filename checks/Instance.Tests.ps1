@@ -18,22 +18,20 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
     (Get-ComputerName).ForEach{
         Context "Testing SQL Browser Service on $psitem" {
-            @(Get-DbaSqlService -ComputerName $psitem).ForEach{
-                It "SQL browser service on $($psitem.InstanceName) should be Stopped unless multiple instances are installed" {
-                    if (($psitem.ServiceType -eq "Engine").count -eq 1) {
-                        $psitem.State | Should be "Stopped"
-                    }
-                    else {
-                        $psitem.State | Should be "Running"
-                    }
+            It "SQL browser service on $psitem should be Stopped unless multiple instances are installed" {
+                if ((Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
+                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should be "Stopped"
                 }
-                It "SQL browser service startmode should be Disabled on $($psitem.InstanceName) unless multiple instances are installed" {
-                    if (($psitem.ServiceType -eq "Engine").count -eq 1) {
-                        $psitem.StartMode | Should be "Disabled"
-                    }
-                    else {
-                        $psitem.StartMode | Should be "Automatic"
-                    }
+                else {
+                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State| Should be "Running"
+                }
+            }
+            It "SQL browser service startmode should be Disabled on $psitem unless multiple instances are installed" {
+                if ((Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
+                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should be "Disabled"
+                }
+                else {
+                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).StartMode| Should be "Automatic"
                 }
             }
         }
