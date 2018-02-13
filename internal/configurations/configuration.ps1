@@ -43,6 +43,7 @@ Set-PSFConfig -Module dbachecks -Name policy.validdbowner -Value "sa" -Initializ
 Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner -Value "sa" -Initialize -Description "The database owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Value $false -Initialize -Description "Alters the OLE Automation check to say if it should be enabled `$true or disabled `$false"
+
 Set-PSFConfig -Module dbachecks -Name policy.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
 Set-PSFConfig -Module dbachecks -Name policy.hadrtcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
@@ -62,6 +63,41 @@ Set-PSFConfig -Module dbachecks -Name policy.logfilecount -Validation integer -V
 Set-PSFConfig -Module dbachecks -Name policy.LogFileSizePercentage -Validation integer -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
 Set-PSFConfig -Module dbachecks -Name policy.LogFileSizeComparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
 Set-PSFConfig -Module dbachecks -Name policy.filebalancetolerance -Validation integer -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
+
+# Policy for Ola Hallengren Maintenance Solution
+Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
+Set-PSFConfig -Module dbachecks -Name policy.ola.database -Validation string -Value 'master' -Initialize -Description "The database where Ola's maintenance solution is installed"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullenabled -Validation bool -Value $true -Initialize -Description "Alters the Full System Database Backup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullenabled -Validation bool -Value $true -Initialize -Description "Alters the Full User Database Backup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffenabled -Validation bool -Value $true -Initialize -Description "Alters the Diff User Database Backup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogenabled -Validation bool -Value $true -Initialize -Description "Alters the Log User Database Backup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullscheduled -Validation bool -Value $true -Initialize -Description "Alters the Full System Database Backup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullscheduled -Validation bool -Value $true -Initialize -Description "Alters the Full User Database Backup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffscheduled -Validation bool -Value $true -Initialize -Description "Alters the Diff User Database Backup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogscheduled -Validation bool -Value $true -Initialize -Description "Alters the Log User Database Backup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullretention -Validation integer -Value 192 -Initialize -Description "Alters the Full System Database Backup retention to check the # of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullretention -Validation integer -Value 192 -Initialize -Description "Alters the Full User Database Backup retention to check the # of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffretention -Validation integer -Value 192 -Initialize -Description "Alters the Diff User Database Backup retention to check the # of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogretention -Validation integer -Value 192 -Initialize -Description "Alters the Log User Database Backup retention to check the # of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogenabled -Validation bool -Value $true -Initialize -Description "Alters the CommandLog Cleanup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogscheduled -Validation bool -Value $true -Initialize -Description "Alters the CommandLog Cleanup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Alters the System Database Integrity check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Alters the System Database Integrity check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Alters the User Database Integrity check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Alters the User Database Integrity check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizeenabled -Validation bool -Value $true -Initialize -Description "Alters the User Index Optimization check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizescheduled -Validation bool -Value $true -Initialize -Description "Alters the User Index Optimization check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupenabled -Validation bool -Value $true -Initialize -Description "Alters the Output File Cleanup check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupscheduled -Validation bool -Value $true -Initialize -Description "Alters the Output File Cleanup check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryenabled -Validation bool -Value $true -Initialize -Description "Alters the Delete Backup History check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryscheduled -Validation bool -Value $true -Initialize -Description "Alters the Delete Backup History check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryenabled -Validation bool -Value $true -Initialize -Description "Alters the Purge Job History check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Validation bool -Value $true -Initialize -Description "Alters the Purge Job History check to say if it should be scheduled `$true or disabled `$false"
+
+# The frequency of the Ola Hallengrens User Full backups 
+        # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
+        # for full options
+        # 1 for Sunday 127 for every day
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
