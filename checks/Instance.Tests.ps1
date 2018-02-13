@@ -4,10 +4,10 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
     (Get-SqlInstance).ForEach{
         Context "Testing SQL Engine Service on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
-                It "SQL agent service account should be running on $($psitem.InstanceName)" {
+                It "SQL Engine service account should be running on $($psitem.InstanceName)" {
                     $psitem.State | Should be "Running"
                 }
-                It "SQL agent service account should have a start mode of Automatic on $($psitem.InstanceName)" {
+                It "SQL Engine service account should have a start mode of Automatic on $($psitem.InstanceName)" {
                     $psitem.StartMode | Should be "Automatic"
                 }
             }
