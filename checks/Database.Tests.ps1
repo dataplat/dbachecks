@@ -67,7 +67,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
     $targetowner = Get-DbcConfigValue policy.validdbowner
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -EnableException:$false).ForEach{
+            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase master,msdb,model,tempdb -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should be $targetowner on $($psitem.Server)" {
                     $psitem.CurrentOwner | Should Be $psitem.TargetOwner
                 }
@@ -80,7 +80,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
     $targetowner = Get-DbcConfigValue policy.invaliddbowner
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -EnableException:$false).ForEach{
+            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase master,msdb,model,tempdb -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should Not be $targetowner on $($psitem.Server)" {
                     $psitem.CurrentOwner | Should Not Be $psitem.TargetOwner
                 }
