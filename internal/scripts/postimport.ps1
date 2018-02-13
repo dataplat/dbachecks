@@ -21,7 +21,7 @@ if (-not (Test-Path -Path $script:maildirectory)) {
 $repos = Get-CheckRepo
 $collection = $groups = $repofiles = @()
 foreach ($repo in $repos) {
-    $repofiles += Get-ChildItem "$repo\*.Tests.ps1"
+    $repofiles += (Get-ChildItem "$repo\*.Tests.ps1" | Where-Object { $_.Name -ne 'MaintenanceSolution.Tests.ps1' })
 }
 
 foreach ($file in $repofiles) {
@@ -46,12 +46,35 @@ foreach ($file in $repofiles) {
         $tags = Select-String -InputObject $string -Pattern '-Tags[\s]*(.+)[\s]*\, \$filename' | ForEach-Object { $_.matches.Groups[1].Value }
         if ($filename -eq "HADR" -and $type -eq $null) { $type = "ComputerName" }
         $collection += [pscustomobject]@{
-            Group       = $filename
-            Type        = $type
-            Description = $describe
-            UniqueTag   = $null
-            AllTags     = "$tags, $filename"
+            Group         = $filename
+            Type          = $type
+            Description   = $describe
+            UniqueTag     = $null
+            AllTags       = "$tags, $filename"
         }
+    }
+}
+
+$olanames = @()
+$olanames += [pscustomobject]@{ Description = 'Ola System Full Backup'; prefix = 'SystemFull' }
+$olanames += [pscustomobject]@{ Description = 'Ola System Full Backup'; prefix = 'UserFull' }
+$olanames += [pscustomobject]@{ Description = 'Ola User Diff Backup'; prefix = 'UserDiff' }
+$olanames += [pscustomobject]@{ Description = 'Ola User Log Backup'; prefix = 'UserLog' }
+$olanames += [pscustomobject]@{ Description = 'Ola CommandLog Cleanup'; prefix = 'CommandLog' }
+$olanames += [pscustomobject]@{ Description = 'Ola System Integrity Check'; prefix = 'SystemIntegrityCheck' }
+$olanames += [pscustomobject]@{ Description = 'Ola User Integrity Check'; prefix = 'UserIntegrityCheck' }
+$olanames += [pscustomobject]@{ Description = 'Ola User Index Optimize'; prefix = 'UserIndexOptimize' }
+$olanames += [pscustomobject]@{ Description = 'Ola Output File Cleanup'; prefix = 'OutputFileCleanup' }
+$olanames += [pscustomobject]@{ JobName = 'Ola Delete Backup History'; prefix = 'DeleteBackupHistory' }
+$olanames += [pscustomobject]@{ JobName = 'Ola Purge Job History'; prefix = 'PurgeJobHistory' }
+
+foreach ($olaname in $olanames) {
+    $collection += [pscustomobject]@{
+        Group          = 'MaintenancePlan'
+        Type           = 'Sqlinstance'
+        Description    = $olaname.Description
+        UniqueTag      = $olaname.Prefix
+        AllTags        = "$($olaname.Prefix), MaintenancePlan"
     }
 }
 

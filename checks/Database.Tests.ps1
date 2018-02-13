@@ -193,7 +193,7 @@ Describe "Page Verify" -Tags PageVerify, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing page verify on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should has page verify set to $pageverify" {
+                It "$psitem on $($psitem.SqlInstance) should have page verify set to $pageverify" {
                     $psitem.PageVerify | Should Be $pageverify
                 }
             }
@@ -206,7 +206,7 @@ Describe "Auto Close" -Tags AutoClose, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Close on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should has Auto Close set to $autoclose" {
+                It "$psitem on $($psitem.SqlInstance) should have Auto Close set to $autoclose" {
                     $psitem.AutoClose | Should Be $autoclose
                 }
             }
@@ -219,7 +219,7 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Shrink on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should has Auto Shrink set to $autoshrink" {
+                It "$psitem on $($psitem.SqlInstance) should have Auto Shrink set to $autoshrink" {
                     $psitem.AutoShrink | Should Be $autoshrink
                 }
             }
@@ -351,7 +351,7 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Create Statistics on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should has Auto Create Statistics set to $autocreatestatistics" {
+                It "$psitem on $($psitem.SqlInstance) should have Auto Create Statistics set to $autocreatestatistics" {
                     $psitem.AutoCreateStatisticsEnabled | Should Be $autocreatestatistics
                 }
             }
@@ -359,12 +359,12 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
     }
 }
 
-Describe "Auto Update Statistics" -Tags autoupdatestatistics, $filename {
+Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
     $autoupdatestatistics = Get-DbcConfigValue policy.autoupdatestatistics
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Update Statistics on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should has Auto Update Statistics set to $autoupdatestatistics" {
+                It "$psitem on $($psitem.SqlInstance) should have Auto Update Statistics set to $autoupdatestatistics" {
                     $psitem.AutoUpdateStatisticsEnabled | Should Be $autoupdatestatistics
                 }
             }
@@ -372,7 +372,7 @@ Describe "Auto Update Statistics" -Tags autoupdatestatistics, $filename {
     }
 }
 
-Describe "Auto Update Statistics Asynchronously" -Tags autoupdatestatisticsasynchronously, $filename {
+Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, $filename {
     $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.autoupdatestatisticsasynchronously
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Update Statistics Asynchronously on $psitem" {

@@ -22,11 +22,11 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
             $operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
             $results = Get-DbaAgentOperator -SqlInstance $psitem -Operator $operatorname
             foreach ($result in $results) {
-                It "operator name on $psitem is in $operatorname" {
+                It "operator name on $psitem exists" {
                     $result.Name -in $operatorname| Should be $true
                 }
                 if ($operatoremail) {
-                    It "operator email on $psitemis in $operatoremail" {
+                    It "operator email on $psitem is correct" {
                         $result.EmailAddress -in $operatoremail | Should be $true
                     }
                 }
@@ -38,9 +38,20 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing failsafe operator exists on $psitem" {
-            $failsafeoperator = Get-DbcConfigValue  agent.failsafeoperator
-            It "failsafe operator on $psitem is $failsafeoperator" {
+            $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
+            It "failsafe operator on $psitem exists" {
                 (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should be $failsafeoperator
+            }
+        }
+    }
+}
+
+Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
+    (Get-SqlInstance).ForEach{
+        Context "Testing database mail profile is set on $psitem" {
+            $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
+            It "database mail profile on $psitem is $databasemailprofile" {
+                (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.DatabaseMailProfile | Should be $databasemailprofile
             }
         }
     }

@@ -42,6 +42,8 @@ Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value "Full" -Initia
 Set-PSFConfig -Module dbachecks -Name policy.validdbowner -Value "sa" -Initialize -Description "The database owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner -Value "sa" -Initialize -Description "The database owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
+Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Value $false -Initialize -Description "Alters the OLE Automation check to say if it should be enabled `$true or disabled `$false"
+
 Set-PSFConfig -Module dbachecks -Name policy.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
 Set-PSFConfig -Module dbachecks -Name policy.hadrtcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
@@ -118,6 +120,7 @@ Set-PSFConfig -Module dbachecks -Name xevent.requiredstoppedsession -Value $null
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
+Set-PSFConfig -Module dbachecks -Name agent.databasemailprofile -Value $null -Initialize -Description "Name of the Database Mail Profile in SQL Agent"
 
 # domain
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"

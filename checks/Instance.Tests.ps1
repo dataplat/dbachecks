@@ -165,7 +165,7 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
     (Get-SqlInstance).ForEach{
         Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
             $count = (Get-DbaDump -SqlInstance $psitem).Count
-            It "dump count of $count does not exceed $maxdumps on $psitem" {
+            It "dump count of $count exceeds $maxdumps on $psitem" {
                 $count -le $maxdumps | Should Be $true
             }
         }
@@ -245,6 +245,17 @@ Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEv
                         $psitem.Status | Should Be "Stopped"
                     }
                 }
+            }
+        }
+    }
+}
+
+Describe "OLE Automation" -Tags OLEAutomation, $filename {
+    $OLEAutomation = Get-DbcConfigValue policy.oleautomation
+    (Get-SqlInstance).ForEach{
+        Context "Testing OLE Automation on $psitem" {
+            It "OLE Automation is set to $OLEAutomation on $psitem" {
+                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should Be $OLEAutomation
             }
         }
     }

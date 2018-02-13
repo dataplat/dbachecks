@@ -36,7 +36,7 @@
                 @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
                     $output = $psitem | Where-Object {
                         $_.Group -match $Pattern -or $_.Description -match $Pattern -or
-                        $_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern
+                        $_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern -or $_.Type -match $Pattern
                     }
                     @($output).ForEach{
                         Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'Description', 'UniqueTag', 'AllTags'
@@ -47,7 +47,7 @@
                 @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
                     $output = $psitem | Where-Object {
                         $_.Group -like $Pattern -or $_.Description -like $Pattern -or
-                        $_.UniqueTag -like $Pattern -or $_.AllTags -like $Pattern
+                        $_.UniqueTag -like $Pattern -or $_.AllTags -like $Pattern -or $_.Type -match $Pattern
                     }
                     @($output).ForEach{
                         Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'Description', 'UniqueTag', 'AllTags'
