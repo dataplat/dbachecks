@@ -3,7 +3,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Describe "Database Collation" -Tags DatabaseCollation, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database collation on $psitem" {
-            @(Test-DbaDatabaseCollation -SqlInstance $psitem).ForEach{
+            @(Test-DbaDatabaseCollation -SqlInstance $psitem -ExcludeDatabase ReportingServer,ReportingServerTempDB ).ForEach{
                 It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                     $psitem.ServerCollation | Should Be $psitem.DatabaseCollation
                 }
