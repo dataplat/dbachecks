@@ -450,3 +450,15 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
         }
     }
 }
+
+Describe "Optimize for Ad Hoc Workloads" -Tags AdHocWorkloads, $filename {
+    (Get-SqlInstance).ForEach{
+        Context "Testing database has optimize for ad hoc workloads enabled on $psitem" {
+            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
+                It "$($psitem.Name) should have optimize for ad hoc workloads set to 1 on $($psitem.Parent)" {
+                    (Get-DbaSpConfigure -SqlInstance $psitem.Parent -Database $psitem.Name).RunningValue -eq 1 | Should be $true
+                }
+            }
+        }
+    }
+}
