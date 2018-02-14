@@ -177,8 +177,9 @@
         [Parameter(Position=0)]
         [Alias("Tags", "Tag", "Checks")]
         [string[]]$Check,
+        [AllowEmptyCollection()]
         [Alias("ExcludeTags", "ExcludeTag", "ExcludeChecks")]
-        [string[]]$ExcludeCheck,
+        [string[]]$ExcludeCheck = (Get-PSFConfigValue -FullName 'dbachecks.command.invokedbccheck.excludecheck' -Fallback @()),
         [switch]$PassThru,
         [DbaInstance[]]$SqlInstance,
         [DbaInstance[]]$ComputerName,
