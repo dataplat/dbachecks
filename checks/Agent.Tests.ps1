@@ -21,13 +21,15 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
             $operatorname = Get-DbcConfigValue agent.dbaoperatorname
             $operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
             $results = Get-DbaAgentOperator -SqlInstance $psitem -Operator $operatorname
-            foreach ($result in $results) {
-                It "operator name on $psitem exists" {
-                    $result.Name -in $operatorname| Should -Be $true
+            @($operatorname).ForEach{
+                It "operator name $psitem exists" {
+                    $psitem | Should -BeIn $Results.Name
                 }
+            }
+            @($operatoremail).ForEach{
                 if ($operatoremail) {
-                    It "operator email on $psitem is correct" {
-                        $result.EmailAddress -in $operatoremail | Should -Be $true
+                    It "operator email $operatoremail is correct" {
+                        $psitem | Should -Bein $results.EmailAddress
                     }
                 }
             }
