@@ -51,8 +51,8 @@ Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
     (Get-ComputerName).ForEach{
         Context "Testing Disk Space on $psitem" {
             @(Get-DbaDiskSpace -ComputerName $psitem).ForEach{
-                It "$($psitem.Name) with $($psitem.PercentFree)% free Should -Be at least $free% free on $($psitem.ComputerName)" {
-                    $psitem.PercentFree -ge $free | Should -Be $true
+                It "$($psitem.Name) with $($psitem.PercentFree)% free should be at least $free% free on $($psitem.ComputerName)" {
+                    $psitem.PercentFree  | Should -BeGreaterThan $free
                 }
             }
         }
@@ -64,12 +64,14 @@ Describe "Ping Computer" -Tags PingComputer, $filename {
     $pingcount = Get-DbcConfigValue policy.connection.pingcount 
     $skipping = Get-DbcConfigValue skip.connection.ping
     (Get-ComputerName).ForEach{
-        Context "Testing Disk Space on $psitem" {
+        Context "Testing Ping to  $psitem" {
             $results = Test-Connection -Count $pingcount -ComputerName $psitem -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ResponseTime
             $avgResponseTime = (($results | Measure-Object -Average).Average) / $pingcount
-            It -skip:$skipping "Average response time (ms) Should -Be less than $pingmsmax for $psitem" {
-                $results.Count -eq $pingcount | Should -Be $true
-                $avgResponseTime -lt $pingmsmax | Should -Be $true
+            It -skip:$skipping "Should have pinged $pingcount times for $psitem" {
+                $results.Count  | Should -Be $pingcount
+            }
+            It -skip:$skipping "Average response time (ms) should Be less than $pingmsmax (ms) for $psitem" {
+                $avgResponseTime | Should -BeLessThan $pingmsmax 
             }
         }
     }

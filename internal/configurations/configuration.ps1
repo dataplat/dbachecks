@@ -136,6 +136,8 @@ Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredstoppedsession -Valu
 # sp_WhoIsActive
 Set-PSFConfig -Module dbachecks -Name policy.whoisactive.database -Value "master" -Initialize -Description "Which database should contain the sp_WhoIsActive stored procedure"
 
+#Build
+Set-PSFConfig -Module dbachecks -Name policy.build.warningwindow -Value 6 -Initialize -Description "The number of months prior to a build being unsupported that you want warning about"
 
 # The frequency of the Ola Hallengrens User Full backups 
         # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
