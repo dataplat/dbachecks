@@ -207,7 +207,7 @@ Describe "Page Verify" -Tags PageVerify, $filename {
 }
 
 Describe "Auto Close" -Tags AutoClose, $filename {
-    $autoclose = Get-DbcConfigValue policy.autoclose
+    $autoclose = Get-DbcConfigValue policy.database.autoclose
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Close on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
@@ -220,7 +220,7 @@ Describe "Auto Close" -Tags AutoClose, $filename {
 }
 
 Describe "Auto Shrink" -Tags AutoShrink, $filename {
-    $autoshrink = Get-DbcConfigValue policy.autoshrink
+    $autoshrink = Get-DbcConfigValue policy.database.autoshrink
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Shrink on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
@@ -294,7 +294,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
 }
 
 Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
-    $vlfmax = Get-DbcConfigValue policy.virtuallogfilemax
+    $vlfmax = Get-DbcConfigValue policy.database.maxvlf
     (Get-SqlInstance).ForEach{
         Context "Testing Database VLFs on $psitem" {
             @(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{

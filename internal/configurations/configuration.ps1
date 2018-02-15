@@ -77,10 +77,15 @@ Set-PSFConfig -Module dbachecks -Name policy.hadr.tcpport -Value "1433" -Initial
 #Dump Files
 Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
 
+#pageverify
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
-Set-PSFConfig -Module dbachecks -Name policy.autoclose -Validation bool -Value $false -Initialize -Description "Alters the Auto Close check to say if it should be allowed `$true or dissalower `$false"
-Set-PSFConfig -Module dbachecks -Name policy.autoshrink -Validation bool -Value $false -Initialize -Description "Alters the Auto Shrink check to say if it should be allowed `$true or dissalower `$false"
-Set-PSFConfig -Module dbachecks -Name policy.virtuallogfilemax -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
+
+# Database
+Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool -Value $false -Initialize -Description "Alters the Auto Close check to say if it should be allowed `$true or dissalower `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation bool -Value $false -Initialize -Description "Alters the Auto Shrink check to say if it should be allowed `$true or dissalower `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
+
+
 Set-PSFConfig -Module dbachecks -Name policy.pingmsmax -Validation integer -Value 10 -Initialize -Description "Maximum response time in ms"
 Set-PSFConfig -Module dbachecks -Name policy.pingcount -Validation integer -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
 Set-PSFConfig -Module dbachecks -Name policy.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Create Statistics check to say if it should be enabled `$true or disabled `$false"
