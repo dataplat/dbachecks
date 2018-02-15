@@ -171,11 +171,15 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
 }
 
 Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
+    $BuildWarning = Get-DbcConfigValue -Name  policy.build.warningwindow
     (Get-SqlInstance).ForEach{
         Context "Checking that build is still supportedby Microsoft for $psitem" {
             $results = Get-DbaSqlBuildReference -SqlInstance $psitem
-            It "$($results.Build) on $psitem is still suported" {
-                $results.SupportedUntil -ge (Get-Date) | Should -Be $true
+            It "$($results.Build) on $psitem is still supported" {
+                $results.SupportedUntil  | Should -BeGreaterThan (Get-Date)
+            }
+            It "$($results.Build) on $psitem is supported for more than $BuildWarning Months" {
+                $results.SupportedUntil  | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning)
             }
         }
     }
