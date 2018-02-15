@@ -55,7 +55,7 @@ $jobnames | ForEach-Object {
                 }
                 It "$($JobName) schedules Should -Be enabled - $Scheduled" {
                     $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object ).Count -gt 0
-                    $results | Should BeGreaterThan 0 
+                    $results | Should -BeGreaterThan 0 
                 }
             }      
 
@@ -63,7 +63,7 @@ $jobnames | ForEach-Object {
                 Context "Checking the backup retention on $psitem" {
                     $results = (($job.JobSteps | Where-Object {$_.SubSystem -eq "CmdExec"}).Command.Split("@") | Where-Object {$_ -match "CleanupTime"})
                     It "Is the backup retention set to at least $Retention hours" {                   
-                        $results.split("=")[1].split(",").split(" ")[1] | Should BeGreaterThan ($Retention -1 )
+                        $results.split("=")[1].split(",").split(" ")[1] | Should -BeGreaterThan ($Retention -1 )
                     }
                 }
             }

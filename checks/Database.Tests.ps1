@@ -100,7 +100,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
             @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name).ForEach{
                 if ($psitem.Database -ne 'tempdb') {
                     It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should -Be less than $maxdays" {
-                        $psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays( - ($maxdays))
+                        $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).AddDays( - ($maxdays))
                     }
 
                     It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
@@ -240,7 +240,7 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
             @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) Should -Be less than $maxfull days" {
-                    $psitem.LastFullBackup | Should BeGreaterThan (Get-Date).AddDays( - ($maxfull))
+                    $psitem.LastFullBackup | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull))
                 }
             }
         }
@@ -255,7 +255,7 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
             @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) Should -Be less than $maxdiff hours" {
-                    $psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours( - ($maxdiff))
+                    $psitem.LastDiffBackup | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff))
                 }
             }
         }
@@ -271,7 +271,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
                 if ($psitem.RecoveryModel -ne 'Simple') {
                     $offline = ($psitem.Status -match "Offline")
                     It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) Should -Be less than $maxlog minutes" {
-                        $psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1)
+                        $psitem.LastLogBackup | Should -BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1)
                     }
                 }
 
@@ -406,12 +406,12 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
                     }
                     if ($datafilegrowthtype -eq "kb") {
                         It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                            $psitem.Growth * 8 | Should BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
+                            $psitem.Growth * 8 | Should -BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
                         }
                     }
                     else {
                         It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                            $psitem.Growth | Should BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
+                            $psitem.Growth | Should -BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
                         }
                     }
                 }
