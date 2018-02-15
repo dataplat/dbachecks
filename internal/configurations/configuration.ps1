@@ -35,23 +35,23 @@ Set-PSFConfig -Module dbachecks -Name policy.storage.backuppath -Value $null -In
 Set-PSFConfig -Module dbachecks -Name policy.backup.testserver -Value $null -Initialize -Description "Destination server for backuptests"
 Set-PSFConfig -Module dbachecks -Name policy.backup.datadir -Value $null -Initialize -Description "Destination server data directory"
 Set-PSFConfig -Module dbachecks -Name policy.backup.logdir -Value $null -Initialize -Description "Destination server log directory"
-Set-PSFConfig -Module dbachecks -Name policy.backup.fullmaxdays -Validation integer -Value 1 -Initialize -Description "Maxmimum number of days before Full Backups are considered outdated"
-Set-PSFConfig -Module dbachecks -Name policy.backup.diffmaxhours -Validation integer -Value 25 -Initialize -Description "Maxmimum number of hours before Diff Backups are considered outdated"
-Set-PSFConfig -Module dbachecks -Name policy.backup.logmaxminutes -Validation integer -Value 15 -Initialize -Description "Maxmimum number of minutes before Log Backups are considered outdated"
-Set-PsFConfig -Module dbachecks -Name policy.backup.newdbgraceperiod -Validation integer -Value 0 -Initialize -Description "The number of hours a newly created database is allowed to not have backups"
+Set-PSFConfig -Module dbachecks -Name policy.backup.fullmaxdays -Value 1 -Initialize -Description "Maxmimum number of days before Full Backups are considered outdated"
+Set-PSFConfig -Module dbachecks -Name policy.backup.diffmaxhours -Value 25 -Initialize -Description "Maxmimum number of hours before Diff Backups are considered outdated"
+Set-PSFConfig -Module dbachecks -Name policy.backup.logmaxminutes -Value 15 -Initialize -Description "Maxmimum number of minutes before Log Backups are considered outdated"
+Set-PsFConfig -Module dbachecks -Name policy.backup.newdbgraceperiod -Value 0 -Initialize -Description "The number of hours a newly created database is allowed to not have backups"
 Set-PSFConfig -Module dbachecks -Name policy.backup.defaultbackupcompreesion -Validation bool -Value $true -Initialize -Description "Default Backup Compression check should be enabled `$true or disabled `$false"
 
 #diskspce
-Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Validation integer -Value 20 -Initialize -Description "Percent disk free"
+Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -Initialize -Description "Percent disk free"
 
 #DBCC
-Set-PSFConfig -Module dbachecks -Name policy.dbcc.maxdays -Validation integer -Value 7 -Initialize -Description "Maxmimum number of days before DBCC CHECKDB is considered outdated"
+Set-PSFConfig -Module dbachecks -Name policy.dbcc.maxdays -Value 7 -Initialize -Description "Maxmimum number of days before DBCC CHECKDB is considered outdated"
 
 #Identity
-Set-PSFConfig -Module dbachecks -Name policy.identity.usagepercent -Validation integer -Value 90 -Initialize -Description "Maxmimum percentage of max of identity column"
+Set-PSFConfig -Module dbachecks -Name policy.identity.usagepercent -Value 90 -Initialize -Description "Maxmimum percentage of max of identity column"
 
 #Network
-Set-PSFConfig -Module dbachecks -Name policy.network.latencymaxms -Validation integer -Value 40 -Initialize -Description "Max network latency average"
+Set-PSFConfig -Module dbachecks -Name policy.network.latencymaxms -Value 40 -Initialize -Description "Max network latency average"
 
 #Recovery Model
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.type -Value "Full" -Initialize -Description "Standard recovery model"
@@ -71,14 +71,14 @@ Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Val
 
 #Connectivity
 Set-PSFConfig -Module dbachecks -Name policy.connection.authscheme  -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
-Set-PSFConfig -Module dbachecks -Name policy.connection.pingmaxms -Validation integer -Value 10 -Initialize -Description "Maximum response time in ms"
-Set-PSFConfig -Module dbachecks -Name policy.connection.pingcount -Validation integer -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
+Set-PSFConfig -Module dbachecks -Name policy.connection.pingmaxms -Value 10 -Initialize -Description "Maximum response time in ms"
+Set-PSFConfig -Module dbachecks -Name policy.connection.pingcount -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
 
 #HADR
 Set-PSFConfig -Module dbachecks -Name policy.hadr.tcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 
 #Dump Files
-Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
+Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize -Description "Maximum number of expected dumps"
 
 #pageverify
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
@@ -86,17 +86,17 @@ Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initi
 # Database
 Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool -Value $false -Initialize -Description "Auto Close should be allowed `$true or dissalowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation bool -Value $false -Initialize -Description "Auto Shrink should be allowed `$true or dissalowed `$false"
-Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
+Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Value 512 -Initialize -Description "Max virtual log files"
 Set-PSFConfig -Module dbachecks -Name policy.database.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Auto Create Statistics should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics -Validation bool -Value $true -Initialize -Description "Auto Update Statistics should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Auto Update Statistics Asynchronously should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthexcludedb -Value @() -Initialize -Description "Databases to exclude from the file growth check"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthtype  -Value "kb" -Initialize -Description "Growth Type should be 'kb' or 'percent'"
-Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthvalue  -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
-Set-PSFConfig -Module dbachecks -Name policy.database.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"
-Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizepercentage -Validation integer -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
+Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthvalue  -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
+Set-PSFConfig -Module dbachecks -Name policy.database.logfilecount -Value 1 -Initialize -Description "The number of Log files expected on a database"
+Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizepercentage -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizecomparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
-Set-PSFConfig -Module dbachecks -Name policy.database.filebalancetolerance -Validation integer -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
+Set-PSFConfig -Module dbachecks -Name policy.database.filebalancetolerance -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
 
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
@@ -109,10 +109,10 @@ Set-PSFConfig -Module dbachecks -name policy.ola.systemfullscheduled -Validation
 Set-PSFConfig -Module dbachecks -name policy.ola.userfullscheduled -Validation bool -Value $true -Initialize -Description "Ola's Full User Database Backup should be scheduled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.userdiffscheduled -Validation bool -Value $true -Initialize -Description "Ola's Diff User Database Backup should be scheduled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.userlogscheduled -Validation bool -Value $true -Initialize -Description "Ola's Log User Database Backup should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.systemfullretention -Validation integer -Value 192 -Initialize -Description "Ola's Full System Database Backup retention number of hours"
-Set-PSFConfig -Module dbachecks -name policy.ola.userfullretention -Validation integer -Value 192 -Initialize -Description "Ola's Full User Database Backup retention number of hours"
-Set-PSFConfig -Module dbachecks -name policy.ola.userdiffretention -Validation integer -Value 192 -Initialize -Description "Ola's Diff User Database Backup retention number of hours"
-Set-PSFConfig -Module dbachecks -name policy.ola.userlogretention -Validation integer -Value 192 -Initialize -Description "Ola's Log User Database Backup retention number of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullretention -Value 192 -Initialize -Description "Ola's Full System Database Backup retention number of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullretention -Value 192 -Initialize -Description "Ola's Full User Database Backup retention number of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffretention -Value 192 -Initialize -Description "Ola's Diff User Database Backup retention number of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogretention -Value 192 -Initialize -Description "Ola's Log User Database Backup retention number of hours"
 Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogenabled -Validation bool -Value $true -Initialize -Description "Ola's CommandLog Cleanup should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogscheduled -Validation bool -Value $true -Initialize -Description "Ola's CommandLog Cleanup should be scheduled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Ola's System Database Integrity should be enabled `$true or disabled `$false"
@@ -172,7 +172,7 @@ Set-PSFConfig -Module dbachecks -Name domain.organizationalunit -Value $null -In
 Set-PSFConfig -Module dbachecks -Name domain.domaincontroller -Value $null -Initialize -Description "The domain controller to process your requests"
 
 # email
-Set-PSFConfig -Module dbachecks -Name mail.failurethreshhold -Value 0 -Validation integer -Initialize -Description "Number of errors that must be present to generate an email report"
+Set-PSFConfig -Module dbachecks -Name mail.failurethreshhold -Value 0 -Initialize -Description "Number of errors that must be present to generate an email report"
 Set-PSFConfig -Module dbachecks -Name mail.smtpserver -Value $null -Validation string -Initialize -Description "Store the name of the smtp server to send email reports"
 Set-PSFConfig -Module dbachecks -Name mail.to -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address to send the report to"
 Set-PSFConfig -Module dbachecks -Name mail.from  -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address the email reports should come from"
