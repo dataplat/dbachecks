@@ -350,7 +350,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
 
     (Get-SqlInstance).ForEach{
         Context "Testing for balanced FileGroups on $psitem" {
-            (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+            (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $FileGroups = $Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Group-Object -Property FileGroupName
                 $FileGroups.ForEach{
