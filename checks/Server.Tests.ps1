@@ -64,12 +64,14 @@ Describe "Ping Computer" -Tags PingComputer, $filename {
     $pingcount = Get-DbcConfigValue policy.connection.pingcount 
     $skipping = Get-DbcConfigValue skip.connection.ping
     (Get-ComputerName).ForEach{
-        Context "Testing Disk Space on $psitem" {
+        Context "Testing Ping to  $psitem" {
             $results = Test-Connection -Count $pingcount -ComputerName $psitem -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ResponseTime
             $avgResponseTime = (($results | Measure-Object -Average).Average) / $pingcount
-            It -skip:$skipping "Average response time (ms) Should -Be less than $pingmsmax for $psitem" {
-                $results.Count -eq $pingcount | Should -Be $true
-                $avgResponseTime -lt $pingmsmax | Should -Be $true
+            It -skip:$skipping "Should have pinged $pingcount times for $psitem" {
+                $results.Count  | Should -Be $pingcount
+            }
+            It -skip:$skipping "Average response time (ms) should Be less than $pingmsmax (ms) for $psitem" {
+                $avgResponseTime | Should -BeLessThan $pingmsmax 
             }
         }
     }
