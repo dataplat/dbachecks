@@ -329,7 +329,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     $LogFileSizeComparison = Get-DbcConfigValue policy.Logfilesizecomparison
     (Get-SqlInstance).ForEach{
         Context "Testing Log File count and size for $psitem" {
-            (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+            (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
                 $Splat = @{$LogFileSizeComparison = $true;
