@@ -60,13 +60,14 @@ Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
 }
 
 Describe "Ping Computer" -Tags PingComputer, $filename {
-    $pingmsmax = Get-DbcConfigValue policy.pingmsmax
-    $pingcount = Get-DbcConfigValue policy.pingcount
+    $pingmsmax = Get-DbcConfigValue policy.connection.pingmaxms 
+    $pingcount = Get-DbcConfigValue policy.connection.pingcount 
+    $skipping = Get-DbcConfigValue skip.connection.ping
     (Get-ComputerName).ForEach{
         Context "Testing Disk Space on $psitem" {
             $results = Test-Connection -Count $pingcount -ComputerName $psitem -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ResponseTime
             $avgResponseTime = (($results | Measure-Object -Average).Average) / $pingcount
-            It "Average response time (ms) should Be less than $pingmsmax for $psitem" {
+            It -skip:$skipping "Average response time (ms) should Be less than $pingmsmax for $psitem" {
                 $results.Count -eq $pingcount | Should Be $true
                 $avgResponseTime -lt $pingmsmax | Should Be $true
             }

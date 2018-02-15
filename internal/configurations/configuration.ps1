@@ -70,6 +70,8 @@ Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Val
 
 #Connectivity
 Set-PSFConfig -Module dbachecks -Name policy.connection.authscheme  -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
+Set-PSFConfig -Module dbachecks -Name policy.connection.pingmaxms -Validation integer -Value 10 -Initialize -Description "Maximum response time in ms"
+Set-PSFConfig -Module dbachecks -Name policy.connection.pingcount -Validation integer -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
 
 #HADR
 Set-PSFConfig -Module dbachecks -Name policy.hadr.tcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
@@ -86,8 +88,6 @@ Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation boo
 Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
 
 
-Set-PSFConfig -Module dbachecks -Name policy.pingmsmax -Validation integer -Value 10 -Initialize -Description "Maximum response time in ms"
-Set-PSFConfig -Module dbachecks -Name policy.pingcount -Validation integer -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
 Set-PSFConfig -Module dbachecks -Name policy.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Create Statistics check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Update Statistics check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Alters the Auto Update Statistics Asynchronously check to say if it should be enabled `$true or disabled `$false"
