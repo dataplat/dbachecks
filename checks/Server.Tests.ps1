@@ -11,8 +11,9 @@ Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
 }
 
 Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
-    $skipremote = Get-DbcConfigValue skip.remotingcheck
-    $authscheme = Get-DbcConfigValue policy.authscheme
+    $skipremote = Get-DbcConfigValue skip.connection.remoting
+    $skipping = Get-DbcConfigValue skip.connection.ping
+    $authscheme = Get-DbcConfigValue policy.connection.authscheme 
     (Get-SqlInstance).ForEach{
         Context "Testing Instance Connection on $psitem" {
             $connection = Test-DbaConnection -SqlInstance $psitem
@@ -22,7 +23,7 @@ Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename
             It "auth scheme should Be $authscheme on $psitem" {
                 $connection.AuthScheme | Should Be $authscheme
             }
-            It "$psitem is pingable" {
+            It -Skip:$skipping "$psitem is pingable" {
                 $connection.IsPingable | Should Be $true
             }
             It -Skip:$skipremote "$psitem Is PSRemotebale" {
