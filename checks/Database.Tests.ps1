@@ -48,7 +48,7 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
 }
 
 Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filename {
-    $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod 
+    $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod 
     (Get-SqlInstance).ForEach{
         Context "VerifyOnly tests of last backups on $psitem" {
             @(Test-DbaLastBackup -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name -VerifyOnly).ForEach{
@@ -92,7 +92,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
 Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
     $maxdays = Get-DbcConfigValue policy.integritycheckmaxdays
     $datapurity = Get-DbcConfigValue skip.datapuritycheck
-    $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod    
+    $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod    
     (Get-SqlInstance).ForEach{
         Context "Testing Last Good DBCC CHECKDB on $psitem" {
             @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name).ForEach{
@@ -230,8 +230,8 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
 }
 
 Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA, $filename {
-    $maxfull = Get-DbcConfigValue policy.backupfullmaxdays
-    $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod
+    $maxfull = Get-DbcConfigValue policy.backup.fullmaxdays
+    $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
     (Get-SqlInstance).ForEach{
         Context "Testing last full backups on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).ForEach{
@@ -245,6 +245,7 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
 }
 
 Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA, $filename {
+<<<<<<< HEAD
     if (-not (Get-DbcConfig -Name skip.diffbackuptest)){
         $maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
         $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod
@@ -255,6 +256,16 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
                     It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) should be less than $maxdiff hours" {
                         $psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours(- ($maxdiff))
                     }
+=======
+    $maxdiff = Get-DbcConfigValue policy.backup.diffmaxhours
+    $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
+    (Get-SqlInstance).ForEach{
+        Context "Testing last diff backups on $psitem" {
+            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
+                $offline = ($psitem.Status -match "Offline")
+                It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) should be less than $maxdiff hours" {
+                    $psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours( - ($maxdiff))
+>>>>>>> backup config name change
                 }
             }
         }
@@ -262,8 +273,8 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
 }
 
 Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, $filename {
-    $maxlog = Get-DbcConfigValue policy.backuplogmaxminutes
-    $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod
+    $maxlog = Get-DbcConfigValue policy.backup.logmaxminutes
+    $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
     (Get-SqlInstance).ForEach{
         Context "Testing last log backups on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{

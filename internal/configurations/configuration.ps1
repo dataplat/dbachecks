@@ -35,12 +35,14 @@ Set-PSFConfig -Module dbachecks -Name policy.storage.backuppath -Value $null -In
 Set-PSFConfig -Module dbachecks -Name policy.backup.testserver -Value $null -Initialize -Description "Destination server for backuptests"
 Set-PSFConfig -Module dbachecks -Name policy.backup.datadir -Value $null -Initialize -Description "Destination server data directory"
 Set-PSFConfig -Module dbachecks -Name policy.backup.logdir -Value $null -Initialize -Description "Destination server log directory"
+Set-PSFConfig -Module dbachecks -Name policy.backup.fullmaxdays -Validation integer -Value 1 -Initialize -Description "Maxmimum number of days before Full Backups are considered outdated"
+Set-PSFConfig -Module dbachecks -Name policy.backup.diffmaxhours -Validation integer -Value 25 -Initialize -Description "Maxmimum number of hours before Diff Backups are considered outdated"
+Set-PSFConfig -Module dbachecks -Name policy.backup.logmaxminutes -Validation integer -Value 15 -Initialize -Description "Maxmimum number of minutes before Log Backups are considered outdated"
+Set-PsFConfig -Module dbachecks -Name policy.backup.newdbgraceperiod -Validation integer -Value 0 -Initialize -Description "The number of hours a newly created database is allowed to not have backups"
 
+#diskspce
 Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Validation integer -Value 20 -Initialize -Description "Percent disk free"
-Set-PSFConfig -Module dbachecks -Name policy.backupfullmaxdays -Validation integer -Value 1 -Initialize -Description "Maxmimum number of days before Full Backups are considered outdated"
-Set-PSFConfig -Module dbachecks -Name policy.backupdiffmaxhours -Validation integer -Value 25 -Initialize -Description "Maxmimum number of hours before Diff Backups are considered outdated"
-Set-PSFConfig -Module dbachecks -Name policy.backuplogmaxminutes -Validation integer -Value 15 -Initialize -Description "Maxmimum number of minutes before Log Backups are considered outdated"
-Set-PsFConfig -Module dbachecks -Name policy.newdbbackupgraceperiod -Validation integer -Value 0 -Initialize -Description "The number of hours a newly created database is allowed to not have backups"
+
 Set-PSFConfig -Module dbachecks -Name policy.integritycheckmaxdays -Validation integer -Value 7 -Initialize -Description "Maxmimum number of days before DBCC CHECKDB is considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.identityusagepercent -Validation integer -Value 90 -Initialize -Description "Maxmimum percentage of max of identity column"
 Set-PSFConfig -Module dbachecks -Name policy.networklatencymsmax -Validation integer -Value 40 -Initialize -Description "Max network latency average"
