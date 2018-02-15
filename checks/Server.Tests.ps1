@@ -46,7 +46,7 @@ Describe "SPNs" -Tags SPN, $filename {
 }
 
 Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
-    $free = Get-DbcConfigValue policy.diskspacepercentfree
+    $free = Get-DbcConfigValue policy.diskspace.percentfree
     (Get-ComputerName).ForEach{
         Context "Testing Disk Space on $psitem" {
             @(Get-DbaDiskSpace -ComputerName $psitem).ForEach{

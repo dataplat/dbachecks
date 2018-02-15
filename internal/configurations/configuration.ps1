@@ -36,7 +36,7 @@ Set-PSFConfig -Module dbachecks -Name policy.backup.testserver -Value $null -Ini
 Set-PSFConfig -Module dbachecks -Name policy.backup.datadir -Value $null -Initialize -Description "Destination server data directory"
 Set-PSFConfig -Module dbachecks -Name policy.backup.logdir -Value $null -Initialize -Description "Destination server log directory"
 
-Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Validation integer -Value 20 -Initialize -Description "Percent disk free"
+Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Validation integer -Value 20 -Initialize -Description "Percent disk free"
 Set-PSFConfig -Module dbachecks -Name policy.backupfullmaxdays -Validation integer -Value 1 -Initialize -Description "Maxmimum number of days before Full Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backupdiffmaxhours -Validation integer -Value 25 -Initialize -Description "Maxmimum number of hours before Diff Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backuplogmaxminutes -Validation integer -Value 15 -Initialize -Description "Maxmimum number of minutes before Log Backups are considered outdated"
