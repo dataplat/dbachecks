@@ -133,6 +133,9 @@ Set-PSFConfig -Module dbachecks -Name policy.xevent.validrunningsession -Value $
 Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredrunningsession -Value $null -Initialize -Description "List of XE Sessions that should be running."
 Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredstoppedsession -Value $null -Initialize -Description "List of XE Sessions that should not be running."
 
+# sp_WhoIsActive
+Set-PSFConfig -Module dbachecks -Name policy.whoisactive.database -Value "master" -Initialize -Description "Which database should contains the sp_WhoIsActive stored procedure"
+
 
 # The frequency of the Ola Hallengrens User Full backups 
         # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
@@ -170,9 +173,6 @@ Set-PSFConfig -Module dbachecks -Name agent.databasemailprofile -Value $null -In
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"
 Set-PSFConfig -Module dbachecks -Name domain.organizationalunit -Value $null -Initialize -Description "The OU that your server should be a part of"
 Set-PSFConfig -Module dbachecks -Name domain.domaincontroller -Value $null -Initialize -Description "The domain controller to process your requests"
-
-# sp_WhoIsActive
-Set-PSFConfig -Module dbachecks -Name whoisactive.database -Value "master" -Initialize -Description "Which database should contains the sp_WhoIsActive stored procedure"
 
 # email
 Set-PSFConfig -Module dbachecks -Name mail.failurethreshhold -Value 0 -Validation integer -Initialize -Description "Number of errors that must be present to generate an email report"
