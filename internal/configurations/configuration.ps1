@@ -43,7 +43,9 @@ Set-PsFConfig -Module dbachecks -Name policy.backup.newdbgraceperiod -Validation
 #diskspce
 Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Validation integer -Value 20 -Initialize -Description "Percent disk free"
 
-Set-PSFConfig -Module dbachecks -Name policy.integritycheckmaxdays -Validation integer -Value 7 -Initialize -Description "Maxmimum number of days before DBCC CHECKDB is considered outdated"
+#DBCC
+Set-PSFConfig -Module dbachecks -Name policy.dbcc.maxdays -Validation integer -Value 7 -Initialize -Description "Maxmimum number of days before DBCC CHECKDB is considered outdated"
+
 Set-PSFConfig -Module dbachecks -Name policy.identityusagepercent -Validation integer -Value 90 -Initialize -Description "Maxmimum percentage of max of identity column"
 Set-PSFConfig -Module dbachecks -Name policy.networklatencymsmax -Validation integer -Value 40 -Initialize -Description "Max network latency average"
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value "Full" -Initialize -Description "Standard recovery model"
@@ -108,7 +110,7 @@ Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Valid
         # 1 for Sunday 127 for every day
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
-Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
+Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
 Set-PSFConfig -Module dbachecks -Name skip.tempdb1118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 1118"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilecount -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Count"

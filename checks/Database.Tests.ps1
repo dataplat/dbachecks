@@ -90,8 +90,8 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
 }
 
 Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
-    $maxdays = Get-DbcConfigValue policy.integritycheckmaxdays
-    $datapurity = Get-DbcConfigValue skip.datapuritycheck
+    $maxdays = Get-DbcConfigValue policy.dbcc.maxdays
+    $datapurity = Get-DbcConfigValue skip.dbcc.datapuritycheck
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod    
     (Get-SqlInstance).ForEach{
         Context "Testing Last Good DBCC CHECKDB on $psitem" {
