@@ -46,8 +46,12 @@ Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Validation i
 #DBCC
 Set-PSFConfig -Module dbachecks -Name policy.dbcc.maxdays -Validation integer -Value 7 -Initialize -Description "Maxmimum number of days before DBCC CHECKDB is considered outdated"
 
+#Identity
 Set-PSFConfig -Module dbachecks -Name policy.identity.usagepercent -Validation integer -Value 90 -Initialize -Description "Maxmimum percentage of max of identity column"
-Set-PSFConfig -Module dbachecks -Name policy.networklatencymsmax -Validation integer -Value 40 -Initialize -Description "Max network latency average"
+
+#Network
+Set-PSFConfig -Module dbachecks -Name policy.network.latencymaxms -Validation integer -Value 40 -Initialize -Description "Max network latency average"
+
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value "Full" -Initialize -Description "Standard recovery model"
 Set-PSFConfig -Module dbachecks -Name policy.validdbowner -Value "sa" -Initialize -Description "The database owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner -Value "sa" -Initialize -Description "The database owner account should not be this user"

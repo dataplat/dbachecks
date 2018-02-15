@@ -102,7 +102,7 @@ Describe "Dedicated Administrator Connection" -Tags DAC, $filename {
 }
 
 Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
-    $max = Get-DbcConfigValue policy.networklatencymsmax
+    $max = Get-DbcConfigValue policy.network.latencymaxms
     (Get-SqlInstance).ForEach{
         Context "Testing Network Latency on $psitem" {
             @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
