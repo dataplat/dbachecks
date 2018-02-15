@@ -39,6 +39,7 @@ Set-PSFConfig -Module dbachecks -Name policy.backup.fullmaxdays -Validation inte
 Set-PSFConfig -Module dbachecks -Name policy.backup.diffmaxhours -Validation integer -Value 25 -Initialize -Description "Maxmimum number of hours before Diff Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backup.logmaxminutes -Validation integer -Value 15 -Initialize -Description "Maxmimum number of minutes before Log Backups are considered outdated"
 Set-PsFConfig -Module dbachecks -Name policy.backup.newdbgraceperiod -Validation integer -Value 0 -Initialize -Description "The number of hours a newly created database is allowed to not have backups"
+Set-PSFConfig -Module dbachecks -Name policy.backup.defaultbackupcompreesion -Validation bool -Value $true -Initialize -Description "Default Backup Compression check should be enabled `$true or disabled `$false"
 
 #diskspce
 Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Validation integer -Value 20 -Initialize -Description "Percent disk free"
@@ -87,10 +88,9 @@ Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool
 Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation bool -Value $false -Initialize -Description "Alters the Auto Shrink check to say if it should be allowed `$true or dissalower `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
 Set-PSFConfig -Module dbachecks -Name policy.database.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Create Statistics check to say if it should be enabled `$true or disabled `$false"
-
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics-Validation bool -Value $true -Initialize -Description "Alters the Auto Update Statistics check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Alters the Auto Update Statistics Asynchronously check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -Name policy.defaultbackupcompreesion -Validation bool -Value $true -Initialize -Description "Alters the Default Backup Compression check to say if it should be enabled `$true or disabled `$false"
+
 Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthtype -Value "kb" -Initialize -Description "Alters the Growth Type to say if it should be 'kb' or 'percent'"
 Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthvalue -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
 Set-PSFConfig -Module dbachecks -Name policy.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"

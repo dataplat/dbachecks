@@ -193,7 +193,7 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
 }
 
 Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
-    $defaultbackupcompreesion = Get-DbcConfigValue policy.defaultbackupcompreesion
+    $defaultbackupcompreesion = Get-DbcConfigValue policy.backup.defaultbackupcompreesion
     (Get-SqlInstance).ForEach{
         Context "Testing Default Backup Compression on $psitem" {
             It "Default Backup Compression is set to $defaultbackupcompreesion on $psitem" {
