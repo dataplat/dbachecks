@@ -159,7 +159,7 @@ The Check `LastGoodCheckDb` includes a test for data purity. You may be in an en
 
 ```powershell
 Get-DbcConfig *skip*
-Set-DbcConfig -Name skip.datapuritycheck -Value $true
+Set-DbcConfig -Name skip.dbcc.datapuritycheck -Value $true
 ```
 
 Need to skip a whole test? Just use the `-ExcludeCheck` which is auto-populated with both Check names and Pester Tags.

@@ -76,11 +76,11 @@ Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
 Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Backup Path Access on $psitem" {
-            if (-not (Get-DbcConfigValue policy.backuppath)) {
+            if (-not (Get-DbcConfigValue policy.storage.backuppath)) {
                 $backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
             }
             else {
-                $backuppath = Get-DbcConfigValue policy.backuppath
+                $backuppath = Get-DbcConfigValue policy.storage.backuppath
             }
 
             It "can access backup path ($backuppath) on $psitem" {
@@ -102,7 +102,7 @@ Describe "Dedicated Administrator Connection" -Tags DAC, $filename {
 }
 
 Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
-    $max = Get-DbcConfigValue policy.networklatencymsmax
+    $max = Get-DbcConfigValue policy.network.latencymaxms
     (Get-SqlInstance).ForEach{
         Context "Testing Network Latency on $psitem" {
             @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
@@ -159,7 +159,7 @@ Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
 }
 
 Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
-    $maxdumps = Get-DbcConfigValue -Name policy.maxdumpcount
+    $maxdumps = Get-DbcConfigValue -Name policy.dump.maxcount
     (Get-SqlInstance).ForEach{
         Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
             $count = (Get-DbaDump -SqlInstance $psitem).Count
@@ -193,7 +193,7 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
 }
 
 Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
-    $defaultbackupcompreesion = Get-DbcConfigValue policy.defaultbackupcompreesion
+    $defaultbackupcompreesion = Get-DbcConfigValue policy.backup.defaultbackupcompreesion
     (Get-SqlInstance).ForEach{
         Context "Testing Default Backup Compression on $psitem" {
             It "Default Backup Compression is set to $defaultbackupcompreesion on $psitem" {
@@ -204,7 +204,7 @@ Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename 
 }
 
 Describe "Stopped XE Sessions" -Tags XESessionStopped, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue xevent.requiredstoppedsession
+    $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
     (Get-SqlInstance).ForEach{
         Context "Checking sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
@@ -219,7 +219,7 @@ Describe "Stopped XE Sessions" -Tags XESessionStopped, ExtendedEvent, $filename 
 }
 
 Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue xevent.requiredrunningsession
+    $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
     (Get-SqlInstance).ForEach{
         Context "Checking running sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
@@ -234,7 +234,7 @@ Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename 
 }
 
 Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue xevent.validrunningsession
+    $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
     (Get-SqlInstance).ForEach{
         Context "Checking sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
@@ -254,6 +254,17 @@ Describe "OLE Automation" -Tags OLEAutomation, $filename {
         Context "Testing OLE Automation on $psitem" {
             It "OLE Automation is set to $OLEAutomation on $psitem" {
                 (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should Be $OLEAutomation
+            }
+        }
+    }
+}
+
+Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, $filename {
+    $db = Get-DbcConfigValue policy.whoisactive.database
+    (Get-SqlInstance).ForEach{
+        Context "Testing WhoIsActive exists on $psitem" {
+            It "WhoIsActive should exists on $db on $psitem" {
+                (Get-DbaSqlModule -SqlInstance $psitem -Database $db -Type StoredProcedure | Where-Object name -eq "sp_WhoIsActive") | Should Not Be $Null
             }
         }
     }

@@ -5,12 +5,12 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Command executes properly and returns proper info" {
         BeforeAll {
-            $config = Get-DbcConfig -Name policy.maxdumpcount
+            $config = Get-DbcConfig -Name policy.dump.maxcount
         }
         AfterAll {
-            $result = Set-DbcConfig -Name policy.maxdumpcount -Value $config.Value
+            $result = Set-DbcConfig -Name policy.dump.maxcount -Value $config.Value
         }
-        $result = Set-DbcConfig -Name policy.maxdumpcount -Value ($config.Value + 1)
+        $result = Set-DbcConfig -Name policy.dump.maxcount -Value ($config.Value + 1)
         It "sets a config" {
             $result.Value | Should Be ($config.Value + 1)
         }

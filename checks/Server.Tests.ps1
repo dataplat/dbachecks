@@ -11,8 +11,9 @@ Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
 }
 
 Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
-    $skipremote = Get-DbcConfigValue skip.remotingcheck
-    $authscheme = Get-DbcConfigValue policy.authscheme
+    $skipremote = Get-DbcConfigValue skip.connection.remoting
+    $skipping = Get-DbcConfigValue skip.connection.ping
+    $authscheme = Get-DbcConfigValue policy.connection.authscheme 
     (Get-SqlInstance).ForEach{
         Context "Testing Instance Connection on $psitem" {
             $connection = Test-DbaConnection -SqlInstance $psitem
@@ -22,7 +23,7 @@ Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename
             It "auth scheme should Be $authscheme on $psitem" {
                 $connection.AuthScheme | Should Be $authscheme
             }
-            It "$psitem is pingable" {
+            It -Skip:$skipping "$psitem is pingable" {
                 $connection.IsPingable | Should Be $true
             }
             It -Skip:$skipremote "$psitem Is PSRemotebale" {
@@ -46,7 +47,7 @@ Describe "SPNs" -Tags SPN, $filename {
 }
 
 Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
-    $free = Get-DbcConfigValue policy.diskspacepercentfree
+    $free = Get-DbcConfigValue policy.diskspace.percentfree
     (Get-ComputerName).ForEach{
         Context "Testing Disk Space on $psitem" {
             @(Get-DbaDiskSpace -ComputerName $psitem).ForEach{
@@ -59,13 +60,14 @@ Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
 }
 
 Describe "Ping Computer" -Tags PingComputer, $filename {
-    $pingmsmax = Get-DbcConfigValue policy.pingmsmax
-    $pingcount = Get-DbcConfigValue policy.pingcount
+    $pingmsmax = Get-DbcConfigValue policy.connection.pingmaxms 
+    $pingcount = Get-DbcConfigValue policy.connection.pingcount 
+    $skipping = Get-DbcConfigValue skip.connection.ping
     (Get-ComputerName).ForEach{
         Context "Testing Disk Space on $psitem" {
             $results = Test-Connection -Count $pingcount -ComputerName $psitem -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ResponseTime
             $avgResponseTime = (($results | Measure-Object -Average).Average) / $pingcount
-            It "Average response time (ms) should Be less than $pingmsmax for $psitem" {
+            It -skip:$skipping "Average response time (ms) should Be less than $pingmsmax for $psitem" {
                 $results.Count -eq $pingcount | Should Be $true
                 $avgResponseTime -lt $pingmsmax | Should Be $true
             }
