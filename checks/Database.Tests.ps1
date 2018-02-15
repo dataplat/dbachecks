@@ -307,8 +307,8 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
 }
 
 Describe "Log File Count Checks" -Tags LogfileCount, $filename {
-    $LogFileCountTest = Get-DbcConfigValue skip.logfilecounttest
-    $LogFileCount = Get-DbcConfigValue policy.LogFileCount
+    $LogFileCountTest = Get-DbcConfigValue skip.database.logfilecounttest
+    $LogFileCount = Get-DbcConfigValue policy.database.logfilecount
     If (-not $LogFileCountTest) {
         (Get-SqlInstance).ForEach{
             Context "Testing Log File count and size for $psitem" {
@@ -325,8 +325,8 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
 }
 
 Describe "Log File Size Checks" -Tags LogfileSize, $filename {
-    $LogFileSizePercentage = Get-DbcConfigValue policy.logfilesizepercentage
-    $LogFileSizeComparison = Get-DbcConfigValue policy.Logfilesizecomparison
+    $LogFileSizePercentage = Get-DbcConfigValue policy.database.logfilesizepercentage
+    $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
     (Get-SqlInstance).ForEach{
         Context "Testing Log File count and size for $psitem" {
             (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
@@ -346,7 +346,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
 }
 
 Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
-    $Tolerance = Get-DbcConfigValue policy.filebalancetolerance
+    $Tolerance = Get-DbcConfigValue policy.database.filebalancetolerance
 
     (Get-SqlInstance).ForEach{
         Context "Testing for balanced FileGroups on $psitem" {
@@ -407,12 +407,13 @@ Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsync
 }
 
 Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $filename {
-    $datafilegrowthtype = Get-DbcConfigValue policy.datafilegrowthtype
-    $datafilegrowthvalue = Get-DbcConfigValue policy.datafilegrowthvalue
+    $datafilegrowthtype = Get-DbcConfigValue policy.database.filegrowthtype 
+    $datafilegrowthvalue = Get-DbcConfigValue policy.database.filegrowthvalue 
+    $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
     (Get-SqlInstance).ForEach{
         Context "Testing datafile growth type on $psitem" {
-            (Get-DbaDatabaseFile -SqlInstance $psitem).ForEach{
-                if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.datafilegrowthdisabled))) {
+            (Get-DbaDatabaseFile -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
+                if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
                     It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
                         $psitem.GrowthType | Should Be $datafilegrowthtype
                     }

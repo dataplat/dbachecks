@@ -90,13 +90,13 @@ Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Validation integer
 Set-PSFConfig -Module dbachecks -Name policy.database.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Create Statistics check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics-Validation bool -Value $true -Initialize -Description "Alters the Auto Update Statistics check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Alters the Auto Update Statistics Asynchronously check to say if it should be enabled `$true or disabled `$false"
-
-Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthtype -Value "kb" -Initialize -Description "Alters the Growth Type to say if it should be 'kb' or 'percent'"
-Set-PSFConfig -Module dbachecks -Name policy.datafilegrowthvalue -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
-Set-PSFConfig -Module dbachecks -Name policy.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"
-Set-PSFConfig -Module dbachecks -Name policy.LogFileSizePercentage -Validation integer -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
-Set-PSFConfig -Module dbachecks -Name policy.LogFileSizeComparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
-Set-PSFConfig -Module dbachecks -Name policy.filebalancetolerance -Validation integer -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
+Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthexcludedb -Value $null -Initialize -Description "Databases to exclude from the file growth check"
+Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthtype  -Value "kb" -Initialize -Description "Alters the Growth Type to say if it should be 'kb' or 'percent'"
+Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthvalue  -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
+Set-PSFConfig -Module dbachecks -Name policy.database.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"
+Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizepercentage -Validation integer -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
+Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizecomparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
+Set-PSFConfig -Module dbachecks -Name policy.database.filebalancetolerance -Validation integer -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
 
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
@@ -143,9 +143,14 @@ Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Validation bool -Valu
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesizemax -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
 Set-PSFConfig -Module dbachecks -Name skip.connection.remoting -Validation bool -Value $false -Initialize -Description "Skip PowerShell remoting check for connectivity"
 Set-PSFConfig -Module dbachecks -Name skip.connection.ping -Validation bool -Value $false -Initialize -Description "Skip the ping check for connectivity"
+<<<<<<< HEAD
 Set-PSFConfig -Module dbachecks -Name skip.datafilegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
 Set-PSFConfig -Module dbachecks -Name skip.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.diffbackuptest -Validation bool -Value $false -Initialize -Description "Skip the Differential backup test"
+=======
+Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
+Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
+>>>>>>> database config renames
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 
 # xevents
