@@ -88,7 +88,7 @@ Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool
 Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation bool -Value $false -Initialize -Description "Auto Shrink should be allowed `$true or dissalowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
 Set-PSFConfig -Module dbachecks -Name policy.database.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Auto Create Statistics should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics-Validation bool -Value $true -Initialize -Description "Auto Update Statistics should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics -Validation bool -Value $true -Initialize -Description "Auto Update Statistics should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Auto Update Statistics Asynchronously should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthexcludedb -Value $null -Initialize -Description "Databases to exclude from the file growth check"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthtype  -Value "kb" -Initialize -Description "Growth Type should be 'kb' or 'percent'"
