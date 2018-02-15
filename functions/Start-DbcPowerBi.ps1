@@ -2,9 +2,11 @@
     <#
         .SYNOPSIS
             Launches the PowerBi Template for dbachecks
+            YOU WILL NEED TO REFRESH the PowerBi everytime to see the new results
         
         .DESCRIPTION
             Launches the PowerBi Template for dbachecks
+            YOU WILL NEED TO REFRESH the PowerBi everytime to see the new results
     
         .PARAMETER Path
             The location of the pbix file. "$script:ModuleRoot\bin\dbachecks.pbix" by default.
