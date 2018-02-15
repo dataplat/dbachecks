@@ -52,7 +52,10 @@ Set-PSFConfig -Module dbachecks -Name policy.identity.usagepercent -Validation i
 #Network
 Set-PSFConfig -Module dbachecks -Name policy.network.latencymaxms -Validation integer -Value 40 -Initialize -Description "Max network latency average"
 
-Set-PSFConfig -Module dbachecks -Name policy.recoverymodel -Value "Full" -Initialize -Description "Standard recovery model"
+#Recovery Model
+Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.type -Value "Full" -Initialize -Description "Standard recovery model"
+Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.excludedb -Value "master,tempdb" -Initialize -Description "Databases to exclude from standard recovery model check"
+
 Set-PSFConfig -Module dbachecks -Name policy.validdbowner -Value "sa" -Initialize -Description "The database owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner -Value "sa" -Initialize -Description "The database owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"

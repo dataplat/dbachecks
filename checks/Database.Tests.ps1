@@ -129,9 +129,10 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
 Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Recovery Model on $psitem" {
-            @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
-                It "$($psitem.Name) should be set to $((Get-DbcConfigValue policy.recoverymodel)) on $($psitem.SqlInstance)" {
-                    $psitem.RecoveryModel | Should be (Get-DbcConfigValue policy.recoverymodel)
+            $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
+            @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+                It "$($psitem.Name) should be set to $((Get-DbcConfigValue policy.recoverymodel.type)) on $($psitem.SqlInstance)" {
+                    $psitem.RecoveryModel | Should be (Get-DbcConfigValue policy.recoverymodel.type)
                 }
             }
         }
