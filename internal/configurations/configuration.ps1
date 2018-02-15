@@ -18,6 +18,7 @@ Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $Emai
 
 
 # some configs to help with autocompletes and other module level stuff
+#apps
 Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value "$script:ModuleRoot\checks" -Initialize -Description "Where Pester tests/checks are stored"
 Set-PSFConfig -Module dbachecks -Name app.sqlinstance -Value $null -Initialize -Description "List of SQL Server instances that SQL-based tests will run against"
 Set-PSFConfig -Module dbachecks -Name app.computername -Value $null -Initialize -Description "List of Windows Servers that Windows-based tests will run against"
@@ -26,8 +27,10 @@ Set-PSFConfig -Module dbachecks -Name app.wincredential -Value $null -Initialize
 Set-PSFConfig -Module dbachecks -Name app.localapp -Value "$env:localappdata\dbachecks" -Initialize -Description "Persisted files live here"
 Set-PSFConfig -Module dbachecks -Name app.maildirectory -Value "$env:localappdata\dbachecks\dbachecks.mail" -Initialize -Description "Files for mail are stored here"
 
-# Policy
-Set-PSFConfig -Module dbachecks -Name policy.backuppath -Value $null -Initialize -Description "Enables tests to check if servers have access to centralized backup location"
+# Policy Configs
+#Storage
+Set-PSFConfig -Module dbachecks -Name policy.storage.backuppath -Value $null -Initialize -Description "Enables tests to check if servers have access to centralized backup location"
+
 Set-PSFConfig -Module dbachecks -Name policy.backuptestserver -Value $null -Initialize -Description "Destination server for backuptests"
 Set-PSFConfig -Module dbachecks -Name policy.backupdatadir -Value $null -Initialize -Description "Destination server data directory"
 Set-PSFConfig -Module dbachecks -Name policy.backuplogdir -Value $null -Initialize -Description "Destination server log directory"
@@ -112,13 +115,14 @@ Set-PSFConfig -Module dbachecks -Name skip.remotingcheck -Validation bool -Value
 Set-PSFConfig -Module dbachecks -Name skip.datafilegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
 Set-PSFConfig -Module dbachecks -Name skip.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.diffbackuptest -Validation bool -Value $false -Initialize -Description "Skip the Differential backup test"
+Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 
 # xevents
 Set-PSFConfig -Module dbachecks -Name xevent.validrunningsession -Value $null -Initialize -Description "List of XE Sessions that can be be running."
 Set-PSFConfig -Module dbachecks -Name xevent.requiredrunningsession -Value $null -Initialize -Description "List of XE Sessions that should be running."
 Set-PSFConfig -Module dbachecks -Name xevent.requiredstoppedsession -Value $null -Initialize -Description "List of XE Sessions that should not be running."
 
-# agent
+#agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
@@ -138,6 +142,3 @@ Set-PSFConfig -Module dbachecks -Name mail.smtpserver -Value $null -Validation s
 Set-PSFConfig -Module dbachecks -Name mail.to -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address to send the report to"
 Set-PSFConfig -Module dbachecks -Name mail.from  -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address the email reports should come from"
 Set-PSFConfig -Module dbachecks -Name mail.subject  -Value 'dbachecks results' -Validation String -Initialize -Description "Subject line of the email report"
-
-# Command parameter default values
-Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludecheck -Value @() -Initialize -Description "Invoke-DbcCheck: The checks that should be skipped by default."
