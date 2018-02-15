@@ -51,7 +51,7 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
     $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod 
     (Get-SqlInstance).ForEach{
         Context "VerifyOnly tests of last backups on $psitem" {
-            @(Test-DbaLastBackup -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours(-$graceperiod)}).name -VerifyOnly).ForEach{
+            @(Test-DbaLastBackup -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name -VerifyOnly).ForEach{
                 It "restore for $($psitem.Database) on $($psitem.SourceServer) should be success" {
                     $psitem.RestoreResult | Should Be 'Success'
                 }
@@ -67,7 +67,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
     $targetowner = Get-DbcConfigValue policy.validdbowner
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -EnableException:$false).ForEach{
+            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase master, msdb, model, tempdb -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should be $targetowner on $($psitem.Server)" {
                     $psitem.CurrentOwner | Should Be $psitem.TargetOwner
                 }
@@ -80,7 +80,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
     $targetowner = Get-DbcConfigValue policy.invaliddbowner
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -EnableException:$false).ForEach{
+            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase master, msdb, model, tempdb -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should Not be $targetowner on $($psitem.Server)" {
                     $psitem.CurrentOwner | Should Not Be $psitem.TargetOwner
                 }
@@ -95,10 +95,10 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
     $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod    
     (Get-SqlInstance).ForEach{
         Context "Testing Last Good DBCC CHECKDB on $psitem" {
-            @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours(-$graceperiod)}).name).ForEach{
+            @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name).ForEach{
                 if ($psitem.Database -ne 'tempdb') {
                     It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) should be less than $maxdays" {
-                        $psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays(- ($maxdays))
+                        $psitem.LastGoodCheckDb | Should BeGreaterThan (Get-Date).AddDays( - ($maxdays))
                     }
 
                     It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
@@ -234,10 +234,10 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
     $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod
     (Get-SqlInstance).ForEach{
         Context "Testing last full backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours(-$graceperiod)}).ForEach{
+            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) should be less than $maxfull days" {
-                    $psitem.LastFullBackup | Should BeGreaterThan (Get-Date).AddDays(- ($maxfull))
+                    $psitem.LastFullBackup | Should BeGreaterThan (Get-Date).AddDays( - ($maxfull))
                 }
             }
         }
@@ -266,11 +266,11 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
     $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod
     (Get-SqlInstance).ForEach{
         Context "Testing last log backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject -and $_.CreateDate -lt (Get-Date).AddHours(-$graceperiod) }).ForEach{
+            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 if ($psitem.RecoveryModel -ne 'Simple') {
                     $offline = ($psitem.Status -match "Offline")
                     It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) should be less than $maxlog minutes" {
-                        $psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes(- ($maxlog) + 1)
+                        $psitem.LastLogBackup | Should BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1)
                     }
                 }
 
@@ -319,8 +319,8 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
                 $Splat = @{$LogFileSizeComparison = $true;
-                            property = 'size'
-                        }
+                    property                      = 'size'
+                }
                 $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
                 $DataFileSize = ($Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Measure-Object @Splat).$LogFileSizeComparison
                 It "$($psitem.Name) on $($psitem.SqlInstance) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
@@ -343,7 +343,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
                     $Unbalanced = 0
                     $Average = ($psitem.Group.Size | Measure-Object -Average).Average
 
-                    $Unbalanced = $psitem | Where-Object {$psitem.group.Size -lt ((1-($Tolerance/100)) * $Average) -or $psitem.group.Size -gt ((1+($Tolerance/100)) * $Average)}
+                    $Unbalanced = $psitem | Where-Object {$psitem.group.Size -lt ((1 - ($Tolerance / 100)) * $Average) -or $psitem.group.Size -gt ((1 + ($Tolerance / 100)) * $Average)}
                     It "$($psitem.Name) of $($psitem.Group[0].Database) on $($psitem.Group[0].SqlInstance)  Should have FileGroup members with sizes within 5% of the average" {
                         $Unbalanced.count | Should Be 0
                     }
@@ -455,11 +455,9 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
 
 Describe "Optimize for Ad Hoc Workloads" -Tags AdHocWorkloads, $filename {
     (Get-SqlInstance).ForEach{
-        Context "Testing database has optimize for ad hoc workloads enabled on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
-                It "$($psitem.Name) should have optimize for ad hoc workloads set to 1 on $($psitem.Parent)" {
-                    (Get-DbaSpConfigure -SqlInstance $psitem.Parent -Database $psitem.Name).RunningValue -eq 1 | Should be $true
-                }
+        Context "Testing optimize for ad hoc workloads is enabled on $psitem" {
+            It "Should have optimize for ad hoc workloads set to 1 on $($psitem)" {
+                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName OptimizeAdhocWorkloads).RunningValue | Should be 1
             }
         }
     }

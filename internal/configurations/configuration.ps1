@@ -118,7 +118,7 @@ Set-PSFConfig -Module dbachecks -Name xevent.validrunningsession -Value $null -I
 Set-PSFConfig -Module dbachecks -Name xevent.requiredrunningsession -Value $null -Initialize -Description "List of XE Sessions that should be running."
 Set-PSFConfig -Module dbachecks -Name xevent.requiredstoppedsession -Value $null -Initialize -Description "List of XE Sessions that should not be running."
 
-#agent
+# agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
@@ -138,3 +138,6 @@ Set-PSFConfig -Module dbachecks -Name mail.smtpserver -Value $null -Validation s
 Set-PSFConfig -Module dbachecks -Name mail.to -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address to send the report to"
 Set-PSFConfig -Module dbachecks -Name mail.from  -Value $null -Validation validation.EmailValidation -Initialize -Description "Email address the email reports should come from"
 Set-PSFConfig -Module dbachecks -Name mail.subject  -Value 'dbachecks results' -Validation String -Initialize -Description "Subject line of the email report"
+
+# Command parameter default values
+Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludecheck -Value @() -Initialize -Description "Invoke-DbcCheck: The checks that should be skipped by default."
