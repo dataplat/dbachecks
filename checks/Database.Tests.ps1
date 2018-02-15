@@ -368,7 +368,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
 }
 
 Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
-    $autocreatestatistics = Get-DbcConfigValue policy.autocreatestatistics
+    $autocreatestatistics = Get-DbcConfigValue policy.database.autocreatestatistics
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Create Statistics on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
@@ -381,7 +381,7 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
 }
 
 Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
-    $autoupdatestatistics = Get-DbcConfigValue policy.autoupdatestatistics
+    $autoupdatestatistics = Get-DbcConfigValue policy.database.autoupdatestatistics
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Update Statistics on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
@@ -394,7 +394,7 @@ Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
 }
 
 Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, $filename {
-    $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.autoupdatestatisticsasynchronously
+    $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Update Statistics Asynchronously on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
