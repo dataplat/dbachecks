@@ -245,14 +245,16 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
 }
 
 Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA, $filename {
-    $maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
-    $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod
-    (Get-SqlInstance).ForEach{
-        Context "Testing last diff backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours(-$graceperiod) }).ForEach{
-                $offline = ($psitem.Status -match "Offline")
-                It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) should be less than $maxdiff hours" {
-                    $psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours(- ($maxdiff))
+    if (-not (Get-DbcConfig -Name skip.diffbackuptest)){
+        $maxdiff = Get-DbcConfigValue policy.backupdiffmaxhours
+        $graceperiod = Get-DbcConfigValue policy.newdbbackupgraceperiod
+        (Get-SqlInstance).ForEach{
+            Context "Testing last diff backups on $psitem" {
+                @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours(-$graceperiod) }).ForEach{
+                    $offline = ($psitem.Status -match "Offline")
+                    It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) should be less than $maxdiff hours" {
+                        $psitem.LastDiffBackup | Should BeGreaterThan (Get-Date).AddHours(- ($maxdiff))
+                    }
                 }
             }
         }
