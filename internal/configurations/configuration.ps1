@@ -128,6 +128,12 @@ Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryscheduled -V
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryenabled -Validation bool -Value $true -Initialize -Description "Alters the Purge Job History check to say if it should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Validation bool -Value $true -Initialize -Description "Alters the Purge Job History check to say if it should be scheduled `$true or disabled `$false"
 
+# xevents
+Set-PSFConfig -Module dbachecks -Name policy.xevent.validrunningsession -Value $null -Initialize -Description "List of XE Sessions that can be be running."
+Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredrunningsession -Value $null -Initialize -Description "List of XE Sessions that should be running."
+Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredstoppedsession -Value $null -Initialize -Description "List of XE Sessions that should not be running."
+
+
 # The frequency of the Ola Hallengrens User Full backups 
         # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
         # for full options
@@ -153,10 +159,6 @@ Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation
 >>>>>>> database config renames
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 
-# xevents
-Set-PSFConfig -Module dbachecks -Name xevent.validrunningsession -Value $null -Initialize -Description "List of XE Sessions that can be be running."
-Set-PSFConfig -Module dbachecks -Name xevent.requiredrunningsession -Value $null -Initialize -Description "List of XE Sessions that should be running."
-Set-PSFConfig -Module dbachecks -Name xevent.requiredstoppedsession -Value $null -Initialize -Description "List of XE Sessions that should not be running."
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"

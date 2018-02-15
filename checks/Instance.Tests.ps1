@@ -204,7 +204,7 @@ Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename 
 }
 
 Describe "Stopped XE Sessions" -Tags XESessionStopped, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue xevent.requiredstoppedsession
+    $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
     (Get-SqlInstance).ForEach{
         Context "Checking sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
@@ -219,7 +219,7 @@ Describe "Stopped XE Sessions" -Tags XESessionStopped, ExtendedEvent, $filename 
 }
 
 Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue xevent.requiredrunningsession
+    $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
     (Get-SqlInstance).ForEach{
         Context "Checking running sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
@@ -234,7 +234,7 @@ Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename 
 }
 
 Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue xevent.validrunningsession
+    $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
     (Get-SqlInstance).ForEach{
         Context "Checking sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
