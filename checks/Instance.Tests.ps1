@@ -107,7 +107,7 @@ Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
         Context "Testing Network Latency on $psitem" {
             @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
                 It "network latency Should -Be less than $max ms on $($psitem.InstanceName)" {
-                    $psitem.Average.TotalMilliseconds | Should BeLessThan $max
+                    $psitem.Average.TotalMilliseconds | Should -BeLessThan $max
                 }
             }
         }
@@ -131,7 +131,7 @@ Describe "Max Memory" -Tags MaxMemory, $filename {
         Context "Testing Max Memory on $psitem" {
             It "Max Memory setting Should -Be correct on $psitem" {
                 @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
-                    $psitem.SqlMaxMB | Should BeLessThan ($psitem.RecommendedMB + 379)
+                    $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379)
                 }
             }
         }

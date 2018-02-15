@@ -286,7 +286,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
         Context "Testing Database VLFs on $psitem" {
             @(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should -Be less than $vlfmax" {
-                    $psitem.Total | Should BeLessThan $vlfmax
+                    $psitem.Total | Should -BeLessThan $vlfmax
                 }
             }
         }
@@ -303,7 +303,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
                     $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                     $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
                     It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
-                        $LogFiles.Count | Should BeLessThan $LogFileCount 
+                        $LogFiles.Count | Should -BeLessThan $LogFileCount 
                     }
                 }
             }
@@ -325,7 +325,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
                 $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
                 $DataFileSize = ($Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Measure-Object @Splat).$LogFileSizeComparison
                 It "$($psitem.Name) on $($psitem.SqlInstance) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
-                    $LogFileSize | Should BeLessThan ($DataFileSize * $LogFileSizePercentage) 
+                    $LogFileSize | Should -BeLessThan ($DataFileSize * $LogFileSizePercentage) 
                 }
             }
         }
