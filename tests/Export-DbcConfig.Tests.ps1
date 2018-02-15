@@ -14,7 +14,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         Export-DbcConfig *>$null
         
         It "output a file" {
-            (Get-ChildItem "$script:localapp\config.json") -ne $null | Should Be $true
+            (Get-ChildItem "$script:localapp\config.json") -ne $null | Should -Be $true
         }
     }
 }
