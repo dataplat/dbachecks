@@ -189,8 +189,8 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
     (Get-SqlInstance).ForEach{
         Context "Checking that sa login has been renamed on $psitem" {
             $results = Get-DbaLogin -SqlInstance $psitem -Login sa
-            It "returns no results on $psitem" {
-                $results -eq $null | Should -Be $true
+            It "sa login does not exist on $psitem" {
+                $results | Should -Be $null
             }
         }
     }
