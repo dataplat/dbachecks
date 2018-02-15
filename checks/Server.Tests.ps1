@@ -51,8 +51,8 @@ Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
     (Get-ComputerName).ForEach{
         Context "Testing Disk Space on $psitem" {
             @(Get-DbaDiskSpace -ComputerName $psitem).ForEach{
-                It "$($psitem.Name) with $($psitem.PercentFree)% free Should -Be at least $free% free on $($psitem.ComputerName)" {
-                    $psitem.PercentFree -ge $free | Should -Be $true
+                It "$($psitem.Name) with $($psitem.PercentFree)% free should be at least $free% free on $($psitem.ComputerName)" {
+                    $psitem.PercentFree  | Should -BeGreaterThan $free
                 }
             }
         }
