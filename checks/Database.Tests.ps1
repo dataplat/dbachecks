@@ -349,7 +349,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
     $Tolerance = Get-DbcConfigValue policy.filebalancetolerance
 
     (Get-SqlInstance).ForEach{
-        Context "Tesing for balanced FileGroups on $psitem" {
+        Context "Testing for balanced FileGroups on $psitem" {
             (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $FileGroups = $Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Group-Object -Property FileGroupName
