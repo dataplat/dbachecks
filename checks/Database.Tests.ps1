@@ -312,7 +312,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
     If (-not $LogFileCountTest) {
         (Get-SqlInstance).ForEach{
             Context "Testing Log File count and size for $psitem" {
-                (Get-DbaDatabase -SqlInstance $psitem | Select SqlInstance, Name).ForEach{
+                (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                     $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                     $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
                     It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
