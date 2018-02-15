@@ -33,8 +33,8 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             @($describes).Foreach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
                 It "$title Should Use a double quote after the Describe" {
-                    $PSItem.Name.ToString().Startswith('"')  | Should be $true
-                    $PSItem.Name.ToString().Endswith('"')  | Should be $true
+                    $PSItem.Name.ToString().Startswith('"')  | Should -Be $true
+                    $PSItem.Name.ToString().Endswith('"')  | Should -Be $true
                 }
                 It "$title should use a plural for tags" {
                     $PsItem.Tags | Should Not BeNullOrEmpty
@@ -42,17 +42,17 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
                     $PSItem.Tags.Text.Split(',').Trim().Where{($_ -ne '$filename') -and ($_ -notlike '*statistics*') -and ($_ -notlike '*BackupPathAccess*') }.ForEach{
-                        It "$PsItem Should Be Singular" {
-                            $_.ToString().Endswith('s') | Should Be $False
+                        It "$PsItem Should -Be Singular" {
+                            $_.ToString().Endswith('s') | Should -Be $False
                         }
                     }
-                    It "The first Tag Should Be in the unique Tags returned from Get-DbcCheck" {
-                        $UniqueTags -contains $PSItem.Tags.Text.Split(',')[0].ToString() | Should Be $true
+                    It "The first Tag Should -Be in the unique Tags returned from Get-DbcCheck" {
+                        $UniqueTags -contains $PSItem.Tags.Text.Split(',')[0].ToString() | Should -Be $true
                     }
                 }
                 else {
                     It "You haven't used the Tags Parameter so we can't check the tags" {
-                        $false | Should be $true
+                        $false | Should -Be $true
                     }
                 }  
             }
@@ -76,7 +76,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             @($Contexts).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
                 It "$Title Should end with `$psitem So that the PowerBi will work correctly" {
-                    $PSItem.Name.ToString().Endswith('psitem"') | Should Be $true
+                    $PSItem.Name.ToString().Endswith('psitem"') | Should -Be $true
                 }
             }
         }
@@ -88,16 +88,16 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             @($Statements.Where{$_.StartLineNumber -ne 1}).ForEach{
                 $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
                 It "$title Should Use Get-SqlInstance or Get-ComputerName" {
-                    ($PSItem.text -Match 'Get-SqlInstance') -or ($psitem.text -match 'Get-ComputerName') | Should be $true
+                    ($PSItem.text -Match 'Get-SqlInstance') -or ($psitem.text -match 'Get-ComputerName') | Should -Be $true
                 }
                 It "$title Should use the ForEach Method" {
-                    ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' )| Should Be $true # use the \ to escape the )
+                    ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' )| Should -Be $true # use the \ to escape the )
                 }
                 It "$title Should not use `$_" {
-                    ($Psitem.text -match '$_' )| Should Be $false
+                    ($Psitem.text -match '$_' )| Should -Be $false
                 }
                 It "$title Should Contain a Context Block" {
-                    $Psitem.text -match 'Context' | Should Be $True
+                    $Psitem.text -match 'Context' | Should -Be $True
                 }
             }
         }

@@ -12,7 +12,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         }
         $result = Set-DbcConfig -Name policy.dump.maxcount -Value ($config.Value + 1)
         It "sets a config" {
-            $result.Value | Should Be ($config.Value + 1)
+            $result.Value | Should -Be ($config.Value + 1)
         }
     }
 }

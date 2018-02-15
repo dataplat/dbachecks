@@ -4,8 +4,8 @@ Describe "Active Directory Domain Name" -Tags DomainName, $filename {
     $domain = Get-DbcConfigValue -Name domain.name
     (Get-ComputerName).ForEach{
         Context "Testing Active Directory Domain Name on $psitem" {
-            It "$psitem Should be on the Domain $domain" {
-                (Get-DbaCmObject -Class Win32_ComputerSystem -ComputerName $psitem -Credential $credential).Domain | Should be $domain
+            It "$psitem Should -Be on the Domain $domain" {
+                (Get-DbaCmObject -Class Win32_ComputerSystem -ComputerName $psitem -Credential $credential).Domain | Should -Be $domain
             }
         }
     }
@@ -20,8 +20,8 @@ Describe "Active Directory OU" -Tags OrganizationalUnit, $filename {
                 # Can be passed by Invoke-DbcCheck -Value
                 $value = Get-DbcConfigValue -Name domain.organizationalunit
             }
-            It -Skip "$psitem should be in the right OU ($value)" {
-                (Get-ADComputer $psitem -Properties CanonicalName -Server $dc).CanonicalName | Should be $value
+            It -Skip "$psitem Should -Be in the right OU ($value)" {
+                (Get-ADComputer $psitem -Properties CanonicalName -Server $dc).CanonicalName | Should -Be $value
             }
         }
     }

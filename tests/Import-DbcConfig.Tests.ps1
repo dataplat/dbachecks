@@ -13,7 +13,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         
         It "returns a bunch of results" {
             $results = Import-DbcConfig -Path "$script:localapp\config.json"
-            ($results).Count -gt 10 | Should Be $true
+            ($results).Count -gt 10 | Should -Be $true
         }
         It "returns some results for app.checkrepos" {
             $results | Where-Object name -eq app.checkrepos | Should Not Be $null

@@ -9,7 +9,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         }
         
         It "returns a single bool" {
-            $results -eq $true -or $results -eq $false | Should Be $true
+            $results -eq $true -or $results -eq $false | Should -Be $true
         }
     }
 }

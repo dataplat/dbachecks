@@ -8,11 +8,11 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         $count = ($results).Count
         
         It "returns a number of tags" {
-            $count -gt 10 | Should Be $true
+            $count -gt 10 | Should -Be $true
         }
         
         It "returns a unique number of tags" {
-            ($results | Sort-Object | Select-Object -Unique).Count | Should Be $count
+            ($results | Sort-Object | Select-Object -Unique).Count | Should -Be $count
         }
     }
 }
