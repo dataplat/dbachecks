@@ -55,13 +55,13 @@ Set-PSFConfig -Module dbachecks -Name policy.network.latencymaxms -Validation in
 
 #Recovery Model
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.type -Value "Full" -Initialize -Description "Standard recovery model"
-Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.excludedb -Value "master,tempdb" -Initialize -Description "Databases to exclude from standard recovery model check"
+Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.excludedb -Value @('master','tempdb') -Initialize -Description "Databases to exclude from standard recovery model check"
 
 #DBOwners
 Set-PSFConfig -Module dbachecks -Name policy.validdbowner.name -Value "sa" -Initialize -Description "The database owner account should be this user"
-Set-PSFConfig -Module dbachecks -Name policy.validdbowner.excludedb -Value "master, msdb, model, tempdb" -Initialize -Description "Databases to exclude from valid dbowner checks"
+Set-PSFConfig -Module dbachecks -Name policy.validdbowner.excludedb -Value @('master', 'msdb', 'model', 'tempdb')  -Initialize -Description "Databases to exclude from valid dbowner checks"
 Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.name -Value "sa" -Initialize -Description "The database owner account should not be this user"
-Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.excludedb -Value "master, msdb, model, tempdb" -Initialize -Description "Databases to exclude from invalid dbowner checks"
+Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.excludedb -Value @('master', 'msdb', 'model', 'tempdb')  -Initialize -Description "Databases to exclude from invalid dbowner checks"
 
 #DAC
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "DAC should be allowed `$true or disallowed `$false"
@@ -90,7 +90,7 @@ Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Validation integer
 Set-PSFConfig -Module dbachecks -Name policy.database.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Auto Create Statistics should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics -Validation bool -Value $true -Initialize -Description "Auto Update Statistics should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Auto Update Statistics Asynchronously should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthexcludedb -Value $null -Initialize -Description "Databases to exclude from the file growth check"
+Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthexcludedb -Value @() -Initialize -Description "Databases to exclude from the file growth check"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthtype  -Value "kb" -Initialize -Description "Growth Type should be 'kb' or 'percent'"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthvalue  -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"
