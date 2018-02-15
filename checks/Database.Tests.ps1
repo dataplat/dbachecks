@@ -26,10 +26,10 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
 }
 
 Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
-    if (-not (Get-DbcConfigValue skip.backuptesting)) {
-        $destserver = Get-DbcConfigValue policy.backuptestserver
-        $destdata = Get-DbcConfigValue policy.backupdatadir
-        $destlog = Get-DbcConfigValue policy.backuplogdir
+    if (-not (Get-DbcConfigValue skip.backup.testing)) {
+        $destserver = Get-DbcConfigValue policy.backup.testserver 
+        $destdata = Get-DbcConfigValue policy.backup.datadir
+        $destlog = Get-DbcConfigValue policy.backup.logdir
         (Get-SqlInstance).ForEach{
             Context "Testing Backup Restore & Integrity Checks on $psitem" {
                 @(Test-DbaLastBackup -SqlInstance $psitem -Destination $destserver -LogDirectory $destlog -DataDirectory $destdata).ForEach{

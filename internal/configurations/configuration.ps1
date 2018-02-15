@@ -31,9 +31,11 @@ Set-PSFConfig -Module dbachecks -Name app.maildirectory -Value "$env:localappdat
 #Storage
 Set-PSFConfig -Module dbachecks -Name policy.storage.backuppath -Value $null -Initialize -Description "Enables tests to check if servers have access to centralized backup location"
 
-Set-PSFConfig -Module dbachecks -Name policy.backuptestserver -Value $null -Initialize -Description "Destination server for backuptests"
-Set-PSFConfig -Module dbachecks -Name policy.backupdatadir -Value $null -Initialize -Description "Destination server data directory"
-Set-PSFConfig -Module dbachecks -Name policy.backuplogdir -Value $null -Initialize -Description "Destination server log directory"
+#Backup
+Set-PSFConfig -Module dbachecks -Name policy.backup.testserver -Value $null -Initialize -Description "Destination server for backuptests"
+Set-PSFConfig -Module dbachecks -Name policy.backup.datadir -Value $null -Initialize -Description "Destination server data directory"
+Set-PSFConfig -Module dbachecks -Name policy.backup.logdir -Value $null -Initialize -Description "Destination server log directory"
+
 Set-PSFConfig -Module dbachecks -Name policy.diskspacepercentfree -Validation integer -Value 20 -Initialize -Description "Percent disk free"
 Set-PSFConfig -Module dbachecks -Name policy.backupfullmaxdays -Validation integer -Value 1 -Initialize -Description "Maxmimum number of days before Full Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backupdiffmaxhours -Validation integer -Value 25 -Initialize -Description "Maxmimum number of hours before Diff Backups are considered outdated"
@@ -105,7 +107,7 @@ Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Valid
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
-Set-PSFConfig -Module dbachecks -Name skip.backuptesting -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
+Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
 Set-PSFConfig -Module dbachecks -Name skip.tempdb1118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 1118"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilecount -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Count"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
