@@ -52,7 +52,7 @@
         [parameter(ValueFromPipeline, Mandatory)]
         [pscustomobject]$InputObject,
         [string]$Path = "$env:windir\temp\dbachecks",
-        [string]$Enviornment = "Default",
+        [string]$Environment = "Default",
         [switch]$Append,
         [switch]$Force,
         [switch]$EnableException
