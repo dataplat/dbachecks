@@ -64,10 +64,10 @@ Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.name -Value "sa" -In
 Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.excludedb -Value "master, msdb, model, tempdb" -Initialize -Description "Databases to exclude from invalid dbowner checks"
 
 #DAC
-Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
+Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "DAC should be allowed `$true or disallowed `$false"
 
 #OLE Automation
-Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Value $false -Initialize -Description "Alters the OLE Automation check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Value $false -Initialize -Description "OLE Automation should be enabled `$true or disabled `$false"
 
 #Connectivity
 Set-PSFConfig -Module dbachecks -Name policy.connection.authscheme  -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
@@ -84,14 +84,14 @@ Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Validation integer -
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 
 # Database
-Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool -Value $false -Initialize -Description "Alters the Auto Close check to say if it should be allowed `$true or dissalower `$false"
-Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation bool -Value $false -Initialize -Description "Alters the Auto Shrink check to say if it should be allowed `$true or dissalower `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool -Value $false -Initialize -Description "Auto Close should be allowed `$true or dissalowed `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation bool -Value $false -Initialize -Description "Auto Shrink should be allowed `$true or dissalowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Validation integer -Value 512 -Initialize -Description "Max virtual log files"
-Set-PSFConfig -Module dbachecks -Name policy.database.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Alters the Auto Create Statistics check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics-Validation bool -Value $true -Initialize -Description "Alters the Auto Update Statistics check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Alters the Auto Update Statistics Asynchronously check to say if it should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Auto Create Statistics should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics-Validation bool -Value $true -Initialize -Description "Auto Update Statistics should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Auto Update Statistics Asynchronously should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthexcludedb -Value $null -Initialize -Description "Databases to exclude from the file growth check"
-Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthtype  -Value "kb" -Initialize -Description "Alters the Growth Type to say if it should be 'kb' or 'percent'"
+Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthtype  -Value "kb" -Initialize -Description "Growth Type should be 'kb' or 'percent'"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthvalue  -Validation integer -Value 65535 -Initialize -Description "The auto growth value (in kb) should be equal or higher than this value. Example: A value of 65535 means at least 64MB. "
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilecount -Validation integer -Value 1 -Initialize -Description "The number of Log files expected on a database"
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizepercentage -Validation integer -Value 100 -Initialize -Description "Maximum percentage of Data file Size that logfile is allowed to be."
@@ -101,32 +101,32 @@ Set-PSFConfig -Module dbachecks -Name policy.database.filebalancetolerance -Vali
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
 Set-PSFConfig -Module dbachecks -Name policy.ola.database -Validation string -Value 'master' -Initialize -Description "The database where Ola's maintenance solution is installed"
-Set-PSFConfig -Module dbachecks -name policy.ola.systemfullenabled -Validation bool -Value $true -Initialize -Description "Alters the Full System Database Backup check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.userfullenabled -Validation bool -Value $true -Initialize -Description "Alters the Full User Database Backup check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.userdiffenabled -Validation bool -Value $true -Initialize -Description "Alters the Diff User Database Backup check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.userlogenabled -Validation bool -Value $true -Initialize -Description "Alters the Log User Database Backup check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.systemfullscheduled -Validation bool -Value $true -Initialize -Description "Alters the Full System Database Backup check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.userfullscheduled -Validation bool -Value $true -Initialize -Description "Alters the Full User Database Backup check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.userdiffscheduled -Validation bool -Value $true -Initialize -Description "Alters the Diff User Database Backup check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.userlogscheduled -Validation bool -Value $true -Initialize -Description "Alters the Log User Database Backup check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.systemfullretention -Validation integer -Value 192 -Initialize -Description "Alters the Full System Database Backup retention to check the # of hours"
-Set-PSFConfig -Module dbachecks -name policy.ola.userfullretention -Validation integer -Value 192 -Initialize -Description "Alters the Full User Database Backup retention to check the # of hours"
-Set-PSFConfig -Module dbachecks -name policy.ola.userdiffretention -Validation integer -Value 192 -Initialize -Description "Alters the Diff User Database Backup retention to check the # of hours"
-Set-PSFConfig -Module dbachecks -name policy.ola.userlogretention -Validation integer -Value 192 -Initialize -Description "Alters the Log User Database Backup retention to check the # of hours"
-Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogenabled -Validation bool -Value $true -Initialize -Description "Alters the CommandLog Cleanup check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogscheduled -Validation bool -Value $true -Initialize -Description "Alters the CommandLog Cleanup check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Alters the System Database Integrity check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Alters the System Database Integrity check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Alters the User Database Integrity check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Alters the User Database Integrity check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizeenabled -Validation bool -Value $true -Initialize -Description "Alters the User Index Optimization check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizescheduled -Validation bool -Value $true -Initialize -Description "Alters the User Index Optimization check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupenabled -Validation bool -Value $true -Initialize -Description "Alters the Output File Cleanup check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupscheduled -Validation bool -Value $true -Initialize -Description "Alters the Output File Cleanup check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryenabled -Validation bool -Value $true -Initialize -Description "Alters the Delete Backup History check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryscheduled -Validation bool -Value $true -Initialize -Description "Alters the Delete Backup History check to say if it should be scheduled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryenabled -Validation bool -Value $true -Initialize -Description "Alters the Purge Job History check to say if it should be enabled `$true or disabled `$false"
-Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Validation bool -Value $true -Initialize -Description "Alters the Purge Job History check to say if it should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullenabled -Validation bool -Value $true -Initialize -Description "Ola's Full System Database Backup should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullenabled -Validation bool -Value $true -Initialize -Description "Ola's Full User Database Backup should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffenabled -Validation bool -Value $true -Initialize -Description "Ola's Diff User Database Backup should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogenabled -Validation bool -Value $true -Initialize -Description "Ola's Log User Database Backup should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullscheduled -Validation bool -Value $true -Initialize -Description "Ola's Full System Database Backup should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullscheduled -Validation bool -Value $true -Initialize -Description "Ola's Full User Database Backup should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffscheduled -Validation bool -Value $true -Initialize -Description "Ola's Diff User Database Backup should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogscheduled -Validation bool -Value $true -Initialize -Description "Ola's Log User Database Backup should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.systemfullretention -Validation integer -Value 192 -Initialize -Description "Ola's Full System Database Backup retention number of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userfullretention -Validation integer -Value 192 -Initialize -Description "Ola's Full User Database Backup retention number of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userdiffretention -Validation integer -Value 192 -Initialize -Description "Ola's Diff User Database Backup retention number of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.userlogretention -Validation integer -Value 192 -Initialize -Description "Ola's Log User Database Backup retention number of hours"
+Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogenabled -Validation bool -Value $true -Initialize -Description "Ola's CommandLog Cleanup should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogscheduled -Validation bool -Value $true -Initialize -Description "Ola's CommandLog Cleanup should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Ola's System Database Integrity should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Ola's System Database Integrity should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Ola's User Database Integrity should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Ola's User Database Integrity should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizeenabled -Validation bool -Value $true -Initialize -Description "Ola's User Index Optimization should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizescheduled -Validation bool -Value $true -Initialize -Description "Ola's User Index Optimization should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupenabled -Validation bool -Value $true -Initialize -Description "Ola's Output File Cleanup should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupscheduled -Validation bool -Value $true -Initialize -Description "Ola's Output File Cleanup should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryenabled -Validation bool -Value $true -Initialize -Description "Ola's Delete Backup History should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryscheduled -Validation bool -Value $true -Initialize -Description "Ola's Delete Backup History should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryenabled -Validation bool -Value $true -Initialize -Description "Ola's Purge Job History should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Validation bool -Value $true -Initialize -Description "Ola's Purge Job History should be scheduled `$true or disabled `$false"
 
 # xevents
 Set-PSFConfig -Module dbachecks -Name policy.xevent.validrunningsession -Value $null -Initialize -Description "List of XE Sessions that can be be running."
@@ -134,7 +134,7 @@ Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredrunningsession -Valu
 Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredstoppedsession -Value $null -Initialize -Description "List of XE Sessions that should not be running."
 
 # sp_WhoIsActive
-Set-PSFConfig -Module dbachecks -Name policy.whoisactive.database -Value "master" -Initialize -Description "Which database should contains the sp_WhoIsActive stored procedure"
+Set-PSFConfig -Module dbachecks -Name policy.whoisactive.database -Value "master" -Initialize -Description "Which database should contain the sp_WhoIsActive stored procedure"
 
 
 # The frequency of the Ola Hallengrens User Full backups 
