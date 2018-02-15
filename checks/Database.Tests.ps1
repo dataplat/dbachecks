@@ -111,7 +111,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 }
 
 Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
-    $maxpercentage = Get-DbcConfigValue policy.identityusagepercent
+    $maxpercentage = Get-DbcConfigValue policy.identity.usagepercent
     (Get-SqlInstance).ForEach{
         Context "Testing Column Identity Usage on $psitem" {
             @(Test-DbaIdentityUsage -SqlInstance $psitem).ForEach{
