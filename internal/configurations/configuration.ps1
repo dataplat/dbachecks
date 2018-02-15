@@ -74,8 +74,9 @@ Set-PSFConfig -Module dbachecks -Name policy.connection.authscheme  -Value "Kerb
 #HADR
 Set-PSFConfig -Module dbachecks -Name policy.hadr.tcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
 
+#Dump Files
+Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
 
-Set-PSFConfig -Module dbachecks -Name policy.maxdumpcount -Validation integer -Value 1 -Initialize -Description "Maximum number of expected dumps"
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 Set-PSFConfig -Module dbachecks -Name policy.autoclose -Validation bool -Value $false -Initialize -Description "Alters the Auto Close check to say if it should be allowed `$true or dissalower `$false"
 Set-PSFConfig -Module dbachecks -Name policy.autoshrink -Validation bool -Value $false -Initialize -Description "Alters the Auto Shrink check to say if it should be allowed `$true or dissalower `$false"
