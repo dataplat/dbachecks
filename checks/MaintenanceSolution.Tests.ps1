@@ -5,12 +5,12 @@ Describe "Ola maintenance solution installed" -Tags OlaInstalled, $filename{
     $oladb = Get-DbcConfigValue policy.ola.database
     (Get-SqlInstance).ForEach{        
         $db = Get-DbaDatabase -SqlInstance $PSItem -Database $oladb
-        Context "Checking the CommandLog table"{            
+        Context "Checking the CommandLog table on $psitem"{            
             It "The CommandLog table exists in $oladb on $PSItem" {
                 @($db.tables | Where-Object name -eq "CommandLog").Count | Should -Be 1
             }
         }
-        Context "Checking the Ola Stored Procedures" {
+        Context "Checking the Ola Stored Procedures on $psitem" {
             It "The stored procedures exists in $oladb on $PSItem" {
                 ($db.StoredProcedures | Where-Object {$PSItem.schema -eq 'dbo' -and $PSItem.name -in $OlaSPs} | Measure-Object).Count | Should -Be $OlaSPs.Count
             }
