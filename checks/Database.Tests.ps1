@@ -64,10 +64,11 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
 }
 
 Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
-    $targetowner = Get-DbcConfigValue policy.validdbowner
+    $targetowner = Get-DbcConfigValue policy.validdbowner.name
+    $exclude = Get-DbcConfigValue policy.validdbowner.excludedb 
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase master, msdb, model, tempdb -EnableException:$false).ForEach{
+            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should be $targetowner on $($psitem.Server)" {
                     $psitem.CurrentOwner | Should Be $psitem.TargetOwner
                 }
@@ -77,10 +78,11 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
 }
 
 Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
-    $targetowner = Get-DbcConfigValue policy.invaliddbowner
+    $targetowner = Get-DbcConfigValue policy.invaliddbowner.name
+    $exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb 
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase master, msdb, model, tempdb -EnableException:$false).ForEach{
+            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should Not be $targetowner on $($psitem.Server)" {
                     $psitem.CurrentOwner | Should Not Be $psitem.TargetOwner
                 }

@@ -56,8 +56,12 @@ Set-PSFConfig -Module dbachecks -Name policy.network.latencymaxms -Validation in
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.type -Value "Full" -Initialize -Description "Standard recovery model"
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.excludedb -Value "master,tempdb" -Initialize -Description "Databases to exclude from standard recovery model check"
 
-Set-PSFConfig -Module dbachecks -Name policy.validdbowner -Value "sa" -Initialize -Description "The database owner account should be this user"
-Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner -Value "sa" -Initialize -Description "The database owner account should not be this user"
+#DBOwners
+Set-PSFConfig -Module dbachecks -Name policy.validdbowner.name -Value "sa" -Initialize -Description "The database owner account should be this user"
+Set-PSFConfig -Module dbachecks -Name policy.validdbowner.excludedb -Value "master, msdb, model, tempdb" -Initialize -Description "Databases to exclude from valid dbowner checks"
+Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.name -Value "sa" -Initialize -Description "The database owner account should not be this user"
+Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.excludedb -Value "master, msdb, model, tempdb" -Initialize -Description "Databases to exclude from invalid dbowner checks"
+
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "Alters the DAC check to say if it should be allowed `$true or disallowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Value $false -Initialize -Description "Alters the OLE Automation check to say if it should be enabled `$true or disabled `$false"
 
