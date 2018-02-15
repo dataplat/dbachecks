@@ -277,7 +277,8 @@
             if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
                 if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
                     $number = $repos.IndexOf($repo)
-                    $PSBoundParameters['OutputFile'] = "$script:maildirectory\report$number.xml"
+                    $timestamp = Get-Date -format "yyyyMMddHHmmss"
+                    $PSBoundParameters['OutputFile'] = "$script:maildirectory\report-$number-$pid-$timestamp.xml"
                 }
                 Push-Location -Path $repo
                 Invoke-Pester @PSBoundParameters
