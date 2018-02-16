@@ -268,6 +268,13 @@
         $null = $PSBoundParameters.Add('Tag', $Check)
         $null = $PSBoundParameters.Add('ExcludeTag', $ExcludeCheck)
         
+        $globalexcludedchecks = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludecheck
+        
+        foreach ($singlecheck in $check) {
+            if ($singlecheck -in $globalexcludedchecks) {
+                Write-PSFMessage -Level Warning -Message "$singlecheck is excluded in command.invokedbccheck.excludecheck and will be skipped "
+            }
+        }
         
         # Then we'll need a generic param passer that doesnt require global params 
         # cuz global params are hard
