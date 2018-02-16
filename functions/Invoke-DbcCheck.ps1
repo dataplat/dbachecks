@@ -276,6 +276,10 @@
             }
         }
         
+        if ($AllChecks -and $globalexcludedchecks) {
+            Write-PSFMessage -Level Warning -Message "$globalexcludedchecks will be skipped"
+        }
+        
         # Then we'll need a generic param passer that doesnt require global params 
         # cuz global params are hard
         
