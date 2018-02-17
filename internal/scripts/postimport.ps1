@@ -65,8 +65,8 @@ $olanames += [pscustomobject]@{ Description = 'Ola System Integrity Check'; pref
 $olanames += [pscustomobject]@{ Description = 'Ola User Integrity Check'; prefix = 'UserIntegrityCheck' }
 $olanames += [pscustomobject]@{ Description = 'Ola User Index Optimize'; prefix = 'UserIndexOptimize' }
 $olanames += [pscustomobject]@{ Description = 'Ola Output File Cleanup'; prefix = 'OutputFileCleanup' }
-$olanames += [pscustomobject]@{ JobName = 'Ola Delete Backup History'; prefix = 'DeleteBackupHistory' }
-$olanames += [pscustomobject]@{ JobName = 'Ola Purge Job History'; prefix = 'PurgeJobHistory' }
+$olanames += [pscustomobject]@{ Description = 'Ola Delete Backup History'; prefix = 'DeleteBackupHistory' }
+$olanames += [pscustomobject]@{ Description = 'Ola Purge Job History'; prefix = 'PurgeJobHistory' }
 
 foreach ($olaname in $olanames) {
     $collection += [pscustomobject]@{
