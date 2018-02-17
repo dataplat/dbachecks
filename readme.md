@@ -39,7 +39,7 @@ If you have already installed the module and you update it, you may be required 
 Then you need to 
 
 ````
-Update-Module Pester -SkipPublisherCheck
+Install-Module Pester -SkipPublisherCheck
 Import-Module Pester -Force
 ````
 
