@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
     
     # Version number of this module.
-    ModuleVersion          = '0.0.1'
+    ModuleVersion          = '1.0.0'
     
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -26,7 +26,7 @@
     Copyright              = '(c) 2017. All rights reserved.'
     
     # Description of the functionality provided by this module
-    Description            = 'Automates testing for SQL Server stuff'
+    Description            = 'SQL Server Infrastructure Tests'
     
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion      = '4.0'
@@ -49,8 +49,8 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
         @{ ModuleName = 'Pester'; ModuleVersion = '4.1.1' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.162' }
-        @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.6.12' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.201' }
+        @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.9.19' }
     )
     
     # Assemblies that must be loaded prior to importing this module
@@ -119,7 +119,7 @@
             Tags         = @('sqlserver', 'sql', 'dba', 'databases', 'audits', 'checklists', 'Pester', 'PowerBi')
             
             # The web address of an icon which can be used in galleries to represent this module
-            IconUri      = "https://dbatools.io/logo.png"
+            IconUri      = "https://dbachecks.io/logo.png"
             
             # The web address of this module's project or support homepage.
             ProjectUri   = ""
@@ -134,7 +134,7 @@
             # RequireLicenseAcceptance = ""
             
             # Indicates this is a pre-release/testing version of the module.
-            IsPrerelease = 'True'
+            IsPrerelease = 'False'
         }
     }
 }
