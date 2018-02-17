@@ -48,9 +48,17 @@
             Stop-PSFFunction -Message "Failure" -Exception $_
             return
         }
-        
+
+
         foreach ($result in $results) {
-            Set-DbcConfig -Name $result.Name -Value $result.Value -Temporary:$Temporary
+            if($result.name -eq 'app.sqlcredential' -and ($null -ne $result.value))
+            {
+                Write-Warning "You need to re-enter the credential"
+                Set-DbcConfig -Name app.sqlcredential -Value (Get-Credential -Message "You need to reenter the credential for app.sqlcredential") -Temporary:$Temporary
+            }
+            else{
+                Set-DbcConfig -Name $result.Name -Value $result.Value -Temporary:$Temporary
+            }
         }
     }
 }
