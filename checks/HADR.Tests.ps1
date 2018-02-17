@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "Cluster Health" -Tags ClusterHealth, HADR, $filename {
+Describe "Cluster Health" -Tags ClusterHealth, $filename {
     $domainname = Get-DbcConfigValue domain.name
     $tcpport = Get-DbcConfigValue policy.hadr.tcpport
     
@@ -47,7 +47,7 @@ Describe "Cluster Health" -Tags ClusterHealth, HADR, $filename {
     
     $return = Get-ClusterObject -Cluster $cluster
     
-    Describe "Cluster Server Health" -Tags ClusterServerHealth,HADR, $filename {
+    Describe "Cluster Server Health" -Tags ClusterServerHealth, $filename {
         Context "Cluster Nodes for $cluster" {
             $return.Nodes.ForEach{
                 It "Node $($psitem.Name) Should -Be Up" {
@@ -79,7 +79,7 @@ Describe "Cluster Health" -Tags ClusterHealth, HADR, $filename {
         }
     }
     
-    Describe "Cluster Network Health" -Tags ClusterNetworkHealth, AvailabilityGroup, HADR,$filename {
+    Describe "Cluster Network Health" -Tags ClusterNetworkHealth, $filename {
         Context "Cluster Connectivity for $cluster" {
             $return.SqlTestListeners.ForEach{
                 It "Listener $($psitem.SqlInstance) Should -Be Pingable" {
@@ -112,7 +112,7 @@ Describe "Cluster Health" -Tags ClusterHealth, HADR, $filename {
         }
     }
     
-    Describe "Availability Group Health" -Tags AvailabilityGroupHealth, AvailabilityGroup,HADR, $filename {
+    Describe "Availability Group Health" -Tag AvailabilityGroupHealth, AvailabilityGroup, $filename {
         Context "Availability Group Status for $cluster" {
             $return.AGReplica.Where.ForEach{
                 It "$($psitem.Replica) Replica should not be in Unknown Availability Mode" {
