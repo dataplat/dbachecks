@@ -17,6 +17,10 @@
             By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
             This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
+
+        .PARAMETER Force
+            Don't prompt for the SQL Authentication. This should be used in automated solutions where you set the app.sqlcredential 
+            configuration setting in a different way. This WILL NOT set the SQL Auth configuration you will have to do it in a different way
             
         .EXAMPLE
             Import-DbcConfig
@@ -51,7 +55,7 @@
 
 
         foreach ($result in $results) {
-            if($result.name -eq 'app.sqlcredential' -and ($null -ne $result.value))
+            if(($result.name -eq 'app.sqlcredential') -and ($null -ne $result.value) -and (-not $force))
             {
                 Write-Warning "You need to re-enter the credential"
                 Set-DbcConfig -Name app.sqlcredential -Value (Get-Credential -Message "You need to reenter the credential for app.sqlcredential") -Temporary:$Temporary
