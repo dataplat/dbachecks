@@ -36,6 +36,7 @@
     param (
         [string]$Path = "$script:localapp\config.json",
         [switch]$Temporary,
+        [switch]$Force,
         [switch]$EnableException
     )
 
