@@ -462,7 +462,7 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
     }
 }
 
-Describe "Optimize for Ad Hoc Workloads" -Tags AdHocWorkloads, $filename {
+Describe "Optimize for Ad Hoc Workloads" -Tags AdHocWorkload, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing optimize for ad hoc workloads is enabled on $psitem" {
             It "Should have optimize for ad hoc workloads set to 1 on $($psitem)" {

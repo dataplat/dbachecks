@@ -6,7 +6,7 @@ if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
 $tokens = $null
 $errors = $null
 Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" {
-    $Checks = (Get-ChildItem $ModuleBase\checks).Where{$_.Name -ne 'HADR.Tests.ps1'}
+    $Checks = (Get-ChildItem $ModuleBase\checks).Where{$_.Name -ne 'MaintenanceSolution.Tests.ps1'}
     $Checks.Foreach{
         $Check = Get-Content $Psitem.FullName -Raw
         Context "$($_.Name) - Checking Describes titles and tags" {
@@ -42,11 +42,11 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
                     $PSItem.Tags.Text.Split(',').Trim().Where{($_ -ne '$filename') -and ($_ -notlike '*statistics*') -and ($_ -notlike '*BackupPathAccess*') }.ForEach{
-                        It "$PsItem Should -Be Singular" {
+                        It "$PsItem Should Be Singular" {
                             $_.ToString().Endswith('s') | Should -Be $False
                         }
                     }
-                    It "The first Tag Should -Be in the unique Tags returned from Get-DbcCheck" {
+                    It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) Should Be in the unique Tags returned from Get-DbcCheck" {
                         $UniqueTags -contains $PSItem.Tags.Text.Split(',')[0].ToString() | Should -Be $true
                     }
                 }
@@ -75,8 +75,8 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
 
             @($Contexts).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
-                It "$Title Should end with `$psitem So that the PowerBi will work correctly" {
-                    $PSItem.Name.ToString().Endswith('psitem"') | Should -Be $true
+                It "$Title Should end with `$psitem (or `$cluster) So that the PowerBi will work correctly" {
+                    $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('cluster"') | Should -Be $true
                 }
             }
         }
@@ -90,8 +90,10 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 It "$title Should Use Get-SqlInstance or Get-ComputerName" {
                     ($PSItem.text -Match 'Get-SqlInstance') -or ($psitem.text -match 'Get-ComputerName') | Should -Be $true
                 }
-                It "$title Should use the ForEach Method" {
-                    ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' )| Should -Be $true # use the \ to escape the )
+                if ($title -ne 'Cluster Health') {
+                    It "$title Should use the ForEach Method" {
+                        ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -Be $true # use the \ to escape the )
+                    }
                 }
                 It "$title Should not use `$_" {
                     ($Psitem.text -match '$_' )| Should -Be $false
