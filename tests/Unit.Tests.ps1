@@ -75,8 +75,8 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
 
             @($Contexts).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
-                It "$Title Should end with `$psitem So that the PowerBi will work correctly" {
-                    $PSItem.Name.ToString().Endswith('psitem"') | Should -Be $true
+                It "$Title Should end with `$psitem (or `$cluster) So that the PowerBi will work correctly" {
+                    $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('cluster"') | Should -Be $true
                 }
             }
         }
