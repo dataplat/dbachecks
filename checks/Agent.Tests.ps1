@@ -4,7 +4,7 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
     (Get-SqlInstance).ForEach{
         Context "Testing SQL Agent is running on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Agent).ForEach{
-                It "SQL Agent Should -Be running on $psitem" {
+                It "SQL Agent Should Be running on $psitem" {
                     $psitem.State | Should -Be "Running"
                 }
                 It "SQL Agent service should have a start mode of Automatic on $psitem" {
