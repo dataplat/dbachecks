@@ -90,8 +90,10 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 It "$title Should Use Get-SqlInstance or Get-ComputerName" {
                     ($PSItem.text -Match 'Get-SqlInstance') -or ($psitem.text -match 'Get-ComputerName') | Should -Be $true
                 }
+                if ($title -ne 'Cluster Health') {
                 It "$title Should use the ForEach Method" {
-                    ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' )| Should -Be $true # use the \ to escape the )
+                        ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -Be $true # use the \ to escape the )
+                    }
                 }
                 It "$title Should not use `$_" {
                     ($Psitem.text -match '$_' )| Should -Be $false
