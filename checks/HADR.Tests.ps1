@@ -112,7 +112,7 @@ Describe "Cluster Health" -Tags ClusterHealth, $filename {
         }
     }
     
-    Describe "Availability Group Health" -Tag AvailabilityGroupHealth, AvailabilityGroup, $filename {
+    Describe "Availability Group Health" -Tags AvailabilityGroupHealth, AvailabilityGroup, $filename {
         Context "Availability Group Status for $cluster" {
             $return.AGReplica.Where.ForEach{
                 It "$($psitem.Replica) Replica should not be in Unknown Availability Mode" {
