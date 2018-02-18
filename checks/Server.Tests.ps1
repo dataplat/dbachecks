@@ -20,7 +20,7 @@ Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename
             It "connects successfully to $psitem" {
                 $connection.connectsuccess | Should -Be $true
             }
-            It "auth scheme Should -Be $authscheme on $psitem" {
+            It "auth scheme Should Be $authscheme on $psitem" {
                 $connection.AuthScheme | Should -Be $authscheme
             }
             It -Skip:$skipping "$psitem is pingable" {
