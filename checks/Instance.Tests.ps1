@@ -4,7 +4,7 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
     (Get-SqlInstance).ForEach{
         Context "Testing SQL Engine Service on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
-                It "SQL Engine service account Should -Be running on $($psitem.InstanceName)" {
+                It "SQL Engine service account Should Be running on $($psitem.InstanceName)" {
                     $psitem.State | Should -Be "Running"
                 }
                 It "SQL Engine service account should have a start mode of Automatic on $($psitem.InstanceName)" {
@@ -18,7 +18,7 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
     (Get-ComputerName).ForEach{
         Context "Testing SQL Browser Service on $psitem" {
-            It "SQL browser service on $psitem Should -Be Stopped unless multiple instances are installed" {
+            It "SQL browser service on $psitem Should Be Stopped unless multiple instances are installed" {
                 if ((Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Stopped"
                 }
@@ -26,7 +26,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State| Should -Be "Running"
                 }
             }
-            It "SQL browser service startmode Should -Be Disabled on $psitem unless multiple instances are installed" {
+            It "SQL browser service startmode Should Be Disabled on $psitem unless multiple instances are installed" {
                 if ((Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Disabled"
                 }
@@ -64,7 +64,7 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
 Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Ad Hoc Workload Optimization on $psitem" {
-            It "$psitem Should -Be Optimised for Ad Hoc workloads" {
+            It "$psitem Should Be Optimised for Ad Hoc workloads" {
                 @(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
                     $psitem.CurrentOptimizeAdHoc | Should -Be $psitem.RecommendedOptimizeAdHoc
                 }
@@ -106,7 +106,7 @@ Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Network Latency on $psitem" {
             @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
-                It "network latency Should -Be less than $max ms on $($psitem.InstanceName)" {
+                It "network latency Should Be less than $max ms on $($psitem.InstanceName)" {
                     $psitem.Average.TotalMilliseconds | Should -BeLessThan $max
                 }
             }
@@ -129,7 +129,7 @@ Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename 
 Describe "Max Memory" -Tags MaxMemory, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Max Memory on $psitem" {
-            It "Max Memory setting Should -Be correct on $psitem" {
+            It "Max Memory setting Should Be correct on $psitem" {
                 @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
                     $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379)
                 }
@@ -228,7 +228,7 @@ Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename 
         Context "Checking running sessions on $psitem" {
             @(Get-DbaXESession -SqlInstance $psitem).ForEach{
                 if ($psitem.Name -in $xesession) {
-                    It "session $($psitem.Name) Should -Be running on $($psitem.InstanceName)" {
+                    It "session $($psitem.Name) Should Be running on $($psitem.InstanceName)" {
                         $psitem.Status | Should -Be "Running"
                     }
                 }
