@@ -34,10 +34,10 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
             Context "Testing Backup Restore & Integrity Checks on $psitem" {
                 @(Test-DbaLastBackup -SqlInstance $psitem -Destination $destserver -LogDirectory $destlog -DataDirectory $destdata).ForEach{
                     if ($psitem.DBCCResult -notmatch 'skipped for restored master') {
-                        It "DBCC for $($psitem.Database) on $($psitem.SourceServer) Should -Be success" {
+                        It "DBCC for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
                             $psitem.DBCCResult | Should -Be 'Success'
                         }
-                        It "restore for $($psitem.Database) on $($psitem.SourceServer) Should -Be success" {
+                        It "restore for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
                             $psitem.RestoreResult | Should -Be 'Success'
                         }
                     }
@@ -52,7 +52,7 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
     (Get-SqlInstance).ForEach{
         Context "VerifyOnly tests of last backups on $psitem" {
             @(Test-DbaLastBackup -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name -VerifyOnly).ForEach{
-                It "restore for $($psitem.Database) on $($psitem.SourceServer) Should -Be success" {
+                It "restore for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
                     $psitem.RestoreResult | Should -Be 'Success'
                 }
                 It "file exists for last backup of $($psitem.Database) on $($psitem.SourceServer)" {
@@ -69,7 +69,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
-                It "$($psitem.Database) owner Should -Be $targetowner on $($psitem.Server)" {
+                It "$($psitem.Database) owner Should Be $targetowner on $($psitem.Server)" {
                     $psitem.CurrentOwner | Should -Be $psitem.TargetOwner
                 }
             }
@@ -99,7 +99,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
         Context "Testing Last Good DBCC CHECKDB on $psitem" {
             @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name).ForEach{
                 if ($psitem.Database -ne 'tempdb') {
-                    It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should -Be less than $maxdays" {
+                    It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should Be less than $maxdays" {
                         $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).AddDays( - ($maxdays))
                     }
 
@@ -246,7 +246,7 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
         Context "Testing last full backups on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).ForEach{
                 $offline = ($psitem.Status -match "Offline")
-                It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) Should -Be less than $maxfull days" {
+                It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) Should Be less than $maxfull days" {
                     $psitem.LastFullBackup | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull))
                 }
             }
@@ -261,7 +261,7 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
         Context "Testing last diff backups on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 $offline = ($psitem.Status -match "Offline")
-                It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) Should -Be less than $maxdiff hours" {
+                It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) Should Be less than $maxdiff hours" {
                     $psitem.LastDiffBackup | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff))
                 }
             }
@@ -277,7 +277,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
             @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 if ($psitem.RecoveryModel -ne 'Simple') {
                     $offline = ($psitem.Status -match "Offline")
-                    It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) Should -Be less than $maxlog minutes" {
+                    It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) Should Be less than $maxlog minutes" {
                         $psitem.LastLogBackup | Should -BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1)
                     }
                 }
@@ -292,7 +292,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Database VLFs on $psitem" {
             @(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{
-                It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should -Be less than $vlfmax" {
+                It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should Be less than $vlfmax" {
                     $psitem.Total | Should -BeLessThan $vlfmax
                 }
             }
