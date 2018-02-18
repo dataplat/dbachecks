@@ -42,11 +42,11 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
                     $PSItem.Tags.Text.Split(',').Trim().Where{($_ -ne '$filename') -and ($_ -notlike '*statistics*') -and ($_ -notlike '*BackupPathAccess*') }.ForEach{
-                        It "$PsItem Should -Be Singular" {
+                        It "$PsItem Should Be Singular" {
                             $_.ToString().Endswith('s') | Should -Be $False
                         }
                     }
-                    It "The first Tag Should -Be in the unique Tags returned from Get-DbcCheck" {
+                    It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) Should Be in the unique Tags returned from Get-DbcCheck" {
                         $UniqueTags -contains $PSItem.Tags.Text.Split(',')[0].ToString() | Should -Be $true
                     }
                 }
