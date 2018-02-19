@@ -33,26 +33,26 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             @($describes).Foreach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
                 It "$title Should Use a double quote after the Describe" {
-                    $PSItem.Name.ToString().Startswith('"')  | Should -Be $true
-                    $PSItem.Name.ToString().Endswith('"')  | Should -Be $true
+                    $PSItem.Name.ToString().Startswith('"')  | Should -BeTrue -Because 'We need use double quotes for titles'
+                    $PSItem.Name.ToString().Endswith('"')  | Should -BeTrue -Because 'We need use double quotes for titles'
                 }
                 It "$title should use a plural for tags" {
-                    $PsItem.Tags | Should Not BeNullOrEmpty
+                    $PsItem.Tags | Should Not BeNullOrEmpty -Because 'We use the plural of Tags'
                 }
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
                     $PSItem.Tags.Text.Split(',').Trim().Where{($_ -ne '$filename') -and ($_ -notlike '*statistics*') -and ($_ -notlike '*BackupPathAccess*') }.ForEach{
                         It "$PsItem Should Be Singular" {
-                            $_.ToString().Endswith('s') | Should -Be $False
+                            $_.ToString().Endswith('s') | Should -BeFalse -Because 'Our coding standards say tags should be singular'
                         }
                     }
                     It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) Should Be in the unique Tags returned from Get-DbcCheck" {
-                        $UniqueTags -contains $PSItem.Tags.Text.Split(',')[0].ToString() | Should -Be $true
+                        $UniqueTags | Should -Contain $PSItem.Tags.Text.Split(',')[0].ToString() -Because 'We need a unique tag for each test'
                     }
                 }
                 else {
                     It "You haven't used the Tags Parameter so we can't check the tags" {
-                        $false | Should -Be $true
+                        $false | Should -BeTrue -Because 'We use teh Tags parameter'
                     }
                 }  
             }
@@ -76,7 +76,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             @($Contexts).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
                 It "$Title Should end with `$psitem (or `$cluster) So that the PowerBi will work correctly" {
-                    $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('cluster"') | Should -Be $true
+                    $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('cluster"') | Should -BeTrue -Because 'This helps the PowerBi to parse the data'
                 }
             }
         }
@@ -88,18 +88,18 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             @($Statements.Where{$_.StartLineNumber -ne 1}).ForEach{
                 $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
                 It "$title Should Use Get-SqlInstance or Get-ComputerName" {
-                    ($PSItem.text -Match 'Get-SqlInstance') -or ($psitem.text -match 'Get-ComputerName') | Should -Be $true
+                    ($PSItem.text -Match 'Get-SqlInstance') -or ($psitem.text -match 'Get-ComputerName') | Should -BeTrue -Because 'These are the commands to use to get Instances or Computers'
                 }
                 if ($title -ne 'Cluster Health') {
                     It "$title Should use the ForEach Method" {
-                        ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -Be $true # use the \ to escape the )
+                        ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -BeTrue # use the \ to escape the ) -Because 'We use the ForEach method in our coding standards'
                     }
                 }
                 It "$title Should not use `$_" {
-                    ($Psitem.text -match '$_' )| Should -Be $false
+                    ($Psitem.text -match '$_' )| Should -BeFalse -Because '¬$psitem is the correct one to use'
                 }
                 It "$title Should Contain a Context Block" {
-                    $Psitem.text -match 'Context' | Should -Be $True
+                    $Psitem.text -match 'Context' | Should -BeTrue -Because 'This helps the Power Bi'
                 }
             }
         }
