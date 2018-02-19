@@ -4,7 +4,7 @@ Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
     (Get-ComputerName).ForEach{
         Context "Testing Server Power Plan Configuration on $psitem" {
             It "PowerPlan is High Performance on $psitem" {
-                (Test-DbaPowerPlan -ComputerName $psitem).IsBestPractice | Should -Be $true
+                (Test-DbaPowerPlan -ComputerName $psitem).IsBestPractice | Should -BeTrue
             }
         }
     }
@@ -18,16 +18,16 @@ Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename
         Context "Testing Instance Connection on $psitem" {
             $connection = Test-DbaConnection -SqlInstance $psitem
             It "connects successfully to $psitem" {
-                $connection.connectsuccess | Should -Be $true
+                $connection.connectsuccess | Should -BeTrue
             }
             It "auth scheme Should Be $authscheme on $psitem" {
                 $connection.AuthScheme | Should -Be $authscheme
             }
             It -Skip:$skipping "$psitem is pingable" {
-                $connection.IsPingable | Should -Be $true
+                $connection.IsPingable | Should -BeTrue
             }
             It -Skip:$skipremote "$psitem Is PSRemotebale" {
-                $Connection.PSRemotingAccessible | Should -Be $True
+                $Connection.PSRemotingAccessible | Should -BeTrue
             }
         }
     }
