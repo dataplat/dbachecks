@@ -1,10 +1,10 @@
 ﻿function Export-DbcConfig {
     <#
         .SYNOPSIS
-            Exports the Config to a JSON file to make it easier to modify
+            Exports dbachecks configs from a json file to make it easier to modify or be used for specific configurations.
         
         .DESCRIPTION
-            Exports the Config to a JSON file to make it easier to modify
+            Exports dbachecks configs from a json file to make it easier to modify or be used for specific configurations.
     
         .PARAMETER Path
             The path to export to, by default is "$script:localapp\config.json"

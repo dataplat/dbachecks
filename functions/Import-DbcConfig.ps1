@@ -1,17 +1,17 @@
 ﻿function Import-DbcConfig {
     <#
         .SYNOPSIS
-            Imports the Config from a JSON file
+            Imports dbachecks configs from a json file
         
         .DESCRIPTION
-            Imports the Config from a JSON file
+           Imports dbachecks configs from a json file
     
         .PARAMETER Path
             The path to import from, by default is "$script:localapp\config.json"
     
         .PARAMETER Temporary
             The settings are not persisted outside the current session.
-            By default, settings will be remembered across all powershell sessions.
+            By default, settings will be remembered across all PowerShell sessions.
     
         .PARAMETER EnableException
             By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
