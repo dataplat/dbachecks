@@ -10,11 +10,11 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         }
         
         It "returns a number of configs" {
-            ($results).Count -gt 10 | Should -Be $true
+            ($results).Count -gt 10 | Should -BeTrue
         }
         
         It "returns a single bool" {
-            $specific.Value -eq $true -or $specific.Value -eq $false | Should -Be $true
+            $specific.Value -eq $true -or $specific.Value -eq $false | Should -BeTrue
         }
     }
 }
