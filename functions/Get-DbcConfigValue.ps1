@@ -1,10 +1,10 @@
 ﻿function Get-DbcConfigValue {
     <#
         .SYNOPSIS
-            Retrieves dbachecks configuration element values by name.
+            Retrieves raw configuration values by name.
         
         .DESCRIPTION
-            Retrieves dbachecks configuration element values by name.
+            Retrieves raw configuration values by name.
             
             Can be used to search the existing configuration list.
     
@@ -22,7 +22,7 @@
         .EXAMPLE
             Get-DbcConfigValue app.sqlinstance
             
-            Retrieves the configuration element for the key "app.sqlinstance"
+            Retrieves the raw value for the key "app.sqlinstance"
     #>
     [CmdletBinding()]
     param (
