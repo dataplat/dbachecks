@@ -1,10 +1,10 @@
 ﻿function Get-DbcTagCollection {
     <#
         .SYNOPSIS
-            Retrieves a list of all available tags. Simplisitic, similar to Get-Verb.
+            Retrieves a list of all available tags. Simplistic, similar to Get-Verb.
     
         .DESCRIPTION
-            Retrieves a list of all available tags. Simplisitic, similar to Get-Verb.
+            Retrieves a list of all available tags. Simplistic, similar to Get-Verb.
             
         .PARAMETER Name
             Default: "*"

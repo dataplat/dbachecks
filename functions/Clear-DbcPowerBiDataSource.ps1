@@ -4,7 +4,7 @@
             Clears the data source directory created by Update-DbcPowerBiDataSource
 
         .DESCRIPTION
-            Clears the data source directory created by Update-DbcPowerBiDataSource
+            Clears the data source directory created by Update-DbcPowerBiDataSource ("C:\windows\temp\dbachecks\*.json" by default). This command makes it easier to clean up data used by PowerBI via Start-DbcPowerBi.
 
         .PARAMETER Path
             The directory to your JSON files, which will be removed. "C:\windows\temp\dbachecks\*.json" by default

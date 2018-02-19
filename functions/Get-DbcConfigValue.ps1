@@ -1,10 +1,10 @@
 ﻿function Get-DbcConfigValue {
     <#
         .SYNOPSIS
-            Retrieves configuration element values by name.
+            Retrieves raw configuration values by name.
         
         .DESCRIPTION
-            Retrieves configuration element values by name.
+            Retrieves raw configuration values by name.
             
             Can be used to search the existing configuration list.
     
@@ -20,9 +20,9 @@
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
             
         .EXAMPLE
-            Get-DbcConfig Lists.SqlServers
+            Get-DbcConfigValue app.sqlinstance
             
-            Retrieves the configuration element for the key "Lists.SqlServers"
+            Retrieves the raw value for the key "app.sqlinstance"
     #>
     [CmdletBinding()]
     param (

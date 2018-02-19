@@ -1,12 +1,11 @@
 ﻿function Update-DbcPowerBiDataSource {
     <#
         .SYNOPSIS
-            Converts Pester results and exports file in required format for launching the PowerBi command
-            YOU WILL NEED TO REFRESH the PowerBi TO SEE THE NEW Results
+            Converts Pester results and exports file in required format for launching the Power BI command. **You will need refresh* the Power BI dashboard every time to see the new results.
 
         .DESCRIPTION
-            Converts Pester results and exports file in required format for launching the PowerBi command
-            YOU WILL NEED TO REFRESH the PowerBi TO SEE THE NEW Results
+            Converts Pester results and exports file in required format for launching the Power BI command. **You will need refresh* the Power BI dashboard every time to see the new results.
+
             Basically does this:
                 $InputObject.TestResult | Select-Object -First 20 | ConvertTo-Json -Depth 3 | Out-File "$env:windir\temp\dbachecks.json"
 
