@@ -8,7 +8,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         $count = ($results).Count
         
         It "returns a number of tags" {
-            $count -gt 10 | Should -Be $true
+            $count -gt 10 | Should -BeTrue
         }
         
         It "returns a unique number of tags" {
