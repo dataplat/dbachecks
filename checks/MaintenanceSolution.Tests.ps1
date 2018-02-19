@@ -46,16 +46,16 @@ $jobnames | ForEach-Object {
             $job = Get-DbaAgentJob -SqlInstance $PSItem -Job $JobName
             Context  "Is job enabled on $PSItem" {
                 It "$JobName Should Be enabled - $Enabled " {
-                    $job.IsEnabled | Should -Be $Enabled -Because 'If the job is not enabled it wont run'
+                    $job.IsEnabled | Should -Be $Enabled -Because 'If the job is not enabled it will not run'
                 }
             }
             Context "Is job scheduled on $PSItem" {
                 It "$JobName Should Be scheduled - $Scheduled " {
-                    $job.HasSchedule | Should -Be $Scheduled -Because 'If the job is not scheduled it wont run'
+                    $job.HasSchedule | Should -Be $Scheduled -Because 'If the job is not scheduled it will not run'
                 }
                 It "$($JobName) schedules Should Be enabled - $Scheduled" {
                     $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object ).Count -gt 0
-                    $results | Should -BeGreaterThan 0 -Because 'If the schedule is not enabled the jobs wont run'
+                    $results | Should -BeGreaterThan 0 -Because 'If the schedule is not enabled the jobs will not run'
                 }
             }      
 
