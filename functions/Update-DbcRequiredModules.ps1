@@ -33,4 +33,13 @@ function Update-DbcRequiredModules {
             }
         }
     }
+    if ($pscmdlet.ShouldProcess("Install latest dbachecks from repository")) {
+        try {
+            Write-PSFMessage -Level Output -Message "Updating dbachecks"
+            Update-Module -Name dbachecks -ErrorAction Stop
+        }
+        catch {
+            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
+        }
+    }
 }
