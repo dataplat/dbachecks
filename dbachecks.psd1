@@ -98,7 +98,7 @@
     
     # Aliases to export from this module
     # Aliases are stored in dbachecks.psm1
-    AliasesToExport        = '*'
+    AliasesToExport        = 'Update-Dbchecks'
     
     # List of all modules packaged with this module
     ModuleList             = @()
