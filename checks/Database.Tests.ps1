@@ -232,7 +232,7 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
         Context "Testing Auto Shrink on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Shrink set to $autoshrink" {
-                    $psitem.AutoShrink | Should -Be $autoshrink -Because 'You dont want to waste time shrinking databases'
+                    $psitem.AutoShrink | Should -Be $autoshrink -Because 'Shrinking databases causes fragmentation and performance issues'
                 }
             }
         }
@@ -247,7 +247,7 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
             @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) Should Be less than $maxfull days" {
-                    $psitem.LastFullBackup | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because 'taking regular backups is VERY important!'
+                    $psitem.LastFullBackup | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because 'Taking regular backups is extraordinarily important'
                 }
             }
         }
@@ -262,7 +262,7 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
             @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) Should Be less than $maxdiff hours" {
-                    $psitem.LastDiffBackup | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff)) -Because 'taking regular backups is VERY important!'
+                    $psitem.LastDiffBackup | Should -BeGreaterThan (Get-Date).AddHours(- ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
                 }
             }
         }
@@ -278,7 +278,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
                 if ($psitem.RecoveryModel -ne 'Simple') {
                     $offline = ($psitem.Status -match "Offline")
                     It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) Should Be less than $maxlog minutes" {
-                        $psitem.LastLogBackup | Should -BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1) -Because 'taking regular backups is VERY important!'
+                        $psitem.LastLogBackup | Should -BeGreaterThan (Get-Date).AddMinutes(- ($maxlog) + 1) -Because 'Taking regular backups is extraordinarily important'
                     }
                 }
 
@@ -293,7 +293,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
         Context "Testing Database VLFs on $psitem" {
             @(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should Be less than $vlfmax" {
-                    $psitem.Total | Should -BeLessThan $vlfmax -Because 'Too many VLFs slow down SQL Server'
+                    $psitem.Total | Should -BeLessThan $vlfmax -Because 'Too many VLFs can impact performance and slow down backup/restore'
                 }
             }
         }
@@ -409,16 +409,16 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
             (Get-DbaDatabaseFile -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
                 if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
                     It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
-                        $psitem.GrowthType | Should -Be $datafilegrowthtype -Because 'We expect a certain File growth type'
+                        $psitem.GrowthType | Should -Be $datafilegrowthtype -Because 'We expect a certain file growth type'
                     }
                     if ($datafilegrowthtype -eq "kb") {
                         It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                            $psitem.Growth * 8 | Should -BeGreaterOrEqual $datafilegrowthvalue  -because 'We expect a certain File growth value'
+                            $psitem.Growth * 8 | Should -BeGreaterOrEqual $datafilegrowthvalue  -because 'We expect a certain file growth value'
                         }
                     }
                     else {
                         It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                            $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -because 'We expect a certain File growth value'
+                            $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -because 'We expect a certain fFile growth value'
                         }
                     }
                 }
@@ -432,7 +432,7 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
         Context "Testing database trustworthy option on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase msdb).ForEach{
                 It "Trustworthy is set to false on $($psitem.Name)" {
-                    $psitem.Trustworthy | Should -BeFalse -Because 'Teh trustworthy value on databases is important'
+                    $psitem.Trustworthy | Should -BeFalse -Because 'Trustworthy has security implications and may expose your SQL Server to additional risk'
                 }
             }
         }

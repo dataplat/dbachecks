@@ -5,10 +5,10 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
         Context "Testing SQL Engine Service on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
                 It "SQL Engine service account Should Be running on $($psitem.InstanceName)" {
-                    $psitem.State | Should -Be "Running" -Because 'If the service is not running you wont have any SQL!'
+                    $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
                 }
                 It "SQL Engine service account should have a start mode of Automatic on $($psitem.InstanceName)" {
-                    $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts you wont have any SQL'
+                    $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessibl'
                 }
             }
         }
@@ -84,7 +84,7 @@ Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
             }
 
             It "can access backup path ($backuppath) on $psitem" {
-                Test-DbaSqlPath -SqlInstance $psitem -Path $backuppath | Should -BeTrue -Because 'SQL Service Account needs to have access to the backup path to backup your databases'
+                Test-DbaSqlPath -SqlInstance $psitem -Path $backuppath | Should -BeTrue -Because 'The SQL Service account needs to have access to the backup path to backup your databases'
             }
         }
     }
@@ -131,7 +131,7 @@ Describe "Max Memory" -Tags MaxMemory, $filename {
         Context "Testing Max Memory on $psitem" {
             It "Max Memory setting Should Be correct on $psitem" {
                 @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
-                    $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You dont want SQL taking all of the RAMs'
+                    $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
                 }
             }
         }
@@ -164,7 +164,7 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
         Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
             $count = (Get-DbaDump -SqlInstance $psitem).Count
             It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" {
-                $Count | Should -BeLessOrEqual $maxdumps -Because 'The number of SQL Memory dumps should be less than this'
+                $Count | Should -BeLessOrEqual $maxdumps -Because 'Memory dumps often suggest issues with the SQL Server instance'
             }
         }
     }
@@ -257,7 +257,7 @@ Describe "OLE Automation" -Tags OLEAutomation, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing OLE Automation on $psitem" {
             It "OLE Automation is set to $OLEAutomation on $psitem" {
-                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should -Be $OLEAutomation -Because 'This is the required setting'
+                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should -Be $OLEAutomation -Because 'OLE Automation can introduce additional security risks'
             }
         }
     }
