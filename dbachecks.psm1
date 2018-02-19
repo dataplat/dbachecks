@@ -32,3 +32,5 @@ foreach ($function in (Get-ChildItem "$ModuleRoot\functions\*.ps1")) {
 
 # Execute Postimport actions
 . Import-ModuleFile -Path "$ModuleRoot\internal\scripts\postimport.ps1"
+
+if (-not (Test-Path Alias:Update-Dbachecks)) { Set-Alias -Scope Global -Name 'Update-Dbachecks' -Value 'Update-DbcRequiredModules' }

@@ -36,17 +36,6 @@
         }
     }
     
-    $required = (Import-PowerShellDataFile -Path "$script:ModuleRoot\dbachecks.psd1").RequiredModules
-    $modules = $required.ModuleName
-    #$modules += "dbachecks"
-
-    ForEach ($module in $modules) {
-        try {
-            Write-PSFMessage -Level Output -Message "Saving $module to $Path"
-            Save-Module -Name $module -Path $path -ErrorAction Stop
-        }
-        catch {
-            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
-        }
-    }
+    Write-PSFMessage -Level Output -Message "Note: PowerShell Gallery will say 'Installing dependent package' but it's really just saving them."
+    Save-Module -Name dbachecks -Path $path -ErrorAction Stop
 }
