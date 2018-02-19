@@ -153,7 +153,7 @@ foreach ($command in $commands) {
                 if ($helpParm -notin $parameterNames) {
                     # Shouldn't find extra parameters in help.
                     It "finds help parameter in code: $helpParm" {
-                        $helpParm -in $parameterNames | Should -Be $true
+                        $helpParm -in $parameterNames | Should -BeTrue
                     }
                     $testparamserrors += 1
                 }
