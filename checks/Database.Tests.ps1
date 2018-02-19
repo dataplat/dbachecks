@@ -119,7 +119,7 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
             @(Test-DbaIdentityUsage -SqlInstance $psitem).ForEach{
                 if ($psitem.Database -ne 'tempdb') {
                     $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
-                    It "usage for $columnfqdn on $($psitem.SqlInstance) Should -Be less than $maxpercentage percent" {
+                    It "usage for $columnfqdn on $($psitem.SqlInstance) Should Be less than $maxpercentage percent" {
                         $psitem.PercentUsed -lt $maxpercentage | Should -BeTrue -Because 'You do not want your Identity columns to hit the max value and stop inserts'
                     }
                 }
