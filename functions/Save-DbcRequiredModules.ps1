@@ -1,10 +1,10 @@
 ﻿function Save-DbcRequiredModules {
     <#
         .SYNOPSIS
-            Saves all required modules, including dbachecks, to a directory. Ideal for offline installs.
+            Saves all required modules, including dbachecks, dbatools, Pester and PSFramework to a directory. Ideal for offline installs.
         
         .DESCRIPTION
-            Saves all required modules, including dbachecks, to a directory. Ideal for offline installs.
+            Saves all required modules, including dbachecks, dbatools, Pester and PSFramework to a directory. Ideal for offline installs.
     
         .PARAMETER Path
             The directory where the modules will be saved. Directory will be created if it does not exist.
