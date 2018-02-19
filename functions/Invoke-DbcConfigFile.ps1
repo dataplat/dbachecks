@@ -1,10 +1,10 @@
 ﻿function Invoke-DbcConfigFile {
     <#
         .SYNOPSIS
-            Invokes the default location of the config file for easy edits
+            Opens the default location of the json config file for easy edits.
         
         .DESCRIPTION
-            Invokes the default location of the config file for easy edits. Follow with Import-DbcConfig to import changes.
+            Opens the default location of the json config file for easy edits. Follow with Import-DbcConfig to import changes.
     
         .PARAMETER Path
             The path to open, by default is "$script:localapp\config.json"
