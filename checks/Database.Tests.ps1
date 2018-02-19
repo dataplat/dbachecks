@@ -5,7 +5,7 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
         Context "Testing database collation on $psitem" {
             @(Test-DbaDatabaseCollation -SqlInstance $psitem -ExcludeDatabase ReportingServer,ReportingServerTempDB ).ForEach{
                 It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
-                    $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation
+                    $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation -Because 'You will get collation conflict errors in tempdb'
                 }
             }
         }
@@ -18,7 +18,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
-                    @($results).Count | Should -Be 0
+                    @($results).Count | Should -Be 0 -Because 'You dont want suspect pages'
                 }
             }
         }
@@ -35,10 +35,10 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
                 @(Test-DbaLastBackup -SqlInstance $psitem -Destination $destserver -LogDirectory $destlog -DataDirectory $destdata).ForEach{
                     if ($psitem.DBCCResult -notmatch 'skipped for restored master') {
                         It "DBCC for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
-                            $psitem.DBCCResult | Should -Be 'Success'
+                            $psitem.DBCCResult | Should -Be 'Success' -Because 'You need to run DBCC CHECKDB to ensure your database is consistent'
                         }
                         It "restore for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
-                            $psitem.RestoreResult | Should -Be 'Success'
+                            $psitem.RestoreResult | Should -Be 'Success' -Because 'The backup file has not successfully restored - you have no backup'
                         }
                     }
                 }
@@ -53,10 +53,10 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
         Context "VerifyOnly tests of last backups on $psitem" {
             @(Test-DbaLastBackup -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name -VerifyOnly).ForEach{
                 It "restore for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
-                    $psitem.RestoreResult | Should -Be 'Success'
+                    $psitem.RestoreResult | Should -Be 'Success' -Because 'The restore file has not successfully restored - you have no backup'
                 }
                 It "file exists for last backup of $($psitem.Database) on $($psitem.SourceServer)" {
-                    $psitem.FileExists | Should -Be $true
+                    $psitem.FileExists | Should -BeTrue -Because 'Without a backup file you have no backup'
                 }
             }
         }
@@ -70,7 +70,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
         Context "Testing Database Owners on $psitem" {
             @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner Should Be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should -Be $psitem.TargetOwner
+                    $psitem.CurrentOwner | Should -Be $psitem.TargetOwner -Because "The account that is the database owner is not what was expected"
                 }
             }
         }
@@ -84,7 +84,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
         Context "Testing Database Owners on $psitem" {
             @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should Not be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should Not Be $psitem.TargetOwner
+                    $psitem.CurrentOwner | Should Not Be $psitem.TargetOwner -Because 'The datbase owner was one specified as incorrect'
                 }
             }
         }
@@ -104,7 +104,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
                     }
 
                     It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
-                        $psitem.DataPurityEnabled | Should -Be $true
+                        $psitem.DataPurityEnabled | Should -BeTrue -Because 'the DATA_PURITY option causes the CHECKDB command to look for column values that are invalid or out of range.'
                     }
                 }
             }
@@ -120,7 +120,7 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
                 if ($psitem.Database -ne 'tempdb') {
                     $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
                     It "usage for $columnfqdn on $($psitem.SqlInstance) Should -Be less than $maxpercentage percent" {
-                        $psitem.PercentUsed -lt $maxpercentage | Should -Be $true
+                        $psitem.PercentUsed -lt $maxpercentage | Should -BeTrue -Because 'You do not want your Identity columns to hit the max value and stop inserts'
                     }
                 }
             }
@@ -134,7 +134,7 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
             @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "$($psitem.Name) Should -Be set to $((Get-DbcConfigValue policy.recoverymodel.type)) on $($psitem.SqlInstance)" {
-                    $psitem.RecoveryModel | Should -Be (Get-DbcConfigValue policy.recoverymodel.type)
+                    $psitem.RecoveryModel | Should -Be (Get-DbcConfigValue policy.recoverymodel.type) -Because 'You expect this recovery model'
                 }
             }
         }
@@ -147,7 +147,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem on $($psitem.Parent) should return 0 duplicate indexes" {
-                    @($results).Count | Should -Be 0
+                    @($results).Count | Should -Be 0 -Because 'Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory'
                 }
             }
         }
@@ -161,12 +161,12 @@ Describe "Unused Index" -Tags UnusedIndex, $filename {
                 try {
                     $results = Find-DbaUnusedIndex -SqlInstance $psitem.Parent -Database $psitem.Name -EnableException
                     It "$psitem on $($psitem.Parent) should return 0 Unused indexes" {
-                        @($results).Count | Should -Be 0
+                        @($results).Count | Should -Be 0 -Because 'You should have indexes that are used'
                     }
                 }
                 catch {
                     It -Skip "$psitem on $($psitem.Parent) should return 0 Unused indexes" {
-                        @($results).Count | Should -Be 0
+                        @($results).Count | Should -Be 0 -Because 'You should have indexes that are used'
                     }
                 }
             }
@@ -180,7 +180,7 @@ Describe "Disabled Index" -Tags DisabledIndex, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Find-DbaDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem on $($psitem.Parent) should return 0 Disabled indexes" {
-                    @($results).Count | Should -Be 0
+                    @($results).Count | Should -Be 0 -Because 'Disabled indexes are wasting disk space'
                 }
             }
         }
@@ -193,7 +193,7 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem should return 0 database growth events on $($psitem.SqlInstance)" {
-                    @($results).Count | Should -Be 0
+                    @($results).Count | Should -Be 0 -Because 'You want to control how your database files are grown'
                 }
             }
         }
@@ -206,7 +206,7 @@ Describe "Page Verify" -Tags PageVerify, $filename {
         Context "Testing page verify on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have page verify set to $pageverify" {
-                    $psitem.PageVerify | Should -Be $pageverify
+                    $psitem.PageVerify | Should -Be $pageverify -Because 'Page verify helps SQL Server to detect corruption'
                 }
             }
         }
@@ -219,7 +219,7 @@ Describe "Auto Close" -Tags AutoClose, $filename {
         Context "Testing Auto Close on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Close set to $autoclose" {
-                    $psitem.AutoClose | Should -Be $autoclose
+                    $psitem.AutoClose | Should -Be $autoclose -Because 'Because!'
                 }
             }
         }
@@ -232,7 +232,7 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
         Context "Testing Auto Shrink on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Shrink set to $autoshrink" {
-                    $psitem.AutoShrink | Should -Be $autoshrink
+                    $psitem.AutoShrink | Should -Be $autoshrink -Because 'You dont want to waste time shrinking databases'
                 }
             }
         }
@@ -353,7 +353,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
 
                     $Unbalanced = $psitem | Where-Object {$psitem.group.Size -lt ((1 - ($Tolerance / 100)) * $Average) -or $psitem.group.Size -gt ((1 + ($Tolerance / 100)) * $Average)}
                     It "$($psitem.Name) of $($psitem.Group[0].Database) on $($psitem.Group[0].SqlInstance)  Should have FileGroup members with sizes within 5% of the average" {
-                        $Unbalanced.count | Should -Be 0
+                        $Unbalanced.count | Should -Be 0 -Because 'If your file groups are not balanced SQL Server wont be optimal'
                     }
                 }
             }
@@ -367,7 +367,7 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
         Context "Testing Auto Create Statistics on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Create Statistics set to $autocreatestatistics" {
-                    $psitem.AutoCreateStatisticsEnabled | Should -Be $autocreatestatistics
+                    $psitem.AutoCreateStatisticsEnabled | Should -Be $autocreatestatistics -Because 'This is value expeceted for autocreate statistics'
                 }
             }
         }
@@ -380,7 +380,7 @@ Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
         Context "Testing Auto Update Statistics on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Update Statistics set to $autoupdatestatistics" {
-                    $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics
+                    $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because 'This is value expeceted for autoupdate statistics'
                 }
             }
         }
@@ -393,7 +393,7 @@ Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsync
         Context "Testing Auto Update Statistics Asynchronously on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
-                    $psitem.AutoUpdateStatisticsAsync | Should -Be $autoupdatestatisticsasynchronously
+                    $psitem.AutoUpdateStatisticsAsync | Should -Be $autoupdatestatisticsasynchronously  -Because 'This is value expeceted for autoupdate statistics asynchronously'
                 }
             }
         }
@@ -409,7 +409,7 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
             (Get-DbaDatabaseFile -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
                 if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
                     It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
-                        $psitem.GrowthType | Should -Be $datafilegrowthtype
+                        $psitem.GrowthType | Should -Be $datafilegrowthtype -Because 'We expect a certain File growth type'
                     }
                     if ($datafilegrowthtype -eq "kb") {
                         It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
@@ -432,7 +432,7 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
         Context "Testing database trustworthy option on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase msdb).ForEach{
                 It "Trustworthy is set to false on $($psitem.Name)" {
-                    $psitem.Trustworthy | Should -Be $false
+                    $psitem.Trustworthy | Should -BeFalse -Because 'Teh trustworthy value on databases is important'
                 }
             }
         }
@@ -444,7 +444,7 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
         Context "Testing database orphaned user event on $psitem" {
             $results = Get-DbaOrphanUser -SqlInstance $psitem
             It "$psitem should return 0 orphaned users" {
-                @($results).Count | Should -Be 0
+                @($results).Count | Should -Be 0 -Because 'We dont want orphaned users'
             }
         }
     }
@@ -455,7 +455,7 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
             @(Get-DbaDatabase -SqlInstance $PSItem -ExcludeDatabase tempdb).ForEach{
                 It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent)" {
-                    (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq 'pseudo-SIMPLE' | Should -Be $false
+                    (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq 'pseudo-SIMPLE' | Should -BeFalse -Because 'PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode'
                 }
             }
         }
@@ -466,7 +466,7 @@ Describe "Optimize for Ad Hoc Workloads" -Tags AdHocWorkload, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing optimize for ad hoc workloads is enabled on $psitem" {
             It "Should have optimize for ad hoc workloads set to 1 on $($psitem)" {
-                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName OptimizeAdhocWorkloads).RunningValue | Should -Be 1
+                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName OptimizeAdhocWorkloads).RunningValue | Should -Be 1 -Because 'SQL Server does not need to store the plans for queries it wont re-use'
             }
         }
     }
