@@ -100,7 +100,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
             @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database (Get-DbaDatabase -SqlInstance $psitem | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).name).ForEach{
                 if ($psitem.Database -ne 'tempdb') {
                     It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should Be less than $maxdays" {
-                        $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).AddDays( - ($maxdays))
+                        $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).AddDays( - ($maxdays)) -Because 'You should have run a DBCC CheckDB inside that time'
                     }
 
                     It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
@@ -247,7 +247,7 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
             @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) Should Be less than $maxfull days" {
-                    $psitem.LastFullBackup | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull))
+                    $psitem.LastFullBackup | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because 'taking regular backups is VERY important!'
                 }
             }
         }
@@ -262,7 +262,7 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
             @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 $offline = ($psitem.Status -match "Offline")
                 It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) Should Be less than $maxdiff hours" {
-                    $psitem.LastDiffBackup | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff))
+                    $psitem.LastDiffBackup | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff)) -Because 'taking regular backups is VERY important!'
                 }
             }
         }
@@ -278,7 +278,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
                 if ($psitem.RecoveryModel -ne 'Simple') {
                     $offline = ($psitem.Status -match "Offline")
                     It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) Should Be less than $maxlog minutes" {
-                        $psitem.LastLogBackup | Should -BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1)
+                        $psitem.LastLogBackup | Should -BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1) -Because 'taking regular backups is VERY important!'
                     }
                 }
 
@@ -293,7 +293,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
         Context "Testing Database VLFs on $psitem" {
             @(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should Be less than $vlfmax" {
-                    $psitem.Total | Should -BeLessThan $vlfmax
+                    $psitem.Total | Should -BeLessThan $vlfmax -Because 'Too many VLFs slow down SQL Server'
                 }
             }
         }
@@ -310,7 +310,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
                     $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                     $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
                     It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
-                        $LogFiles.Count | Should -BeLessThan $LogFileCount 
+                        $LogFiles.Count | Should -BeLessThan $LogFileCount -Because 'You want the correct number of log files'
                     }
                 }
             }
@@ -332,7 +332,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
                 $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
                 $DataFileSize = ($Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Measure-Object @Splat).$LogFileSizeComparison
                 It "$($psitem.Name) on $($psitem.SqlInstance) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
-                    $LogFileSize | Should -BeLessThan ($DataFileSize * $LogFileSizePercentage) 
+                    $LogFileSize | Should -BeLessThan ($DataFileSize * $LogFileSizePercentage) -Because 'If your log file is this large you are not maintaining it well enough'
                 }
             }
         }
@@ -413,12 +413,12 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
                     }
                     if ($datafilegrowthtype -eq "kb") {
                         It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                            $psitem.Growth * 8 | Should -BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
+                            $psitem.Growth * 8 | Should -BeGreaterOrEqual $datafilegrowthvalue  -because 'We expect a certain File growth value'
                         }
                     }
                     else {
                         It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                            $psitem.Growth | Should -BeGreaterThan ($datafilegrowthvalue - 1) #-1 because we don't have a GreaterOrEqual
+                            $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -because 'We expect a certain File growth value'
                         }
                     }
                 }

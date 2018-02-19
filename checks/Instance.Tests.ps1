@@ -107,7 +107,7 @@ Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
         Context "Testing Network Latency on $psitem" {
             @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
                 It "network latency Should Be less than $max ms on $($psitem.InstanceName)" {
-                    $psitem.Average.TotalMilliseconds | Should -BeLessThan $max
+                    $psitem.Average.TotalMilliseconds | Should -BeLessThan $max -Because 'You dont want to be waiting on the network'
                 }
             }
         }
@@ -131,7 +131,7 @@ Describe "Max Memory" -Tags MaxMemory, $filename {
         Context "Testing Max Memory on $psitem" {
             It "Max Memory setting Should Be correct on $psitem" {
                 @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
-                    $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379)
+                    $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You dont want SQL taking all of the RAMs'
                 }
             }
         }
@@ -164,7 +164,7 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
         Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
             $count = (Get-DbaDump -SqlInstance $psitem).Count
             It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" {
-                $Count | Should -BeLessThan ($maxdumps +1)
+                $Count | Should -BeLessOrEqual $maxdumps -Because 'The number of SQL Memory dumps should be less than this'
             }
         }
     }
@@ -176,10 +176,10 @@ Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
         Context "Checking that build is still supportedby Microsoft for $psitem" {
             $results = Get-DbaSqlBuildReference -SqlInstance $psitem
             It "$($results.Build) on $psitem is still supported" {
-                $results.SupportedUntil  | Should -BeGreaterThan (Get-Date)
+                $results.SupportedUntil  | Should -BeGreaterThan (Get-Date) -Because 'This build is now unsupported by Microsoft'
             }
             It "$($results.Build) on $psitem is supported for more than $BuildWarning Months" {
-                $results.SupportedUntil  | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning)
+                $results.SupportedUntil  | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning) -Because 'This build will soon be unsupported by Microsoft'
             }
         }
     }

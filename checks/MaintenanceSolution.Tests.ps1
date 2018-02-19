@@ -55,7 +55,7 @@ $jobnames | ForEach-Object {
                 }
                 It "$($JobName) schedules Should Be enabled - $Scheduled" {
                     $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object ).Count -gt 0
-                    $results | Should -BeGreaterThan 0 
+                    $results | Should -BeGreaterThan 0 -Because 'If the schedule is not enabled the jobs wont run'
                 }
             }      
 
