@@ -84,7 +84,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
         Context "Testing Database Owners on $psitem" {
             @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should Not be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should Not Be $psitem.TargetOwner -Because 'The datbase owner was one specified as incorrect'
+                    $psitem.CurrentOwner | Should -Not -Be $psitem.TargetOwner -Because 'The datbase owner was one specified as incorrect'
                 }
             }
         }
