@@ -12,7 +12,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         }
         
         It "returns a bunch of results" {
-            $results = Import-DbcConfig -Path "$script:localapp\config.json" -WarningAction SilentlyContinue -WarningVariable warns
+            $results = Import-DbcConfig -Path "$script:localapp\config.json" -WarningAction SilentlyContinue -WarningVariable warns 3>$null
             ($results).Count -gt 10 | Should -BeTrue
         }
         It -Skip "returns some results for app.checkrepos" { #skip till I get the syntax right
