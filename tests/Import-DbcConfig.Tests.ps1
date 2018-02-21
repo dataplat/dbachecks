@@ -16,7 +16,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
             ($results).Count -gt 10 | Should -BeTrue
         }
         It "returns some results for app.checkrepos" {
-            $results | Where-Object name -eq app.checkrepos | Should Not Be $null
+            $results | Where-Object name -eq app.checkrepos | Should -Not Be $null
         }
     }
 }
