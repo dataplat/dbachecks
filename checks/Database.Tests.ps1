@@ -427,17 +427,6 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
     }
 }
 
-Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
-    (Get-SqlInstance).ForEach{
-        Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $PSItem -ExcludeDatabase tempdb).ForEach{
-                It "PseudoSimple recovery model is false on $($psitem.Name)" {
-					(Test-DbaFullRecoveryModel -SqlInstance $psitem.SqlInstance -Database $psitem.Name).ActualRecoveryModel -ne 'pseudo-SIMPLE' | Should -Be $false
-				}
-            }
-        }
-    }
-}
 Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database trustworthy option on $psitem" {
