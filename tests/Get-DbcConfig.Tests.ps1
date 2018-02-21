@@ -6,7 +6,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Command executes properly and returns proper info" {
         BeforeAll {
             $results = Get-DbcConfig
-            $specific = Get-DbcConfig -Name skip.remotingcheck
+            $specific = Get-DbcConfig -Name policy.database.autoclose
         }
         
         It "returns a number of configs" {
