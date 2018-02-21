@@ -217,6 +217,24 @@ Save-Module -Name dbachecks, dbatools, PSFramework, Pester -Path C:\temp
 
 Then move them to somewhere in your `$env:PSModulePath`, perhaps **Documents\WindowsPowerShell\Modules** or **C:\Program Files\WindowsPowerShell\Modules**.
 
+## Read more
+
+Read more about dbachecks from a number of our original contributors!
+
+* [Announcing dbachecks – Configurable PowerShell Validation For Your SQL Instances by Rob Sewell](https://sqldbawithabeard.com/2018/02/22/announcing-dbachecks-configurable-powershell-validation-for-your-sql-instances/)
+* [introducing dbachecks - a new module from the dbatools team! by Chrissy LeMaire](https://dbachecks.io/introducing)
+* [install dbachecks by Chrissy LeMaire](https://dbachecks.io/install)
+* [dbachecks commands by Chrissy LeMaire](https://dbachecks.io/commands)
+* [dbachecks – Using Power BI dashboards to analyse results by Cláudio Silva](http://claudioessilva.eu/2018/02/22/dbachecks-using-power-bi-dashboards-to-analyse-results/)
+* [My wrapper for dbachecks by Tony Wilhelm](https://v-roddba.blogspot.com/2018/02/wrapper-for-dbachecks.html)
+* [Checking backups with dbachecks by Jess Promfret](http://jesspomfret.com/checking-backups-with-dbachecks/)
+* [dbachecks please! by Garry Bargsley](http://blog.garrybargsley.com/dbachecks-please)
+* [dbachecks – Configuration Deep Dive by Rob Sewell](https://sqldbawithabeard.com/2018/02/22/dbachecks-configuration-deep-dive/)
+* [Test Log Shipping with dbachecks](https://www.sqlstad.nl/powershell/test-log-shipping-with-dbachecks/)
+* [Checking your backup strategy with dbachecks by Joshua Corrick](https://corrick.io/blog/checking-your-backup-strategy-with-dbachecks)
+* [Enterprise-level reporting with dbachecks by Jason Squires](http://www.sqlnotnull.com/2018/02/20/enterprise-level-reporting-with-dbachecks-from-the-makers-of-dbatools)
+* [Adding your own checks to dbachecks by Shane O'Neill](http://nocolumnname.blog/2018/02/22/adding-your-own-checks-to-dbachecks)
+
 ## Party
 
 Nice work!
