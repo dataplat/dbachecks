@@ -5,7 +5,7 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Command executes properly and returns proper info" {
         BeforeAll {
-            $results = Get-DbcConfigValue -Name skip.remotingcheck
+            $results = Get-DbcConfigValue -Name policy.database.autoclose
         }
         
         It "returns a single bool" {
