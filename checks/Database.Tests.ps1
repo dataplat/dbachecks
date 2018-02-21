@@ -432,8 +432,7 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
             @(Get-DbaDatabase -SqlInstance $PSItem -ExcludeDatabase tempdb).ForEach{
                 It "PseudoSimple recovery model is false on $($psitem.Name)" {
-					(Test-DbaFullRecoveryModel -SqlInstance $psitem.SqlInstance -Database $psitem.Name).ActualRe
-coveryModel -ne 'pseudo-SIMPLE' | Should -Be $false
+					(Test-DbaFullRecoveryModel -SqlInstance $psitem.SqlInstance -Database $psitem.Name).ActualRecoveryModel -ne 'pseudo-SIMPLE' | Should -Be $false
 				}
             }
         }
