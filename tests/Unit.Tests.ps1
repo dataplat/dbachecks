@@ -37,7 +37,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                     $PSItem.Name.ToString().Endswith('"')  | Should -BeTrue -Because 'We need use double quotes for titles'
                 }
                 It "$title should use a plural for tags" {
-                    $PsItem.Tags | Should Not BeNullOrEmpty -Because 'We use the plural of Tags'
+                    $PsItem.Tags | Should -Not -BeNullOrEmpty -Because 'We use the plural of Tags'
                 }
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
