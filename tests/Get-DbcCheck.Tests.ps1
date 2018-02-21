@@ -5,7 +5,7 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Command executes properly and returns proper info" {
         (Get-DbcCheck).ForEach{
-            It "returns a unique tag" {
+            It "$($psitem.Description) returns a unique tag" {
                 $psitem.UniqueTag | Should Not Be $null
             }
             It "should only have one unique tag" {
