@@ -126,7 +126,7 @@ Invoke-DbcCheck -SqlInstance sql2017 -Checks SuspectPage, LastBackup -Show Summa
 Start-DbcPowerBi
 ```
 
-![image](https://user-images.githubusercontent.com/19521315/34442952-9c72f1f2-ecbd-11e7-8ada-70bafd098113.png)
+![image](https://user-images.githubusercontent.com/19521315/36527050-640d6c0a-17a8-11e8-9781-0aab0a8f8d48.png)
 
 The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
 
@@ -234,6 +234,7 @@ Read more about dbachecks from a number of our original contributors!
 * [Checking your backup strategy with dbachecks by Joshua Corrick](https://corrick.io/blog/checking-your-backup-strategy-with-dbachecks)
 * [Enterprise-level reporting with dbachecks by Jason Squires](http://www.sqlnotnull.com/2018/02/20/enterprise-level-reporting-with-dbachecks-from-the-makers-of-dbatools)
 * [Adding your own checks to dbachecks by Shane O'Neill](http://nocolumnname.blog/2018/02/22/adding-your-own-checks-to-dbachecks)
+* [dbachecks - A different approach for an in-progress and incremental validation by Cláudio Silva](http://claudioessilva.eu/2018/02/22/dbachecks-a-different-approach-for-a-in-progress-and-incremental-validation/)
 
 ## Party
 
