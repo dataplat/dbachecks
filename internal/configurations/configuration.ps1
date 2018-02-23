@@ -167,7 +167,6 @@ Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initia
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.databasemailprofile -Value $null -Initialize -Description "Name of the Database Mail Profile in SQL Agent"
-Set-PSFConfig -Module dbachecks -Name agent.validjobowner.name -Value "sa" -Initialize -Description "Agent job owner account should be this user"
 
 # domain
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"

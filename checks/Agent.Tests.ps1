@@ -77,16 +77,3 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
         }
     }
 }
-
-Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
-    $targetowner = Get-DbcConfigValue agent.validjobowner.name
-    (Get-SqlInstance).ForEach{
-        Context "Testing job owners on $psitem" {
-            @(Test-DbaJobOwner -SqlInstance $psitem -Login $targetowner -EnableException:$false).ForEach{
-                It "$($psitem.Job) owner Should Be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should -Be $psitem.TargetOwner -Because "The account that is the job owner is not what was expected"
-                }
-            }
-        }
-    }
-}
