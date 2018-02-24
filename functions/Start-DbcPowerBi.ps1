@@ -46,6 +46,15 @@
             Stop-PSFFunction -Message "$Path does not exist"
             return
         }
+        
+        if ($Path -match "Program Files") {
+            $newpath = "$script:localapp\dbachecks.pbix"
+            #if ((Test-Path -Path $newpath)) { # Would be nice if we could tell if it needed to be replaced or not
+            #I suppose we could use dbachecks versioning and wintemp?
+            Copy-Item -Path $Path -Destination $newpath -Force -ErrorAction SilentlyContinue
+            $Path = $newpath
+        }
+        
         try {
 			Write-PSFMessage -Level Output -Message "Launching the dbachecks dashboard. This may take a moment."
             Invoke-Item -Path $path
