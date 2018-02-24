@@ -69,9 +69,22 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
                     }
                 }
                 else {
-                    It "$psitem's last run outcome on $($psitem.SqlInstance) is success" {
+                    It "$psitem's last run outcome on $($psitem.SqlInstance) is $($psitem.LastRunOutcome)" {
                         $psitem.LastRunOutcome | Should -Be "Succeeded" -Because 'All Agent Jobs should have succeed - you need to investigate the failed jobs'
                     }
+                }
+            }
+        }
+    }
+}
+
+Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
+    $targetowner = Get-DbcConfigValue agent.validjobowner.name
+    (Get-SqlInstance).ForEach{
+        Context "Testing job owners on $psitem" {
+            @(Test-DbaJobOwner -SqlInstance $psitem -Login $targetowner -EnableException:$false).ForEach{
+                It "$($psitem.Job) owner Should Be $targetowner on $($psitem.Server)" {
+                    $psitem.CurrentOwner | Should -Be $psitem.TargetOwner -Because "The account that is the job owner is not what was expected"
                 }
             }
         }

@@ -123,6 +123,7 @@
         [switch]$UseSsl,
         [switch]$ExcludeXmlAttachment,
         [switch]$ExcludeCsvAttachment,
+        [switch]$ExcludeHtmlAttachment,
         [int]$MaxNotifyInterval,
         [string]$EnableException
     )
@@ -206,12 +207,12 @@
             }
         }
         
-        if (-not ($files = Get-ChildItem -Path "$script:maildirectory\*.xml")) {
+        if (-not ($xmlfiles = Get-ChildItem -Path "$script:maildirectory\*.xml")) {
             Stop-PSFFunction -Message "Oops, $("$script:maildirectory\*.xml") does not exist"
             return
         }
         
-        foreach ($file in $files) {
+        foreach ($file in $xmlfiles) {
             $xml = [xml](Get-Content $file.FullName)
             $total = $xml.'test-results'.Total
             if ($total -eq 0) {
@@ -236,8 +237,15 @@
             try {
                 # Output report
                 & $reportunit $script:maildirectory
+				
+                if (-not $ExcludeHtmlAttachment) {
+                    $htmlfiles = Get-ChildItem -Path "$script:maildirectory\*.html"
+				    foreach ($file in $htmlfiles) {
+					    $Attachments += $file
+				    }
+                }
                 
-                # Get HTML varaible
+                # Get HTML variable
                 $htmlbody = Get-Content -Path $outputpath -ErrorAction SilentlyContinue | Out-String
                 
                 # Modify the params as required

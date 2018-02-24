@@ -128,7 +128,7 @@ Start-DbcPowerBi
 
 ![image](https://user-images.githubusercontent.com/19521315/36527050-640d6c0a-17a8-11e8-9781-0aab0a8f8d48.png)
 
-The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
+The above report uses `Update-DbcPowerBiDataSource`'s `-Environment` parameter.
 
 ```powershell
 # Run checks and export its JSON
