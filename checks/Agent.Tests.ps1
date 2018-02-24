@@ -69,7 +69,7 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
                     }
                 }
                 else {
-                    It "$psitem's last run outcome on $($psitem.SqlInstance) is success" {
+                    It "$psitem's last run outcome on $($psitem.SqlInstance) is $($psitem.LastRunOutcome)" {
                         $psitem.LastRunOutcome | Should -Be "Succeeded" -Because 'All Agent Jobs should have succeed - you need to investigate the failed jobs'
                     }
                 }
