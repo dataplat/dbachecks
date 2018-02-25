@@ -1,10 +1,45 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
+function Get-InstanceDatabase {
+    param (
+        [DbaInstanceParameter[]]$SqlInstance,
+        [object[]]$ExcludeDatabase
+    )
+    begin {
+        if (!(test-path variable:script:results)) {
+            $script:results = @{}
+        }
+    }
+    process {
+        foreach ($instance in $SqlInstance) {
+            try {
+                if (!($script:results.ContainsKey($instance))) {
+                    $server = Connect-DbaInstance -SqlInstance $instance -SqlCredential $sqlcredential
+                    $script:results.Add($instance, $server.Query("
+select [name] [Database]
+    ,serverproperty('Collation') ServerCollation
+    ,collation_name DatabaseCollation
+    ,isnull((select count(*) from msdb..suspect_pages sp where sp.database_id = d.database_id and event_type in (1,2,3)),0) SuspectPages
+    ,suser_sname(owner_sid) CurrentOwner
+from sys.databases d
+                    "))
+                }
+
+                return $script:results[$instance] | Where-Object { $psitem.Database -notin $ExcludeDatabase -or !$ExcludeDatabase }
+            }
+            catch {
+                #Stop-Function -Message "Failure" -Category ConnectionError -ErrorRecord $_ -Target $instance -Continue
+                throw
+            }
+        }
+    }
+}
+
 Describe "Database Collation" -Tags DatabaseCollation, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database collation on $psitem" {
-            @(Test-DbaDatabaseCollation -SqlInstance $psitem -ExcludeDatabase ReportingServer,ReportingServerTempDB ).ForEach{
-                It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
+            @(Get-InstanceDatabase -SqlInstance $psitem -ExcludeDatabase ReportingServer,ReportingServerTempDB ).ForEach{
+                It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.Parent.SqlInstance)" {
                     $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation -Because 'You will get collation conflict errors in tempdb'
                 }
             }
@@ -15,10 +50,9 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
 Describe "Suspect Page" -Tags SuspectPage, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing suspect pages on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
-                It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
-                    @($results).Count | Should -Be 0 -Because 'You dont want suspect pages'
+            @(Get-InstanceDatabase -SqlInstance $psitem).ForEach{
+                It "$psitem should return 0 suspect pages on $($psitem.Parent.SqlInstance)" {
+                    $psitem.SuspectPages | Should -Be 0 -Because 'You dont want suspect pages'
                 }
             }
         }
@@ -68,9 +102,9 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
     $exclude = Get-DbcConfigValue policy.validdbowner.excludedb 
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
+            @(Get-InstanceDatabase -SqlInstance $psitem -ExcludeDatabase $exclude -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner Should Be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should -Be $psitem.TargetOwner -Because "The account that is the database owner is not what was expected"
+                    $psitem.CurrentOwner | Should -Be $targetowner -Because "The account that is the database owner is not what was expected"
                 }
             }
         }
@@ -82,9 +116,9 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
     $exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb 
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
+            @(Get-InstanceDatabase -SqlInstance $psitem -ExcludeDatabase $exclude -EnableException:$false).ForEach{
                 It "$($psitem.Database) owner should Not be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should -Not -Be $psitem.TargetOwner -Because 'The database owner was one specified as incorrect'
+                    $psitem.CurrentOwner | Should -Not -Be $targetowner -Because 'The database owner was one specified as incorrect'
                 }
             }
         }
