@@ -53,7 +53,7 @@ Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
         Context "Testing database mail profile is set on $psitem" {
             $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
             It "database mail profile on $psitem is $databasemailprofile" {
-                (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.DatabaseMailProfile | Should -Be $databasemailprofile -Because 'The database mail profile is required to send emails'
+                (Connect-DbaInstance -SqlInstance $psitem).JobServer.DatabaseMailProfile | Should -Be $databasemailprofile -Because 'The database mail profile is required to send emails'
             }
         }
     }
