@@ -16,12 +16,38 @@ function Get-InstanceDatabase {
                 if (!($script:results.ContainsKey($instance))) {
                     $server = Connect-DbaInstance -SqlInstance $instance -SqlCredential $sqlcredential
                     $script:results.Add($instance, $server.Query("
-select [name] [Database]
+select quotename(d.name) [Database]
     ,serverproperty('Collation') ServerCollation
-    ,collation_name DatabaseCollation
+    ,d.collation_name DatabaseCollation
+    ,suser_sname(d.owner_sid) CurrentOwner
+    ,d.recovery_model_desc RecoveryModel
+    ,d.is_auto_shrink_on AutoShrink
+    ,d.is_auto_close_on AutoClose
+    ,d.page_verify_option_desc PageVerify
     ,isnull((select count(*) from msdb..suspect_pages sp where sp.database_id = d.database_id and event_type in (1,2,3)),0) SuspectPages
-    ,suser_sname(owner_sid) CurrentOwner
+    ,d.status_desc Status
+    ,fullbackup.BackupDate LastFullBackup
+	,differentialbackup.BackupDate LastDiffBackup
+	,transactionalbackup.BackupDate LastLogBackup
 from sys.databases d
+cross apply (
+	select top 1 b.backup_finish_date BackupDate 
+	from msdb..backupset b
+	where b.database_name = d.name and type = 'D'
+	order by backup_set_id desc
+) fullbackup
+cross apply (
+	select top 1 b.backup_finish_date BackupDate 
+	from msdb..backupset b
+	where b.database_name = d.name and type = 'I'
+	order by backup_set_id desc
+) differentialbackup
+cross apply (
+	select top 1 b.backup_finish_date BackupDate 
+	from msdb..backupset b
+	where b.database_name = d.name and type = 'L'
+	order by backup_set_id desc
+) transactionalbackup
                     "))
                 }
 
@@ -59,6 +85,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
     }
 }
 
+#TODO: backups are for later (diamonds are forever)
 Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
     if (-not (Get-DbcConfigValue skip.backup.testing)) {
         $destserver = Get-DbcConfigValue policy.backup.testserver 
@@ -81,6 +108,7 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
     }
 }
 
+#TODO: backups are for later (diamonds are forever)
 Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filename {
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod 
     (Get-SqlInstance).ForEach{
@@ -125,6 +153,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
     }
 }
 
+#TODO: DBCC per database
 Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
     $maxdays = Get-DbcConfigValue policy.dbcc.maxdays
     $datapurity = Get-DbcConfigValue skip.dbcc.datapuritycheck
@@ -146,6 +175,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
     }
 }
 
+#TODO later
 Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
     $maxpercentage = Get-DbcConfigValue policy.identity.usagepercent
     (Get-SqlInstance).ForEach{
@@ -166,8 +196,8 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Recovery Model on $psitem" {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
-            @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
-                It "$($psitem.Name) Should -Be set to $((Get-DbcConfigValue policy.recoverymodel.type)) on $($psitem.SqlInstance)" {
+            @(Get-InstanceDatabase -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+                It "Recovery model on $($psitem.Database) should be set to $((Get-DbcConfigValue policy.recoverymodel.type)) on $($psitem.Parent.SqlInstance)" {
                     $psitem.RecoveryModel | Should -Be (Get-DbcConfigValue policy.recoverymodel.type) -Because 'You expect this recovery model'
                 }
             }
@@ -175,6 +205,7 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
     }
 }
 
+#TODO for later
 Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing duplicate indexes on $psitem" {
@@ -188,6 +219,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
     }
 }
 
+#TODO for later
 Describe "Unused Index" -Tags UnusedIndex, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Unused indexes on $psitem" {
@@ -208,6 +240,7 @@ Describe "Unused Index" -Tags UnusedIndex, $filename {
     }
 }
 
+#TODO for later
 Describe "Disabled Index" -Tags DisabledIndex, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Disabled indexes on $psitem" {
@@ -221,6 +254,7 @@ Describe "Disabled Index" -Tags DisabledIndex, $filename {
     }
 }
 
+#TODO for later
 Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database growth event on $psitem" {
@@ -238,8 +272,8 @@ Describe "Page Verify" -Tags PageVerify, $filename {
     $pageverify = Get-DbcConfigValue policy.pageverify
     (Get-SqlInstance).ForEach{
         Context "Testing page verify on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should have page verify set to $pageverify" {
+            @(Get-InstanceDatabase -SqlInstance $psitem).ForEach{
+                It "$psitem on $($psitem.Parent.SqlInstance) should have page verify set to $pageverify" {
                     $psitem.PageVerify | Should -Be $pageverify -Because 'Page verify helps SQL Server to detect corruption'
                 }
             }
@@ -251,8 +285,8 @@ Describe "Auto Close" -Tags AutoClose, $filename {
     $autoclose = Get-DbcConfigValue policy.database.autoclose
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Close on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should have Auto Close set to $autoclose" {
+            @(Get-InstanceDatabase -SqlInstance $psitem).ForEach{
+                It "$psitem on $($psitem.Parent.SqlInstance) should have Auto Close set to $autoclose" {
                     $psitem.AutoClose | Should -Be $autoclose -Because 'Because!'
                 }
             }
@@ -264,8 +298,8 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
     $autoshrink = Get-DbcConfigValue policy.database.autoshrink
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Shrink on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should have Auto Shrink set to $autoshrink" {
+            @(Get-InstanceDatabase -SqlInstance $psitem).ForEach{
+                It "$psitem on $($psitem.Parent.SqlInstance) should have Auto Shrink set to $autoshrink" {
                     $psitem.AutoShrink | Should -Be $autoshrink -Because 'Shrinking databases causes fragmentation and performance issues'
                 }
             }
@@ -278,9 +312,9 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
     (Get-SqlInstance).ForEach{
         Context "Testing last full backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).ForEach{
+            @(Get-InstanceDatabase -SqlInstance $psitem -ExcludeDatabase tempdb | Where-Object {$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).ForEach{
                 $offline = ($psitem.Status -match "Offline")
-                It -Skip:$offline "$($psitem.Name) full backups on $($psitem.SqlInstance) Should Be less than $maxfull days" {
+                It -Skip:$offline "$($psitem.Database) full backups on $($psitem.Parent.SqlInstance) Should Be less than $maxfull days" {
                     $psitem.LastFullBackup | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because 'Taking regular backups is extraordinarily important'
                 }
             }
@@ -293,9 +327,9 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
     (Get-SqlInstance).ForEach{
         Context "Testing last diff backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
+            @(Get-InstanceDatabase -SqlInstance $psitem | Where-Object { (-not $psitem.IsSystemObject) -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 $offline = ($psitem.Status -match "Offline")
-                It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.SqlInstance) Should Be less than $maxdiff hours" {
+                It -Skip:$offline "$($psitem.Database) diff backups on $($psitem.Parent.SqlInstance) Should Be less than $maxdiff hours" {
                     $psitem.LastDiffBackup | Should -BeGreaterThan (Get-Date).AddHours(- ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
                 }
             }
@@ -308,14 +342,13 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
     (Get-SqlInstance).ForEach{
         Context "Testing last log backups on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
+            @(Get-InstanceDatabase -SqlInstance $psitem | Where-Object { -not $psitem.IsSystemObject -and $_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 if ($psitem.RecoveryModel -ne 'Simple') {
                     $offline = ($psitem.Status -match "Offline")
-                    It -Skip:$offline "$($psitem.Name) log backups on $($psitem.SqlInstance) Should Be less than $maxlog minutes" {
+                    It -Skip:$offline "$($psitem.Database) log backups on $($psitem.Parent.SqlInstance) Should Be less than $maxlog minutes" {
                         $psitem.LastLogBackup | Should -BeGreaterThan (Get-Date).AddMinutes(- ($maxlog) + 1) -Because 'Taking regular backups is extraordinarily important'
                     }
                 }
-
             }
         }
     }
