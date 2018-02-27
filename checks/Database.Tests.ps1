@@ -17,32 +17,36 @@ function Get-InstanceDatabase {
                     $server = Connect-DbaInstance -SqlInstance $instance -SqlCredential $sqlcredential
                     $script:results.Add($instance, $server.Query("
 select quotename(d.name) [Database]
-    ,serverproperty('Collation') ServerCollation
-    ,d.collation_name DatabaseCollation
-    ,suser_sname(d.owner_sid) CurrentOwner
-    ,d.recovery_model_desc RecoveryModel
-    ,d.is_auto_shrink_on AutoShrink
-    ,d.is_auto_close_on AutoClose
-    ,d.page_verify_option_desc PageVerify
+    ,serverproperty('Collation')        ServerCollation
+    ,d.collation_name                   DatabaseCollation
+    ,suser_sname(d.owner_sid)           CurrentOwner
+    ,d.recovery_model_desc              RecoveryModel
+    ,d.is_auto_shrink_on                AutoShrink
+    ,d.is_auto_close_on                 AutoClose
+    ,d.is_auto_create_stats_on          AutoCreateStatisticsEnabled
+	,d.is_auto_update_stats_on          AutoUpdateStatisticsEnabled
+    ,d.is_auto_update_stats_async_on    AutoUpdateStatisticsAsync
+    ,d.is_trustworthy_on                Trustworthy
+    ,d.page_verify_option_desc          PageVerify
     ,isnull((select count(*) from msdb..suspect_pages sp where sp.database_id = d.database_id and event_type in (1,2,3)),0) SuspectPages
-    ,d.status_desc Status
-    ,fullbackup.BackupDate LastFullBackup
-	,differentialbackup.BackupDate LastDiffBackup
-	,transactionalbackup.BackupDate LastLogBackup
+    ,d.state_desc                       Status
+    ,fullbackup.BackupDate              LastFullBackup
+	,differentialbackup.BackupDate      LastDiffBackup
+	,transactionalbackup.BackupDate     LastLogBackup
 from sys.databases d
-cross apply (
+outer apply (
 	select top 1 b.backup_finish_date BackupDate 
 	from msdb..backupset b
 	where b.database_name = d.name and type = 'D'
 	order by backup_set_id desc
 ) fullbackup
-cross apply (
+outer apply (
 	select top 1 b.backup_finish_date BackupDate 
 	from msdb..backupset b
 	where b.database_name = d.name and type = 'I'
 	order by backup_set_id desc
 ) differentialbackup
-cross apply (
+outer apply (
 	select top 1 b.backup_finish_date BackupDate 
 	from msdb..backupset b
 	where b.database_name = d.name and type = 'L'
@@ -354,6 +358,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
     }
 }
 
+#TODO later - it will probably require DBCC call
 Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     $vlfmax = Get-DbcConfigValue policy.database.maxvlf
     (Get-SqlInstance).ForEach{
@@ -367,6 +372,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     }
 }
 
+#TODO later - cached operations on sys.master_files
 Describe "Log File Count Checks" -Tags LogfileCount, $filename {
     $LogFileCountTest = Get-DbcConfigValue skip.database.logfilecounttest
     $LogFileCount = Get-DbcConfigValue policy.database.logfilecount
@@ -385,6 +391,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
     }
 }
 
+#TODO later - cached operations on sys.master_files
 Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     $LogFileSizePercentage = Get-DbcConfigValue policy.database.logfilesizepercentage
     $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
@@ -406,6 +413,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     }
 }
 
+#TODO later - cached operations on sys.master_files
 Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
     $Tolerance = Get-DbcConfigValue policy.database.filebalancetolerance
 
@@ -432,8 +440,8 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
     $autocreatestatistics = Get-DbcConfigValue policy.database.autocreatestatistics
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Create Statistics on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should have Auto Create Statistics set to $autocreatestatistics" {
+            @(Get-InstanceDatabase -SqlInstance $psitem).ForEach{
+                It "$psitem on $($psitem.Parent.SqlInstance) should have Auto Create Statistics set to $autocreatestatistics" {
                     $psitem.AutoCreateStatisticsEnabled | Should -Be $autocreatestatistics -Because 'This is value expeceted for autocreate statistics'
                 }
             }
@@ -445,8 +453,8 @@ Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
     $autoupdatestatistics = Get-DbcConfigValue policy.database.autoupdatestatistics
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Update Statistics on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should have Auto Update Statistics set to $autoupdatestatistics" {
+            @(Get-InstanceDatabase -SqlInstance $psitem).ForEach{
+                It "$psitem on $($psitem.Parent.SqlInstance) should have Auto Update Statistics set to $autoupdatestatistics" {
                     $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because 'This is value expeceted for autoupdate statistics'
                 }
             }
@@ -458,8 +466,8 @@ Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsync
     $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously
     (Get-SqlInstance).ForEach{
         Context "Testing Auto Update Statistics Asynchronously on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
-                It "$psitem on $($psitem.SqlInstance) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
+            @(Get-InstanceDatabase -SqlInstance $psitem).ForEach{
+                It "$psitem on $($psitem.Parent.SqlInstance) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
                     $psitem.AutoUpdateStatisticsAsync | Should -Be $autoupdatestatisticsasynchronously  -Because 'This is value expeceted for autoupdate statistics asynchronously'
                 }
             }
@@ -467,6 +475,7 @@ Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsync
     }
 }
 
+#TODO more tests on files
 Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $filename {
     $datafilegrowthtype = Get-DbcConfigValue policy.database.filegrowthtype 
     $datafilegrowthvalue = Get-DbcConfigValue policy.database.filegrowthvalue 
@@ -497,8 +506,8 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
 Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database trustworthy option on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase msdb).ForEach{
-                It "Trustworthy is set to false on $($psitem.Name)" {
+            @(Get-InstanceDatabase -SqlInstance $psitem -ExcludeDatabase msdb).ForEach{
+                It "Trustworthy is set to false on $($psitem.Database)" {
                     $psitem.Trustworthy | Should -BeFalse -Because 'Trustworthy has security implications and may expose your SQL Server to additional risk'
                 }
             }
@@ -506,6 +515,7 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
     }
 }
 
+#TODO later
 Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database orphaned user event on $psitem" {
@@ -520,9 +530,11 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
 Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $PSItem -ExcludeDatabase tempdb).ForEach{
-                It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent)" {
-                    (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq 'pseudo-SIMPLE' | Should -BeFalse -Because 'PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode'
+            @(Get-InstanceDatabase -SqlInstance $psitem -ExcludeDatabase tempdb).ForEach{
+                if ($psItem.RecoveryModel -eq "FULL") {
+                    It "$($psitem.Database) is not in PseudoSimple recovery model on $($psitem.Parent.SqlInstance)" {
+                        $psitem.LastFullBackup | Should -Not -Be [System.DBNull]::Value -Because 'PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode'
+                    }
                 }
             }
         }
