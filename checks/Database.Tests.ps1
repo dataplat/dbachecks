@@ -339,19 +339,23 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     }
 }
 
-Describe "Files about to grow" -Tags FilesAboutToGrow, $filename {
+Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
+    $threshold = Get-DbcConfig policy.database.filegrowthfreespacethreshold
 	(Get-SqlInstance).ForEach{
-		Context "Testing for files nearing a growth event on $psitem" {
+		Context "Testing for files likely to grow soon on $psitem" {
             (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
-                $Files | Add-Member NoteProperty -Name PercentFree -Value {([int64]$PSItem.AvailableSpace/[int64]$PSItem.Size)*100}
-                It "$($psitem.LogicalName) for $($psitem.Database) on $($psitem.SqlInstance) Should have enough free space for the next growth event" {
-                    $PSItem.PercentFree | Should -BeGreaterOrEqual 20 -Because "dunno yet"
+                $Files | Add-Member ScriptProperty -Name PercentFree -Value {[Math]::Round(([int64]$PSItem.AvailableSpace/[int64]$PSItem.Size)*100,3)}
+                $files | ForEach-Object {
+                    It "$($PSItem.Database) file $($PSItem.PhysicalName) on $($PSItem.SqlInstance) has free space under threshold" {
+                        $Files.PercentFree | Should -BeGreaterOrEqual $threshold -Because "free space within the file should be lower than threshold of $threshold%"
+                    }
                 }
             }
         }
-	}
+    }
 }
+
 
 Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
     $Tolerance = Get-DbcConfigValue policy.database.filebalancetolerance
