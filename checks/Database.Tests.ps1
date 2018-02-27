@@ -339,6 +339,20 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     }
 }
 
+Describe "Files about to grow" -Tags FilesAboutToGrow, $filename {
+	(Get-SqlInstance).ForEach{
+		Context "Testing for files nearing a growth event on $psitem" {
+            (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
+                $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
+                $Files | Add-Member NoteProperty -Name PercentFree -Value {([int64]$PSItem.AvailableSpace/[int64]$PSItem.Size)*100}
+                It "$($psitem.LogicalName) for $($psitem.Database) on $($psitem.SqlInstance) Should have enough free space for the next growth event" {
+                    $PSItem.PercentFree | Should -BeGreaterOrEqual 20 -Because "dunno yet"
+                }
+            }
+        }
+	}
+}
+
 Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
     $Tolerance = Get-DbcConfigValue policy.database.filebalancetolerance
 
