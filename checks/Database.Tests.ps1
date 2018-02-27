@@ -341,9 +341,9 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
 
 Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
     $threshold = Get-DbcConfig policy.database.filegrowthfreespacethreshold
-	(Get-SqlInstance).ForEach{
+	@(Get-SqlInstance).ForEach{
 		Context "Testing for files likely to grow soon on $psitem" {
-            (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
+            @(Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $Files | Add-Member ScriptProperty -Name PercentFree -Value {[Math]::Round(([int64]$PSItem.AvailableSpace/[int64]$PSItem.Size)*100,3)}
                 $files | ForEach-Object {
