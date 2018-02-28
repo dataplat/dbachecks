@@ -461,3 +461,15 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
         }
     }
 }
+
+Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
+    (Get-SqlInstance).ForEach{
+        Context "Testing database compatibility level matches server compatibility level on $psitem" {
+            @(Test-DbaDatabaseCompatibility -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
+                   $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because 'it means you are on the appropirate compatibility level for your SQL Server version to use all available features'
+                }
+            }
+        }
+    }
+}
