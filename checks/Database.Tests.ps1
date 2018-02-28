@@ -291,7 +291,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     $vlfmax = Get-DbcConfigValue policy.database.maxvlf
     (Get-SqlInstance).ForEach{
         Context "Testing Database VLFs on $psitem" {
-            @(Test-DbaVirtualLogFile -SqlInstance $psitem).ForEach{
+            @(Test-DbaDbVirtualLogFile -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should Be less than $vlfmax" {
                     $psitem.Total | Should -BeLessThan $vlfmax -Because 'Too many VLFs can impact performance and slow down backup/restore'
                 }
