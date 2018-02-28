@@ -14,7 +14,7 @@ Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename
     $skipremote = Get-DbcConfigValue skip.connection.remoting
     $skipping = Get-DbcConfigValue skip.connection.ping
     $authscheme = Get-DbcConfigValue policy.connection.authscheme 
-    (Get-SqlInstance).ForEach{
+    @(Get-SqlInstance).ForEach{
         Context "Testing Instance Connection on $psitem" {
             $connection = Test-DbaConnection -SqlInstance $psitem
             It "connects successfully to $psitem" {
