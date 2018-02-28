@@ -22,7 +22,9 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
                 It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
                 }
+            }
                 else {
+                It "SQL browser service on $psitem Should Be Running as multiple instances are installed" {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State| Should -Be "Running" -Because 'You need the browser service with multiple instances'
                 }
             }
