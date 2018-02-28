@@ -28,7 +28,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State| Should -Be "Running" -Because 'You need the browser service with multiple instances'
                 }
             }
-            if ((Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
+            if (@(Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
                 It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service'
                 }
