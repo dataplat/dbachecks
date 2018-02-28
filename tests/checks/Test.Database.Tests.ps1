@@ -19,12 +19,12 @@ Describe "Tests database checks" {
             }
             It "The test should pass when the database collation matches the instance collation" {
                 Invoke-DbaSqlQuery -SqlInstance $psitem -SqlCredential $sqlcredential -Query "alter database $testdb1 collate $serverCollation"
-                { Invoke-DbcCheck -Tags DatabaseCollation -Script $checksScript -SqlInstance $psitem -SqlCredential $sqlcredential -Show None -PassThru } | Should -Not -Throw -Because "the collations match and the test failed to recognise it"
+                { Invoke-DbcCheck -Tags DatabaseCollation -Database $testdb1 -Script $checksScript -SqlInstance $psitem -SqlCredential $sqlcredential -Show None -PassThru } | Should -Not -Throw -Because "the collations match and the test failed to recognise it"
             }
             It "The test should fail when the database collation doesn't match the instance collation" {
                 # Thai_CI_AS collation seems to be 'exotic' enough not to be the default server collation in any test environment. 
                 Invoke-DbaSqlQuery -SqlInstance $psitem -SqlCredential $sqlcredential -Query "alter database $testdb1 collate Thai_CI_AS"
-                { Invoke-DbaCheck -Tags DatabaseCollation  -Script $checksScript -SqlInstance $psitem -SqlCredential $sqlcredential -Show None -PassThru } | Should -Throw -Because "the collations don't match but the test failed to fail"
+                { Invoke-DbcCheck -Tags DatabaseCollation -Database $testdb1 -Script $checksScript -SqlInstance $psitem -SqlCredential $sqlcredential -Show None -PassThru } | Should -Throw -Because "the collations don't match but the test failed to fail"
             }
         }
     }
