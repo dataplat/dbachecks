@@ -349,7 +349,7 @@ Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
                 $Files | Add-Member ScriptProperty -Name PercentFree -Value {100-[Math]::Round(([int64]$PSItem.UsedSpace.Byte / [int64]$PSItem.Size.Byte) * 100, 3)}
                 $Files | ForEach-Object {
                     if (-Not (($PSItem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
-                        It "$($PSItem.Database) file $($PSItem.PhysicalName) on $($PSItem.SqlInstance) has free space under threshold" {
+                        It "$($PSItem.Database) file $($PSItem.LogicalName) on $($PSItem.SqlInstance) has free space under threshold" {
                             $PSItem.PercentFree | Should -BeGreaterOrEqual $threshold -Because "free space within the file should be lower than threshold of $threshold%"
                         }
                     }
