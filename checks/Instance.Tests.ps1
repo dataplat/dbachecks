@@ -19,7 +19,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     (Get-ComputerName).ForEach{
         Context "Testing SQL Browser Service on $psitem" {
             It "SQL browser service on $psitem Should Be Stopped unless multiple instances are installed" {
-                if ((Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
+                if ($null -eq (Get-DbaSqlService -ComputerName $psitem -Type Engine).Count) {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
                 }
                 else {
