@@ -106,7 +106,7 @@ Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing Network Latency on $psitem" {
             @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
-                It "network latency Should Be less than $max ms on $($psitem.InstanceName)" {
+                It "network latency Should Be less than $max ms on $($psitem.SqlInstance)" {
                     $psitem.Average.TotalMilliseconds | Should -BeLessThan $max -Because 'You dont want to be waiting on the network'
                 }
             }
