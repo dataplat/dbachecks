@@ -106,11 +106,11 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     }
 
     Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
-        $max = Get-DbcConfigValue policy.network.latencymaxms
+    $max = Get-DbcConfigValue policy.network.latencymaxms
         (Get-SqlInstance).ForEach{
             Context "Testing Network Latency on $psitem" {
                 @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
-                    It "network latency Should Be less than $max ms on $($psitem.InstanceName)" {
+                    It "network latency Should Be less than $max ms on $($psitem.SqlInstance)" {
                         $psitem.Average.TotalMilliseconds | Should -BeLessThan $max -Because 'You dont want to be waiting on the network'
                     }
                 }
