@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-Write-Warning $filename
+
 Describe "Ola maintenance solution installed" -Tags OlaInstalled, $filename{
     $OlaSPs = @('CommandExecute', 'DatabaseBackup', 'DatabaseIntegrityCheck', 'IndexOptimize')
     $oladb = Get-DbcConfigValue policy.ola.database
