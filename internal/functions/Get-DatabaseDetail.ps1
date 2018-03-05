@@ -48,7 +48,6 @@ from sys.databases d
                 return $script:results[$instance] | Where-Object { $psitem.Database -notin $ExcludeDatabase -or !$ExcludeDatabase }
             }
             catch {
-                #Stop-Function -Message "Failure" -Category ConnectionError -ErrorRecord $_ -Target $instance -Continue
                 throw
             }
         }
