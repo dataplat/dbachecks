@@ -8,7 +8,7 @@ $testdb1 = "DbcChecksTestDb1"
 $testlogin = "DbcChecksTestLogin"
 $testloginpassword = (ConvertTo-SecureString -String "4([tyB)UJp64Vp%21~HQNUH" -AsPlainText -Force)
 
-Describe "Tests database checks" {
+Describe "Tests database checks" -Tag Integration {
     # there is no need to use Get-Instance as it is not the Invoke-DbcCheck run
     # there is no need to use configuration. It is just a unit test on predefined test servers. 
     $sqlinstance.ForEach{
