@@ -1,11 +1,13 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+. "$PSScriptRoot/../internal/checks/Database.ps1"
+. "$PSScriptRoot/../internal/functions/Get-DatabaseDetail.ps1"
 
-Describe "Database Collation" -Tags DatabaseCollation, $filename {
+Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing database collation on $psitem" {
-            @(Test-DbaDatabaseCollation -SqlInstance $psitem -ExcludeDatabase ReportingServer,ReportingServerTempDB ).ForEach{
+            @(Get-DatabaseDetail -SqlInstance $psitem -ExcludeDatabase ReportingServer,ReportingServerTempDB ).ForEach{
                 It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
-                    $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation -Because 'You will get collation conflict errors in tempdb'
+                    Assert-DatabaseCollationsMatch $psitem -Because 'You will get collation conflict errors in tempdb' 
                 }
             }
         }
