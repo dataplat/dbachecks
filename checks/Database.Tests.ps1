@@ -10,11 +10,11 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
                     Assert-DatabaseCollationsMatch $psitem -Because 'You will get collation conflict errors in tempdb' 
                 }
             }
-        }
+        }.\
     }
 }
 
-Describe "Suspect Page" -Tags SuspectPage, $filename {
+Describe "Suspect Page" -Tags SuspectPage, FastDatabase $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing suspect pages on $psitem" {
             @(Get-DatabaseDetail -SqlInstance $psitem).ForEach{
