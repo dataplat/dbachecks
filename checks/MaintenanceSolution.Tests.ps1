@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "Ola maintenance solution installed" -Tag OlaInstalled, $filename{
+Describe "Ola maintenance solution installed" -Tags OlaInstalled, $filename{
     $OlaSPs = @('CommandExecute', 'DatabaseBackup', 'DatabaseIntegrityCheck', 'IndexOptimize')
     $oladb = Get-DbcConfigValue policy.ola.database
     (Get-SqlInstance).ForEach{
@@ -41,7 +41,7 @@ $jobnames | ForEach-Object {
     
     #Write-PSFMessage -Level Host -Message "$jobname / $JobPrefix / $tagname"
     
-    Describe "Ola - $Jobname" -Tag $tagname, OlaJobs, $filename {
+    Describe "Ola - $Jobname" -Tags $tagname, OlaJobs, $filename {
         (Get-SqlInstance).ForEach{
             $job = Get-DbaAgentJob -SqlInstance $PSItem -Job $JobName
             Context  "Is job enabled on $PSItem" {
