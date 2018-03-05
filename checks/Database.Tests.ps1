@@ -17,10 +17,10 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
 Describe "Suspect Page" -Tags SuspectPage, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing suspect pages on $psitem" {
-            @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
+            @(Get-DatabaseDetail -SqlInstance $psitem).ForEach{
                 $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
-                    @($results).Count | Should -Be 0 -Because 'You dont want suspect pages'
+                    Assert-SuspectPageCount $psitem -Because 'You do not want any suspect pages'
                 }
             }
         }
