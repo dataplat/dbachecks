@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-
+Write-Warning $filename
 Describe "Ola maintenance solution installed" -Tags OlaInstalled, $filename{
     $OlaSPs = @('CommandExecute', 'DatabaseBackup', 'DatabaseIntegrityCheck', 'IndexOptimize')
     $oladb = Get-DbcConfigValue policy.ola.database
@@ -31,7 +31,7 @@ $jobnames += [pscustomobject]@{JobName='Output File Cleanup';                   
 $jobnames += [pscustomobject]@{JobName='sp_delete_backuphistory';                       prefix='DeleteBackupHistory'}
 $jobnames += [pscustomobject]@{JobName='sp_purge_jobhistory';                           prefix='PurgeJobHistory'}
 
-$jobnames | ForEach-Object {    
+$jobnames | ForEach-Object {
     $JobPrefix = $psitem.prefix
     $tagname = "Ola$($JobPrefix)"
     $JobName = $PSItem.Jobname    
