@@ -130,7 +130,7 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
 
 Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
     (Get-SqlInstance).ForEach{
-	$recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
+    $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
         Context "Testing Recovery Model on $psitem" {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
             @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
@@ -383,19 +383,19 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
 }
 
 Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
-	$CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
-	$exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
+    $CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
+    $exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
     (Get-SqlInstance).ForEach{
-		Context "Checking that encryption certificates have not expired on $psitem" {
-			(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs | Where-Object {$_.Encryption -eq 'Certificate' -and !($exclude.contains($_.Database))}).ForEach{
-				It "$($psitem.Name) in $($psitem.Database) has not expired" {
-					$psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date) -Because 'this certificate should not be expired'
-				}
-				It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months" {
-					$psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date).AddMonths($CertificateWarning) -Because 'this certificate will soon expire'
-				}
-			}
-		}
+        Context "Checking that encryption certificates have not expired on $psitem" {
+            (Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs | Where-Object {$_.Encryption -eq 'Certificate' -and !($exclude.contains($_.Database))}).ForEach{
+                It "$($psitem.Name) in $($psitem.Database) has not expired" {
+                    $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date) -Because 'this certificate should not be expired'
+                }
+                It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months" {
+                    $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date).AddMonths($CertificateWarning) -Because 'this certificate will soon expire'
+                }
+            }
+        }
     }
 }
 
