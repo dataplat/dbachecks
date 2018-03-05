@@ -1,7 +1,7 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
-    (Get-SqlInstance).ForEach{
+    @(Get-SqlInstance).ForEach{
         Context "Testing SQL Engine Service on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
                 It "SQL Engine service account Should Be running on $($psitem.InstanceName)" {
@@ -16,7 +16,7 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
-    (Get-ComputerName).ForEach{
+    @(Get-ComputerName).ForEach{
         Context "Testing SQL Browser Service on $psitem" {
             if (@(Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
                 It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" {
@@ -43,7 +43,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 }
 
     Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing TempDB Configuration on $psitem" {
                 $TempDBTest = Test-DbaTempDbConfiguration -SqlServer $psitem
                 It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDb1118) {
@@ -66,7 +66,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     }
 
     Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
                 It "$psitem Should Be Optimised for Ad Hoc workloads" {
                     @(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
@@ -78,7 +78,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     }
 
     Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing Backup Path Access on $psitem" {
                 if (-not (Get-DbcConfigValue policy.storage.backuppath)) {
                     $backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
@@ -107,7 +107,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
     $max = Get-DbcConfigValue policy.network.latencymaxms
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing Network Latency on $psitem" {
                 @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
                     It "network latency Should Be less than $max ms on $($psitem.SqlInstance)" {
@@ -119,7 +119,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     }
 
     Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename {
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing Linked Servers on $psitem" {
                 @(Test-DbaLinkedServerConnection -SqlInstance $psitem).ForEach{
                     It "Linked Server $($psitem.LinkedServerName) on on $($psitem.SqlInstance) has connectivity" {
@@ -131,7 +131,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     }
 
     Describe "Max Memory" -Tags MaxMemory, $filename {
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing Max Memory on $psitem" {
                 It "Max Memory setting Should Be correct on $psitem" {
                     @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
@@ -143,7 +143,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     }
 
     Describe "Orphaned Files" -Tags OrphanedFile, $filename {
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Checking for orphaned database files on $psitem" {
                 It "$psitem doesn't have orphan files" {
                     (Find-DbaOrphanedFile -SqlInstance $psitem).Count | Should -Be 0 -Because 'You dont want any orphaned files - Use Find-DbaOrphanedFiles to locate them'
@@ -153,7 +153,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     }
 
     Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing instance name matches Windows name for $psitem" {
                 It "$psitem doesn't require rename" {
                     (Test-DbaServerName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
@@ -164,7 +164,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
         $maxdumps = Get-DbcConfigValue -Name policy.dump.maxcount
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
                 $count = (Get-DbaDump -SqlInstance $psitem).Count
                 It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" {
@@ -176,7 +176,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
         $BuildWarning = Get-DbcConfigValue -Name  policy.build.warningwindow
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Checking that build is still supportedby Microsoft for $psitem" {
                 $results = Get-DbaSqlBuildReference -SqlInstance $psitem
                 It "$($results.Build) on $psitem is still supported" {
@@ -190,7 +190,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
     }
 
     Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Checking that sa login has been renamed on $psitem" {
                 $results = Get-DbaLogin -SqlInstance $psitem -Login sa
                 It "sa login does not exist on $psitem" {
@@ -202,7 +202,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
         $defaultbackupcompression = Get-DbcConfigValue policy.backup.defaultbackupcompression
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing Default Backup Compression on $psitem" {
                 It "Default Backup Compression is set to $defaultbackupcompression on $psitem" {
                     (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'DefaultBackupCompression').ConfiguredValue -eq 1 | Should -Be $defaultbackupcompression -Because 'The default backup compression should be set correctly'
@@ -213,7 +213,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "Stopped XE Sessions" -Tags XESessionStopped, ExtendedEvent, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Checking sessions on $psitem" {
                 @(Get-DbaXESession -SqlInstance $psitem).ForEach{
                     if ($psitem.Name -in $xesession) {
@@ -228,7 +228,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Checking running sessions on $psitem" {
                 @(Get-DbaXESession -SqlInstance $psitem).ForEach{
                     if ($psitem.Name -in $xesession) {
@@ -243,7 +243,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Checking sessions on $psitem" {
                 @(Get-DbaXESession -SqlInstance $psitem).ForEach{
                     if ($psitem.Name -notin $xesession) {
@@ -258,7 +258,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "OLE Automation" -Tags OLEAutomation, $filename {
         $OLEAutomation = Get-DbcConfigValue policy.oleautomation
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing OLE Automation on $psitem" {
                 It "OLE Automation is set to $OLEAutomation on $psitem" {
                     (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should -Be $OLEAutomation -Because 'OLE Automation can introduce additional security risks'
@@ -269,7 +269,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, $filename {
         $db = Get-DbcConfigValue policy.whoisactive.database
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing WhoIsActive exists on $psitem" {
                 It "WhoIsActive should exists on $db on $psitem" {
                     (Get-DbaSqlModule -SqlInstance $psitem -Database $db -Type StoredProcedure | Where-Object name -eq "sp_WhoIsActive") | Should -Not -Be $Null -Because 'The sp_WhoIsActive stored procedure should be installed'
