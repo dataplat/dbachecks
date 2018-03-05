@@ -56,25 +56,25 @@ foreach ($file in $repofiles) {
 }
 
 $olanames = @()
-$olanames += [pscustomobject]@{ Description = 'Ola System Full Backup'; prefix = 'SystemFull' }
-$olanames += [pscustomobject]@{ Description = 'Ola System Full Backup'; prefix = 'UserFull' }
-$olanames += [pscustomobject]@{ Description = 'Ola User Diff Backup'; prefix = 'UserDiff' }
-$olanames += [pscustomobject]@{ Description = 'Ola User Log Backup'; prefix = 'UserLog' }
-$olanames += [pscustomobject]@{ Description = 'Ola CommandLog Cleanup'; prefix = 'CommandLog' }
-$olanames += [pscustomobject]@{ Description = 'Ola System Integrity Check'; prefix = 'SystemIntegrityCheck' }
-$olanames += [pscustomobject]@{ Description = 'Ola User Integrity Check'; prefix = 'UserIntegrityCheck' }
-$olanames += [pscustomobject]@{ Description = 'Ola User Index Optimize'; prefix = 'UserIndexOptimize' }
-$olanames += [pscustomobject]@{ Description = 'Ola Output File Cleanup'; prefix = 'OutputFileCleanup' }
-$olanames += [pscustomobject]@{ Description = 'Ola Delete Backup History'; prefix = 'DeleteBackupHistory' }
-$olanames += [pscustomobject]@{ Description = 'Ola Purge Job History'; prefix = 'PurgeJobHistory' }
+$olanames += [pscustomobject]@{ Description = 'Ola System Full Backup'; prefix = 'OlaSystemFull' }
+$olanames += [pscustomobject]@{ Description = 'Ola System Full Backup'; prefix = 'OlaUserFull' }
+$olanames += [pscustomobject]@{ Description = 'Ola User Diff Backup'; prefix = 'OlaUserDiff' }
+$olanames += [pscustomobject]@{ Description = 'Ola User Log Backup'; prefix = 'OlaUserLog' }
+$olanames += [pscustomobject]@{ Description = 'Ola CommandLog Cleanup'; prefix = 'OlaCommandLog' }
+$olanames += [pscustomobject]@{ Description = 'Ola System Integrity Check'; prefix = 'OlaSystemIntegrityCheck' }
+$olanames += [pscustomobject]@{ Description = 'Ola User Integrity Check'; prefix = 'OlaUserIntegrityCheck' }
+$olanames += [pscustomobject]@{ Description = 'Ola User Index Optimize'; prefix = 'OlaUserIndexOptimize' }
+$olanames += [pscustomobject]@{ Description = 'Ola Output File Cleanup'; prefix = 'OlaOutputFileCleanup' }
+$olanames += [pscustomobject]@{ Description = 'Ola Delete Backup History'; prefix = 'OlaDeleteBackupHistory' }
+$olanames += [pscustomobject]@{ Description = 'Ola Purge Job History'; prefix = 'OlaPurgeJobHistory' }
 
 foreach ($olaname in $olanames) {
     $collection += [pscustomobject]@{
-        Group          = 'MaintenancePlan'
+        Group          = 'MaintenanceSolution'
         Type           = 'Sqlinstance'
         Description    = $olaname.Description
         UniqueTag      = $olaname.Prefix
-        AllTags        = "$($olaname.Prefix), MaintenancePlan"
+        AllTags        = "$($olaname.Prefix), MaintenanceSolution"
     }
 }
 
