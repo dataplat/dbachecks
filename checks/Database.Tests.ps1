@@ -18,7 +18,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
             @(Get-DbaDatabase -SqlInstance $psitem).ForEach{
                 $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
-                    @($results).Count | Should -Be 0 -Because 'You dont want suspect pages'
+                    @($results).Count | Should -Be 0 -Because 'You do not want suspect pages'
                 }
             }
         }
@@ -130,11 +130,12 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
 
 Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
     (Get-SqlInstance).ForEach{
+	$recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
         Context "Testing Recovery Model on $psitem" {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
             @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
-                It "$($psitem.Name) Should -Be set to $((Get-DbcConfigValue policy.recoverymodel.type)) on $($psitem.SqlInstance)" {
-                    $psitem.RecoveryModel | Should -Be (Get-DbcConfigValue policy.recoverymodel.type) -Because 'You expect this recovery model'
+                It "$($psitem.Name) Should -Be set to $recoverymodel on $($psitem.SqlInstance)" {
+                    $psitem.RecoveryModel | Should -Be $recoverymodel -Because 'You expect this recovery model'
                 }
             }
         }
@@ -362,7 +363,6 @@ Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
 
 Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
     $Tolerance = Get-DbcConfigValue policy.database.filebalancetolerance
-
     (Get-SqlInstance).ForEach{
         Context "Testing for balanced FileGroups on $psitem" {
             (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
@@ -379,6 +379,23 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
                 }
             }
         }
+    }
+}
+
+Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
+	$CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
+	$exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
+    (Get-SqlInstance).ForEach{
+		Context "Checking that encryption certificates have not expired on $psitem" {
+			(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs | Where-Object {$_.Encryption -eq 'Certificate' -and !($exclude.contains($_.Database))}).ForEach{
+				It "$($psitem.Name) in $($psitem.Database) has not expired" {
+					$psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date) -Because 'this certificate should not be expired'
+				}
+				It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months" {
+					$psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date).AddMonths($CertificateWarning) -Because 'this certificate will soon expire'
+				}
+			}
+		}
     }
 }
 
@@ -488,7 +505,7 @@ Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
         Context "Testing database compatibility level matches server compatibility level on $psitem" {
             @(Test-DbaDatabaseCompatibility -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
-                   $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because 'it means you are on the appropirate compatibility level for your SQL Server version to use all available features'
+                   $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because 'it means you are on the appropriate compatibility level for your SQL Server version to use all available features'
                 }
             }
         }
