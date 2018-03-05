@@ -42,4 +42,23 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
             { Assert-SuspectPageCount $mock } | Should -Throw
         }
     }
+
+    Context "Validate database owner checks" {
+        It "The positive test should pass when the current owner is as expected" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin" }
+            Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin"
+        }
+        It "The positive test should fail when the current owner is not one that is expected" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "wronglogin" }
+            { Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin" } | Should -Throw
+        }
+        It "The negative test should pass when the current owner is not what is invalid" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin" }
+            Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin"
+        }
+        It "The negative test should fail when the current owner is the invalid one" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "invalidlogin" }
+            { Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin" } | Should -Throw
+        }
+    }
 }
