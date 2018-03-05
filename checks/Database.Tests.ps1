@@ -308,7 +308,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
     If (-not $LogFileCountTest) {
         (Get-SqlInstance).ForEach{
             Context "Testing Log File count and size for $psitem" {
-                (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
+                @(Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                     $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                     $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
                     It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
@@ -325,7 +325,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
     (Get-SqlInstance).ForEach{
         Context "Testing Log File count and size for $psitem" {
-            (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
+            @(Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $LogFiles = $Files | Where-Object {$_.TypeDescription -eq 'LOG'}
                 $Splat = @{$LogFileSizeComparison = $true;
@@ -367,7 +367,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
 
     (Get-SqlInstance).ForEach{
         Context "Testing for balanced FileGroups on $psitem" {
-            (Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
+            @(Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $FileGroups = $Files | Where-Object {$_.TypeDescription -eq 'ROWS'} | Group-Object -Property FileGroupName
                 $FileGroups.ForEach{
@@ -429,7 +429,7 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
     $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
     (Get-SqlInstance).ForEach{
         Context "Testing datafile growth type on $psitem" {
-            (Get-DbaDatabaseFile -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
+            @(Get-DbaDatabaseFile -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
                 if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
                     It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
                         $psitem.GrowthType | Should -Be $datafilegrowthtype -Because 'We expect a certain file growth type'
