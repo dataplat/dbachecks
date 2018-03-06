@@ -11,6 +11,7 @@
     RootModule             = 'dbachecks.psm1'
     
     # Version number of this module.
+    
     ModuleVersion          = '1.1.103'
     
     # ID used to uniquely identify this module

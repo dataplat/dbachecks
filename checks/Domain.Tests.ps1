@@ -2,7 +2,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "Active Directory Domain Name" -Tags DomainName, $filename {
     $domain = Get-DbcConfigValue -Name domain.name
-    (Get-ComputerName).ForEach{
+    @(Get-ComputerName).ForEach{
         Context "Testing Active Directory Domain Name on $psitem" {
             It "$psitem Should Be on the Domain $domain" {
                 (Get-DbaCmObject -Class Win32_ComputerSystem -ComputerName $psitem -Credential $credential).Domain | Should -Be $domain -Because 'The machine needs to be on the domain'
@@ -14,7 +14,7 @@ Describe "Active Directory Domain Name" -Tags DomainName, $filename {
 # Skipping this for now until we get AdsiPS command equiv
 Describe "Active Directory OU" -Tags OrganizationalUnit, $filename {
     $dc = Get-DbcConfigValue -Name domain.domaincontroller
-    (Get-ComputerName).ForEach{
+    @(Get-ComputerName).ForEach{
         Context "Testing Active Directory OU on $psitem" {
             if (-not $value) {
                 # Can be passed by Invoke-DbcCheck -Value
