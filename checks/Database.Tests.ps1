@@ -1,17 +1,17 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "Database Collation" -Tags DatabaseCollation, $filename {
-    $exclude = Get-DbcConfigValue policy.database.collationexludedb
-    $excludeall = "ReportingServer", "ReportingServerTempDB"
-    $excludeall += $exclude
+    $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
+    $exclude = "ReportingServer", "ReportingServerTempDB"
+    $exclude += $Wrongcollation
     @(Get-SqlInstance).ForEach{
         Context "Testing database collation on $psitem" {
-            @(Test-DbaDatabaseCollation -SqlInstance $psitem -ExcludeDatabase $excludeall ).ForEach{
+            @(Test-DbaDatabaseCollation -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
                 It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                     $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation -Because "You will get collation conflict errors in tempdb"
                 }
             }
-            @(Test-DbaDatabaseCollation -SqlInstance $psitem -Database $excludeall ).ForEach{
+            @(Test-DbaDatabaseCollation -SqlInstance $psitem -Database $Wrongcollation ).ForEach{
                 It "database collation ($($psitem.DatabaseCollation)) should not match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                     $psitem.ServerCollation | Should -Not -Be $psitem.DatabaseCollation -Because "You have defined the database to have another collation then the server. You will get collation conflict errors in tempdb"
                 }
