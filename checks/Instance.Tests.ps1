@@ -96,7 +96,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
     Describe "Dedicated Administrator Connection" -Tags DAC, $filename {
         $dac = Get-DbcConfigValue policy.dacallowed
-        (Get-SqlInstance).ForEach{
+        @(Get-SqlInstance).ForEach{
             Context "Testing Dedicated Administrator Connection on $psitem" {
                 It "DAC is set to $dac on $psitem" {
                     (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'RemoteDACConnectionsEnabled').ConfiguredValue -eq 1 | Should -Be $dac -Because 'This is the setting that you have chosen for DAC connections'
