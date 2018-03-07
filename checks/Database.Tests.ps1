@@ -370,7 +370,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
             @(Get-DbaDatabase -SqlInstance $psitem | Select-Object SqlInstance, Name).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
                 $FileGroups = $Files | Where-Object {$_.TypeDescription -eq "ROWS"} | Group-Object -Property FileGroupName
-                $FileGroups.ForEach{
+                @($FileGroups).ForEach{
                     $Unbalanced = 0
                     $Average = ($psitem.Group.Size | Measure-Object -Average).Average
 
