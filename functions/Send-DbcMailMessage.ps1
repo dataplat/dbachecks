@@ -137,6 +137,7 @@
                 $null = New-Item -ItemType Directory -Path "$script:maildirectory\notify" -ErrorAction Stop
             }
             if (-not (Test-Path -Path $xmlfile)) {
+	         Get-ChildItem -Path "$script:maildirectory\*.*" | Remove-Item -ErrorAction SilentlyContinue
                 Export-Clixml -Path $xmlfile -InputObject $null
             }
         }
