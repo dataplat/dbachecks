@@ -60,7 +60,7 @@
             Invoke-Item -Path $path
         }
         catch {
-            Stop-PSFFunction -Message "Failure" -Exception $_.Exception
+            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
             return
         }
     }
