@@ -2,17 +2,17 @@
 #Set-PSFConfig -Handler { if (Get-PSFTaskEngineCache -Module dbachecks -Name module-imported) { Write-PSFMessage -Level Warning -Message "This setting will only take effect on the next console start" } }
 
 #Add some validation for values with limited options
-$LogFileComparisonValidationssb = { param ([string]$input) if ($input -in ('average','maximum')){ [PsCustomObject]@{Success = $true; value = $input} } else { [PsCustomObject]@{Success = $false; message = "must be average or maximum - $input"} } }
+$LogFileComparisonValidationssb = { param ([string]$input) if ($input -in ('average', 'maximum')) { [PsCustomObject]@{Success = $true; value = $input} } else { [PsCustomObject]@{Success = $false; message = "must be average or maximum - $input"}
+    } }
 Register-PSFConfigValidation -Name validation.LogFileComparisonValidations -ScriptBlock $LogFileComparisonValidationssb
-$EmailValidationSb = { 
-    param ([string]$input) 
+$EmailValidationSb = {
+    param ([string]$input)
     $EmailRegEx = "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
-    if ($input -match $EmailRegEx){ 
-        [PsCustomObject]@{Success = $true; value = $input} 
-    } 
-    else { 
-        [PsCustomObject]@{Success = $false; message = "does not appear to be an email address - $input"} 
-    } 
+    if ($input -match $EmailRegEx) {
+        [PsCustomObject]@{Success = $true; value = $input}
+    } else {
+        [PsCustomObject]@{Success = $false; message = "does not appear to be an email address - $input"}
+    }
 }
 Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $EmailValidationSb
 
@@ -47,6 +47,10 @@ Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -In
 #DBCC
 Set-PSFConfig -Module dbachecks -Name policy.dbcc.maxdays -Value 7 -Initialize -Description "Maxmimum number of days before DBCC CHECKDB is considered outdated"
 
+#Encryption
+Set-PSFConfig -Module dbachecks -Name policy.certificateexpiration.excludedb -Value '{master, msdb, model, tempdb}'  -Initialize -Description "Databases to exclude from expired certificate checks"
+Set-PSFConfig -Module dbachecks -Name policy.certificateexpiration.warningwindow -Value 1  -Initialize -Description "The number of months prior to a certificate being expired that you want warning about"
+
 #Identity
 Set-PSFConfig -Module dbachecks -Name policy.identity.usagepercent -Value 90 -Initialize -Description "Maxmimum percentage of max of identity column"
 
@@ -55,7 +59,7 @@ Set-PSFConfig -Module dbachecks -Name policy.network.latencymaxms -Value 40 -Ini
 
 #Recovery Model
 Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.type -Value "Full" -Initialize -Description "Standard recovery model"
-Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.excludedb -Value @('master','tempdb') -Initialize -Description "Databases to exclude from standard recovery model check"
+Set-PSFConfig -Module dbachecks -Name policy.recoverymodel.excludedb -Value @('master', 'tempdb') -Initialize -Description "Databases to exclude from standard recovery model check"
 
 #DBOwners
 Set-PSFConfig -Module dbachecks -Name policy.validdbowner.name -Value "sa" -Initialize -Description "The database owner account should be this user"
@@ -98,6 +102,8 @@ Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizepercentage -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizecomparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
 Set-PSFConfig -Module dbachecks -Name policy.database.filebalancetolerance -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthfreespacethreshold -Value 20 -Initialize -Description "Integer representing percentage of free space within a database file before warning"
+Set-PSFConfig -Module dbachecks -Name policy.database.wrongcollation -Value @() -Initialize -Description "Databases that doesnt match server collation check"
+
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
 Set-PSFConfig -Module dbachecks -Name policy.ola.database -Validation string -Value 'master' -Initialize -Description "The database where Ola's maintenance solution is installed"
@@ -139,10 +145,10 @@ Set-PSFConfig -Module dbachecks -Name policy.whoisactive.database -Value "master
 #Build
 Set-PSFConfig -Module dbachecks -Name policy.build.warningwindow -Value 6 -Initialize -Description "The number of months prior to a build being unsupported that you want warning about"
 
-# The frequency of the Ola Hallengrens User Full backups 
-        # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
-        # for full options
-        # 1 for Sunday 127 for every day
+# The frequency of the Ola Hallengrens User Full backups
+# See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
+# for full options
+# 1 for Sunday 127 for every day
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"

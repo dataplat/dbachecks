@@ -6,6 +6,14 @@ function Assert-DatabaseCollationsMatch {
     $TestObject.ServerCollation | Should -Be $TestObject.DatabaseCollation -Because $because
 }
 
+function Assert-DatabaseCollationsMismatch {
+    param (
+        [object]$TestObject,
+        [string]$Because
+    )
+    $TestObject.ServerCollation | Should -Not -Be $TestObject.DatabaseCollation -Because $because
+}
+
 function Assert-SuspectPageCount {
     param (
         [object]$TestObject,
