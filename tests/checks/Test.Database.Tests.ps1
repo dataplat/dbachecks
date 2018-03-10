@@ -22,6 +22,39 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         }
     }
 
+    Context "Validate database owner checks" {
+        It "The positive test should pass when the current owner is as expected" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin" }
+            Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin"
+        }
+        It "The positive test should fail when the current owner is not one that is expected" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "wronglogin" }
+            { Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin" } | Should -Throw
+        }
+        It "The negative test should pass when the current owner is not what is invalid" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin" }
+            Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin"
+        }
+        It "The negative test should fail when the current owner is the invalid one" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "invalidlogin" }
+            { Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin" } | Should -Throw
+        }
+    }
+
+    Context "Validate recovery model checks" {
+        It "The test should pass when the current recovery model is as expected" {
+            $mock = [PSCustomObject]@{ RecoveryModel = "FULL" }
+            Assert-RecoveryModel $mock -ExpectedRecoveryModel "FULL"
+            $mock = [PSCustomObject]@{ RecoveryModel = "SIMPLE" }
+            Assert-RecoveryModel $mock -ExpectedRecoveryModel "simple" # the assert should be case insensitive
+        }
+
+        It "The test should fail when the current recovery model is not what is expected" {
+            $mock = [PSCustomObject]@{ RecoveryModel = "FULL" }
+            { Assert-RecoveryModel $mock -ExpectedRecoveryModel "SIMPLE" } | Should -Throw
+        }
+    }
+
     Context "Validate the suspcet pages check" {
         It "The test should pass when there are no suspect pages" {
             $mock = [PSCustomObject]@{
@@ -40,25 +73,6 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 SuspectPages = 10
             }
             { Assert-SuspectPageCount $mock } | Should -Throw
-        }
-    }
-
-    Context "Validate database owner checks" {
-        It "The positive test should pass when the current owner is as expected" {
-            $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin" }
-            Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin"
-        }
-        It "The positive test should fail when the current owner is not one that is expected" {
-            $mock = [PSCustomObject]@{ CurrentOwner = "wronglogin" }
-            { Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin" } | Should -Throw
-        }
-        It "The negative test should pass when the current owner is not what is invalid" {
-            $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin" }
-            Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin"
-        }
-        It "The negative test should fail when the current owner is the invalid one" {
-            $mock = [PSCustomObject]@{ CurrentOwner = "invalidlogin" }
-            { Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin" } | Should -Throw
         }
     }
 }

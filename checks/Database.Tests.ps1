@@ -145,9 +145,9 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
     $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
         Context "Testing Recovery Model on $psitem" {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
-            @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
-                It "$($psitem.Name) should be set to $recoverymodel on $($psitem.SqlInstance)" {
-                    $psitem.RecoveryModel | Should -Be $recoverymodel -Because "You expect this recovery model"
+            @(Get-DatabaseDetail -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+                It "$($psitem.Database) should be set to $recoverymodel on $($psitem.SqlInstance)" {
+                    Assert-RecoveryModel $psitem -ExpectedRecoveryModel $recoverymodel -Because "You expect this recovery model"
                 }
             }
         }

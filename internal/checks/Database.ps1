@@ -32,6 +32,15 @@ function Assert-DatabaseOwnerIsNot {
     $TestObject.CurrentOwner | Should -Not -Be $InvalidOwner -Because $Because
 }
 
+function Assert-RecoveryModel {
+    param (
+        [object]$TestObject,
+        [string]$ExpectedRecoveryModel,
+        [string]$Because
+    )
+    $TestObject.RecoveryModel | Should -Be $ExpectedRecoveryModel -Because $Because
+}
+
 function Assert-SuspectPageCount {
     param (
         [object]$TestObject,
