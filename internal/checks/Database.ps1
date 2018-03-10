@@ -14,14 +14,6 @@ function Assert-DatabaseCollationsMismatch {
     $TestObject.ServerCollation | Should -Not -Be $TestObject.DatabaseCollation -Because $because
 }
 
-function Assert-SuspectPageCount {
-    param (
-        [object]$TestObject,
-        [string]$Because
-    )
-    $TestObject.SuspectPages | Should -Be 0 -Because $Because
-}
-
 function Assert-DatabaseOwnerIs {
     param (
         [object]$TestObject,
@@ -38,4 +30,12 @@ function Assert-DatabaseOwnerIsNot {
         [string]$Because
     )
     $TestObject.CurrentOwner | Should -Not -Be $InvalidOwner -Because $Because
+}
+
+function Assert-SuspectPageCount {
+    param (
+        [object]$TestObject,
+        [string]$Because
+    )
+    $TestObject.SuspectPages | Should -Be 0 -Because $Because
 }
