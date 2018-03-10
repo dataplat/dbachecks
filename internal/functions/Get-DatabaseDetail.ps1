@@ -42,9 +42,6 @@ from sys.databases d
                     $script:results.Add($instance, $dbs)
                 }
 
-                $server.DomainInstanceName
-                $server.VersionMajor
-
                 return $script:results[$instance] | Where-Object { $psitem.Database -notin $ExcludeDatabase -or !$ExcludeDatabase }
             }
             catch {
