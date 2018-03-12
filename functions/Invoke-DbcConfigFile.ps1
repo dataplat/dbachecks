@@ -36,7 +36,7 @@
             Write-PSFMessage -Level	Output -Message "Remember to run Import-DbcConfig when you've finished your edits"
         }
         catch {
-            Stop-PSFFunction -Message "Failure" -Exception $_
+            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
             return
         }
     }
