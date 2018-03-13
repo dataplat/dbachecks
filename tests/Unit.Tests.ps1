@@ -107,29 +107,41 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
 }
 
 # This should stop people making breaking changes to the tests without first altering the test
-Describe "Checking that the tests do as they should" -Tags UnitTest {
-    Context "Agent" {
+Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
+Import-Module $ModuleBase\dbachecks.psd1 
 
-    }
-    Context "Database" {
+    Describe "Checking that the tests do as they should" -Tags UnitTest, UnitTestchecks {
+        #Mock the functions to only test what we want to test - The code ( the checks in this case)
+        Function Get-SqlInstance {}
+        Function Get-DbcConfigValue {}
 
-    }
-    Context "Domain" {
+        Function Write-PSFMessage {}
 
-    }
-    Context "HADR" {
+        Mock Get-SqlInstance {}
+        Mock Write-PSFMessage {}
 
-    }
-    Context "Instance" {
+        Context "Agent" {
+
+        }
+        Context "Database" {
+
+        }
+        Context "Domain" {
+
+        }
+        Context "HADR" {
+
+        }
+        Context "Instance" {
     
-    }
-    Context "LogShipping" {
+        }
+        Context "LogShipping" {
 
-    }
-    Context "Maintenance Solution" {
+        }
+        Context "Maintenance Solution" {
 
+        }
+        Context "Server" {
+
+        }
     }
-    Context "Server" {
-        
-    }
-}
