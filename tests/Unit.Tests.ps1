@@ -5,7 +5,7 @@ if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
 }
 $tokens = $null
 $errors = $null
-Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" {
+Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" -Tags UnitTest {
     $Checks = (Get-ChildItem $ModuleBase\checks).Where{$_.Name -ne 'MaintenanceSolution.Tests.ps1'}
     $Checks.Foreach{
         $Check = Get-Content $Psitem.FullName -Raw
@@ -103,5 +103,33 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 }
             }
         }
+    }
+}
+
+# This should stop people making breaking changes to the tests without first altering the test
+Describe "Checking that the tests do as they should" -Tags UnitTest {
+    Context "Agent" {
+
+    }
+    Context "Database" {
+
+    }
+    Context "Domain" {
+
+    }
+    Context "HADR" {
+
+    }
+    Context "Instance" {
+    
+    }
+    Context "LogShipping" {
+
+    }
+    Context "Maintenance Solution" {
+
+    }
+    Context "Server" {
+        
     }
 }
