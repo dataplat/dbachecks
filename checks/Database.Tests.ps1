@@ -74,13 +74,13 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
 }
 
 Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
-    $targetowner = Get-DbcConfigValue policy.validdbowner.name
-    $exclude = Get-DbcConfigValue policy.validdbowner.excludedb
+    [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
+    [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
     @(Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
-                It "$($psitem.Database) owner Should Be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should -Be $psitem.TargetOwner -Because "The account that is the database owner is not what was expected"
+            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase $exclude -EnableException:$false).ForEach{
+                It "$($psitem.Name) owner $($psitem.Owner) should be in this list $targetowner on $($psitem.SqlInstance)" {
+                    $psitem.Owner | Should -BeIn $TargetOwner -Because "The account that is the database owner is not what was expected"
                 }
             }
         }
