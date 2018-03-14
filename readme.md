@@ -16,8 +16,18 @@ This open source module allows us to crowdsource our checklists using [Pester](h
 Have questions about development? Please visit our [Wiki](https://github.com/potatoqualitee/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
 
 ## Build Status
-Development Branch Build<img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/3/badge">    
-Master Branch Build <img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/badge">    
+<table>
+  <tbody>
+    <tr>
+      <td><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/3/badge"></td>
+      <td>Development Branch Build</td>
+    </tr>
+    <tr>
+      <td><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/badge"></td>
+      <td>Master Branch Build</td>
+    </tr>
+  </tbody>
+</table> 
 
 ## Prerequisites
 
