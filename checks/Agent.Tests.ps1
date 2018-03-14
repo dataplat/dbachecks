@@ -79,7 +79,7 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
 }
 
 Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
-    $targetowner = Get-DbcConfigValue agent.validjobowner.name
+    [string[]]$targetowner = Get-DbcConfigValue agent.validjobowner.name
     @(Get-SqlInstance).ForEach{
         Context "Testing job owners on $psitem" {
             @(Test-DbaJobOwner -SqlInstance $psitem -Login $targetowner -EnableException:$false).ForEach{
