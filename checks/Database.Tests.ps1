@@ -79,7 +79,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
     @(Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase $exclude -EnableException:$false).ForEach{
-                It "$($psitem.Name) owner $($psitem.Owner) should be in this list $targetowner on $($psitem.SqlInstance)" {
+                It "Database $($psitem.Name) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
                     $psitem.Owner | Should -BeIn $TargetOwner -Because "The account that is the database owner is not what was expected"
                 }
             }
@@ -88,13 +88,13 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
 }
 
 Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
-    $targetowner = Get-DbcConfigValue policy.invaliddbowner.name
-    $exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
+    [string[]]$targetowner = Get-DbcConfigValue policy.invaliddbowner.name
+    [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
     @(Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Test-DbaDatabaseOwner -SqlInstance $psitem -TargetLogin $targetowner -ExcludeDatabase $exclude -EnableException:$false).ForEach{
-                It "$($psitem.Database) owner should Not be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should -Not -Be $psitem.TargetOwner -Because "The database owner was one specified as incorrect"
+            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase $exclude -EnableException:$false).ForEach{
+                It "Database $($psitem.Name) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
+                    $psitem.Owner | Should -Not -BeIn $TargetOwner -Because "The database owner was one specified as incorrect"
                 }
             }
         }
