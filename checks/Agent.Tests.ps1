@@ -83,7 +83,7 @@ Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
     @(Get-SqlInstance).ForEach{
         Context "Testing job owners on $psitem" {
             @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
-                It "$($psitem.Name) owner $($psitem.OwnerLoginName) should be in this list $targetowner on $($psitem.Server)" {
+                It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
                     $psitem.OwnerLoginName | Should -BeIn $TargetOwner -Because "The account that is the job owner is not what was expected"
                 }
             }
