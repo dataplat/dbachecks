@@ -109,7 +109,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
         Context "Testing Last Good DBCC CHECKDB on $psitem" {
             @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).Name).ForEach{
                 if ($psitem.Database -ne "tempdb") {
-                    It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should Be less than $maxdays" {
+                    It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should Be less than $maxdays days old" {
                         $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).AddDays( - ($maxdays)) -Because "You should have run a DBCC CheckDB inside that time"
                     }
 
