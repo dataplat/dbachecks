@@ -4,7 +4,7 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
     $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
     $exclude = "ReportingServer", "ReportingServerTempDB"
     $exclude += $Wrongcollation
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing database collation on $psitem" {
             @(Test-DbaDatabaseCollation -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
                 It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
@@ -23,7 +23,7 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
 }
 
 Describe "Suspect Page" -Tags SuspectPage, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing suspect pages on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
@@ -40,7 +40,7 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
         $destserver = Get-DbcConfigValue policy.backup.testserver
         $destdata = Get-DbcConfigValue policy.backup.datadir
         $destlog = Get-DbcConfigValue policy.backup.logdir
-        @(Get-SqlInstance).ForEach{
+        @(Get-instance).ForEach{
             Context "Testing Backup Restore & Integrity Checks on $psitem" {
                 @(Test-DbaLastBackup -SqlInstance $psitem -Destination $destserver -LogDirectory $destlog -DataDirectory $destdata).ForEach{
                     if ($psitem.DBCCResult -notmatch "skipped for restored master") {
@@ -59,7 +59,7 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
 
 Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filename {
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "VerifyOnly tests of last backups on $psitem" {
             @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).Name -VerifyOnly).ForEach{
                 It "restore for $($psitem.Database) on $($psitem.SourceServer) Should be success" {
@@ -76,7 +76,7 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
 Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
     [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
     [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -notin $exclude}).ForEach{
                 It "Database $($psitem.Name) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
@@ -90,7 +90,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
 Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
     [string[]]$targetowner = Get-DbcConfigValue policy.invaliddbowner.name
     [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -notin $exclude}).ForEach{
                 It "Database $($psitem.Name) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
@@ -105,7 +105,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
     $maxdays = Get-DbcConfigValue policy.dbcc.maxdays
     $datapurity = Get-DbcConfigValue skip.dbcc.datapuritycheck
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Last Good DBCC CHECKDB on $psitem" {
             @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod)}).Name).ForEach{
                 if ($psitem.Database -ne "tempdb") {
@@ -124,7 +124,7 @@ Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
 
 Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
     $maxpercentage = Get-DbcConfigValue policy.identity.usagepercent
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Column Identity Usage on $psitem" {
             @(Test-DbaIdentityUsage -SqlInstance $psitem).ForEach{
                 if ($psitem.Database -ne "tempdb") {
@@ -139,8 +139,8 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
 }
 
 Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
-    @(Get-SqlInstance).ForEach{
-    $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
+    @(Get-instance).ForEach{
+        $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
         Context "Testing Recovery Model on $psitem" {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
             @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
@@ -153,7 +153,7 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 }
 
 Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing duplicate indexes on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $results = Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name
@@ -166,7 +166,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 }
 
 Describe "Unused Index" -Tags UnusedIndex, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Unused indexes on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 try {
@@ -186,7 +186,7 @@ Describe "Unused Index" -Tags UnusedIndex, $filename {
 }
 
 Describe "Disabled Index" -Tags DisabledIndex, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Disabled indexes on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $results = Find-DbaDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
@@ -199,7 +199,7 @@ Describe "Disabled Index" -Tags DisabledIndex, $filename {
 }
 
 Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing database growth event on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
@@ -213,7 +213,7 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
 
 Describe "Page Verify" -Tags PageVerify, $filename {
     $pageverify = Get-DbcConfigValue policy.pageverify
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing page verify on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have page verify set to $pageverify" {
@@ -226,7 +226,7 @@ Describe "Page Verify" -Tags PageVerify, $filename {
 
 Describe "Auto Close" -Tags AutoClose, $filename {
     $autoclose = Get-DbcConfigValue policy.database.autoclose
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Auto Close on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Close set to $autoclose" {
@@ -239,7 +239,7 @@ Describe "Auto Close" -Tags AutoClose, $filename {
 
 Describe "Auto Shrink" -Tags AutoShrink, $filename {
     $autoshrink = Get-DbcConfigValue policy.database.autoshrink
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Auto Shrink on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Shrink set to $autoshrink" {
@@ -253,7 +253,7 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
 Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA, $filename {
     $maxfull = Get-DbcConfigValue policy.backup.fullmaxdays
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing last full backups on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 $offline = ($psitem.Status -match "Offline")
@@ -269,7 +269,7 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
     if (-not (Get-DbcConfigValue skip.diffbackuptest)) {
         $maxdiff = Get-DbcConfigValue policy.backup.diffmaxhours
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
-        @(Get-SqlInstance).ForEach{
+        @(Get-instance).ForEach{
             Context "Testing last diff backups on $psitem" {
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                     $offline = ($psitem.Status -match "Offline")
@@ -285,7 +285,7 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
 Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, $filename {
     $maxlog = Get-DbcConfigValue policy.backup.logmaxminutes
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing last log backups on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) }).ForEach{
                 if ($psitem.RecoveryModel -ne "Simple") {
@@ -302,7 +302,7 @@ Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, 
 
 Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     $vlfmax = Get-DbcConfigValue policy.database.maxvlf
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Database VLFs on $psitem" {
             @(Test-DbaDbVirtualLogFile -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should Be less than $vlfmax" {
@@ -317,7 +317,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
     $LogFileCountTest = Get-DbcConfigValue skip.database.logfilecounttest
     $LogFileCount = Get-DbcConfigValue policy.database.logfilecount
     If (-not $LogFileCountTest) {
-        @(Get-SqlInstance).ForEach{
+        @(Get-instance).ForEach{
             Context "Testing Log File count and size for $psitem" {
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases).ForEach{
                     $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
@@ -334,7 +334,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
 Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     $LogFileSizePercentage = Get-DbcConfigValue policy.database.logfilesizepercentage
     $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Log File count and size for $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
@@ -355,7 +355,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
 Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
     $threshold = Get-DbcConfigValue policy.database.filegrowthfreespacethreshold
     $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing for files likely to grow soon on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -notin $exclude}).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
@@ -375,7 +375,7 @@ Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
 
 Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
     $Tolerance = Get-DbcConfigValue policy.database.filebalancetolerance
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing for balanced FileGroups on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases).ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.SqlInstance -Database $psitem.Name
@@ -397,7 +397,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
 Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
     $CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
     $exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Checking that encryption certificates have not expired on $psitem" {
             @(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs | Where-Object {$_.Encryption -eq "Certificate" -and !($exclude.contains($_.Database))}).ForEach{
                 It "$($psitem.Name) in $($psitem.Database) has not expired" {
@@ -413,7 +413,7 @@ Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
 
 Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
     $autocreatestatistics = Get-DbcConfigValue policy.database.autocreatestatistics
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Auto Create Statistics on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Create Statistics set to $autocreatestatistics" {
@@ -426,7 +426,7 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
 
 Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
     $autoupdatestatistics = Get-DbcConfigValue policy.database.autoupdatestatistics
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Auto Update Statistics on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Update Statistics set to $autoupdatestatistics" {
@@ -439,7 +439,7 @@ Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
 
 Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, $filename {
     $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing Auto Update Statistics Asynchronously on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 It "$psitem on $($psitem.SqlInstance) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
@@ -454,7 +454,7 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
     $datafilegrowthtype = Get-DbcConfigValue policy.database.filegrowthtype
     $datafilegrowthvalue = Get-DbcConfigValue policy.database.filegrowthvalue
     $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing datafile growth type on $psitem" {
             @(Get-DbaDatabaseFile -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
                 if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
@@ -478,7 +478,7 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
 }
 
 Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing database trustworthy option on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'msdb'}).ForEach{
                 It "Trustworthy is set to false on $($psitem.Name)" {
@@ -490,7 +490,7 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
 }
 
 Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing database orphaned user event on $psitem" {
             $results = Get-DbaOrphanUser -SqlInstance $psitem
             It "$psitem should return 0 orphaned users" {
@@ -501,7 +501,7 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
 }
 
 Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb'}).ForEach{
                 It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent)" {
@@ -513,11 +513,11 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
 }
 
 Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-instance).ForEach{
         Context "Testing database compatibility level matches server compatibility level on $psitem" {
             @(Test-DbaDatabaseCompatibility -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
-                   $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
+                    $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
                 }
             }
         }
