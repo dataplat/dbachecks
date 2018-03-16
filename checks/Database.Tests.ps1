@@ -157,7 +157,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
         Context "Testing duplicate indexes on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $results = Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name
-                It "$psitem on $($psitem.Parent) should return 0 duplicate indexes" {
+                It "$psitem on $($psitem.Parent.Name) should return 0 duplicate indexes" {
                     @($results).Count | Should -Be 0 -Because "Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory"
                 }
             }
@@ -171,12 +171,12 @@ Describe "Unused Index" -Tags UnusedIndex, $filename {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 try {
                     $results = Find-DbaUnusedIndex -SqlInstance $psitem.Parent -Database $psitem.Name -EnableException
-                    It "$psitem on $($psitem.Parent) should return 0 Unused indexes" {
+                    It "$psitem on $($psitem.Parent.Name) should return 0 Unused indexes" {
                         @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                     }
                 }
                 catch {
-                    It -Skip "$psitem on $($psitem.Parent) should return 0 Unused indexes" {
+                    It -Skip "$psitem on $($psitem.Parent.Name) should return 0 Unused indexes" {
                         @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                     }
                 }
@@ -190,7 +190,7 @@ Describe "Disabled Index" -Tags DisabledIndex, $filename {
         Context "Testing Disabled indexes on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $results = Find-DbaDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
-                It "$psitem on $($psitem.Parent) should return 0 Disabled indexes" {
+                It "$psitem on $($psitem.Parent.Name) should return 0 Disabled indexes" {
                     @($results).Count | Should -Be 0 -Because "Disabled indexes are wasting disk space"
                 }
             }
@@ -504,7 +504,7 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
     @(Get-instance).ForEach{
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb'}).ForEach{
-                It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent)" {
+                It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" {
                     (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "pseudo-SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
                 }
             }
