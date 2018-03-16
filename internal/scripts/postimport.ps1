@@ -25,14 +25,14 @@ foreach ($repo in $repos) {
 }
 
 foreach ($file in $repofiles) {
-    $gets = Select-String -InputObject $file -Pattern 'Get-SqlInstance|Get-ComputerName'
+    $gets = Select-String -InputObject $file -Pattern 'Get-Instance|Get-ComputerName'
     $filename = $file.Name.Replace(".Tests.ps1", "")
     $groups += $filename
     $strings = Get-Content $file | Where-Object { $_ -match "-Tags" }
     foreach ($string in $strings) {
         $rawtype = $gets | Where-Object { $_.LineNumber -gt $string.ReadCount } | Sort-Object LineNumber | Select-Object -First 1
         
-        if ($rawtype -match "Get-SqlInstance") {
+        if ($rawtype -match "Get-Instance") {
             $type = "Sqlinstance"
         }
         if ($rawtype -match "Get-ComputerName") {
