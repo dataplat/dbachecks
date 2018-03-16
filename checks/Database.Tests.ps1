@@ -27,7 +27,7 @@ Describe "Suspect Page" -Tags SuspectPage, $filename {
         Context "Testing suspect pages on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
-                It "$($psitem.Name) should return 0 suspect pages on $($psitem.SqlInstance)" {
+                It "$($psitem.Name) should return 0 suspect pages on $($psitem.Parent.Name)" {
                     @($results).Count | Should -Be 0 -Because "You do not want suspect pages"
                 }
             }
@@ -79,7 +79,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -notin $exclude}).ForEach{
-                It "Database $($psitem.Name) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
+                It "Database $($psitem.Name) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.Parent.Name)" {
                     $psitem.Owner | Should -BeIn $TargetOwner -Because "The account that is the database owner is not what was expected"
                 }
             }
@@ -93,7 +93,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -notin $exclude}).ForEach{
-                It "Database $($psitem.Name) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
+                It "Database $($psitem.Name) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.Parent.Name)" {
                     $psitem.Owner | Should -Not -BeIn $TargetOwner -Because "The database owner was one specified as incorrect"
                 }
             }
@@ -166,19 +166,18 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 }
 
 Describe "Unused Index" -Tags UnusedIndex, $filename {
-    @(Get-Instance).ForEach{
+    @(Get-SQlInstance).ForEach{
         Context "Testing Unused indexes on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
-                try {
-                    $results = Find-DbaUnusedIndex -SqlInstance $psitem.Parent -Database $psitem.Name -EnableException
-                    It "$($psitem.Name) on $($psitem.Parent.Name) should return 0 Unused indexes" {
+            try {
+                @($results = Find-DbaUnusedIndex -SqlInstance $psitem -EnableException).ForEach{
+                    It "$psitem on $($psitem.SQLInstance) should return 0 Unused indexes" {
                         @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                     }
                 }
-                catch {
-                    It -Skip "$($psitem.Name) on $($psitem.Parent.Name) should return 0 Unused indexes" {
-                        @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
-                    }
+            }
+            catch {
+                It -Skip "$psitem on $($psitem.SQLInstance) should return 0 Unused indexes" {
+                    @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                 }
             }
         }
@@ -203,7 +202,7 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
         Context "Testing database growth event on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
-                It "$($psitem.Name) should return 0 database growth events on $($psitem.SqlInstance)" {
+                It "$($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                     @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
                 }
             }
@@ -216,7 +215,7 @@ Describe "Page Verify" -Tags PageVerify, $filename {
     @(Get-Instance).ForEach{
         Context "Testing page verify on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
-                It "$($psitem.Name) on $($psitem.SqlInstance) should have page verify set to $pageverify" {
+                It "$($psitem.Name) on $($psitem.Parent.Name) should have page verify set to $pageverify" {
                     $psitem.PageVerify | Should -Be $pageverify -Because "Page verify helps SQL Server to detect corruption"
                 }
             }
@@ -229,7 +228,7 @@ Describe "Auto Close" -Tags AutoClose, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Auto Close on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
-                It "$($psitem.Name) on $($psitem.SqlInstance) should have Auto Close set to $autoclose" {
+                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Close set to $autoclose" {
                     $psitem.AutoClose | Should -Be $autoclose -Because "Because!"
                 }
             }
@@ -242,7 +241,7 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Auto Shrink on $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
-                It "$($psitem.Name) on $($psitem.SqlInstance) should have Auto Shrink set to $autoshrink" {
+                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Shrink set to $autoshrink" {
                     $psitem.AutoShrink | Should -Be $autoshrink -Because "Shrinking databases causes fragmentation and performance issues"
                 }
             }
@@ -322,7 +321,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases).ForEach{
                     $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                     $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
-                    It "$($psitem.Name) on $($psitem.SqlInstance) Should have less than $LogFileCount Log files" {
+                    It "$($psitem.Name) on $($psitem.Parent.Name) Should have less than $LogFileCount Log files" {
                         $LogFiles.Count | Should -BeLessThan $LogFileCount -Because "You want the correct number of log files"
                     }
                 }
@@ -344,7 +343,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
                 }
                 $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
                 $DataFileSize = ($Files | Where-Object {$_.TypeDescription -eq "ROWS"} | Measure-Object @Splat).$LogFileSizeComparison
-                It "$($psitem.Name) on $($psitem.SqlInstance) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
+                It "$($psitem.Name) on $($psitem.Parent.Name) Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles" {
                     $LogFileSize | Should -BeLessThan ($DataFileSize * $LogFileSizePercentage) -Because "If your log file is this large you are not maintaining it well enough"
                 }
             }
