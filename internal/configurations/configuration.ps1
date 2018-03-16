@@ -68,7 +68,7 @@ Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.name -Value "sa" -In
 Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.excludedb -Value @('master', 'msdb', 'model', 'tempdb')  -Initialize -Description "Databases to exclude from invalid dbowner checks"
 
 #Error Log
-Set-PSFConfig -Module dbachecks -Name policy.errorlog.warningwindow -Value 7 -Initialize -Description "The number of days prior to check for error log issues"
+Set-PSFConfig -Module dbachecks -Name policy.errorlog.warningwindow -Value 2 -Initialize -Description "The number of days prior to check for error log issues"
 
 #DAC
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "DAC should be allowed `$true or disallowed `$false"
