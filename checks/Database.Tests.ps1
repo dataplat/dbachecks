@@ -25,7 +25,7 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     }
 }
 
-Describe "Suspect Page" -Tags SuspectPage, FastDatabase $filename {
+Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing suspect pages on $psitem" {
             @(Get-DatabaseDetail -SqlInstance $psitem).ForEach{
