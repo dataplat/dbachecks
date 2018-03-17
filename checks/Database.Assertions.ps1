@@ -1,3 +1,14 @@
+<# It is important to test our test. It really is. 
+ # (http://jakubjares.com/2017/12/07/testing-your-environment-tests/)
+ #
+ #   To be able to do it with Pester one has to keep the test definition and the assertion 
+ # in separate files. Write a new test, or modifying an existing one typically involves 
+ # modifications to the three related files:
+ #
+ # /checks/Database.Assertions.ps1 (this file)      - where the assertions are defined
+ # /checks/Database.Tests.ps1                       - where the assertions are used to check stuff
+ # /tests/checks/Test.Database.Tests.ps1            - where the assertions are unit tests
+ #>
 function Assert-DatabaseCollationsMatch {
     param (
         [object]$TestObject,
