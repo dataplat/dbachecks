@@ -84,8 +84,8 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             ## This just grabs all the code
             $AST = [System.Management.Automation.Language.Parser]::ParseInput($Check, [ref]$null, [ref]$null)
             $Statements = $AST.EndBlock.statements.Extent
-            ## Ignore the filename line
-            @($Statements.Where{$_.StartLineNumber -ne 1}).ForEach{
+            ## Check only Pester description blocks to allow for extra includes in the file
+            @($Statements.Where{$_.Text -like "Describe*"}).ForEach{
                 $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
                 It "$title Should Use Get-SqlInstance or Get-ComputerName" {
                     ($PSItem.text -Match 'Get-SqlInstance') -or ($psitem.text -match 'Get-ComputerName') | Should -BeTrue -Because 'These are the commands to use to get Instances or Computers'
