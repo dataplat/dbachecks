@@ -5,9 +5,9 @@
  # in separate files. Write a new test, or modifying an existing one typically involves 
  # modifications to the three related files:
  #
- # /checks/Database.Assertions.ps1                  - where the assertions are defined
- # /checks/Database.Tests.ps1                       - where the assertions are used to check stuff
- # /tests/checks/Test.Database.Tests.ps1 (this file)- where the assertions are unit tests
+ # /checks/Database.Assertions.ps1                          - where the assertions are defined
+ # /checks/Database.Tests.ps1                               - where the assertions are used to check stuff
+ # /tests/checks/Database.Assetions.Tests.ps1 (this file)   - where the assertions are unit tests
  #>
 
 $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
