@@ -4,15 +4,15 @@
 #Add some validation for values with limited options
 $LogFileComparisonValidationssb = { param ([string]$input) if ($input -in ('average','maximum')){ [PsCustomObject]@{Success = $true; value = $input} } else { [PsCustomObject]@{Success = $false; message = "must be average or maximum - $input"} } }
 Register-PSFConfigValidation -Name validation.LogFileComparisonValidations -ScriptBlock $LogFileComparisonValidationssb
-$EmailValidationSb = { 
-    param ([string]$input) 
+$EmailValidationSb = {
+    param ([string]$input)
     $EmailRegEx = "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
-    if ($input -match $EmailRegEx){ 
-        [PsCustomObject]@{Success = $true; value = $input} 
-    } 
-    else { 
-        [PsCustomObject]@{Success = $false; message = "does not appear to be an email address - $input"} 
-    } 
+    if ($input -match $EmailRegEx){
+        [PsCustomObject]@{Success = $true; value = $input}
+    }
+    else {
+        [PsCustomObject]@{Success = $false; message = "does not appear to be an email address - $input"}
+    }
 }
 Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $EmailValidationSb
 
@@ -84,8 +84,8 @@ Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize 
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 
 # Database
-Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool -Value $false -Initialize -Description "Auto Close should be allowed `$true or dissalowed `$false"
-Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation bool -Value $false -Initialize -Description "Auto Shrink should be allowed `$true or dissalowed `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool -Value $false -Initialize -Description "Auto Close should be allowed `$true or disallowed `$false"
+Set-PSFConfig -Module dbachecks -Name policy.database.autoshrink -Validation bool -Value $false -Initialize -Description "Auto Shrink should be allowed `$true or disallowed `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxvlf -Value 512 -Initialize -Description "Max virtual log files"
 Set-PSFConfig -Module dbachecks -Name policy.database.autocreatestatistics -Validation bool -Value $true -Initialize -Description "Auto Create Statistics should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.database.autoupdatestatistics -Validation bool -Value $true -Initialize -Description "Auto Update Statistics should be enabled `$true or disabled `$false"
@@ -139,7 +139,7 @@ Set-PSFConfig -Module dbachecks -Name policy.whoisactive.database -Value "master
 #Build
 Set-PSFConfig -Module dbachecks -Name policy.build.warningwindow -Value 6 -Initialize -Description "The number of months prior to a build being unsupported that you want warning about"
 
-# The frequency of the Ola Hallengrens User Full backups 
+# The frequency of the Ola Hallengrens User Full backups
         # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
         # for full options
         # 1 for Sunday 127 for every day
