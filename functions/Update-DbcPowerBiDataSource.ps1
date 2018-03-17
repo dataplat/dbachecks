@@ -73,7 +73,7 @@
             }
         }
         catch {
-            Stop-PSFFunction -Message "Failure" -Exception $_
+            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
             return
         }
         
@@ -94,7 +94,7 @@
                 Write-PSFMessage -Level Output -Message "Wrote results to $filename"
             }
             catch {
-                Stop-PSFFunction -Message "Failure" -Exception $_
+                Stop-PSFFunction -Message "Failure" -ErrorRecord $_
                 return
             }
         }

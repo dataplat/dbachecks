@@ -1,6 +1,6 @@
 # dbachecks
 
-<img align="left" src="https://user-images.githubusercontent.com/8278033/34322840-ed09114e-e832-11e7-9670-9baa686ade71.png">
+<img align="left" src="https://user-images.githubusercontent.com/8278033/34322840-ed09114e-e832-11e7-9670-9baa686ade71.png">  
 
 dbachecks is a framework created by and for SQL Server pros who need to validate their environments. Basically, we all share similar checklists and mostly just the server names and RPO/RTO/etc change.
 
@@ -14,6 +14,24 @@ This open source module allows us to crowdsource our checklists using [Pester](h
 * All enabled jobs have succeeded
 
 Have questions about development? Please visit our [Wiki](https://github.com/potatoqualitee/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
+
+## Build Status
+<table>
+  <tbody>
+    <tr>
+      <td><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/3/badge"></td>
+      <td>Development Branch Build - Unit testing</td>
+    </tr>
+    <tr>
+      <td><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/badge"></td>
+      <td>Master Branch Build - Module version update and Code Signing</td>
+    </tr>
+        <tr>
+      <td><img align="left" src="https://sqlcollaborative.vsrm.visualstudio.com/_apis/public/Release/badge/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/2"></td>
+      <td>Master Branch Release - Release to PowerShell Gallery</td>
+    </tr>
+  </tbody>
+</table> 
 
 ## Prerequisites
 
@@ -128,7 +146,7 @@ Start-DbcPowerBi
 
 ![image](https://user-images.githubusercontent.com/19521315/36527050-640d6c0a-17a8-11e8-9781-0aab0a8f8d48.png)
 
-The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
+The above report uses `Update-DbcPowerBiDataSource`'s `-Environment` parameter.
 
 ```powershell
 # Run checks and export its JSON

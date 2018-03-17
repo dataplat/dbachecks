@@ -231,6 +231,36 @@
                 Set-PSFConfig -Module dbachecks -Name $item.Name -Value $PSBoundParameters.$key
             }
         }
+        
+        if ($SqlCredential) {
+            if ($PSDefaultParameterValues) {
+                $newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $SqlCredential }
+                Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
+            }
+            else {
+                Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $SqlCredential }
+            }
+        }
+        else {
+            if ($PSDefaultParameterValues) {
+                $PSDefaultParameterValues.Remove('*:SqlCredential')
+            }
+        }
+        
+        if ($Credential) {
+            if ($PSDefaultParameterValues) {
+                $newvalue = $PSDefaultParameterValues += @{ '*Dba*:Credential' = $Credential }
+                Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
+            }
+            else {
+                Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value @{ '*Dba*:Credential' = $Credential }
+            }
+        }
+        else {
+            if ($PSDefaultParameterValues) {
+                $PSDefaultParameterValues.Remove('*Dba*:Credential')
+            }
+        }
     }
     
     process {

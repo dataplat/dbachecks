@@ -11,7 +11,8 @@
     RootModule             = 'dbachecks.psm1'
     
     # Version number of this module.
-    ModuleVersion          = '1.0.0'
+    
+    ModuleVersion          = '1.1.111'
     
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -49,7 +50,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
         @{ ModuleName = 'Pester'; ModuleVersion = '4.2.0' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.207' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.300' }
         @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.10.23' }
     )
     
