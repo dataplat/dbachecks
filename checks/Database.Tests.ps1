@@ -75,6 +75,7 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
     }
 }
 
+<<<<<<< HEAD
 Describe "Valid Database Owner" -Tags ValidDatabaseOwner, FastDatabase, $filename {
     $targetowner = Get-DbcConfigValue policy.validdbowner.name
     $exclude = Get-DbcConfigValue policy.validdbowner.excludedb
@@ -83,12 +84,23 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, FastDatabase, $filenam
             @(Get-DatabaseDetail -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "$($psitem.Database) owner Should Be $targetowner on $($psitem.SqlInstance)" {
                     Assert-DatabaseOwnerIs $psitem -ExpectedOwner $targetowner -Because "The account that is the database owner is not what was expected"
+=======
+Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
+    [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
+    [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
+    @(Get-SqlInstance).ForEach{
+        Context "Testing Database Owners on $psitem" {
+            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase $exclude -EnableException:$false).ForEach{
+                It "Database $($psitem.Name) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
+                    $psitem.Owner | Should -BeIn $TargetOwner -Because "The account that is the database owner is not what was expected"
+>>>>>>> development
                 }
             }
         }
     }
 }
 
+<<<<<<< HEAD
 Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, FastDatabase, $filename {
     $invalidowner = Get-DbcConfigValue policy.invaliddbowner.name
     $exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb 
@@ -97,6 +109,16 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, FastDatabase, $fil
             @(Get-DatabaseDetail -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "$($psitem.Database) owner should Not be $invalidowner on $($psitem.SqlInstance)" {
                     Assert-DatabaseOwnerIsNot $psitem -InvalidOwner $invalidowner -Because 'The database owner was one specified as incorrect'
+=======
+Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
+    [string[]]$targetowner = Get-DbcConfigValue policy.invaliddbowner.name
+    [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
+    @(Get-SqlInstance).ForEach{
+        Context "Testing Database Owners on $psitem" {
+            @(Get-DbaDatabase -SqlInstance $psitem -ExcludeDatabase $exclude -EnableException:$false).ForEach{
+                It "Database $($psitem.Name) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
+                    $psitem.Owner | Should -Not -BeIn $TargetOwner -Because "The database owner was one specified as incorrect"
+>>>>>>> development
                 }
             }
         }

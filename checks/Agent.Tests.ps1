@@ -79,12 +79,12 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
 }
 
 Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
-    $targetowner = Get-DbcConfigValue agent.validjobowner.name
+    [string[]]$targetowner = Get-DbcConfigValue agent.validjobowner.name
     @(Get-SqlInstance).ForEach{
         Context "Testing job owners on $psitem" {
-            @(Test-DbaJobOwner -SqlInstance $psitem -Login $targetowner -EnableException:$false).ForEach{
-                It "$($psitem.Job) owner Should Be $targetowner on $($psitem.Server)" {
-                    $psitem.CurrentOwner | Should -Be $psitem.TargetOwner -Because "The account that is the job owner is not what was expected"
+            @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
+                It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
+                    $psitem.OwnerLoginName | Should -BeIn $TargetOwner -Because "The account that is the job owner is not what was expected"
                 }
             }
         }

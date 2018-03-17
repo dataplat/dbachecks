@@ -45,7 +45,7 @@
             $results = Get-Content -Path $Path | ConvertFrom-Json
         }
         catch {
-            Stop-PSFFunction -Message "Failure" -Exception $_
+            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
             return
         }
         

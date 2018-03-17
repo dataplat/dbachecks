@@ -17,19 +17,19 @@ function Assert-DatabaseCollationsMismatch {
 function Assert-DatabaseOwnerIs {
     param (
         [object]$TestObject,
-        [string]$ExpectedOwner,
+        [string[]]$ExpectedOwner,
         [string]$Because
     )
-    $TestObject.CurrentOwner | Should -Be $ExpectedOwner -Because $Because
+    $TestObject.CurrentOwner | Should -BeIn $ExpectedOwner -Because $Because
 }
 
 function Assert-DatabaseOwnerIsNot {
     param (
         [object]$TestObject,
-        [string]$InvalidOwner,
+        [string[]]$InvalidOwner,
         [string]$Because
     )
-    $TestObject.CurrentOwner | Should -Not -Be $InvalidOwner -Because $Because
+    $TestObject.CurrentOwner | Should -Not -BeIn $InvalidOwner -Because $Because
 }
 
 function Assert-RecoveryModel {
