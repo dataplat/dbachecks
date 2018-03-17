@@ -42,7 +42,7 @@ from sys.databases d
                     $script:results.Add($instance, $dbs)
                 }
 
-                return $script:results[$instance] | Where-Object { $psitem.Database -notin $ExcludeDatabase -or !$ExcludeDatabase }
+                return ([array]$script:results[$instance]) | Where-Object { $psitem.Database -notin $ExcludeDatabase -or !$ExcludeDatabase }
             }
             catch {
                 throw

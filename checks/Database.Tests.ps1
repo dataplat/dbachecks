@@ -22,13 +22,13 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     @(Get-SqlInstance).ForEach{
         Context "Testing database collation on $psitem" {
 
-            @(Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                     Assert-DatabaseCollationsMatch $psitem -Because 'You will get collation conflict errors in tempdb' 
                 }
             }
             if ($Wrongcollation) {
-                @(Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $Wrongcollation).ForEach{
+                (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $Wrongcollation).ForEach{
                     It "database collation ($($psitem.DatabaseCollation)) should not match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                         Assert-DatabaseCollationsMismatch $psitem -Because 'You have defined the database to have another collation then the server. You will get collation conflict errors in tempdb' 
                     }
@@ -41,7 +41,7 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
 Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
     (Get-SqlInstance).ForEach{
         Context "Testing suspect pages on $psitem" {
-            @(Get-DbConfig -SqlInstance $psitem).ForEach{
+            (Get-DbConfig -SqlInstance $psitem).ForEach{
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
                     Assert-SuspectPageCount $psitem -Because 'You do not want any suspect pages'
                 }
@@ -92,7 +92,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, FastDatabase, $filenam
     [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
     @(Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
                     Assert-DatabaseOwnerIs $psitem -ExpectedOwner $targetowner -Because "The account that is the database owner is not what was expected"
                 }
@@ -106,7 +106,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, FastDatabase, $fil
     [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
     (Get-SqlInstance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
                     Assert-DatabaseOwnerIsNot $psitem -InvalidOwner $invalidowner -Because 'The database owner was one specified as incorrect'
                 }
@@ -157,7 +157,7 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, FastDatabase, $filename {
     $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
         Context "Testing Recovery Model on $psitem" {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
-            @(Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "$($psitem.Database) should be set to $recoverymodel on $($psitem.SqlInstance)" {
                     Assert-RecoveryModel $psitem -ExpectedRecoveryModel $recoverymodel -Because "You expect this recovery model"
                 }
