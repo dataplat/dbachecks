@@ -295,3 +295,15 @@ Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
         }
     }
 }
+
+Describe "Error Log Entries" -Tags ErrorLog, $filename {
+    $logWindow = Get-DbcConfigValue policy.errorlog.warningwindow
+    @(Get-SqlInstance).ForEach{
+        Context "Checking error log on $psitem" {
+            It "Error log should be free of error severities 17-24 on $psitem" {
+               (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays(-$logWindow)).Text | Should -Not -Match "Severity: 1[7-9]" -Because "these severities indicate serious problems"
+               (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays(-$logWindow)).Text | Should -Not -Match "Severity: 2[0-4]" -Because "these severities indicate serious problems"
+            }
+        }
+    }
+}
