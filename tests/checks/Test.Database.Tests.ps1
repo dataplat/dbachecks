@@ -27,6 +27,10 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
             $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin" }
             Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin"
         }
+        It "The positive test should pass when the current owner is one of the expected ones" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin2" }
+            Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin1","correctlogin2"
+        }
         It "The positive test should fail when the current owner is not one that is expected" {
             $mock = [PSCustomObject]@{ CurrentOwner = "wronglogin" }
             { Assert-DatabaseOwnerIs $mock -ExpectedOwner "correctlogin" } | Should -Throw
@@ -38,6 +42,10 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         It "The negative test should fail when the current owner is the invalid one" {
             $mock = [PSCustomObject]@{ CurrentOwner = "invalidlogin" }
             { Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin" } | Should -Throw
+        }
+        It "The negative test should fail when the current owner is one of the invalid ones" {
+            $mock = [PSCustomObject]@{ CurrentOwner = "invalidlogin2" }
+            { Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin1","invalidlogin2" } | Should -Throw
         }
     }
 
