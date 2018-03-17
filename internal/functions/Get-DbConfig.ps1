@@ -1,4 +1,4 @@
-function Get-DatabaseDetail {
+function Get-DbConfig {
     param (
         [DbaInstanceParameter[]]$SqlInstance,
         [object[]]$ExcludeDatabase
