@@ -6,7 +6,7 @@ if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
 $tokens = $null
 $errors = $null
 Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" -Tags UnitTest {
-    $Checks = (Get-ChildItem $ModuleBase\checks).Where{$_.Name -ne 'MaintenanceSolution.Tests.ps1'}
+    $Checks = (Get-ChildItem $ModuleBase\checks\*.Tests.ps1).Where{$_.Name -ne 'MaintenanceSolution.Tests.ps1'}
     $Checks.Foreach{
         $Check = Get-Content $Psitem.FullName -Raw
         Context "$($_.Name) - Checking Describes titles and tags" {
