@@ -1,7 +1,7 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Testing SQL Agent is running on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Agent).ForEach{
                 It "SQL Agent Should Be running on $psitem" {
@@ -16,7 +16,7 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
 }
 
 Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Testing DBA Operators exists on $psitem" {
             $operatorname = Get-DbcConfigValue agent.dbaoperatorname
             $operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
@@ -38,7 +38,7 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 }
 
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Testing failsafe operator exists on $psitem" {
             $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
             It "failsafe operator on $psitem exists" {
@@ -49,7 +49,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 }
 
 Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Testing database mail profile is set on $psitem" {
             $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
             It "database mail profile on $psitem is $databasemailprofile" {
@@ -60,7 +60,7 @@ Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
 }
 
 Describe "Failed Jobs" -Tags FailedJob, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Checking for failed enabled jobs on $psitem" {
             @(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
                 if ($psitem.LastRunOutcome -eq "Unknown") {
@@ -79,7 +79,7 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
 
 Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
     [string[]]$targetowner = Get-DbcConfigValue agent.validjobowner.name
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Testing job owners on $psitem" {
             @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
                 It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
@@ -95,7 +95,7 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
     $messageid = Get-DbcConfigValue agent.alert.messageid
     $AgentAlertJob = Get-DbcConfigValue agent.alert.Job
     $AgentAlertNotification = Get-DbcConfigValue agent.alert.Notification
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         $alerts = Get-DbaAgentAlert -SqlInstance $psitem
         Context "Testing Agent Alerts Severity exists on $psitem" {   
             ForEach ($sev in $severity) {

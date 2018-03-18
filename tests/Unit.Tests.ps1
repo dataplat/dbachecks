@@ -87,12 +87,12 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             ## Check only Pester description blocks to allow for extra includes in the file
             @($Statements.Where{$_.Text -like "Describe*"}).ForEach{
                 $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
-                It "$title Should Use Get-SqlInstance or Get-ComputerName" {
-                    ($PSItem.text -Match 'Get-SqlInstance') -or ($psitem.text -match 'Get-ComputerName') | Should -BeTrue -Because 'These are the commands to use to get Instances or Computers'
+                It "$title Should Use Get-Instance or Get-ComputerName" {
+                    ($PSItem.text -Match 'Get-Instance') -or ($psitem.text -match 'Get-ComputerName') | Should -BeTrue -Because 'These are the commands to use to get Instances or Computers'
                 }
                 if ($title -ne 'Cluster Health') {
                     It "$title Should use the ForEach Method" {
-                        ($Psitem.text -match 'Get-SqlInstance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -BeTrue # use the \ to escape the ) -Because 'We use the ForEach method in our coding standards'
+                        ($Psitem.text -match 'Get-Instance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -BeTrue # use the \ to escape the ) -Because 'We use the ForEach method in our coding standards'
                     }
                 }
                 It "$title Should not use `$_" {
@@ -112,12 +112,12 @@ Import-Module $ModuleBase\dbachecks.psd1
 
     Describe "Checking that the tests do as they should" -Tags UnitTest, UnitTestchecks {
         #Mock the functions to only test what we want to test - The code ( the checks in this case)
-        Function Get-SqlInstance {}
+        Function Get-Instance {}
         Function Get-DbcConfigValue {}
 
         Function Write-PSFMessage {}
 
-        Mock Get-SqlInstance {}
+        Mock Get-Instance {}
         Mock Write-PSFMessage {}
 
         Context "Agent" {
