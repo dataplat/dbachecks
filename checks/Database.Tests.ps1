@@ -40,7 +40,7 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
 Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            (Get-DbConfig -SqlInstance $psitem) {
+            (Get-DbConfig -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $ExpectedOwner))) on $($psitem.SqlInstance)" {
                     $psitem | Assert-DatabaseOwnerIsCorrect 
                 }
