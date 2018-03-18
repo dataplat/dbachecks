@@ -75,7 +75,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         }
     }
 
-    Context "Validate the suspcet pages check" {
+    Context "Validate the suspect pages check" {
         It "The test should pass when there are no suspect pages" {
             $mock = [PSCustomObject]@{
                 SuspectPages = 0
