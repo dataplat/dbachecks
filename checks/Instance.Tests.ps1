@@ -22,8 +22,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
                 It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
                 }
-            }
-            else {
+            } else {
                 It "SQL browser service on $psitem Should Be Running as multiple instances are installed" {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).State| Should -Be "Running" -Because 'You need the browser service with multiple instances'
                 }
@@ -32,8 +31,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
                 It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service'
                 }
-            }
-            else {
+            } else {
                 It "SQL browser service startmode Should Be Automatic on $psitem as multiple instances are installed" {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).StartMode | Should -Be "Automatic"
                 }
@@ -82,8 +80,7 @@ Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
         Context "Testing Backup Path Access on $psitem" {
             if (-not (Get-DbcConfigValue policy.storage.backuppath)) {
                 $backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
-            }
-            else {
+            } else {
                 $backuppath = Get-DbcConfigValue policy.storage.backuppath
             }
 
@@ -285,13 +282,60 @@ Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
             Context "Testing model database growth setting is not default on $psitem" {
                 @(Get-DbaDatabaseFile -SqlInstance $psitem -Database Model).ForEach{
                     It "Model database growth settings should not be percent for file $($psitem.LogicalName) on $($psitem.SqlInstance)" {
-                       $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
+                        $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
                     }
                     It "Model database growth settings should not be 1Mb for file $($psitem.LogicalName) on $($psitem.SqlInstance)" {
                         $psitem.Growth | Should -Not -Be 1024 -Because 'New databases use the model database as a template and growing for each Mb will have a performance impact'
-                     }
+                    }
                 }
             }
+        }
+    }
+}
+
+Describe "Ad Users and Groups " -Tags ADLogin, $filename {
+    $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
+    $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
+    @(Get-SqlInstance).ForEach{
+        Context "Testing active Directory users on $psitem" {
+            
+            @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
+                #write-host $psitem
+                It "Active Directory user $($psitem.login) was found in $($psitem.domain)" {
+                    $psitem.found | Should -Be $true -Because 'SQL Login should be in Active Directory'
+                }
+                if ($psitem.found -eq $true) {
+                    It "Active Directory user $($psitem.login) should not have expired password in $($psitem.domain)" {
+                        $psitem.PasswordExpired | Should -Be $false -Because 'Active Directory user password should not be expired.'
+                    }                
+                    It "Active Directory user $($psitem.login) should not be lockedout in $($psitem.domain)" {
+                        $psitem.lockedout | Should -Be $false -Because 'Active Directory user should mot be locked out.'
+                    }
+                    It "Active Directory user $($psitem.login) should be enabled on $($psitem.domin)" {
+                        $psitem.Enabled | Should -Be $true -Because 'Active Directory user should be enabled.'
+                    }
+                    It "Active Directory user $($psitem.login) should not be disabled in SQL Server on $($psitem.Server)" {
+                        $psitem.DisabledInSQLServer | Should -Be $false -Because 'SQL login should be active on the SQL server'
+                    }
+                }
+
+            }            
+        }
+
+        Context "Testing active Directory groups on $psitem" {
+            # add so that you can exclude logins from the test
+            @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
+                #write-host $psitem
+                It "Active Directory group $($psitem.login) was found in $($psitem.domain)" {
+                    $psitem.found | Should -Be $true -Because 'SQL Login should be in Active Directory'
+                }
+                if ($psitem.found -eq $true) {
+                    It "Active Directory group $($psitem.login) should not be disabled in SQL Server on $($psitem.Server)" {
+                        $psitem.DisabledInSQLServer | Should -Be $false -Because 'SQL login should be active on the SQL server'
+                    }
+                }
+
+            }            
         }
     }
 }
