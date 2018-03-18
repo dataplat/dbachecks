@@ -293,29 +293,27 @@ Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
     }
 }
 
-Describe "Ad Users and Groups " -Tags ADLogin, $filename {
+Describe "Ad Users and Groups " -Tags ADLogin, User, Login, $filename {
     $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
     $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
     @(Get-SqlInstance).ForEach{
         Context "Testing active Directory users on $psitem" {
-            
             @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
-                #write-host $psitem
                 It "Active Directory user $($psitem.login) was found in $($psitem.domain)" {
-                    $psitem.found | Should -Be $true -Because 'SQL Login should be in Active Directory'
+                    $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                 }
                 if ($psitem.found -eq $true) {
                     It "Active Directory user $($psitem.login) should not have expired password in $($psitem.domain)" {
-                        $psitem.PasswordExpired | Should -Be $false -Because 'Active Directory user password should not be expired.'
+                        $psitem.PasswordExpired | Should -Be $false -Because "$($psitem.login) password should not be expired"
                     }                
                     It "Active Directory user $($psitem.login) should not be lockedout in $($psitem.domain)" {
-                        $psitem.lockedout | Should -Be $false -Because 'Active Directory user should mot be locked out.'
+                        $psitem.lockedout | Should -Be $false -Because "$($psitem.login) should mot be locked out"
                     }
                     It "Active Directory user $($psitem.login) should be enabled on $($psitem.domin)" {
-                        $psitem.Enabled | Should -Be $true -Because 'Active Directory user should be enabled.'
+                        $psitem.Enabled | Should -Be $true -Because "$($psitem.login) should be enabled"
                     }
                     It "Active Directory user $($psitem.login) should not be disabled in SQL Server on $($psitem.Server)" {
-                        $psitem.DisabledInSQLServer | Should -Be $false -Because 'SQL login should be active on the SQL server'
+                        $psitem.DisabledInSQLServer | Should -Be $false -Because "$($psitem.login) should be active on the SQL server"
                     }
                 }
 
@@ -323,15 +321,13 @@ Describe "Ad Users and Groups " -Tags ADLogin, $filename {
         }
 
         Context "Testing active Directory groups on $psitem" {
-            # add so that you can exclude logins from the test
             @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
-                #write-host $psitem
                 It "Active Directory group $($psitem.login) was found in $($psitem.domain)" {
-                    $psitem.found | Should -Be $true -Because 'SQL Login should be in Active Directory'
+                    $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                 }
                 if ($psitem.found -eq $true) {
                     It "Active Directory group $($psitem.login) should not be disabled in SQL Server on $($psitem.Server)" {
-                        $psitem.DisabledInSQLServer | Should -Be $false -Because 'SQL login should be active on the SQL server'
+                        $psitem.DisabledInSQLServer | Should -Be $false -Because "$($psitem.login) should be active on the SQL server"
                     }
                 }
 
