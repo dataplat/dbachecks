@@ -20,11 +20,15 @@ Have questions about development? Please visit our [Wiki](https://github.com/pot
   <tbody>
     <tr>
       <td><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/3/badge"></td>
-      <td>Development Branch Build</td>
+      <td>Development Branch Build - Unit testing</td>
     </tr>
     <tr>
       <td><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/badge"></td>
-      <td>Master Branch Build</td>
+      <td>Master Branch Build - Module version update and Code Signing</td>
+    </tr>
+        <tr>
+      <td><img align="left" src="https://sqlcollaborative.vsrm.visualstudio.com/_apis/public/Release/badge/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/2"></td>
+      <td>Master Branch Release - Release to PowerShell Gallery</td>
     </tr>
   </tbody>
 </table> 
