@@ -3,7 +3,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Describe "Ola maintenance solution installed" -Tags OlaInstalled, $filename{
     $OlaSPs = @('CommandExecute', 'DatabaseBackup', 'DatabaseIntegrityCheck', 'IndexOptimize')
     $oladb = Get-DbcConfigValue policy.ola.database
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         $db = Get-DbaDatabase -SqlInstance $PSItem -Database $oladb
         Context "Checking the CommandLog table on $psitem"{
             It "The CommandLog table exists in $oladb on $PSItem" {
@@ -42,7 +42,7 @@ $jobnames | ForEach-Object {
     #Write-PSFMessage -Level Host -Message "$jobname / $JobPrefix / $tagname"
     
     Describe "Ola - $Jobname" -Tags $tagname, OlaJobs, $filename {
-        @(Get-SqlInstance).ForEach{
+        @(Get-Instance).ForEach{
             $job = Get-DbaAgentJob -SqlInstance $PSItem -Job $JobName
             Context  "Is job enabled on $PSItem" {
                 It "$JobName Should Be enabled - $Enabled " {
