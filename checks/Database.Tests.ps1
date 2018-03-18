@@ -166,7 +166,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
 }
 
 Describe "Unused Index" -Tags UnusedIndex, $filename {
-    @(Get-SQlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Testing Unused indexes on $psitem" {
             try {
                 @($results = Find-DbaUnusedIndex -SqlInstance $psitem -EnableException).ForEach{
