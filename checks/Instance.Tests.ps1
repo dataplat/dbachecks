@@ -296,7 +296,7 @@ Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
 Describe "Ad Users and Groups " -Tags ADLogin, User, Login, $filename {
     $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
     $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Testing active Directory users on $psitem" {
             @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
                 It "Active Directory user $($psitem.login) was found in $($psitem.domain)" {
