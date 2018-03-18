@@ -26,13 +26,20 @@ function Assert-DatabaseCollationsMismatch {
     $TestObject.ServerCollation | Should -Not -Be $TestObject.DatabaseCollation -Because $because
 }
 
-function Assert-DatabaseOwnerIs {
+function Assert-DatabaseOwnerIsCorrect {
     param (
-        [object]$TestObject,
-        [string[]]$ExpectedOwner,
-        [string]$Because
+        [parameter(Mandatory=$true,ValueFromPipeline=$true,Position=0)]
+        [object[]]$TestObject
     )
-    $TestObject.CurrentOwner | Should -BeIn $ExpectedOwner -Because $Because
+    begin {
+        [string[]]$ExpectedOwner = Get-DbcConfigValue policy.validdbowner.name
+        [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
+    }
+    process {
+        if (!($TestObject.Database -in $exclude)) {
+            $TestObject.CurrentOwner | Should -BeIn $ExpectedOwner -Because "The database owner was one specified as incorrect"
+        }
+    }
 }
 
 function Assert-DatabaseOwnerIsNot {

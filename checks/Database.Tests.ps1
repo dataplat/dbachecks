@@ -21,7 +21,6 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     $exclude += $Wrongcollation
     @(Get-Instance).ForEach{
         Context "Testing database collation on $psitem" {
-
             (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                     Assert-DatabaseCollationsMatch $psitem -Because 'You will get collation conflict errors in tempdb' 
@@ -32,6 +31,32 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
                     It "database collation ($($psitem.DatabaseCollation)) should not match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                         Assert-DatabaseCollationsMismatch $psitem -Because 'You have defined the database to have another collation then the server. You will get collation conflict errors in tempdb' 
                     }
+                }
+            }
+        }
+    }
+}
+
+Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $filename {
+    @(Get-Instance).ForEach{
+        Context "Testing Database Owners on $psitem" {
+            (Get-DbConfig -SqlInstance $psitem) {
+                It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $ExpectedOwner))) on $($psitem.SqlInstance)" {
+                    $psitem | Assert-DatabaseOwnerIsCorrect 
+                }
+            }
+        }
+    }
+}
+
+Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabase, $filename {
+    [string[]]$invalidowner = Get-DbcConfigValue policy.invaliddbowner.name
+    [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
+    @(Get-Instance).ForEach{
+        Context "Testing Database Owners on $psitem" {
+            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+                It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
+                    Assert-DatabaseOwnerIsNot $psitem -InvalidOwner $invalidowner -Because 
                 }
             }
         }
@@ -49,6 +74,8 @@ Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
         }
     }
 }
+
+# Still to be reviewed
 
 Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
     if (-not (Get-DbcConfigValue skip.backup.testing)) {
@@ -82,33 +109,6 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
                 }
                 It "file exists for last backup of $($psitem.Database) on $($psitem.SourceServer)" {
                     $psitem.FileExists | Should -BeTrue -Because "Without a backup file you have no backup"
-                }
-            }
-        }
-    }
-}
-Describe "Valid Database Owner" -Tags ValidDatabaseOwner, FastDatabase, $filename {
-    [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
-    [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
-    @(Get-Instance).ForEach{
-        Context "Testing Database Owners on $psitem" {
-            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
-                It "Database $($psitem.Database) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
-                    Assert-DatabaseOwnerIs $psitem -ExpectedOwner $targetowner -Because "The account that is the database owner is not what was expected"
-                }
-            }
-        }
-    }
-}
-
-Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, FastDatabase, $filename {
-    [string[]]$invalidowner = Get-DbcConfigValue policy.invaliddbowner.name
-    [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
-    @(Get-Instance).ForEach{
-        Context "Testing Database Owners on $psitem" {
-            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
-                It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
-                    Assert-DatabaseOwnerIsNot $psitem -InvalidOwner $invalidowner -Because 'The database owner was one specified as incorrect'
                 }
             }
         }
