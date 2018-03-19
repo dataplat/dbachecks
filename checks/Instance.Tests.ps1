@@ -1,7 +1,7 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Testing SQL Engine Service on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
                 It "SQL Engine service account Should Be running on $($psitem.InstanceName)" {
