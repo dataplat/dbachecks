@@ -1,4 +1,4 @@
-﻿function Get-SqlInstance {
+﻿function Get-Instance {
     if ($null -ne $sqlinstance) {
         return [array]$sqlinstance
     }
