@@ -293,7 +293,7 @@ Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
     }
 }
 
-Describe "Ad Users and Groups " -Tags ADLogin, User, Login, $filename {
+Describe "Ad Users and Groups " -Tags ADUsers, Domain, $filename {
     $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
     $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
     @(Get-Instance).ForEach{
