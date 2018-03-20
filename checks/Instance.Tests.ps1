@@ -293,7 +293,6 @@ Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
     }
 }
 
-<<<<<<< HEAD
 Describe "Ad Users and Groups " -Tags ADLogin, User, Login, $filename {
     $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
     $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
@@ -336,10 +335,9 @@ Describe "Ad Users and Groups " -Tags ADLogin, User, Login, $filename {
         }
     }
 }
-=======
 Describe "Error Log Entries" -Tags ErrorLog, $filename {
     $logWindow = Get-DbcConfigValue policy.errorlog.warningwindow
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         Context "Checking error log on $psitem" {
             It "Error log should be free of error severities 17-24 on $psitem" {
                (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays(-$logWindow)).Text | Should -Not -Match "Severity: 1[7-9]" -Because "these severities indicate serious problems"
@@ -348,4 +346,3 @@ Describe "Error Log Entries" -Tags ErrorLog, $filename {
         }
     }
 }
->>>>>>> development
