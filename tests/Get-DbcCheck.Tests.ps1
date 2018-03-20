@@ -8,10 +8,10 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
             It "$($psitem.Description) returns a unique tag" {
                 $psitem.UniqueTag | Should Not Be $null
             }
-            It "should only have one unique tag" {
+            It "$($psitem.Description) should only have one unique tag" {
                 $psitem.UniqueTag.Count | Should -Be 1
             }
-            It "should have a group" {
+            It "$($psitem.Description) should have a group" {
                 $psitem.Group | Should Not Be $null
             }
         }

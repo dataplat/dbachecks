@@ -95,7 +95,7 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
     $messageid = Get-DbcConfigValue agent.alert.messageid
     $AgentAlertJob = Get-DbcConfigValue agent.alert.Job
     $AgentAlertNotification = Get-DbcConfigValue agent.alert.Notification
-    @(Get-SqlInstance).ForEach{
+    @(Get-Instance).ForEach{
         $alerts = Get-DbaAgentAlert -SqlInstance $psitem
         Context "Testing Agent Alerts Severity exists on $psitem" {   
             ForEach ($sev in $severity) {
