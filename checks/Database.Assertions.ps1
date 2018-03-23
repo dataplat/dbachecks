@@ -81,8 +81,11 @@ function Assert-RecoveryModel {
 
 function Assert-SuspectPageCount {
     param (
-        [object]$TestObject,
+        [parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [object[]]$TestObject,
         [string]$Because
     )
-    $TestObject.SuspectPages | Should -Be 0 -Because $Because
+    process {
+        $TestObject.SuspectPages | Should -Be 0 -Because $Because
+    }
 }

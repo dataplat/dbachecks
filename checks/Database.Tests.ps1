@@ -68,7 +68,7 @@ Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
         Context "Testing suspect pages on $psitem" {
             (Get-DbConfig -SqlInstance $psitem).ForEach{
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
-                    Assert-SuspectPageCount $psitem -Because 'You do not want any suspect pages'
+                    $psitem | Assert-SuspectPageCount -Because 'You do not want any suspect pages'
                 }
             }
         }
