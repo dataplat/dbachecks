@@ -43,7 +43,7 @@ Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $file
         Context "Testing Database Owners on $psitem" {
             (Get-DbConfig -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $settings.ExpectedOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsValid $settings
+                    $psitem | Assert-DatabaseOwnerIsValid $settings -Becasue "The database owner was one specified as incorrect"
                 }
             }
         }
@@ -56,7 +56,7 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
         Context "Testing Database Owners on $psitem" {
             (Get-DbConfig -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ($( [String]::Join(", ", $settings.InvalidOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsNotInvalid $settings
+                    $psitem | Assert-DatabaseOwnerIsNotInvalid $settings -Because "The database owner was one specified as incorrect"
                 }
             }
         }

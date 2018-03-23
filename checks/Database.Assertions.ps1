@@ -38,11 +38,12 @@ function Assert-DatabaseOwnerIsValid {
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject, 
         [parameter(Mandatory=$true,Position=0)]
-        [object]$TestSettings
+        [object]$TestSettings,
+        [string]$Because
     )
     process {
         if (!($TestObject.Database -in $TestSettings.ExcludedDatabase)) {
-            $TestObject.CurrentOwner | Should -BeIn $TestSettings.ExpectedOwner -Because "The database owner was one specified as incorrect"
+            $TestObject.CurrentOwner | Should -BeIn $TestSettings.ExpectedOwner -Because $Because
         }
     }
 }
@@ -59,11 +60,12 @@ function Assert-DatabaseOwnerIsNotInvalid {
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject, 
         [parameter(Mandatory=$true,Position=0)]
-        [object]$TestSettings
+        [object]$TestSettings,
+        [string]$Because
     )
     process {
         if (!($TestObject.Database -in $TestSettings.ExcludedDatabase)) {
-            $TestObject.CurrentOwner | Should -Not -BeIn $TestSettings.InvalidOwner -Because "The database owner was one specified as incorrect"
+            $TestObject.CurrentOwner | Should -Not -BeIn $TestSettings.InvalidOwner -Because $Because
         }
     }
 }
