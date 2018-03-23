@@ -34,104 +34,99 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         }
     }
 
-    Context "Validate database owner one owner" {
-        Mock Get-DbcConfigValue { return "correctlogin" } -ParameterFilter { $Name -like "policy.validdbowner.name" }
+    Context "Validate database owner is valid check" {
+        Mock Get-DbcConfigValue { return "correctlogin1","correctlogin2" } -ParameterFilter { $Name -like "policy.validdbowner.name" }
         Mock Get-DbcConfigValue { return "myExcludedDb" } -ParameterFilter { $Name -like "policy.validdbowner.excludedb" }
         
-        It "The positive test should pass when the current owner is as expected" {
+        $testSettings = Get-SettingsForDatabaseOwnerIsValid
+
+        It "The test should pass when the current owner is one of the expected owners" {
             @(@{ 
                 Database="db1"
-                CurrentOwner = "correctlogin" 
+                CurrentOwner = "correctlogin1" 
             }) | 
-            Assert-DatabaseOwnerIsCorrect       
+            Assert-DatabaseOwnerIsValid $testSettings       
         }
     
-        It "The positive test should pass even if an excluded database has incorrect owner" {
+        It "The test should pass when the current owner is any of the expected owners" {
             @(@{ 
                 Database="db1"
-                CurrentOwner = "correctlogin" 
+                CurrentOwner = "correctlogin2" 
+            }) | 
+            Assert-DatabaseOwnerIsValid $testSettings       
+        }
+
+        It "The test should pass even if an excluded database has an incorrect owner" {
+            @(@{ 
+                Database="db1"
+                CurrentOwner = "correctlogin1" 
             }, @{
                 Database = "myExcludedDb"
                 CurrentOwner = "incorrectlogin"
             }) | 
-            Assert-DatabaseOwnerIsCorrect
+            Assert-DatabaseOwnerIsValid $testSettings
         }
         
-        It "The positive test should fail when the current owner is not one that is expected" {
+        It "The test should fail when the owner is not one of the expected ones" {
             {
                 @(@{ 
                     Database="db1"
-                    CurrentOwner = "correctlogin" 
+                    CurrentOwner = "correctlogin1" 
                 }, @{ 
                     Database="db2"
                     CurrentOwner = "wronglogin" 
                 }) |  
-                Assert-DatabaseOwnerIsCorrect
+                Assert-DatabaseOwnerIsValid $testSettings
             } | Should -Throw
         }
-
-        # It "The negative test should pass when the current owner is not what is invalid" {
-        #     $mock = [PSCustomObject]@{ CurrentOwner = "correctlogin" }
-        #     Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin"
-        # }
-
-        # It "The negative test should fail when the current owner is the invalid one" {
-        #     $mock = [PSCustomObject]@{ CurrentOwner = "invalidlogin" }
-        #     { Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin" } | Should -Throw
-        # }
-
-        # It "The negative test should fail when the current owner is one of the invalid ones" {
-        #     $mock = [PSCustomObject]@{ CurrentOwner = "invalidlogin2" }
-        #     { Assert-DatabaseOwnerIsNot $mock -InvalidOwner "invalidlogin1","invalidlogin2" } | Should -Throw
-        # }
     }
 
-    Context "Validate database owner is valid check with multiple valid owners" {
-        Mock Get-DbcConfigValue { return "correctlogin1","correctlogin2" } -ParameterFilter { $Name -like "policy.validdbowner.name" }
-        Mock Get-DbcConfigValue { return "myExcludedDb" } -ParameterFilter { $Name -like "policy.validdbowner.excludedb" }
-    
-        It "The positive test should pass when the current owner is one of the expected ones" {
+    Context "Validate database owner is not invalid check" {
+        Mock Get-DbcConfigValue { return "invalidlogin1","invalidlogin2" } -ParameterFilter { $Name -like "policy.invaliddbowner.name" }
+        Mock Get-DbcConfigValue { return "myExcludedDb" } -ParameterFilter { $Name -like "policy.invaliddbowner.excludedb" }
+        
+        $testSettings = Get-SettingsForDatabaseOwnerIsNotInvalid
+
+        It "The test should pass when the current owner is not what is invalid" {
             @(@{ 
-                Database="db2"
-                CurrentOwner = "correctlogin1" 
-            }, @{
-                Database="db3"
-                CurrentOwner = "correctlogin2" 
-            }) |
-            Assert-DatabaseOwnerIsCorrect
+                Database="db1"
+                CurrentOwner = "correctlogin" 
+            }) | 
+            Assert-DatabaseOwnerIsNotInvalid $testSettings
         }
 
-        It "The positive test should pass even if an excluded database has incorrect owner" {
-            @(@{ 
-                Database="db2"
-                CurrentOwner = "correctlogin1" 
-            }, @{
-                Database="db3"
-                CurrentOwner = "correctlogin2" 
-            }, @{
-                Database = "myExcludedDb"
-                CurrentOwner = "incorrectlogin"
-            }) | 
-            Assert-DatabaseOwnerIsCorrect
-        }
-        
-        It "The positive test should fail when the current owner is not one that is expected" {
+        It "The test should fail when the current owner is the invalid one" {
             {
                 @(@{ 
-                    Database="db2"
-                    CurrentOwner = "correctlogin1" 
-                }, @{
-                    Database="db3"
-                    CurrentOwner = "correctlogin2" 
-                }, @{ 
-                    Database="db4"
-                    CurrentOwner = "wronglogin" 
-                }) |  
-                Assert-DatabaseOwnerIsCorrect
+                    Database="db1"
+                    CurrentOwner = "invalidlogin1" 
+                }) | 
+                Assert-DatabaseOwnerIsNotInvalid $testSettings 
             } | Should -Throw
         }
+        
+        It "The test should fail when the current owner is any of the invalid ones" {
+            {
+                @(@{ 
+                    Database="db1"
+                    CurrentOwner = "invalidlogin2" 
+                }) | 
+                Assert-DatabaseOwnerIsNotInvalid $testSettings 
+            } | Should -Throw
+        }
+
+        It "The test should pass when the invalid user is on an excluded database" {
+            @(@{ 
+                Database="db1"
+                CurrentOwner = "correctlogin" 
+            },@{ 
+                Database="myExcludedDb"
+                CurrentOwner = "invalidlogin2" 
+            }) | 
+            Assert-DatabaseOwnerIsNotInvalid $testSettings 
+        }
     }
-    
+
     Context "Validate recovery model checks" {
         It "The test should pass when the current recovery model is as expected" {
             $mock = [PSCustomObject]@{ RecoveryModel = "FULL" }

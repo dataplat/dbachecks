@@ -38,11 +38,12 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
 }
 
 Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $filename {
+    $settings = Get-SettingsForDatabaseOwnerIsValid
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             (Get-DbConfig -SqlInstance $psitem).ForEach{
-                It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $ExpectedOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsCorrect 
+                It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $settings.ExpectedOwner))) on $($psitem.SqlInstance)" {
+                    $psitem | Assert-DatabaseOwnerIsValid $settings
                 }
             }
         }
@@ -50,13 +51,12 @@ Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $file
 }
 
 Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabase, $filename {
-    [string[]]$invalidowner = Get-DbcConfigValue policy.invaliddbowner.name
-    [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
+    $settings = Get-SettingsForDatabaseOwnerIsNotInvalid
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
-                It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
-                    Assert-DatabaseOwnerIsNot $psitem -InvalidOwner $invalidowner -Because 
+            (Get-DbConfig -SqlInstance $psitem).ForEach{
+                It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ($( [String]::Join(", ", $settings.InvalidOwner))) on $($psitem.SqlInstance)" {
+                    $psitem | Assert-DatabaseOwnerIsNotInvalid $settings
                 }
             }
         }

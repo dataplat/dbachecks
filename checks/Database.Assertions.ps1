@@ -26,29 +26,46 @@ function Assert-DatabaseCollationsMismatch {
     $TestObject.ServerCollation | Should -Not -Be $TestObject.DatabaseCollation -Because $because
 }
 
-function Assert-DatabaseOwnerIsCorrect {
-    param (
-        [parameter(Mandatory=$true,ValueFromPipeline=$true,Position=0)]
-        [object[]]$TestObject
-    )
-    begin {
-        [string[]]$ExpectedOwner = Get-DbcConfigValue policy.validdbowner.name
-        [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
+function Get-SettingsForDatabaseOwnerIsValid {
+    return @{
+        ExpectedOwner = @(Get-DbcConfigValue policy.validdbowner.name)
+        ExcludedDatabase = @(Get-DbcConfigValue policy.validdbowner.excludedb)
     }
+}
+
+function Assert-DatabaseOwnerIsValid {
+    param (
+        [parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [object[]]$TestObject, 
+        [parameter(Mandatory=$true,Position=0)]
+        [object]$TestSettings
+    )
     process {
-        if (!($TestObject.Database -in $exclude)) {
-            $TestObject.CurrentOwner | Should -BeIn $ExpectedOwner -Because "The database owner was one specified as incorrect"
+        if (!($TestObject.Database -in $TestSettings.ExcludedDatabase)) {
+            $TestObject.CurrentOwner | Should -BeIn $TestSettings.ExpectedOwner -Because "The database owner was one specified as incorrect"
         }
     }
 }
 
-function Assert-DatabaseOwnerIsNot {
+function Get-SettingsForDatabaseOwnerIsNotInvalid {
+    return @{
+        InvalidOwner = @(Get-DbcConfigValue policy.invaliddbowner.name)
+        ExcludedDatabase = @(Get-DbcConfigValue policy.invaliddbowner.excludedb)
+    }
+}
+
+function Assert-DatabaseOwnerIsNotInvalid {
     param (
-        [object]$TestObject,
-        [string[]]$InvalidOwner,
-        [string]$Because
+        [parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [object[]]$TestObject, 
+        [parameter(Mandatory=$true,Position=0)]
+        [object]$TestSettings
     )
-    $TestObject.CurrentOwner | Should -Not -BeIn $InvalidOwner -Because $Because
+    process {
+        if (!($TestObject.Database -in $TestSettings.ExcludedDatabase)) {
+            $TestObject.CurrentOwner | Should -Not -BeIn $TestSettings.InvalidOwner -Because "The database owner was one specified as incorrect"
+        }
+    }
 }
 
 function Assert-RecoveryModel {
