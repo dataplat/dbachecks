@@ -39,11 +39,11 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
 
 Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $filename {
     $settings = Get-SettingsForDatabaseOwnerIsValid
-    @(Get-Instance).ForEach{
+    (Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            (Get-DbConfig -SqlInstance $psitem).ForEach{
+            @(Get-DbConfig -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $settings.ExpectedOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsValid $settings -Becasue "The database owner was one specified as incorrect"
+                    $psitem | Assert-DatabaseOwnerIsValid $settings -Because "The database owner was one specified as incorrect"
                 }
             }
         }
@@ -54,7 +54,7 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
     $settings = Get-SettingsForDatabaseOwnerIsNotInvalid
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            (Get-DbConfig -SqlInstance $psitem).ForEach{
+            @(Get-DbConfig -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ($( [String]::Join(", ", $settings.InvalidOwner))) on $($psitem.SqlInstance)" {
                     $psitem | Assert-DatabaseOwnerIsNotInvalid $settings -Because "The database owner was one specified as incorrect"
                 }
@@ -66,7 +66,7 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
 Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
     @(Get-Instance).ForEach{
         Context "Testing suspect pages on $psitem" {
-            (Get-DbConfig -SqlInstance $psitem).ForEach{
+            @(Get-DbConfig -SqlInstance $psitem).ForEach{
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
                     $psitem | Assert-SuspectPageCount -Because 'You do not want any suspect pages'
                 }

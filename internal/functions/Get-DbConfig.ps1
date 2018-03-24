@@ -1,7 +1,6 @@
 function Get-DbConfig {
     param (
-        [DbaInstanceParameter[]]$SqlInstance,
-        [object[]]$ExcludeDatabase
+        [DbaInstanceParameter[]]$SqlInstance
     )
     begin {
         if (!(test-path variable:script:results)) {
@@ -13,8 +12,9 @@ function Get-DbConfig {
             try {
                 if (!($script:results.ContainsKey($instance))) {
                     $server = Connect-DbaInstance -SqlInstance $instance -SqlCredential $sqlcredential
+
                     $dbs = $server.Query("
-select quotename(d.name) [Database]
+select d.name                           [Database]
     ,d.collation_name                   DatabaseCollation
     ,suser_sname(d.owner_sid)           CurrentOwner
     ,d.recovery_model_desc              RecoveryModel
@@ -31,6 +31,7 @@ select quotename(d.name) [Database]
     ,d.user_access_desc                 UserAccess
     ,d.is_read_only                     IsReadOnly
 from sys.databases d
+$(if($Database) { "where name like '$($Database.Replace("*","%"))'"})
                                         ")
 
                     foreach($db in $dbs) {
@@ -42,7 +43,7 @@ from sys.databases d
                     $script:results.Add($instance, $dbs)
                 }
 
-                return ([array]$script:results[$instance]) | Where-Object { $psitem.Database -notin $ExcludeDatabase -or !$ExcludeDatabase }
+                return $script:results[$instance]
             }
             catch {
                 throw
