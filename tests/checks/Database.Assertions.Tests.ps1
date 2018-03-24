@@ -17,20 +17,55 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 
 Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)CheckTests" {
     Context "Validate the database collation check" {
-        It "The test should pass when the datbase collation matches the instance collation" {
-            $mock = [PSCustomObject]@{
+        Mock Get-DbcConfigValue { return "mySpecialDbWithUniqueCollation" } -ParameterFilter { $Name -like "policy.database.wrongcollation" }
+        
+        $testSettings = Get-SettingsForDatabaseCollactionCheck
+
+        It "The test should pass when the database is not on the exclusion list and the collations match" {
+            @{
+                Database = "db1"
                 ServerCollation = "collation1"
                 DatabaseCollation = "collation1"
-            }
-            Assert-DatabaseCollationsMatch $mock
+            } |
+            Assert-DatabaseCollation $testSettings
         }
 
-        It "The test should fail when the database and server collations do not match" {
-            $mock = [PSCustomObject]@{
+        It "The test should pass when the database is on the exclusion list and the collations do not match" {
+            @{
+                Database = "mySpecialDbWithUniqueCollation"
                 ServerCollation = "collation1"
                 DatabaseCollation = "collation2"
-            }
-            { Assert-DatabaseCollationsMatch $mock } | Should -Throw
+            } |
+            Assert-DatabaseCollation $testSettings
+        }
+
+        It "The test should pass when the database is ReportingServer and the collations do not match" {
+            @{
+                Database = "mySpecialDbWithUniqueCollation"
+                ServerCollation = "collation1"
+                DatabaseCollation = "collation2"
+            } |
+            Assert-DatabaseCollation $testSettings
+        }
+
+        It "The test should fail when the database is not on the exclusion list and the collations do not match" {
+            {
+                @{
+                    Database = "db1"
+                    ServerCollation = "collation1"
+                    DatabaseCollation = "collation2"
+                } |
+                Assert-DatabaseCollation $testSettings
+            } | Should -Throw
+        }
+
+        It "The test should pass when excluded datbase collation does not matche the instance collation" {
+            @{
+                Database = "mySpecialDbWithUniqueCollation"
+                ServerCollation = "collation1"
+                DatabaseCollation = "collation2"
+            } |
+            Assert-DatabaseCollation $testSettings
         }
     }
 

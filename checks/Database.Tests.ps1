@@ -16,21 +16,12 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . "$PSScriptRoot/../internal/functions/Get-DbConfig.ps1"
 
 Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
-    $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
-    $exclude = "ReportingServer", "ReportingServerTempDB"
-    $exclude += $Wrongcollation
+    $settings = Get-SettingsForDatabaseCollactionCheck
     @(Get-Instance).ForEach{
-        Context "Testing database collation on $psitem" {
-            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
-                It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
-                    Assert-DatabaseCollationsMatch $psitem -Because 'You will get collation conflict errors in tempdb' 
-                }
-            }
-            if ($Wrongcollation) {
-                (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $Wrongcollation).ForEach{
-                    It "database collation ($($psitem.DatabaseCollation)) should not match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
-                        Assert-DatabaseCollationsMismatch $psitem -Because 'You have defined the database to have another collation then the server. You will get collation conflict errors in tempdb' 
-                    }
+        Context "Testing database collations on $psitem" {
+            @(Get-DbConfig -SqlInstance $psitem).ForEach{
+                It "Collation of [$($psitem.Database)] should be as expected" {
+                    $psitem | Assert-DatabaseCollation $settings -Because 'you will get collation conflict errors in tempdb' 
                 }
             }
         }
