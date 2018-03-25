@@ -22,7 +22,7 @@ function Assert-DatabaseCollation {
     param (
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject,
-        [parameter(Mandatory=$true,Position=0)]
+        [parameter(Mandatory=$true)][Alias("With")]
         [object]$TestSettings,
         [string]$Because
     )
@@ -48,7 +48,7 @@ function Assert-DatabaseOwnerIsValid {
     param (
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject, 
-        [parameter(Mandatory=$true,Position=0)]
+        [parameter(Mandatory=$true)][Alias("With")]
         [object]$TestSettings,
         [string]$Because
     )
@@ -70,7 +70,7 @@ function Assert-DatabaseOwnerIsNotInvalid {
     param (
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject, 
-        [parameter(Mandatory=$true,Position=0)]
+        [parameter(Mandatory=$true)][Alias("With")]
         [object]$TestSettings,
         [string]$Because
     )

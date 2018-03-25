@@ -13,15 +13,15 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . "$PSScriptRoot/$($MyInvocation.MyCommand.Name.Replace(".Tests.", ".Assertions."))"
 
-. "$PSScriptRoot/../internal/functions/Get-DbConfig.ps1"
+. "$PSScriptRoot/../internal/functions/Get-DatabaseInfo.ps1"
 
 Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     $settings = Get-SettingsForDatabaseCollactionCheck
     @(Get-Instance).ForEach{
         Context "Testing database collations on $psitem" {
-            @(Get-DbConfig -SqlInstance $psitem).ForEach{
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Collation of [$($psitem.Database)] should be as expected" {
-                    $psitem | Assert-DatabaseCollation $settings -Because 'you will get collation conflict errors in tempdb' 
+                    $psitem | Assert-DatabaseCollation -With $settings -Because 'you will get collation conflict errors in tempdb' 
                 }
             }
         }
@@ -32,7 +32,7 @@ Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $file
     $settings = Get-SettingsForDatabaseOwnerIsValid
     (Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Get-DbConfig -SqlInstance $psitem).ForEach{
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $settings.ExpectedOwner))) on $($psitem.SqlInstance)" {
                     $psitem | Assert-DatabaseOwnerIsValid $settings -Because "The database owner was one specified as incorrect"
                 }
@@ -45,7 +45,7 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
     $settings = Get-SettingsForDatabaseOwnerIsNotInvalid
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
-            @(Get-DbConfig -SqlInstance $psitem).ForEach{
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ($( [String]::Join(", ", $settings.InvalidOwner))) on $($psitem.SqlInstance)" {
                     $psitem | Assert-DatabaseOwnerIsNotInvalid $settings -Because "The database owner was one specified as incorrect"
                 }
@@ -57,7 +57,7 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
 Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
     @(Get-Instance).ForEach{
         Context "Testing suspect pages on $psitem" {
-            @(Get-DbConfig -SqlInstance $psitem).ForEach{
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
                     $psitem | Assert-SuspectPageCount -Because 'You do not want any suspect pages'
                 }
@@ -148,7 +148,7 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, FastDatabase, $filename {
     $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
         Context "Testing Recovery Model on $psitem" {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
-            (Get-DbConfig -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+            (Get-DatabaseInfo -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "$($psitem.Database) should be set to $recoverymodel on $($psitem.SqlInstance)" {
                     Assert-RecoveryModel $psitem -ExpectedRecoveryModel $recoverymodel -Because "You expect this recovery model"
                 }

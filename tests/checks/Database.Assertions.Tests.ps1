@@ -27,7 +27,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 ServerCollation = "collation1"
                 DatabaseCollation = "collation1"
             } |
-            Assert-DatabaseCollation $testSettings
+            Assert-DatabaseCollation -With $testSettings
         }
 
         It "The test should pass when the database is on the exclusion list and the collations do not match" {
@@ -36,7 +36,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 ServerCollation = "collation1"
                 DatabaseCollation = "collation2"
             } |
-            Assert-DatabaseCollation $testSettings
+            Assert-DatabaseCollation -With $testSettings
         }
 
         It "The test should pass when the database is ReportingServer and the collations do not match" {
@@ -45,7 +45,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 ServerCollation = "collation1"
                 DatabaseCollation = "collation2"
             } |
-            Assert-DatabaseCollation $testSettings
+            Assert-DatabaseCollation -With $testSettings
         }
 
         It "The test should fail when the database is not on the exclusion list and the collations do not match" {
@@ -55,7 +55,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                     ServerCollation = "collation1"
                     DatabaseCollation = "collation2"
                 } |
-                Assert-DatabaseCollation $testSettings
+                Assert-DatabaseCollation -With $testSettings
             } | Should -Throw
         }
 
@@ -65,7 +65,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 ServerCollation = "collation1"
                 DatabaseCollation = "collation2"
             } |
-            Assert-DatabaseCollation $testSettings
+            Assert-DatabaseCollation -With $testSettings
         }
     }
 
@@ -80,7 +80,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 Database="db1"
                 CurrentOwner = "correctlogin1" 
             }) | 
-            Assert-DatabaseOwnerIsValid $testSettings       
+            Assert-DatabaseOwnerIsValid -With $testSettings       
         }
     
         It "The test should pass when the current owner is any of the expected owners" {
@@ -88,7 +88,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 Database="db1"
                 CurrentOwner = "correctlogin2" 
             }) | 
-            Assert-DatabaseOwnerIsValid $testSettings       
+            Assert-DatabaseOwnerIsValid -With $testSettings       
         }
 
         It "The test should pass even if an excluded database has an incorrect owner" {
@@ -99,7 +99,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 Database = "myExcludedDb"
                 CurrentOwner = "incorrectlogin"
             }) | 
-            Assert-DatabaseOwnerIsValid $testSettings
+            Assert-DatabaseOwnerIsValid -With $testSettings
         }
         
         It "The test should fail when the owner is not one of the expected ones" {
@@ -111,7 +111,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                     Database="db2"
                     CurrentOwner = "wronglogin" 
                 }) |  
-                Assert-DatabaseOwnerIsValid $testSettings
+                Assert-DatabaseOwnerIsValid -With $testSettings
             } | Should -Throw
         }
     }
@@ -127,7 +127,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 Database="db1"
                 CurrentOwner = "correctlogin" 
             }) | 
-            Assert-DatabaseOwnerIsNotInvalid $testSettings
+            Assert-DatabaseOwnerIsNotInvalid -With $testSettings
         }
 
         It "The test should fail when the current owner is the invalid one" {
@@ -136,7 +136,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                     Database="db1"
                     CurrentOwner = "invalidlogin1" 
                 }) | 
-                Assert-DatabaseOwnerIsNotInvalid $testSettings 
+                Assert-DatabaseOwnerIsNotInvalid -With $testSettings 
             } | Should -Throw
         }
         
@@ -146,7 +146,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                     Database="db1"
                     CurrentOwner = "invalidlogin2" 
                 }) | 
-                Assert-DatabaseOwnerIsNotInvalid $testSettings 
+                Assert-DatabaseOwnerIsNotInvalid -With $testSettings 
             } | Should -Throw
         }
 
@@ -158,7 +158,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
                 Database="myExcludedDb"
                 CurrentOwner = "invalidlogin2" 
             }) | 
-            Assert-DatabaseOwnerIsNotInvalid $testSettings 
+            Assert-DatabaseOwnerIsNotInvalid -With $testSettings 
         }
     }
 
