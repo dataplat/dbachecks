@@ -1,4 +1,4 @@
-function Get-DbConfig {
+function Get-DatabaseInfo {
     param (
         [DbaInstanceParameter[]]$SqlInstance
     )

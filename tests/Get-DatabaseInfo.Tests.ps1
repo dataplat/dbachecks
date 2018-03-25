@@ -1,6 +1,6 @@
 $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
-. "$PSScriptRoot/../internal/functions/Get-DbConfig.ps1"
+. "$PSScriptRoot/../internal/functions/Get-DatabaseInfo.ps1"
 
 $sqlinstance = "localhost"
 
@@ -25,14 +25,14 @@ Describe "Integration testing of $commandname" -Tags IntegrationTests,SqlIntegra
                     Status = [string]
                 }
 
-                $script:databases = (Get-DbConfig -SqlInstance $psitem)
+                $script:databases = (Get-DatabaseInfo -SqlInstance $psitem)
             }
 
-            It "Execution of Get-DbConfig should not throw exceptions" {
-                { Get-DbConfig -SqlInstance $psitem } | Should -Not -Throw -Because "we expect data not exceptions"
+            It "Execution of Get-DatabaseInfo should not throw exceptions" {
+                { Get-DatabaseInfo -SqlInstance $psitem } | Should -Not -Throw -Because "we expect data not exceptions"
             }
   
-            It "Get-DbConfig should return at least the system databases" {
+            It "Get-DatabaseInfo should return at least the system databases" {
                 $script:databases.Count | Should -BeGreaterOrEqual 4 -Because "we expect at least to have the system databases on any instance"
             }
 
