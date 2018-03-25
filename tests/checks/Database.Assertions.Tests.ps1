@@ -73,7 +73,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         Mock Get-DbcConfigValue { return "correctlogin1","correctlogin2" } -ParameterFilter { $Name -like "policy.validdbowner.name" }
         Mock Get-DbcConfigValue { return "myExcludedDb" } -ParameterFilter { $Name -like "policy.validdbowner.excludedb" }
         
-        $testSettings = Get-SettingsForDatabaseOwnerIsValid
+        $testSettings = Get-SettingsForDatabaseOwnerIsValidCheck
 
         It "The test should pass when the current owner is one of the expected owners" {
             @(@{ 
@@ -120,7 +120,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         Mock Get-DbcConfigValue { return "invalidlogin1","invalidlogin2" } -ParameterFilter { $Name -like "policy.invaliddbowner.name" }
         Mock Get-DbcConfigValue { return "myExcludedDb" } -ParameterFilter { $Name -like "policy.invaliddbowner.excludedb" }
         
-        $testSettings = Get-SettingsForDatabaseOwnerIsNotInvalid
+        $testSettings = Get-SettingsForDatabaseOwnerIsNotInvalidCheck
 
         It "The test should pass when the current owner is not what is invalid" {
             @(@{ 

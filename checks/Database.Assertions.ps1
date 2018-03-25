@@ -37,7 +37,7 @@ function Assert-DatabaseCollation {
     }
 }
 
-function Get-SettingsForDatabaseOwnerIsValid {
+function Get-SettingsForDatabaseOwnerIsValidCheck {
     return @{
         ExpectedOwner = @(Get-DbcConfigValue policy.validdbowner.name)
         ExcludedDatabase = @(Get-DbcConfigValue policy.validdbowner.excludedb)
@@ -59,7 +59,7 @@ function Assert-DatabaseOwnerIsValid {
     }
 }
 
-function Get-SettingsForDatabaseOwnerIsNotInvalid {
+function Get-SettingsForDatabaseOwnerIsNotInvalidCheck {
     return @{
         InvalidOwner = @(Get-DbcConfigValue policy.invaliddbowner.name)
         ExcludedDatabase = @(Get-DbcConfigValue policy.invaliddbowner.excludedb)

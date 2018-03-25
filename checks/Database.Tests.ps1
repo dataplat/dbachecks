@@ -29,7 +29,7 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
 }
 
 Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $filename {
-    $settings = Get-SettingsForDatabaseOwnerIsValid
+    $settings = Get-SettingsForDatabaseOwnerIsValidCheck
     (Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
@@ -42,7 +42,7 @@ Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $file
 }
 
 Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabase, $filename {
-    $settings = Get-SettingsForDatabaseOwnerIsNotInvalid
+    $settings = Get-SettingsForDatabaseOwnerIsNotInvalidCheck
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
