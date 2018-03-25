@@ -54,7 +54,7 @@ function Assert-DatabaseOwnerIsValid {
     )
     process {
         if (!($TestObject.Database -in $TestSettings.ExcludedDatabase)) {
-            $TestObject.CurrentOwner | Should -BeIn $TestSettings.ExpectedOwner -Because $Because
+            $TestObject.Owner | Should -BeIn $TestSettings.ExpectedOwner -Because $Because
         }
     }
 }
@@ -76,7 +76,7 @@ function Assert-DatabaseOwnerIsNotInvalid {
     )
     process {
         if (!($TestObject.Database -in $TestSettings.ExcludedDatabase)) {
-            $TestObject.CurrentOwner | Should -Not -BeIn $TestSettings.InvalidOwner -Because $Because
+            $TestObject.Owner | Should -Not -BeIn $TestSettings.InvalidOwner -Because $Because
         }
     }
 }

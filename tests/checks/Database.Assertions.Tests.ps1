@@ -78,7 +78,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         It "The test should pass when the current owner is one of the expected owners" {
             @(@{ 
                 Database="db1"
-                CurrentOwner = "correctlogin1" 
+                Owner = "correctlogin1" 
             }) | 
             Assert-DatabaseOwnerIsValid -With $testSettings       
         }
@@ -86,7 +86,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         It "The test should pass when the current owner is any of the expected owners" {
             @(@{ 
                 Database="db1"
-                CurrentOwner = "correctlogin2" 
+                Owner = "correctlogin2" 
             }) | 
             Assert-DatabaseOwnerIsValid -With $testSettings       
         }
@@ -94,10 +94,10 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         It "The test should pass even if an excluded database has an incorrect owner" {
             @(@{ 
                 Database="db1"
-                CurrentOwner = "correctlogin1" 
+                Owner = "correctlogin1" 
             }, @{
                 Database = "myExcludedDb"
-                CurrentOwner = "incorrectlogin"
+                Owner = "incorrectlogin"
             }) | 
             Assert-DatabaseOwnerIsValid -With $testSettings
         }
@@ -106,10 +106,10 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
             {
                 @(@{ 
                     Database="db1"
-                    CurrentOwner = "correctlogin1" 
+                    Owner = "correctlogin1" 
                 }, @{ 
                     Database="db2"
-                    CurrentOwner = "wronglogin" 
+                    Owner = "wronglogin" 
                 }) |  
                 Assert-DatabaseOwnerIsValid -With $testSettings
             } | Should -Throw
@@ -125,7 +125,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         It "The test should pass when the current owner is not what is invalid" {
             @(@{ 
                 Database="db1"
-                CurrentOwner = "correctlogin" 
+                Owner = "correctlogin" 
             }) | 
             Assert-DatabaseOwnerIsNotInvalid -With $testSettings
         }
@@ -134,7 +134,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
             {
                 @(@{ 
                     Database="db1"
-                    CurrentOwner = "invalidlogin1" 
+                    Owner = "invalidlogin1" 
                 }) | 
                 Assert-DatabaseOwnerIsNotInvalid -With $testSettings 
             } | Should -Throw
@@ -144,7 +144,7 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
             {
                 @(@{ 
                     Database="db1"
-                    CurrentOwner = "invalidlogin2" 
+                    Owner = "invalidlogin2" 
                 }) | 
                 Assert-DatabaseOwnerIsNotInvalid -With $testSettings 
             } | Should -Throw
@@ -153,10 +153,10 @@ Describe "Testing the $commandname checks" -Tags CheckTests, "$($commandname)Che
         It "The test should pass when the invalid user is on an excluded database" {
             @(@{ 
                 Database="db1"
-                CurrentOwner = "correctlogin" 
+                Owner = "correctlogin" 
             },@{ 
                 Database="myExcludedDb"
-                CurrentOwner = "invalidlogin2" 
+                Owner = "invalidlogin2" 
             }) | 
             Assert-DatabaseOwnerIsNotInvalid -With $testSettings 
         }

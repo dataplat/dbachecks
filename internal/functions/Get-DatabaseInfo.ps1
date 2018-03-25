@@ -16,7 +16,7 @@ function Get-DatabaseInfo {
                     $dbs = $server.Query("
 select d.name                           [Database]
     ,d.collation_name                   DatabaseCollation
-    ,suser_sname(d.owner_sid)           CurrentOwner
+    ,suser_sname(d.owner_sid)           Owner
     ,d.recovery_model_desc              RecoveryModel
     ,d.is_auto_shrink_on                AutoShrink
     ,d.is_auto_close_on                 AutoClose

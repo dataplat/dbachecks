@@ -13,7 +13,7 @@ Describe "Integration testing of $commandname" -Tags IntegrationTests,SqlIntegra
                     SqlInstance = [string]
                     SqlVersion = [int]
                     DatabaseCollation = [string]
-                    CurrentOwner = [string]
+                    Owner = [string]
                     AutoShrink = [bool]
                     AutoClose = [bool]
                     AutoCreateStatisticsEnabled = [bool]
