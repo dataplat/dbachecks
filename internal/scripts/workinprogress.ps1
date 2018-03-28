@@ -1,6 +1,5 @@
 param([string]$workspace, [string]$fullPath, [string]$file, [int]$line)
 
-Remove-Module dbachecks
 Import-Module $workspace -Force 
 
 if ($file -like "*.Tests.ps1") {
