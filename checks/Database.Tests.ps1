@@ -15,6 +15,19 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 . "$PSScriptRoot/../internal/functions/Get-DatabaseInfo.ps1"
 
+Describe "Auto Close" -Tags AutoClose, FastDatabase, $filename {
+    $settings = Get-SettingsForAutoCloseCheck
+    @(Get-Instance).ForEach{
+        Context "Testing Auto Close on $psitem" {
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) should have Auto Close set to $($settings.AutoClose)" {
+                    $psitem | Assert-AutoClose -With $settings -Because "Because!"
+                }
+            }
+        }
+    }
+}
+
 Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     $settings = Get-SettingsForDatabaseCollactionCheck
     @(Get-Instance).ForEach{
@@ -222,19 +235,6 @@ Describe "Page Verify" -Tags PageVerify, $filename {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
                 It "$($psitem.Name) on $($psitem.Parent.Name) should have page verify set to $pageverify" {
                     $psitem.PageVerify | Should -Be $pageverify -Because "Page verify helps SQL Server to detect corruption"
-                }
-            }
-        }
-    }
-}
-
-Describe "Auto Close" -Tags AutoClose, $filename {
-    $autoclose = Get-DbcConfigValue policy.database.autoclose
-    @(Get-Instance).ForEach{
-        Context "Testing Auto Close on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
-                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Close set to $autoclose" {
-                    $psitem.AutoClose | Should -Be $autoclose -Because "Because!"
                 }
             }
         }

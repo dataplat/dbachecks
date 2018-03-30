@@ -10,7 +10,30 @@
  # /tests/checks/Database.Assetions.Tests.ps1               - where the assertions are unit tests
  #>
  
-function Get-SettingsForDatabaseCollactionCheck {#
+function Get-SettingsForAutoCloseCheck {
+    try {
+        $autocloseText = (Get-DbcConfigValue policy.database.autoclose)
+        $autoclose = [Boolean]::Parse($autocloseText)
+    } catch {}
+    return @{
+        AutoClose = $autoclose
+    }
+} 
+
+function Assert-AutoClose {
+    param (
+        [parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [object[]]$TestObject,
+        [parameter(Mandatory=$true)][Alias("With")]
+        [object]$TestSettings,
+        [string]$Because
+    )
+    process {
+        $TestObject.AutoClose | Should -Be $TestSettings.AutoClose -Because $Because
+    }
+}
+
+function Get-SettingsForDatabaseCollactionCheck {
     $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
     return @{
         WrongCollation = $Wrongcollation
