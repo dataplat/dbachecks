@@ -67,6 +67,19 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
     }
 }
 
+Describe "Page Verify" -Tags PageVerify, FastDatabase $filename {
+    $settings = Get-SettingsForPageVerifyCheck 
+    @(Get-Instance).ForEach{
+        Context "Testing page verify on $psitem" {
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) should have page verify set to $($settings.PageVerify)" {
+                    $psitem | Assert-PageVerify -With $settings -Because "Page verify helps SQL Server to detect corruption"
+                }
+            }
+        }
+    }
+}
+
 Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
     @(Get-Instance).ForEach{
         Context "Testing suspect pages on $psitem" {
@@ -222,19 +235,6 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
                 $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                     @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
-                }
-            }
-        }
-    }
-}
-
-Describe "Page Verify" -Tags PageVerify, $filename {
-    $pageverify = Get-DbcConfigValue policy.pageverify
-    @(Get-Instance).ForEach{
-        Context "Testing page verify on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.ForEach{
-                It "$($psitem.Name) on $($psitem.Parent.Name) should have page verify set to $pageverify" {
-                    $psitem.PageVerify | Should -Be $pageverify -Because "Page verify helps SQL Server to detect corruption"
                 }
             }
         }
