@@ -10,13 +10,11 @@
  # /tests/checks/Database.Assetions.Tests.ps1               - where the assertions are unit tests
  #>
  
+. $PSScriptRoot/../internal/functions/Convert-ConfigValueToBoolean.ps1 
+
 function Get-SettingsForAutoCloseCheck {
-    try {
-        $autocloseText = (Get-DbcConfigValue policy.database.autoclose)
-        $autoclose = [Boolean]::Parse($autocloseText)
-    } catch {}
     return @{
-        AutoClose = $autoclose
+        AutoClose = (Get-DbcConfigValue policy.database.autoclose | Convert-ConfigValueToBoolean)
     }
 } 
 
