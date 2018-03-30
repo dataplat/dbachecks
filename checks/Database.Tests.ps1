@@ -2,18 +2,23 @@
  # (http://jakubjares.com/2017/12/07/testing-your-environment-tests/)
  #
  #   To be able to do it with Pester one has to keep the test definition and the assertion 
- # in separate files. Write a new test, or modifying an existing one typically involves 
+ # in separate files. Writing a new test, or modifying an existing one typically involves 
  # modifications to the three related files:
  #
- # /checks/Database.Assertions.ps1                          - where the assertions are defined
+ # /assertions/Database.<CheckName>.ps1                     - where the assertions and config functions are defined
  # /checks/Database.Tests.ps1 (this file)                   - where the assertions are used to check stuff
- # /tests/checks/Database.Assertions.Tests.ps1              - where the assertions are unit tests
+ # /tests/assertions/Database.<CheckName>.Tests.ps1         - where the assertions are unit tested
  #>
 
-$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-. "$PSScriptRoot/$($MyInvocation.MyCommand.Name.Replace(".Tests.", ".Assertions."))"
+ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 . "$PSScriptRoot/../internal/functions/Get-DatabaseInfo.ps1"
+
+# dot source the assertion files
+@(Get-ChildItem "$PSScriptRoot/../assertions/$filename.*.ps1").ForEach{
+    . $psItem.FullName 
+}
+
 
 Describe "Auto Close" -Tags AutoClose, FastDatabase, $filename {
     $settings = Get-SettingsForAutoCloseCheck
@@ -67,7 +72,7 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
     }
 }
 
-Describe "Page Verify" -Tags PageVerify, FastDatabase $filename {
+Describe "Page Verify" -Tags PageVerify, FastDatabase, $filename {
     $settings = Get-SettingsForPageVerifyCheck 
     @(Get-Instance).ForEach{
         Context "Testing page verify on $psitem" {
