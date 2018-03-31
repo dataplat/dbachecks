@@ -4,7 +4,7 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 
 $sqlinstance = "localhost"
 
-Describe "Integration testing of $commandname" -Tags IntegrationTests,SqlIntegrationTests, Integration {
+Describe "Integration testing of $commandname" -Tags IntegrationTests, SqlIntegrationTests, Integration {
     @($sqlinstance).ForEach{
         Context "Collecting database configuration details for checks from $psitem" {
             BeforeAll {
@@ -21,8 +21,10 @@ Describe "Integration testing of $commandname" -Tags IntegrationTests,SqlIntegra
                     AutoUpdateStatisticsAsynchronously = [bool]
                     Trustworthy = [bool]
                     PageVerify = [string]
+                    RecoveryModel = [string]
                     SuspectPages = [int]
                     Status = [string]
+                    DataFilesWithoutBackup = [int]
                 }
 
                 $script:databases = (Get-DatabaseInfo -SqlInstance $psitem)

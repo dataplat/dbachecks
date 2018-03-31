@@ -30,6 +30,12 @@ select d.name                           [Database]
     ,d.compatibility_level              CompatibilityLevel
     ,d.user_access_desc                 UserAccess
     ,d.is_read_only                     IsReadOnly
+    ,(	select count(*) 
+		from sys.master_files
+		where database_id = d.database_id 
+			and [type] = 0
+			and differential_base_lsn is null
+	)                                   DataFilesWithoutBackup
 from sys.databases d
 $(if($Database) { "where name like '$($Database.Replace("*","%"))'"})
                                         ")

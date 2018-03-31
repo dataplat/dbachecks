@@ -121,6 +121,18 @@ Describe "Page Verify" -Tags PageVerify, FastDatabase, $filename {
     }
 }
 
+Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, FastDatabase, $filename {
+    @(Get-Instance).ForEach{
+        Context "Testing database is not in PseudoSimple recovery model on $psitem" {
+            @((Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) has PseudoSimple recovery model equal false on $($psitem.SqlInstance)" {
+                    $psitem | Assert-PseudoSimpleRecovery -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
+                }
+            }
+        }
+    }
+}
+
 Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
     @(Get-Instance).ForEach{
         Context "Testing suspect pages on $psitem" {
@@ -503,18 +515,6 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
             $results = Get-DbaOrphanUser -SqlInstance $psitem
             It "$psitem should return 0 orphaned users" {
                 @($results).Count | Should -Be 0 -Because "We dont want orphaned users"
-            }
-        }
-    }
-}
-
-Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
-    @(Get-Instance).ForEach{
-        Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-            @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb' -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
-                It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" {
-                    (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "pseudo-SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
-                }
             }
         }
     }
