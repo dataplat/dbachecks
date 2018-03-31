@@ -44,12 +44,25 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, FastDatabase, $fil
 }
 
 Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, FastDatabase, $filename {
-    $autoupdatestatistics = Get-DbcConfigValue policy.database.autoupdatestatistics
+    $settings = Get-SettingsForAutoUpdateStatisticsCheck
     @(Get-Instance).ForEach{
         Context "Testing Auto Update Statistics on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
-                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics set to $autoupdatestatistics" {
-                    $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because "This is value expeceted for autoupdate statistics"
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) on $($psitem.SqlInstance) should have Auto Update Statistics set to $($settings.AutoUpdateStatistics)" {
+                    $psitem | Assert-AutoUpdateStatistics -With $settings -Because "This is value expeceted for autoupdate statistics"
+                }
+            }
+        }
+    }
+}
+
+Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, FastDatabase, $filename {
+    $settings = Get-SettingsForAutoUpdateStatisticsAsynchronouslyCheck
+    @(Get-Instance).ForEach{
+        Context "Testing Auto Update Statistics Asynchronously on $psitem" {
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) on $($psitem.SqlInstance) should have Auto Update Statistics Asynchronously set to $($settings.AutoUpdateStatisticsAsynchronously)" {
+                    $psitem | Assert-AutoUpdateStatisticsAsynchronously -With $settings -Because "This is value expeceted for autoupdate statistics asynchronously"
                 }
             }
         }
@@ -450,19 +463,6 @@ Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
                 }
                 It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months" {
                     $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date).AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning"
-                }
-            }
-        }
-    }
-}
-
-Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, $filename {
-    $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously
-    @(Get-Instance).ForEach{
-        Context "Testing Auto Update Statistics Asynchronously on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
-                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
-                    $psitem.AutoUpdateStatisticsAsync | Should -Be $autoupdatestatisticsasynchronously  -Because "This is value expeceted for autoupdate statistics asynchronously"
                 }
             }
         }

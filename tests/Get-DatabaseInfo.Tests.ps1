@@ -18,7 +18,7 @@ Describe "Integration testing of $commandname" -Tags IntegrationTests,SqlIntegra
                     AutoClose = [bool]
                     AutoCreateStatistics = [bool]
                     AutoUpdateStatistics = [bool]
-                    AutoUpdateStatisticsAsync = [bool]
+                    AutoUpdateStatisticsAsynchronously = [bool]
                     Trustworthy = [bool]
                     PageVerify = [string]
                     SuspectPages = [int]
