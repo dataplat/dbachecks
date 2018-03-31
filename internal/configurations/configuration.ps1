@@ -200,3 +200,4 @@ Set-PSFConfig -Module dbachecks -Name mail.subject  -Value 'dbachecks results' -
 
 # Command parameter default values
 Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludecheck -Value @() -Initialize -Description "Invoke-DbcCheck: The checks that should be skipped by default."
+Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludedatabase -Value @() -Initialize -Description "Invoke-DbcCheck: The databases that should be skipped by default."
