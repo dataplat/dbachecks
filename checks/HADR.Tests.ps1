@@ -1,53 +1,51 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "Cluster Health" -Tags ClusterHealth, $filename {
-    $domainname = Get-DbcConfigValue domain.name
-    $tcpport = Get-DbcConfigValue policy.hadr.tcpport
+function Get-ClusterObject {
+    [CmdletBinding()]
+    param (
+        [string]$Cluster
+    )
     
-    foreach ($cluster in (Get-ComputerName)) {
-        function Get-ClusterObject {
-            [CmdletBinding()]
-            param (
-                [string]$Cluster
-            )
-            
-            if (-not (Get-Module FailoverClusters)) {
-                try {
-                    Import-Module FailoverClusters -ErrorAction Stop
-                }
-                catch {
-                    Stop-PSFFunction -Message "FailoverClusters module could not load" -ErrorRecord $psitem
-                    return
-                }
-            }
-            
-            [pscustomobject]$return = @{ }
-            $return.Cluster = (Get-Cluster -Name $cluster)
-            $return.Nodes = (Get-ClusterNode -Cluster $cluster)
-            $return.Resources = (Get-ClusterResource -Cluster $cluster)
-            $return.Network = (Get-ClusterNetwork -Cluster $cluster)
-            $listeners = $return.AGStatus.AvailabilityGroupListeners.Name
-            $return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
-            $return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
-            $return.Groups = (Get-ClusterGroup -Cluster $cluster)
-            $listeneripaddress = (Get-ClusterResource -Cluster $cluster -InputObject (Get-ClusterResource -Cluster $cluster | Where-Object { $psitem.ResourceType -like "SQL Server Availability Group" }).OwnerGroup)
-            $return.AGOwner = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }.OwnerNode
-            $return.AGStatus = (Get-DbaAvailabilityGroup -SqlInstance $return.AGOwner.Name)
-            $listeners = $return.AGStatus.AvailabilityGroupListeners.Name
-            $return.AGReplica = (Get-DbaAgReplica -SqlInstance $return.AGStatus.PrimaryReplica)
-            $return.AGDatabasesPrim = (Get-DbaAgDatabase -SqlInstance $return.AGStatus.PrimaryReplica)
-            $synchronoussecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'SynchronousCommit' }.Name
-            $return.AGDatabasesSecSync = $synchronoussecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
-            $asyncsecondaries = $return.AGReplica.Where{ $psitem.Role -eq 'Secondary' -and $psitem.AvailabilityMode -eq 'AsynchronousCommit' }.Name
-            $return.AGDatabasesSecASync = $asyncsecondaries.ForEach{ Get-DbaAgDatabase -SqlInstance $psitem }
-            $return.SqlTestListeners = $listeners.ForEach{ Test-DbaConnection -SqlInstance $psitem }
-            $return.SqlTestReplicas = $return.AGReplica.ForEach{ Test-DbaConnection -SqlInstance $psitem.Name }
+    if (-not (Get-Module FailoverClusters)) {
+        try {
+            Import-Module FailoverClusters -ErrorAction Stop
+        }
+        catch {
+            Stop-PSFFunction -Message "FailoverClusters module could not load" -ErrorRecord $psitem
+            return
         }
     }
+    [pscustomobject]$return = @{ }
+    $return.Cluster = (Get-Cluster -Name $cluster)
+    $return.Nodes = (Get-ClusterNode -Cluster $cluster)
+    $return.Resources = (Get-ClusterResource -Cluster $cluster)
+    $return.Network = (Get-ClusterNetwork -Cluster $cluster)
+    $return.Groups = (Get-ClusterGroup -Cluster $cluster)
+
+    $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
+    $Ags = $return.AGs.Name
+    $return.AvailabilityGroups = @{}
+    foreach ($Ag in $ags ) {
+        
+        $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $AG -AvailabilityGroup $ag
+    }
+
+    Return $return
+}
+
+
+    $clusters = Get-DbcConfigValue app.clusters
+    if ($clusters.Count -eq 0) {
+        Write-Warning "No Clusters to look at. Please use Set-DbcConfig -Name app.clusters to add clusters for checking"
+        break
+    }
+    $domainname = Get-DbcConfigValue domain.name
+    $tcpport = Get-DbcConfigValue policy.hadr.tcpport
+
+    foreach ($cluster in $clusters) {
+        Describe "Cluster $cluster Health" -Tags ClusterHealth, $filename {
+        $return = Get-ClusterObject -Cluster $cluster
     
-    $return = Get-ClusterObject -Cluster $cluster
-    
-    Describe "Cluster Server Health" -Tags ClusterServerHealth, $filename {
         Context "Cluster Nodes for $cluster" {
             $return.Nodes.ForEach{
                 It "Node $($psitem.Name) Should Be Up" {
@@ -77,122 +75,132 @@ Describe "Cluster Health" -Tags ClusterHealth, $filename {
                 }
             }
         }
-    }
-    
-    Describe "Cluster Network Health" -Tags ClusterNetworkHealth, $filename {
-        Context "Cluster Connectivity for $cluster" {
-            $return.SqlTestListeners.ForEach{
-                It "Listener $($psitem.SqlInstance) Should Be Pingable" {
-                    $psitem.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
-                }
-                It "Listener $($psitem.SqlInstance) Should Be Connectable" {
-                    $psitem.ConnectSuccess | Should -BeTrue -Because 'The listener should process SQL commands successfully'
-                }
-                It "Listener $($psitem.SqlInstance) Domain Name Should Be $domainname" {
-                    $psitem.DomainName | Should -Be $domainname -Because 'This is what we expect the domain name to be'
-                }
-                It "Listener $($psitem.SqlInstance) TCP Port Should Be $tcpport" {
-                    $psitem.TCPPort | Should -Be $tcpport -Because 'This is what we said the TCP Port should be'
-                }
-            }
-            $return.SqlTestReplicas.ForEach{
-                It "Replica $($psitem.SqlInstance) Should Be Pingable" {
-                    $psitem.IsPingable | Should -BeTrue -Because 'Each replica should be pingable'
-                }
-                It "Replica $($psitem.SqlInstance) Should Be Connectable" {
-                    $psitem.ConnectSuccess | Should -BeTrue -Because 'Each replica should be able to process SQL commands'
-                }
-                It "Replica $($psitem.SqlInstance) Domain Name Should Be $domainname" {
-                    $psitem.DomainName | Should -Be $domainname -Because 'This is what we expect the domain name to be'
-                }
-                It "Replica $($psitem.SqlInstance) TCP Port Should Be $tcpport" {
-                    $psitem.TCPPort | Should -Be $tcpport -Because 'This is what we expect the TCP Port to be'
-                }
-            }
-        }
-    }
-    
-    Describe "Availability Group Health" -Tags AvailabilityGroupHealth, $filename {
-        Context "Availability Group Status for $cluster" {
-            $return.AGReplica.Where.ForEach{
-                It "$($psitem.Replica) Replica should not be in Unknown Availability Mode" {
-                    $psitem.AvailabilityMode | Should Not Be 'Unknown' -Because 'The replica should not be in unknown state'
-                }
-            }
-            $return.AGReplica.Where{ $psitem.AvailabilityMode -eq 'SynchronousCommit' }.ForEach{
-                It "$($psitem.Replica) Replica Should Be synchronised" {
-                    $psitem.RollupSynchronizationState | Should -Be 'Synchronized' -Because 'The synchronous replica should not synchronised'
-                }
-            }
-            $return.AGReplica.Where{ $psitem.AvailabilityMode -eq 'ASynchronousCommit' }.ForEach{
-                It "$($psitem.Replica) Replica Should Be synchronising" {
-                    $psitem.RollupSynchronizationState | Should -Be 'Synchronizing' -Because 'The asynchronous replica should be synchronizing '
-                }
-            }
-            $return.AGReplica.Where.ForEach{
-                It"$($psitem.Replica) Replica Should Be Connected" {
-                    $psitem.ConnectionState | Should -Be 'Connected' -Because 'The replica should be connected'
-                }
-            }
+        $Ags = $return.AGs.Name
+        foreach($Name in $Ags) {
+            $Ag = $return.AvailabilityGroups[$Name]
             
-        }
-        Context "Database AG Status for $cluster" {
-            $return.AGDatabasesPrim.ForEach{
-                It "Database $($psitem.DatabaseName) Should Be Synchronised on the Primary Replica $($psitem.Replica)" {
-                    $psitem.SynchronizationState | Should -Be 'Synchronized' -Because 'The database on the primary replica should be synchronised'
+            Context "Cluster Connectivity for Availability Group $($AG.Name) on $cluster" {
+                $AG.AvailabilityGroupListeners.ForEach{
+                    $results = Test-DbaConnection -sqlinstance $_.Name
+                    It "Listener $($results.SqlInstance) Should Be Pingable" {
+                        $results.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
+                    }
+                    It "Listener $($results.SqlInstance) Should Be Connectable" {
+                        $results.ConnectSuccess | Should -BeTrue -Because 'The listener should process SQL commands successfully'
+                    }
+                    It "Listener $($results.SqlInstance) Domain Name Should Be $domainname" {
+                        $results.DomainName | Should -Be $domainname -Because 'This is what we expect the domain name to be'
+                    }
+                    It "Listener $($results.SqlInstance) TCP Port Should Be $tcpport" {
+                        $results.TCPPort | Should -Be $tcpport -Because 'This is what we said the TCP Port should be'
+                    }
                 }
-                It "Database $($psitem.DatabaseName) Should Be Failover Ready on the Primary Replica $($psitem.Replica)" {
-                    $psitem.IsFailoverReady | Should -BeTrue  -Because 'The database on the primary replica should be ready to failover'
-                }
-                It "Database $($psitem.DatabaseName) Should Be Joined on the Primary Replica $($psitem.Replica)" {
-                    $psitem.IsJoined | Should -BeTrue  -Because 'The database on the primary replica should be joined to the availablity group'
-                }
-                It "Database $($psitem.DatabaseName) Should Not Be Suspended on the Primary Replica $($psitem.Replica)" {
-                    $psitem.IsSuspended | Should -Be  $False  -Because 'The database on the primary replica should not be suspended'
-                }
-            }
-            $return.AGDatabasesSecSync.ForEach{
-                It "Database $($psitem.DatabaseName) Should Be Synchronised on the Secondary Replica $($psitem.Replica)" {
-                    $psitem.SynchronizationState | Should -Be 'Synchronized'  -Because 'The database on the synchronous secondary replica should be synchronised'
-                }
-                It "Database $($psitem.DatabaseName) Should Be Failover Ready on the Secondary Replica $($psitem.Replica)" {
-                    $psitem.IsFailoverReady | Should -BeTrue -Because 'The database on the synchronous secondary replica should be ready to failover'
-                }
-                It "Database $($psitem.DatabaseName) Should Be Joined on the Secondary Replica $($psitem.Replica)" {
-                    $psitem.IsJoined | Should -BeTrue -Because 'The database on the synchronous secondary replica should be joined to the Availability Group'
-                }
-                It "Database $($psitem.DatabaseName) Should Not Be Suspended on the Secondary Replica $($psitem.Replica)" {
-                    $psitem.IsSuspended | Should -Be  $False -Because 'The database on the synchronous secondary replica should not be suspended'
-                }
-            }
-            $return.AGDatabasesSecASync.ForEach{
-                It "Database $($psitem.DatabaseName) Should Be Synchronising on the Secondary as it is Async" {
-                    $psitem.SynchronizationState | Should -Be 'Synchronizing' -Because 'The database on the asynchronous secondary replica should be synchronising'
-                }
-                It "Database $($psitem.DatabaseName) Should Be Failover Ready on the Secondary Replica $($psitem.Replica)" {
-                    $psitem.IsFailoverReady | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be ready to failover'
-                }
-                It "Database $($psitem.DatabaseName) Should Be Joined on the Secondary Replica $($psitem.Replica)" {
-                    $psitem.IsJoined | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be joined to the availaility group'
-                }
-                It "Database $($psitem.DatabaseName) Should Not Be Suspended on the Secondary Replica $($psitem.Replica)" {
-                    $psitem.IsSuspended | Should -Be  $False -Because 'The database on the asynchronous secondary replica should not be suspended'
+
+                $AG.AvailabilityReplicas.ForEach{
+                    $results = Test-DbaConnection -sqlinstance $PsItem.Name
+                    It "Replica $($results.SqlInstance) Should Be Pingable" {
+                        $results.IsPingable | Should -BeTrue -Because 'Each replica should be pingable'
+                    }
+                    It "Replica $($results.SqlInstance) Should Be Connectable" {
+                        $results.ConnectSuccess | Should -BeTrue -Because 'Each replica should be able to process SQL commands'
+                    }
+                    It "Replica $($results.SqlInstance) Domain Name Should Be $domainname" {
+                        $results.DomainName | Should -Be $domainname -Because 'This is what we expect the domain name to be'
+                    }
+                    It "Replica $($results.SqlInstance) TCP Port Should Be $tcpport" {
+                        $results.TCPPort | Should -Be $tcpport -Because 'This is what we expect the TCP Port to be'
+                    }
                 }
             }
-        }
-        Context "Extended Event Status for $cluster" {
-            $return.AGReplica.ForEach{
-                $Xevents = Get-DbaXESession -SqlInstance $psitem
-                It "Replica $($psitem) should have an Extended Event Session called AlwaysOn_health" {
-                    $Xevents.Name  | Should -Contain 'AlwaysOn_health' -Because 'The Extended Events session should exist'
+
+            Context "Availability Group Status for Availability Group $($AG.Name) on $cluster" {
+                $AG.AvailabilityReplicas.ForEach{
+                    It "$($psitem.Name) Replica should not be in Unknown Availability Mode" {
+                        $psitem.AvailabilityMode | Should -Not -Be 'Unknown' -Because 'The replica should not be in unknown state'
+                    }
                 }
-                It "Replica $($psitem) Always On Health XEvent Should Be Running" {
-                    $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.Status | Should -Be 'Running' -Because 'The extended event session will enable you to troubleshoot errors'
+                $AG.AvailabilityReplicas.Where{ $psitem.AvailabilityMode -eq 'SynchronousCommit' }.ForEach{
+                    It "$($psitem.Name) Replica Should Be synchronised" {
+                        $psitem.RollupSynchronizationState | Should -Be 'Synchronized' -Because 'The synchronous replica should not synchronised'
+                    }
                 }
-                It "Replica $($psitem) Always On Health XEvent Auto Start Should Be True" {
-                    $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.AutoStart | Should -BeTrue  -Because 'The extended event session will enable you to troubleshoot errors'
+                $AG.AvailabilityReplicas.Where{ $psitem.AvailabilityMode -eq 'ASynchronousCommit' }.ForEach{
+                    It "$($psitem.Name) Replica Should Be synchronising" {
+                        $psitem.RollupSynchronizationState | Should -Be 'Synchronizing' -Because 'The asynchronous replica should be synchronizing '
+                    }
+                }
+                $AG.AvailabilityReplicas.Where.ForEach{
+                    It"$($psitem.Name) Replica Should Be Connected" {
+                        $psitem.ConnectionState | Should -Be 'Connected' -Because 'The replica should be connected'
+                    }
+                }
+            
+            }
+        
+            Context "Database AG Status for Availability Group $($AG.Name) on $cluster" {
+                $Primary = $ag.AvailabilityReplicas.Where{$_.Role -eq 'Primary'}.Name
+                (Get-DbaAgDatabase -SqlInstance $Primary -AvailabilityGroup $Ag.Name).ForEach{
+                    It "Database $($psitem.DatabaseName) Should Be Synchronised on the Primary Replica $($psitem.Replica)" {
+                        $psitem.SynchronizationState | Should -Be 'Synchronized' -Because 'The database on the primary replica should be synchronised'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Be Failover Ready on the Primary Replica $($psitem.Replica)" {
+                        $psitem.IsFailoverReady | Should -BeTrue  -Because 'The database on the primary replica should be ready to failover'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Be Joined on the Primary Replica $($psitem.Replica)" {
+                        $psitem.IsJoined | Should -BeTrue  -Because 'The database on the primary replica should be joined to the availablity group'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Not Be Suspended on the Primary Replica $($psitem.Replica)" {
+                        $psitem.IsSuspended | Should -Be  $False  -Because 'The database on the primary replica should not be suspended'
+                    }
+                }
+                $SecSync = $ag.AvailabilityReplicas.Where{$_.Role -eq 'Secondary' -and $_.AvailabilityMode -eq 'SynchronousCommit' }.name
+                (Get-DbaAgDatabase -SqlInstance $SecSync -AvailabilityGroup $Ag.Name).ForEach{
+                    It "Database $($psitem.DatabaseName) Should Be Synchronised on the Secondary Replica $($psitem.Replica)" {
+                        $psitem.SynchronizationState | Should -Be 'Synchronized'  -Because 'The database on the synchronous secondary replica should be synchronised'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Be Failover Ready on the Secondary Replica $($psitem.Replica)" {
+                        $psitem.IsFailoverReady | Should -BeTrue -Because 'The database on the synchronous secondary replica should be ready to failover'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Be Joined on the Secondary Replica $($psitem.Replica)" {
+                        $psitem.IsJoined | Should -BeTrue -Because 'The database on the synchronous secondary replica should be joined to the Availability Group'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Not Be Suspended on the Secondary Replica $($psitem.Replica)" {
+                        $psitem.IsSuspended | Should -Be  $False -Because 'The database on the synchronous secondary replica should not be suspended'
+                    }
+                }
+                $SecASync = $ag.AvailabilityReplicas.Where{$_.Role -eq 'Secondary' -and $_.AvailabilityMode -eq 'AsynchronousCommit' }.name
+                if($SecASync){
+                (Get-DbaAgDatabase -SqlInstance $SecASync -AvailabilityGroup $Ag.Name).ForEach{
+                    It "Database $($psitem.DatabaseName) Should Be Synchronising on the Secondary as it is Async" {
+                        $psitem.SynchronizationState | Should -Be 'Synchronizing' -Because 'The database on the asynchronous secondary replica should be synchronising'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Be Failover Ready on the Secondary Replica $($psitem.Replica)" {
+                        $psitem.IsFailoverReady | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be ready to failover'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Be Joined on the Secondary Replica $($psitem.Replica)" {
+                        $psitem.IsJoined | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be joined to the availaility group'
+                    }
+                    It "Database $($psitem.DatabaseName) Should Not Be Suspended on the Secondary Replica $($psitem.Replica)" {
+                        $psitem.IsSuspended | Should -Be  $False -Because 'The database on the asynchronous secondary replica should not be suspended'
+                    }
+                }
+            }
+            }
+            Context "Extended Event Status for $cluster" {
+                $AG.AvailabilityReplicas.ForEach{
+                    $Xevents = Get-DbaXESession -SqlInstance $psitem.Name
+                    It "Replica $($psitem.Replica) should have an Extended Event Session called AlwaysOn_health" {
+                        $Xevents.Name  | Should -Contain 'AlwaysOn_health' -Because 'The Extended Events session should exist'
+                    }
+                    It "Replica $($psitem.Replica) Always On Health XEvent Should Be Running" {
+                        $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.Status | Should -Be 'Running' -Because 'The extended event session will enable you to troubleshoot errors'
+                    }
+                    It "Replica $($psitem.Replica) Always On Health XEvent Auto Start Should Be True" {
+                        $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.AutoStart | Should -BeTrue  -Because 'The extended event session will enable you to troubleshoot errors'
+                    }
                 }
             }
         }
     }
 }
+       
