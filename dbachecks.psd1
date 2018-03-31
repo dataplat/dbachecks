@@ -12,7 +12,7 @@
     
     # Version number of this module.
     
-    ModuleVersion          = '1.1.114'
+    ModuleVersion          = '1.1.115'
     
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -50,8 +50,8 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
         @{ ModuleName = 'Pester'; ModuleVersion = '4.2.0' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.300' }
-        @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.10.23' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.317' }
+        @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.13.35' }
     )
     
     # Assemblies that must be loaded prior to importing this module

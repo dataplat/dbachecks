@@ -56,7 +56,7 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
             It "should not have TempDB Files on the C Drive on $($TempDBTest[3].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFilesonC) {
                 $TempDBTest[3].CurrentSetting | Should -Be $TempDBTest[3].Recommended -Because 'You dot want the tempdb files on the same drive as the operating system'
             }
-            It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileMaxSize) {
+            It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileSizeMax) {
                 $TempDBTest[4].CurrentSetting | Should -Be $TempDBTest[4].Recommended -Because 'Tempdb files should be able to grow'
             }
         }
