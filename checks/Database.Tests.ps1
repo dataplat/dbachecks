@@ -306,7 +306,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
     $vlfmax = Get-DbcConfigValue policy.database.maxvlf
     @(Get-Instance).ForEach{
         Context "Testing Database VLFs on $psitem" {
-            @(Test-DbaDbVirtualLogFile -SqlInstance $_).ForEach{
+            @(Test-DbaDbVirtualLogFile -SqlInstance $_ -ExcludeDatabase $ExcludedDatabases).ForEach{
                 It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should Be less than $vlfmax" {
                     $psitem.Total | Should -BeLessThan $vlfmax -Because "Too many VLFs can impact performance and slow down backup/restore"
                 }
@@ -518,7 +518,7 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
 Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
     @(Get-Instance).ForEach{
         Context "Testing database compatibility level matches server compatibility level on $psitem" {
-            @(Test-DbaDatabaseCompatibility -SqlInstance $psitem).ForEach{
+            @(Test-DbaDatabaseCompatibility -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases).ForEach{
                 It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
                     $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
                 }
