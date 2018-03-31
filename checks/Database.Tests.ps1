@@ -94,6 +94,18 @@ Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
     }
 }
 
+Describe "Trustworthy Option" -Tags Trustworthy, DISA, FastDatabase, $filename {
+    @(Get-Instance).ForEach{
+        Context "Testing database trustworthy option on $psitem" {
+            @((Get-DatabaseInfo -SqlInstance $psitem).Where{$psitem.Database -ne 'msdb'}).ForEach{
+                It "Trustworthy is set to false on $($psitem.Name)" {
+                    $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
+                }
+            }
+        }
+    }
+}
+
 # Still to be reviewed
 
 Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
@@ -479,18 +491,6 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
                             $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain fFile growth value"
                         }
                     }
-                }
-            }
-        }
-    }
-}
-
-Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
-    @(Get-Instance).ForEach{
-        Context "Testing database trustworthy option on $psitem" {
-            @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'msdb' -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
-                It "Trustworthy is set to false on $($psitem.Name)" {
-                    $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
                 }
             }
         }
