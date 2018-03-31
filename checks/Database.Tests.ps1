@@ -49,7 +49,7 @@ Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $file
         Context "Testing Database Owners on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $settings.ExpectedOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsValid $settings -Because "The database owner was one specified as incorrect"
+                    $psitem | Assert-DatabaseOwnerIsValid -With $settings -Because "The database owner was one specified as incorrect"
                 }
             }
         }
@@ -62,7 +62,7 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
         Context "Testing Database Owners on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ($( [String]::Join(", ", $settings.InvalidOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsNotInvalid $settings -Because "The database owner was one specified as incorrect"
+                    $psitem | Assert-DatabaseOwnerIsNotInvalid -With $settings -Because "The database owner was one specified as incorrect"
                 }
             }
         }
@@ -99,7 +99,7 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, FastDatabase, $filename {
         Context "Testing database trustworthy option on $psitem" {
             @((Get-DatabaseInfo -SqlInstance $psitem).Where{$psitem.Database -ne 'msdb'}).ForEach{
                 It "Trustworthy is set to false on $($psitem.Name)" {
-                    $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
+                    $psitem | Assert-Trustworthy -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
                 }
             }
         }
