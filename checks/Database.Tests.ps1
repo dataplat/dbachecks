@@ -4,6 +4,7 @@ Describe "Database Collation" -Tags DatabaseCollation, $filename {
     $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
     $exclude = "ReportingServer", "ReportingServerTempDB"
     $exclude += $Wrongcollation
+    $exclude += $ExcludedDatabases
     @(Get-Instance).ForEach{
         Context "Testing database collation on $psitem" {
             @(Test-DbaDatabaseCollation -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
@@ -143,6 +144,7 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
         $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
         Context "Testing Recovery Model on $psitem" {
             $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
+            $exclude += $ExcludedDatabases 
             @(Get-DbaDbRecoveryModel -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "$($psitem.Name) should be set to $recoverymodel on $($psitem.SqlInstance)" {
                     $psitem.RecoveryModel | Should -Be $recoverymodel -Because "You expect this recovery model"
@@ -453,6 +455,7 @@ Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $fil
     $datafilegrowthtype = Get-DbcConfigValue policy.database.filegrowthtype
     $datafilegrowthvalue = Get-DbcConfigValue policy.database.filegrowthvalue
     $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
+    $exclude += $ExcludedDatabases 
     @(Get-Instance).ForEach{
         Context "Testing datafile growth type on $psitem" {
             @(Get-DbaDatabaseFile -SqlInstance $psitem -ExcludeDatabase $exclude ).ForEach{
