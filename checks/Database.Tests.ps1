@@ -124,9 +124,22 @@ Describe "Page Verify" -Tags PageVerify, FastDatabase, $filename {
 Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, FastDatabase, $filename {
     @(Get-Instance).ForEach{
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-            @((Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) has PseudoSimple recovery model equal false on $($psitem.SqlInstance)" {
                     $psitem | Assert-PseudoSimpleRecovery -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
+                }
+            }
+        }
+    }
+}
+
+Describe "Recovery Model" -Tags RecoveryModel, DISA, FastDatabase, $filename {
+    $settings = Get-SettingsForRecoveryModelCheck
+    @(Get-Instance).ForEach{
+        Context "Testing Recovery Model on $psitem" {
+            (Get-DatabaseInfo -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+                It "$($psitem.Database) should be set to $($settings.RecoveryModel) on $($psitem.SqlInstance)" {
+                    $psitem | Assert-RecoveryModel -With $settings -Because "You expect this recovery model"
                 }
             }
         }
@@ -242,20 +255,6 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
                     It "usage for $columnfqdn on $($psitem.SqlInstance) Should Be less than $maxpercentage percent" {
                         $psitem.PercentUsed -lt $maxpercentage | Should -BeTrue -Because "You do not want your Identity columns to hit the max value and stop inserts"
                     }
-                }
-            }
-        }
-    }
-}
-
-Describe "Recovery Model" -Tags RecoveryModel, DISA, FastDatabase, $filename {
-    @(Get-Instance).ForEach{
-    $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
-        Context "Testing Recovery Model on $psitem" {
-            $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
-            (Get-DatabaseInfo -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
-                It "$($psitem.Database) should be set to $recoverymodel on $($psitem.SqlInstance)" {
-                    Assert-RecoveryModel $psitem -ExpectedRecoveryModel $recoverymodel -Because "You expect this recovery model"
                 }
             }
         }
