@@ -1,5 +1,5 @@
 ﻿function Invoke-DbcCheck {
-        <#
+    <#
         .SYNOPSIS
             Invoke-DbcCheck is a SQL-centric Invoke-Pester wrapper
 
@@ -174,7 +174,7 @@
         [Alias("Name")]
         [string[]]$TestName,
         [switch]$EnableExit,
-        [Parameter(Position=0)]
+        [Parameter(Position = 0)]
         [Alias("Tags", "Tag", "Checks")]
         [string[]]$Check,
         [AllowEmptyCollection()]
@@ -186,7 +186,7 @@
         [PSCredential]$SqlCredential,
         [PSCredential]$Credential,
         [object[]]$Database,
-        [object[]]$ExcludeDatabase,
+        [object[]]$ExcludeDatabase = (Get-PSFConfigValue -FullName 'dbachecks.command.invokedbccheck.excludedatabase' -Fallback @()),
         [string[]]$Value,
         [object[]]$CodeCoverage = @(),
         [string]$CodeCoverageOutputFile,
@@ -282,14 +282,15 @@
                 $value = Get-Variable -Name $param
                 if ($value.InputObject) {
                     Set-Variable -Scope 0 -Name $param -Value $value.InputObject -ErrorAction SilentlyContinue
-                    $PSDefaultParameterValues.Add({ "*-Dba*:$param", $value.InputObject })
+                    $PSDefaultParameterValues.Add( { "*-Dba*:$param", $value.InputObject })
                 }
             }
             else {
-                $PSDefaultParameterValues.Remove({ "*-Dba*:$param" })
+                $PSDefaultParameterValues.Remove( { "*-Dba*:$param" })
             }
             $null = $PSBoundParameters.Remove($param)
         }
+
         
         # Lil bit of cleanup here, for a switcharoo
         $null = $PSBoundParameters.Remove('AllChecks')
@@ -297,8 +298,12 @@
         $null = $PSBoundParameters.Remove('ExcludeCheck')
         $null = $PSBoundParameters.Add('Tag', $Check)
         $null = $PSBoundParameters.Add('ExcludeTag', $ExcludeCheck)
+
         
         $globalexcludedchecks = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludecheck
+        $Script:ExcludedDatabases = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludedatabase
+        $Script:ExcludedDatabases += $ExcludeDatabase
+
         
         foreach ($singlecheck in $check) {
             if ($singlecheck -in $globalexcludedchecks) {
@@ -308,6 +313,10 @@
         
         if ($AllChecks -and $globalexcludedchecks) {
             Write-PSFMessage -Level Warning -Message "$globalexcludedchecks will be skipped"
+        }
+
+        if ($ExcludedDatabases) {
+            Write-PSFMessage -Level Warning -Message "$ExcludedDatabases databases will be skipped for all checks"
         }
         
         # Then we'll need a generic param passer that doesnt require global params 
