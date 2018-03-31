@@ -1,6 +1,6 @@
 . "$PSScriptRoot/../../assertions/Database.AutoShrink.ps1"
 
-Describe "Testing Auto Shrink Assertion" -Tags AutoCreateStatistic {
+Describe "Testing Auto Shrink Assertion" -Tags AutoShrink {
     $cases = @(
         @{ ConfiguredValue = $true; ExpectedValue = "True"; ExpectedResult = "pass" },
         @{ ConfiguredValue = $true; ExpectedValue = "False"; ExpectedResult = "fail" },

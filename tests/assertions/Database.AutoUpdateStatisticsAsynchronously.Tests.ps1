@@ -1,6 +1,6 @@
 . "$PSScriptRoot/../../assertions/Database.AutoUpdateStatisticsAsynchronously.ps1"
 
-Describe "Testing Auto Update Statistics Asynchronously Assertion" -Tags AutoCreateStatistic {
+Describe "Testing Auto Update Statistics Asynchronously Assertion" -Tags AutoUpdateStatisticsAsynchronously {
     $cases = @(
         @{ ConfiguredValue = $true; ExpectedValue = "True"; ExpectedResult = "pass" },
         @{ ConfiguredValue = $true; ExpectedValue = "False"; ExpectedResult = "fail" },
