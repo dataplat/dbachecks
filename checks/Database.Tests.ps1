@@ -43,6 +43,19 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, FastDatabase, $fil
     }
 }
 
+Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, FastDatabase, $filename {
+    $autoupdatestatistics = Get-DbcConfigValue policy.database.autoupdatestatistics
+    @(Get-Instance).ForEach{
+        Context "Testing Auto Update Statistics on $psitem" {
+            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
+                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics set to $autoupdatestatistics" {
+                    $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because "This is value expeceted for autoupdate statistics"
+                }
+            }
+        }
+    }
+}
+
 Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     $settings = Get-SettingsForDatabaseCollactionCheck
     @(Get-Instance).ForEach{
@@ -437,19 +450,6 @@ Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
                 }
                 It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months" {
                     $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date).AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning"
-                }
-            }
-        }
-    }
-}
-
-Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
-    $autoupdatestatistics = Get-DbcConfigValue policy.database.autoupdatestatistics
-    @(Get-Instance).ForEach{
-        Context "Testing Auto Update Statistics on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
-                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics set to $autoupdatestatistics" {
-                    $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because "This is value expeceted for autoupdate statistics"
                 }
             }
         }
