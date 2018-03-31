@@ -18,9 +18,9 @@ select d.name                           [Database]
     ,d.collation_name                   DatabaseCollation
     ,suser_sname(d.owner_sid)           Owner
     ,d.recovery_model_desc              RecoveryModel
-    ,d.is_auto_shrink_on                AutoShrink
     ,d.is_auto_close_on                 AutoClose
     ,d.is_auto_create_stats_on          AutoCreateStatistics
+    ,d.is_auto_shrink_on                AutoShrink
     ,d.is_auto_update_stats_on          AutoUpdateStatistics
     ,d.is_auto_update_stats_async_on    AutoUpdateStatisticsAsynchronously
     ,d.page_verify_option_desc          PageVerify

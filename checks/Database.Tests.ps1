@@ -43,6 +43,19 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, FastDatabase, $fil
     }
 }
 
+Describe "Auto Shrink" -Tags AutoShrink, $filename {
+    $settings = Get-SettingsForAutoShrinkCheck
+    @(Get-Instance).ForEach{
+        Context "Testing Auto Shrink on $psitem" {
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) on $($psitem.SqlInstance) should have Auto Shrink set to $($settings.AutoShrink)" {
+                    $psitem | Assert-AutoShrink -With $settings -Because "Shrinking databases causes fragmentation and performance issues"
+                }
+            }
+        }
+    }
+}
+
 Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, FastDatabase, $filename {
     $settings = Get-SettingsForAutoUpdateStatisticsCheck
     @(Get-Instance).ForEach{
@@ -76,19 +89,6 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Collation of [$($psitem.Database)] should be as expected" {
                     $psitem | Assert-DatabaseCollation -With $settings -Because 'you will get collation conflict errors in tempdb' 
-                }
-            }
-        }
-    }
-}
-
-Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $filename {
-    $settings = Get-SettingsForDatabaseOwnerIsValidCheck
-    (Get-Instance).ForEach{
-        Context "Testing Database Owners on $psitem" {
-            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
-                It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $settings.ExpectedOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsValid -With $settings -Because "The database owner was one specified as incorrect"
                 }
             }
         }
@@ -139,6 +139,19 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, FastDatabase, $filename {
             @((Get-DatabaseInfo -SqlInstance $psitem).Where{$psitem.Database -ne 'msdb'}).ForEach{
                 It "Trustworthy is set to false on $($psitem.Name)" {
                     $psitem | Assert-Trustworthy -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
+                }
+            }
+        }
+    }
+}
+
+Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $filename {
+    $settings = Get-SettingsForDatabaseOwnerIsValidCheck
+    (Get-Instance).ForEach{
+        Context "Testing Database Owners on $psitem" {
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $settings.ExpectedOwner))) on $($psitem.SqlInstance)" {
+                    $psitem | Assert-DatabaseOwnerIsValid -With $settings -Because "The database owner was one specified as incorrect"
                 }
             }
         }
@@ -289,19 +302,6 @@ Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
                 $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                     @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
-                }
-            }
-        }
-    }
-}
-
-Describe "Auto Shrink" -Tags AutoShrink, $filename {
-    $autoshrink = Get-DbcConfigValue policy.database.autoshrink
-    @(Get-Instance).ForEach{
-        Context "Testing Auto Shrink on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
-                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Shrink set to $autoshrink" {
-                    $psitem.AutoShrink | Should -Be $autoshrink -Because "Shrinking databases causes fragmentation and performance issues"
                 }
             }
         }
