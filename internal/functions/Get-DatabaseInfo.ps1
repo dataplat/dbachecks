@@ -40,7 +40,8 @@ $(if($Database) { "where name like '$($Database.Replace("*","%"))'"})
                         $db | Add-Member -Force -MemberType NoteProperty -Name SqlVersion -Value $server.VersionMajor
                     }
                     
-                    $script:results.Add($instance, $dbs)
+                    # make sure the -ExcludeDatabase of Invoke-DbcCheck is honoured
+                    $script:results.Add($instance, $dbs.Where{($ExcludedDatabases -notcontains $PsItem.Database)})
                 }
 
                 return $script:results[$instance]
