@@ -20,8 +20,8 @@ select d.name                           [Database]
     ,d.recovery_model_desc              RecoveryModel
     ,d.is_auto_shrink_on                AutoShrink
     ,d.is_auto_close_on                 AutoClose
-    ,d.is_auto_create_stats_on          AutoCreateStatisticsEnabled
-    ,d.is_auto_update_stats_on          AutoUpdateStatisticsEnabled
+    ,d.is_auto_create_stats_on          AutoCreateStatistics
+    ,d.is_auto_update_stats_on          AutoUpdateStatistics
     ,d.is_auto_update_stats_async_on    AutoUpdateStatisticsAsync
     ,d.page_verify_option_desc          PageVerify
     ,isnull((select count(*) from msdb..suspect_pages sp where sp.database_id = d.database_id and event_type in (1,2,3)),0) SuspectPages

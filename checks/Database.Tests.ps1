@@ -30,6 +30,19 @@ Describe "Auto Close" -Tags AutoClose, FastDatabase, $filename {
     }
 }
 
+Describe "Auto Create Statistics" -Tags AutoCreateStatistics, FastDatabase, $filename {
+    $settings = Get-SettingsForAutoCreateStatisticsCheck
+    @(Get-Instance).ForEach{
+        Context "Testing Auto Create Statistics on $psitem" {
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) on $($psitem.SqlInstance) should have Auto Create Statistics set to $($settings.AutoCreateStatistics)" {
+                    $psitem | Assert-AutoCreateStatistics -With $settings -Because "This is value expeceted for autocreate statistics"
+                }
+            }
+        }
+    }
+}
+
 Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     $settings = Get-SettingsForDatabaseCollactionCheck
     @(Get-Instance).ForEach{
@@ -424,19 +437,6 @@ Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
                 }
                 It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months" {
                     $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date).AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning"
-                }
-            }
-        }
-    }
-}
-
-Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
-    $autocreatestatistics = Get-DbcConfigValue policy.database.autocreatestatistics
-    @(Get-Instance).ForEach{
-        Context "Testing Auto Create Statistics on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
-                It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Create Statistics set to $autocreatestatistics" {
-                    $psitem.AutoCreateStatisticsEnabled | Should -Be $autocreatestatistics -Because "This is value expeceted for autocreate statistics"
                 }
             }
         }
