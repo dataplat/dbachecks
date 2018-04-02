@@ -49,7 +49,9 @@ function Get-ClusterObject {
     }
     
     foreach ($cluster in $clusters) {
-        Describe "Cluster $cluster Health" -Tags ClusterHealth, $filename {
+    # pick the name here for the output - we cant use it as we are accessing remotely
+    $clusterName = (Get-Cluster -Name $cluster).Name
+    Describe "Cluster $clusterName Health using Node $cluster" -Tags ClusterHealth, $filename {
         $return = Get-ClusterObject -Cluster $cluster
     
         Context "Cluster Nodes for $cluster" {
