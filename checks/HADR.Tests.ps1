@@ -1,17 +1,19 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
+# Get all the info in the function
 function Get-ClusterObject {
     [CmdletBinding()]
     param (
         [string]$Cluster
     )
     
+    # needs the failover cluster module
     if (-not (Get-Module FailoverClusters)) {
         try {
             Import-Module FailoverClusters -ErrorAction Stop
         }
         catch {
-            Stop-PSFFunction -Message "FailoverClusters module could not load" -ErrorRecord $psitem
+            Stop-PSFFunction -Message "FailoverClusters module could not load - Please install the Failover Cluster module using Windows Features " -ErrorRecord $psitem
             return
         }
     }
@@ -25,6 +27,7 @@ function Get-ClusterObject {
     $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
     $Ags = $return.AGs.Name
     $return.AvailabilityGroups = @{}
+    #Add all the AGs
     foreach ($Ag in $ags ) {
         
         $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $AG -AvailabilityGroup $ag
@@ -33,16 +36,18 @@ function Get-ClusterObject {
     Return $return
 }
 
-
+    # Grab some values
     $clusters = Get-DbcConfigValue app.clusters
     $skiplistener = Get-DbcConfigValue skip.hadr.listener.pingcheck
+    $domainname = Get-DbcConfigValue domain.name
+    $tcpport = Get-DbcConfigValue policy.hadr.tcpport
+
+    #Check for Cluster config value
     if ($clusters.Count -eq 0) {
         Write-Warning "No Clusters to look at. Please use Set-DbcConfig -Name app.clusters to add clusters for checking"
         break
     }
-    $domainname = Get-DbcConfigValue domain.name
-    $tcpport = Get-DbcConfigValue policy.hadr.tcpport
-
+    
     foreach ($cluster in $clusters) {
         Describe "Cluster $cluster Health" -Tags ClusterHealth, $filename {
         $return = Get-ClusterObject -Cluster $cluster
