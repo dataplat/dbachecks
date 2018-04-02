@@ -4,7 +4,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 function Get-ClusterObject {
     [CmdletBinding()]
     param (
-        [string]$Cluster
+        [string]$ClusterVM
     )
     
     # needs the failover cluster module
@@ -18,11 +18,11 @@ function Get-ClusterObject {
         }
     }
     [pscustomobject]$return = @{ }
-    $return.Cluster = (Get-Cluster -Name $cluster)
-    $return.Nodes = (Get-ClusterNode -Cluster $cluster)
-    $return.Resources = (Get-ClusterResource -Cluster $cluster)
-    $return.Network = (Get-ClusterNetwork -Cluster $cluster)
-    $return.Groups = (Get-ClusterGroup -Cluster $cluster)
+    $return.Cluster = (Get-Cluster -Name $clustervm)
+    $return.Nodes = (Get-ClusterNode -Cluster $clustervm)
+    $return.Resources = (Get-ClusterResource -Cluster $clustervm)
+    $return.Network = (Get-ClusterNetwork -Cluster $clustervm)
+    $return.Groups = (Get-ClusterGroup -Cluster $clustervm)
 
     $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
     $Ags = $return.AGs.Name
@@ -30,7 +30,7 @@ function Get-ClusterObject {
     #Add all the AGs
     foreach ($Ag in $ags ) {
         
-        $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $cluster -AvailabilityGroup $ag
+        $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $clustervm -AvailabilityGroup $ag
     }
 
     Return $return
@@ -48,11 +48,11 @@ if ($clusters.Count -eq 0) {
     break
 }
     
-foreach ($cluster in $clusters) {
+foreach ($clustervm in $clusters) {
     # pick the name here for the output - we cant use it as we are accessing remotely
-    $clusterName = (Get-Cluster -Name $cluster).Name
+    $clusterName = (Get-Cluster -Name $clustervm).Name
     Describe "Cluster $clusterName Health using Node $cluster" -Tags ClusterHealth, $filename {
-        $return = Get-ClusterObject -Cluster $cluster
+        $return = Get-ClusterObject -Clustervm $clustervm
     
         Context "Cluster nodes for $clusterName" {
             $return.Nodes.ForEach{
