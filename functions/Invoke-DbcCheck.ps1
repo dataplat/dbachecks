@@ -325,34 +325,8 @@
         $repos = Get-CheckRepo
         foreach ($repo in $repos) {
             if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
-
-                $selectedScripts = New-Object System.Collections.Generic.List[String]
-                if ($Script -ne $null) { 
-                    # respect the specific script file passed by parameter name
-                    $selectedScripts.Add($Script) 
-                } elseif ($Check.Count -gt 0) { 
-                    # specific checks were requested. find them.
-                    (Get-ChildItem "$repo\*.Tests.ps1").ForEach{
-                        $checksFile = $psitem.FullName
-                        
-                        if ($Check -contains ($PSItem.Name -replace ".Tests.ps1", "")) {
-                            # file matches by name 
-                            $selectedScripts.Add($checksFile)
-                        } else {
-                            @($check).ForEach{
-                                if (@(Select-String -Path $checksFile -Pattern "^Describe.*-Tags\s+.*($psitem)[`",\s]+[,\w]?.*`$").Matches.Count) {
-                                    # file matches by one of the tags
-                                    if (!($selectedScripts -contains $checksFile)) {
-                                        $selectedScripts.Add($checksFile)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                if ($AllChecks) {
-                    # process whole repository 
+                if ($AllChecks -or $Script) {
+                    # process the whole repository or specific script which was provided
                     if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
                         $number = $repos.IndexOf($repo)
                         $timestamp = Get-Date -format "yyyyMMddHHmmss"
@@ -362,7 +336,8 @@
                     Invoke-Pester @PSBoundParameters
                     Pop-Location
                 } else {
-                    @($selectedScripts).ForEach{
+                    # find the check files with matching tags and execute those
+                    (Get-CheckFile -Repo $repo -Check $check).ForEach{
                         if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
                             $number = $repos.IndexOf($repo)
                             $timestamp = Get-Date -format "yyyyMMddHHmmss"
