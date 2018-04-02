@@ -325,27 +325,20 @@
         $repos = Get-CheckRepo
         foreach ($repo in $repos) {
             if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
-                if ($AllChecks -or $Script) {
-                    # process the whole repository or specific script which was provided
-                    if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
-                        $number = $repos.IndexOf($repo)
-                        $timestamp = Get-Date -format "yyyyMMddHHmmss"
-                        $PSBoundParameters['OutputFile'] = "$script:maildirectory\report-$number-$pid-$timestamp.xml"
-                    }
-                    Push-Location -Path $repo
-                    Invoke-Pester @PSBoundParameters
-                    Pop-Location
-                } else {
-                    # find the check files with matching tags and execute those
-                    (Get-CheckFile -Repo $repo -Check $check).ForEach{
-                        if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
-                            $number = $repos.IndexOf($repo)
-                            $timestamp = Get-Date -format "yyyyMMddHHmmss"
-                            $PSBoundParameters['OutputFile'] = "$script:maildirectory\report-$number-$pid-$timestamp.xml"
-                        }
-                        Invoke-Pester -Script $PSItem @PSBoundParameters
-                    }
+                if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
+                    $number = $repos.IndexOf($repo)
+                    $timestamp = Get-Date -format "yyyyMMddHHmmss"
+                    $PSBoundParameters['OutputFile'] = "$script:maildirectory\report-$number-$pid-$timestamp.xml"
                 }
+
+                if ($Check.Count -gt 0) {
+                    # specific checks were listed. find the necessary script files. 
+                    $PSBoundParameters['Script'] = (Get-CheckFile -Repo $repo -Check $check)
+                }
+
+                Push-Location -Path $repo
+                Invoke-Pester @PSBoundParameters
+                Pop-Location
             }
         }
     }
