@@ -35,6 +35,7 @@ function Get-ClusterObject {
 
 
     $clusters = Get-DbcConfigValue app.clusters
+    $skiplistener = Get-DbcConfigValue skip.hadr.listener.pingcheck
     if ($clusters.Count -eq 0) {
         Write-Warning "No Clusters to look at. Please use Set-DbcConfig -Name app.clusters to add clusters for checking"
         break
@@ -82,7 +83,7 @@ function Get-ClusterObject {
             Context "Cluster Connectivity for Availability Group $($AG.Name) on $cluster" {
                 $AG.AvailabilityGroupListeners.ForEach{
                     $results = Test-DbaConnection -sqlinstance $_.Name
-                    It "Listener $($results.SqlInstance) Should Be Pingable" {
+                    It "Listener $($results.SqlInstance) Should Be Pingable" -skip:$skiplistener {
                         $results.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
                     }
                     It "Listener $($results.SqlInstance) Should Be Connectable" {
