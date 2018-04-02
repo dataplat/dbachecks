@@ -204,4 +204,4 @@ Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludedatabases -V
 
 
 # config for integration testing 
-Set-PSFConfig -Module dbachecks -Name testing.integration.instance -Value "localhost" -Initialize -Validation String -Description "Default SQL Server instances to be used by integration tests"
+Set-PSFConfig -Module dbachecks -Name testing.integration.instance -Value @("localhost") -Initialize -Description "Default SQL Server instances to be used by integration tests"
