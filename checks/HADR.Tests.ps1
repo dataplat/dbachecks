@@ -30,7 +30,7 @@ function Get-ClusterObject {
     #Add all the AGs
     foreach ($Ag in $ags ) {
         
-        $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $AG -AvailabilityGroup $ag
+        $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $cluster -AvailabilityGroup $ag
     }
 
     Return $return
