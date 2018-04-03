@@ -7,16 +7,6 @@ function Get-ClusterObject {
         [string]$ClusterVM
     )
     
-    # needs the failover cluster module
-    if (-not (Get-Module FailoverClusters)) {
-        try {
-            Import-Module FailoverClusters -ErrorAction Stop
-        }
-        catch {
-            Stop-PSFFunction -Message "FailoverClusters module could not load - Please install the Failover Cluster module using Windows Features " -ErrorRecord $psitem
-            return
-        }
-    }
     [pscustomobject]$return = @{ }
     $return.Cluster = (Get-Cluster -Name $clustervm)
     $return.Nodes = (Get-ClusterNode -Cluster $clustervm)
@@ -34,6 +24,19 @@ function Get-ClusterObject {
     }
 
     Return $return
+}
+
+# Import module or bomb out
+
+# needs the failover cluster module
+if (-not (Get-Module FailoverClusters)) {
+    try {
+        Import-Module FailoverClusters -ErrorAction Stop
+    }
+    catch {
+        Stop-PSFFunction -Message "FailoverClusters module could not load - Please install the Failover Cluster module using Windows Features " -ErrorRecord $psitem
+        return
+    }
 }
 
 # Grab some values
