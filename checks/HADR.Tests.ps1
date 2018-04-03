@@ -19,8 +19,14 @@ function Get-ClusterObject {
     $return.AvailabilityGroups = @{}
     #Add all the AGs
     foreach ($Ag in $ags ) {
-        
-        $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $clustervm -AvailabilityGroup $ag
+        $AGResults = Get-DbaAvailabilityGroup -SqlInstance $clustervm -AvailabilityGroup $ag
+        # Need to Check if it connected to Primary to get all the results
+        if($AgResults.LocalReplicaRole -ne 'Primary'){
+            $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $AgResults.PrimaryReplica -AvailabilityGroup $ag
+        }
+        else{
+            $return.AvailabilityGroups[$AG] = $AGResults
+        }
     }
 
     Return $return
