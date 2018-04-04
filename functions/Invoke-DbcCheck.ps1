@@ -332,6 +332,12 @@
                         $timestamp = Get-Date -format "yyyyMMddHHmmss"
                         $PSBoundParameters['OutputFile'] = "$script:maildirectory\report-$number-$pid-$timestamp.xml"
                     }
+
+                    if ($Check.Count -gt 0) {
+                        # specific checks were listed. find the necessary script files. 
+                        $PSBoundParameters['Script'] = (Get-CheckFile -Repo $repo -Check $check)
+                    }
+
                     Push-Location -Path $repo
                     Invoke-Pester @PSBoundParameters
                 }
