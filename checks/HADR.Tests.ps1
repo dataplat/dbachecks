@@ -46,7 +46,7 @@ if (-not (Get-Module FailoverClusters)) {
 }
 
 # Grab some values
-$clusters = Get-DbcConfigValue app.clusters
+$clusters = Get-DbcConfigValue app.cluster
 $skiplistener = Get-DbcConfigValue skip.hadr.listener.pingcheck
 $domainname = Get-DbcConfigValue domain.name
 $tcpport = Get-DbcConfigValue policy.hadr.tcpport
