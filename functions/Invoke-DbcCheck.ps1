@@ -321,25 +321,37 @@
         
         # Then we'll need a generic param passer that doesnt require global params 
         # cuz global params are hard
-        
-        $repos = Get-CheckRepo
-        foreach ($repo in $repos) {
-            if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
-                if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
-                    $number = $repos.IndexOf($repo)
-                    $timestamp = Get-Date -format "yyyyMMddHHmmss"
-                    $PSBoundParameters['OutputFile'] = "$script:maildirectory\report-$number-$pid-$timestamp.xml"
-                }
 
-                if ($Check.Count -gt 0) {
-                    # specific checks were listed. find the necessary script files. 
-                    $PSBoundParameters['Script'] = (Get-CheckFile -Repo $repo -Check $check)
-                }
+        $finishedAllTheChecks = $false
+        try {
+            $repos = Get-CheckRepo
+            foreach ($repo in $repos) {
+                if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
+                    if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
+                        $number = $repos.IndexOf($repo)
+                        $timestamp = Get-Date -format "yyyyMMddHHmmss"
+                        $PSBoundParameters['OutputFile'] = "$script:maildirectory\report-$number-$pid-$timestamp.xml"
+                    }
 
-                Push-Location -Path $repo
-                Invoke-Pester @PSBoundParameters
-                Pop-Location
+                    if ($Check.Count -gt 0) {
+                        # specific checks were listed. find the necessary script files. 
+                        $PSBoundParameters['Script'] = (Get-CheckFile -Repo $repo -Check $check)
+                    }
+
+                    Push-Location -Path $repo
+                    Invoke-Pester @PSBoundParameters
+                }
             }
+            $finishedAllTheChecks = $true
+        }
+        catch {
+            Stop-PSFFunction -Message "There was a problem with execution of checks repos!" -ErrorRecord $psitem
+        }
+        finally {
+            if (!($finishedAllTheChecks)) {
+                Write-PSFMessage -Level Warning -Message "Execution was cancelled!"
+            }
+            Pop-Location
         }
     }
 }
