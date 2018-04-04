@@ -4,7 +4,7 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 
 $sqlinstance = "localhost"
 
-Describe "Integration testing of $commandname" -Tags IntegrationTests,SqlIntegrationTests, Integration {
+Describe "Integration testing of $commandname" -Tags SqlIntegrationTests,IntegrationTests {
     @($sqlinstance).ForEach{
         Context "Collecting database details for checks from $psitem" {
             BeforeAll {
