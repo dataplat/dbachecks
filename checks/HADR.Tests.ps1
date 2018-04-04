@@ -7,20 +7,19 @@ function Get-ClusterObject {
         [string]$ClusterVM
     )
     
+    [pscustomobject]$return = @{}
     # Don't think you can use the cluster name here it won't run remotely
     $return.Cluster = (Get-Cluster -Name $clustervm)
     $return.Nodes = (Get-ClusterNode -Cluster $clustervm)
     $return.Resources = (Get-ClusterResource -Cluster $clustervm)
-    $OwnerGroup = $return.Resources.Where{$_.ResourceType -eq 'SQL Server Availability Group'}.OwnerGroup
     $return.Network = (Get-ClusterNetwork -Cluster $clustervm)
     $return.Groups = (Get-ClusterGroup -Cluster $clustervm)
-    $primary = $return.Groups.Where{$_.Name -eq $Ownergroup}.OwnerNode
     $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
-    $Ags = $return.AGs.Name
-    $return.AvailabilityGroups = @{}
+
     #Add all the AGs
-    foreach ($Ag in $ags ) {
-        $return.AvailabilityGroups[$AG]= Get-DbaAvailabilityGroup -SqlInstance $primary -AvailabilityGroup $ag
+    $return.AvailabilityGroups = @{}
+    @($return.Groups.Where{$_.State -eq "Online"}).ForEach{
+        $return.AvailabilityGroups[$psitem.Name] = Get-DbaAvailabilityGroup -SqlInstance $psitem.OwnerNode.Name -AvailabilityGroup $psitem.Name
     }
     Return $return
 }
