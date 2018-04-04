@@ -21,8 +21,9 @@ function Get-ClusterObject {
     foreach ($Ag in $ags ) {
         $AGResults = Get-DbaAvailabilityGroup -SqlInstance $clustervm -AvailabilityGroup $ag
         # Need to Check if it connected to Primary to get all the results
-        if ($AgResults.LocalReplicaRole -ne 'Primary') {
-            $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $AgResults.PrimaryReplica -AvailabilityGroup $ag
+        if ($AGResults.AvailabilityReplicas.Where{$_.Name -eq $clusterVm}.Role -ne 'Primary') {
+            $Primary = $AGResults.AvailabilityReplicas.Where{$_.Role -eq 'Primary'}.Name
+            $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $Primary -AvailabilityGroup $ag
         }
         else {
             $return.AvailabilityGroups[$AG] = $AGResults
