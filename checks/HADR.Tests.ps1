@@ -21,10 +21,10 @@ function Get-ClusterObject {
     foreach ($Ag in $ags ) {
         $AGResults = Get-DbaAvailabilityGroup -SqlInstance $clustervm -AvailabilityGroup $ag
         # Need to Check if it connected to Primary to get all the results
-        if($AgResults.LocalReplicaRole -ne 'Primary'){
+        if ($AgResults.LocalReplicaRole -ne 'Primary') {
             $return.AvailabilityGroups[$AG] = Get-DbaAvailabilityGroup -SqlInstance $AgResults.PrimaryReplica -AvailabilityGroup $ag
         }
-        else{
+        else {
             $return.AvailabilityGroups[$AG] = $AGResults
         }
     }
@@ -60,7 +60,7 @@ if ($clusters.Count -eq 0) {
 foreach ($clustervm in $clusters) {
     # pick the name here for the output - we cant use it as we are accessing remotely
     $clusterName = (Get-Cluster -Name $clustervm).Name
-    Describe "Cluster $clusterName Health using Node $cluster" -Tags ClusterHealth, $filename {
+    Describe "Cluster $clusterName Health using Node $clustervm" -Tags ClusterHealth, $filename {
         $return = Get-ClusterObject -Clustervm $clustervm
     
         Context "Cluster nodes for $clusterName" {
