@@ -2,8 +2,7 @@ $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 . "$PSScriptRoot/../internal/functions/Get-DatabaseDetail.ps1"
 
-
-Describe "Integration testing of $commandname" -Tags IntegrationTests, SqlIntegrationTests {
+Describe "Integration testing of $commandname" -Tags SqlIntegrationTests,IntegrationTests {
     @(Get-DbcConfigValue testing.integration.instance).ForEach{
         Context "Collecting database details for checks from $psitem" {
             BeforeAll {
