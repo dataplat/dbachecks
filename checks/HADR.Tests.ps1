@@ -51,25 +51,25 @@ if ($clusters.Count -eq 0) {
     
 foreach ($clustervm in $clusters) {
     # pick the name here for the output - we cant use it as we are accessing remotely
-    $clusterName = (Get-Cluster -Name $clustervm).Name
-    Describe "Cluster $clusterName Health using Node $clustervm" -Tags ClusterHealth, $filename {
+    $clustername = (Get-Cluster -Name $clustervm).Name
+    Describe "Cluster $clustername Health using Node $clustervm" -Tags ClusterHealth, $filename {
         $return = Get-ClusterObject -Clustervm $clustervm
     
-        Context "Cluster nodes for $clusterName" {
+        Context "Cluster nodes for $clustername" {
             $return.Nodes.ForEach{
                 It "Node $($psitem.Name) should be up" {
                     $psitem.State | Should -Be 'Up' -Because 'Every node in the cluster should be available'
                 }
             }
         }
-        Context "Cluster resources for $clusterName" {
+        Context "Cluster resources for $clustername" {
             $return.Resources.foreach{
                 It "Resource $($psitem.Name) should be online" {
                     $psitem.State | Should -Be 'Online' -Because 'All of the cluster resources should be online'
                 }
             }
         }
-        Context "Cluster networks for $clusterName" {
+        Context "Cluster networks for $clustername" {
             $return.Network.ForEach{
                 It "$($psitem.Name) should be up" {
                     $psitem.State | Should -Be 'Up' -Because 'All of the CLuster Networks should be up'
@@ -77,7 +77,7 @@ foreach ($clustervm in $clusters) {
             }
         }
         
-        Context "HADR status for $clusterName" {
+        Context "HADR status for $clustername" {
             $return.Nodes.ForEach{
                 It "HADR should be enabled on the node $($psitem.Name)" {
                     (Get-DbaAgHadr -SqlInstance $psitem.Name).IsHadrEnabled | Should -BeTrue -Because 'All of the nodes should have HADR enabled'
@@ -122,7 +122,7 @@ foreach ($clustervm in $clusters) {
                 }
             }
 
-            Context "Availability group status for $($AG.Name) on $clusterName" {
+            Context "Availability group status for $($AG.Name) on $clustername" {
                 $AG.AvailabilityReplicas.ForEach{
                     It "$($psitem.Name) replica should not be in unknown availability mode" {
                         $psitem.AvailabilityMode | Should -Not -Be 'Unknown' -Because 'The replica should not be in unknown state'
@@ -146,7 +146,7 @@ foreach ($clustervm in $clusters) {
             
             }
         
-            Context "Database availability group status for $($AG.Name) on $clusterName" {
+            Context "Database availability group status for $($AG.Name) on $clustername" {
                 $ag.AvailabilityReplicas.Where{$_.AvailabilityMode -eq 'SynchronousCommit' }.ForEach{
                     (Get-DbaAgDatabase -SqlInstance $psitem.Name -AvailabilityGroup $Ag.Name).ForEach{
                         It "Database $($psitem.DatabaseName) should be synchronised on the replica $($psitem.Replica)" {
@@ -182,7 +182,7 @@ foreach ($clustervm in $clusters) {
             } 
         }
         $return.Nodes.ForEach{
-            Context "Always On extended event status for replica $($psitem.Name) on $clusterName " {
+            Context "Always On extended event status for replica $($psitem.Name) on $clustername" {
                 $Xevents = Get-DbaXEsession -SqlInstance $psitem.Name
                 It "Replica $($psitem.Name) should have an extended event session called AlwaysOn_health" {
                     $Xevents.Name  | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
