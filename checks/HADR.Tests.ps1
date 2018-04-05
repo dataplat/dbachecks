@@ -19,7 +19,7 @@ function Get-ClusterObject {
     #Add all the AGs
     foreach ($Ag in $return.AGs) {
 
-        $return.AvailabilityGroups[$AG.Name]= Get-DbaAvailabilityGroup -SqlInstance $Ag.OwnerNode.Name -AvailabilityGroup $AG.Name
+        $return.AvailabilityGroups[$AG.Name] = Get-DbaAvailabilityGroup -SqlInstance $Ag.OwnerNode.Name -AvailabilityGroup $AG.Name
     }
     Return $return
 }
@@ -179,9 +179,9 @@ foreach ($clustervm in $clusters) {
                         }
                     }
                 }
-            }
-            
-            $AG.AvailabilityReplicas.ForEach{
+            } 
+        }
+        $return.Nodes.ForEach{{
                 Context "Always On extended event status for replica $($psitem.Name) on $clusterName " {
                     $Xevents = Get-DbaXEsession -SqlInstance $psitem.Name
                     It "Replica $($psitem.Name) should have an extended event session called AlwaysOn_health" {
@@ -197,5 +197,4 @@ foreach ($clustervm in $clusters) {
             }
         }
     }
-}
-       
+}       
