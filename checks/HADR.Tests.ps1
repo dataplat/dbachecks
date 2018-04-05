@@ -15,11 +15,11 @@ function Get-ClusterObject {
     $return.Network = (Get-ClusterNetwork -Cluster $clustervm)
     $return.Groups = (Get-ClusterGroup -Cluster $clustervm)
     $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
-
-    #Add all the AGs
     $return.AvailabilityGroups = @{}
-    @($return.Groups.Where{$_.State -eq "Online"}).ForEach{
-        $return.AvailabilityGroups[$psitem.Name] = Get-DbaAvailabilityGroup -SqlInstance $psitem.OwnerNode.Name -AvailabilityGroup $psitem.Name
+    #Add all the AGs
+    foreach ($Ag in $return.AGs) {
+
+        $return.AvailabilityGroups[$AG.Name]= Get-DbaAvailabilityGroup -SqlInstance $Ag.OwnerNode.Name -AvailabilityGroup $AG.Name
     }
     Return $return
 }
