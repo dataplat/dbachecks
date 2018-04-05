@@ -181,20 +181,19 @@ foreach ($clustervm in $clusters) {
                 }
             } 
         }
-        $return.Nodes.ForEach{{
-                Context "Always On extended event status for replica $($psitem.Name) on $clusterName " {
-                    $Xevents = Get-DbaXEsession -SqlInstance $psitem.Name
-                    It "Replica $($psitem.Name) should have an extended event session called AlwaysOn_health" {
-                        $Xevents.Name  | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
-                    }
-                    It "Replica $($psitem.Name) Always On Health extended event session should be running" {
-                        $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.Status | Should -Be 'Running' -Because 'The extended event session will enable you to troubleshoot errors'
-                    }
-                    It "Replica $($psitem.Name) Always On Health extended event session should be set to auto start" {
-                        $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.AutoStart | Should -BeTrue  -Because 'The extended event session will enable you to troubleshoot errors'
-                    }
+        $return.Nodes.ForEach{
+            Context "Always On extended event status for replica $($psitem.Name) on $clusterName " {
+                $Xevents = Get-DbaXEsession -SqlInstance $psitem.Name
+                It "Replica $($psitem.Name) should have an extended event session called AlwaysOn_health" {
+                    $Xevents.Name  | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
+                }
+                It "Replica $($psitem.Name) Always On Health extended event session should be running" {
+                    $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.Status | Should -Be 'Running' -Because 'The extended event session will enable you to troubleshoot errors'
+                }
+                It "Replica $($psitem.Name) Always On Health extended event session should be set to auto start" {
+                    $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.AutoStart | Should -BeTrue  -Because 'The extended event session will enable you to troubleshoot errors'
                 }
             }
         }
     }
-}       
+}
