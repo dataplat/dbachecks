@@ -82,6 +82,18 @@ Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsync
     }
 }
 
+Describe "Compatibility Level" -Tags CompatibilityLevel, FastDatabase, $filename {
+    @(Get-Instance).ForEach{
+        Context "Testing database compatibility level matches server compatibility level on $psitem" {
+            @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
+                It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
+                    Assert-CompatibilityLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
+                }
+            }
+        }
+    }
+}
+
 Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
     $settings = Get-SettingsForDatabaseCollactionCheck
     @(Get-Instance).ForEach{
@@ -442,18 +454,6 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
             $results = Get-DbaOrphanUser -SqlInstance $psitem
             It "$psitem should return 0 orphaned users" {
                 @($results).Count | Should -Be 0 -Because "We dont want orphaned users"
-            }
-        }
-    }
-}
-
-Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
-    @(Get-Instance).ForEach{
-        Context "Testing database compatibility level matches server compatibility level on $psitem" {
-            @(Test-DbaDatabaseCompatibility -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases).ForEach{
-                It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
-                    $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
-                }
             }
         }
     }

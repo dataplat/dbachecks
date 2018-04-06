@@ -8,6 +8,7 @@ Describe "Integration testing of $commandname" -Tags SqlIntegrationTests,Integra
             BeforeAll {
                 $expectedProperties = @{
                     ServerCollation = [string]
+                    InstanceCompatibilityLevel = [string]
                     SqlInstance = [string]
                     SqlVersion = [int]
                     DatabaseCollation = [string]
