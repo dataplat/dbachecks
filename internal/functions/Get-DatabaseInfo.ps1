@@ -41,7 +41,7 @@ $(if($Database) { "where name like '$($Database.Replace("*","%"))'"})
                                         ")
 
                     foreach($db in $dbs) {
-                        $db | Add-Member -Force -MemberType NoteProperty -Name ServerCollation -Value $server.Collation
+                        $db | Add-Member -Force -MemberType NoteProperty -Name InstanceCollation -Value $server.Collation
                         $db | Add-Member -Force -MemberType NoteProperty -Name InstanceCompatibilityLevel -Value "$($server.VersionMajor)0"
                         $db | Add-Member -Force -MemberType NoteProperty -Name SqlInstance -Value $server.DomainInstanceName
                         $db | Add-Member -Force -MemberType NoteProperty -Name SqlVersion -Value $server.VersionMajor

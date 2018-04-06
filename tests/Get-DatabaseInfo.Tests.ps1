@@ -7,7 +7,7 @@ Describe "Integration testing of $commandname" -Tags SqlIntegrationTests,Integra
         Context "Collecting database configuration details for checks from $psitem" {
             BeforeAll {
                 $expectedProperties = @{
-                    ServerCollation = [string]
+                    InstanceCollation = [string]
                     InstanceCompatibilityLevel = [string]
                     SqlInstance = [string]
                     SqlVersion = [int]
