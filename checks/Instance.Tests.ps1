@@ -208,51 +208,64 @@ Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename 
     }
 }
 
-Describe "Stopped XE Sessions" -Tags XESessionStopped, ExtendedEvent, $filename {
+Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEvent, $filename {
     $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
-    @(Get-Instance).ForEach{
-        Context "Checking sessions on $psitem" {
-            @(Get-DbaXESession -SqlInstance $psitem).ForEach{
-                if ($psitem.Name -in $xesession) {
-                    It "session $($psitem.Name) should not be running on $($psitem.InstanceName)" {
-                        $psitem.Status | Should -Be "Stopped" -Because 'This session should be stopped'
+    # no point running if we dont have something to check
+    if ($xesession) {
+        @(Get-Instance).ForEach{
+            Context "Checking sessions on $psitem" {
+                $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
+                $xesession.ForEach{
+                    It "Session $psitem should not be running" {
+                        $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
                     }
                 }
             }
         }
     }
+    else {
+        Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredstoppedsession -Value to add some Extended Events session names to run this check"
+    }
 }
 
-Describe "Running XE Sessions" -Tags XESessionRunning, ExtendedEvent, $filename {
+Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEvent, $filename {
     $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
-    @(Get-Instance).ForEach{
-        Context "Checking running sessions on $psitem" {
-            @(Get-DbaXESession -SqlInstance $psitem).ForEach{
-                if ($psitem.Name -in $xesession) {
-                    It "session $($psitem.Name) Should Be running on $($psitem.InstanceName)" {
-                        $psitem.Status | Should -Be "Running" -Because 'This session should be running'
+    # no point running if we dont have something to check
+    if ($xesession) {
+        @(Get-Instance).ForEach{
+            Context "Checking running sessions on $psitem" {
+                $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
+                $xesession.ForEach{
+                    It "session $psitem Should Be running" {
+                        $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
                     }
                 }
             }
         }
     }
+    else {
+        Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value to add some Extended Events session names to run this check"
+    }
 }
 
-Describe "XE Sessions Running Allowed" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
+Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
     $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
-    @(Get-Instance).ForEach{
-        Context "Checking sessions on $psitem" {
-            @(Get-DbaXESession -SqlInstance $psitem).ForEach{
-                if ($psitem.Name -notin $xesession) {
-                    It "session $($psitem.Name) should not be running on $($psitem.InstanceName)" {
-                        $psitem.Status | Should -Be "Stopped" -Because 'These sessions should not be running'
+    # no point running if we dont have something to check
+    if ($xesession) {
+        @(Get-Instance).ForEach{
+            Context "Checking sessions on $psitem" {
+                @(Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.ForEach{
+                    It "Session $($Psitem.Name) is allowed to be running" {
+                        $psitem.name | Should -BeIn $xesession -Because "Only these sessions are  allowed to be running"
                     }
                 }
             }
         }
     }
+    else {
+        Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
+    }
 }
-
 Describe "OLE Automation" -Tags OLEAutomation, $filename {
     $OLEAutomation = Get-DbcConfigValue policy.oleautomation
     @(Get-Instance).ForEach{

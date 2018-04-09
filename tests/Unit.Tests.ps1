@@ -75,8 +75,8 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
 
             @($Contexts).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
-                It "$Title Should end with `$psitem (or `$cluster) So that the PowerBi will work correctly" {
-                    $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('cluster"') | Should -BeTrue -Because 'This helps the PowerBi to parse the data'
+                It "$Title Should end with `$psitem (or `$clustername) So that the PowerBi will work correctly" {
+                    $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('clustername"') | Should -BeTrue -Because 'This helps the PowerBi to parse the data'
                 }
             }
         }
@@ -84,6 +84,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             ## This just grabs all the code
             $AST = [System.Management.Automation.Language.Parser]::ParseInput($Check, [ref]$null, [ref]$null)
             $Statements = $AST.EndBlock.statements.Extent
+
             ## Check only Pester description blocks to allow for extra includes in the file
             @($Statements.Where{$_.Text -like "Describe*"}).ForEach{
                 $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
@@ -110,38 +111,38 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
 Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
 Import-Module $ModuleBase\dbachecks.psd1 
 
-    Describe "Checking that the tests do as they should" -Tags UnitTest, UnitTestchecks {
-        #Mock the functions to only test what we want to test - The code ( the checks in this case)
-        Function Get-Instance {}
-        Function Get-DbcConfigValue {}
+Describe "Checking that the tests do as they should" -Tags UnitTest, UnitTestchecks {
+    #Mock the functions to only test what we want to test - The code ( the checks in this case)
+    Function Get-Instance {}
+    Function Get-DbcConfigValue {}
 
-        Function Write-PSFMessage {}
+    Function Write-PSFMessage {}
 
-        Mock Get-Instance {}
-        Mock Write-PSFMessage {}
+    Mock Get-Instance {}
+    Mock Write-PSFMessage {}
 
-        Context "Agent" {
+    Context "Agent" {
 
-        }
-        Context "Database" {
-
-        }
-        Context "Domain" {
-
-        }
-        Context "HADR" {
-
-        }
-        Context "Instance" {
-    
-        }
-        Context "LogShipping" {
-
-        }
-        Context "Maintenance Solution" {
-
-        }
-        Context "Server" {
-
-        }
     }
+    Context "Database" {
+
+    }
+    Context "Domain" {
+
+    }
+    Context "HADR" {
+
+    }
+    Context "Instance" {
+    
+    }
+    Context "LogShipping" {
+
+    }
+    Context "Maintenance Solution" {
+
+    }
+    Context "Server" {
+
+    }
+}
