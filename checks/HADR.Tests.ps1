@@ -168,7 +168,7 @@ foreach ($clustervm in $clusters) {
                         It "Database $($psitem.DatabaseName) should be synchronising on the secondary as it is Async" {
                             $psitem.SynchronizationState | Should -Be 'Synchronizing' -Because 'The database on the asynchronous secondary replica should be synchronising'
                         }
-                        It "Database $($psitem.DatabaseName) should be failover ready on the secondary replica $($psitem.Replica)" {
+                        It "Database $($psitem.DatabaseName) should not be failover ready on the secondary replica $($psitem.Replica)" {
                             $psitem.IsFailoverReady | Should -BeFalse -Because 'The database on the asynchronous secondary replica should be ready to failover'
                         }
                         It "Database $($psitem.DatabaseName) should be joined on the secondary replica $($psitem.Replica)" {
