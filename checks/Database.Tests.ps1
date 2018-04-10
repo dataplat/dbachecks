@@ -280,9 +280,10 @@ Describe "Disabled Index" -Tags DisabledIndex, $filename {
 }
 
 Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
+    $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
     @(Get-Instance).ForEach{
         Context "Testing database growth event on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
+            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)}.ForEach{
                 $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
                 It "$($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                     @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
