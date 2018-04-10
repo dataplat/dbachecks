@@ -97,8 +97,8 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                             ($PSItem.text -match 'Get-Instance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -BeTrue # use the \ to escape the ) -Because 'We use the ForEach method in our coding standards'
                         }
                     }
-                    It "$title Should not use `$PSItem" {
-                        ($PSItem.text -match '$PSItem' )| Should -BeFalse -Because '¬$psitem is the correct one to use'
+                    It "$title Should not use `$_" {
+                        ($PSItem.text -match '$_' )| Should -BeFalse -Because '¬$psitem is the correct one to use'
                     }
                     It "$title Should Contain a Context Block" {
                         $PSItem.text -match 'Context' | Should -BeTrue -Because 'This helps the Power BI'
