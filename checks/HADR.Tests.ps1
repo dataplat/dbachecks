@@ -63,7 +63,8 @@ foreach ($clustervm in $clusters) {
             }
         }
         Context "Cluster resources for $clustername" {
-            $return.Resources.foreach{
+            # Get the resources that are no IP Addresses with an owner of Availability Group
+            $return.Resources.Where{$_.ResourceType -notin ($_.ResourceType -eq  'IP Address' -and $_.OwnerGroup -in $Return.Ags)}.ForEach{
                 It "Resource $($psitem.Name) should be online" {
                     $psitem.State | Should -Be 'Online' -Because 'All of the cluster resources should be online'
                 }
