@@ -69,6 +69,12 @@ foreach ($clustervm in $clusters) {
                     $psitem.State | Should -Be 'Online' -Because 'All of the cluster resources should be online'
                 }
             }
+            # Get teh resources where IP Address is owned by AG and group by AG
+            ($return.Resources.Where{$_.ResourceType -eq 'IP Address'-and $_.OwnerGroup -in $return.AGs} | Group-Object -Property OwnerGroup).ForEach{
+                It "One of the IP Addresses for Availability Group $($Psitem.Name) Should be online" {
+                    $psitem.Group.Where{$_.State -eq 'Online'}.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
+                }
+            }
         }
         Context "Cluster networks for $clustername" {
             $return.Network.ForEach{
