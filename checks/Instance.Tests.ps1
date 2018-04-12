@@ -15,31 +15,31 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
     }
 }
 
-Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
-    @(Get-ComputerName).ForEach{
-        Context "Testing SQL Browser Service on $psitem" {
-            if (@(Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
-                It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" {
-                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
-                }
-            } else {
-                It "SQL browser service on $psitem Should Be Running as multiple instances are installed" {
-                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State| Should -Be "Running" -Because 'You need the browser service with multiple instances'
-                }
+Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename { 
+    @(Get-ComputerName).ForEach{ 
+        Context "Testing SQL Browser Service on $psitem" { 
+            $Services = Get-DbaSqlService -ComputerName $psitem 
+            if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
+                It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" { 
+                    $Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service' 
+                } 
             }
-            if (@(Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
-                It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" {
-                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service'
-                }
-            } else {
-                It "SQL browser service startmode Should Be Automatic on $psitem as multiple instances are installed" {
-                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).StartMode | Should -Be "Automatic"
-                }
+            else { 
+                It "SQL browser service on $psitem Should Be Running as multiple instances are installed" { 
+                    $Services.Where{$_.ServiceType -eq 'Browser'}.State| Should -Be "Running" -Because 'You need the browser service with multiple instances' } 
+            } 
+            if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) { 
+                It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" { 
+                    $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' } 
             }
-        }
-    }
+            else { 
+                It "SQL browser service startmode Should Be Automatic on $psitem as multiple instances are installed" { 
+                    $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Automatic" 
+                } 
+            } 
+        } 
+    } 
 }
-
 Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
     @(Get-Instance).ForEach{
         Context "Testing TempDB Configuration on $psitem" {
@@ -80,7 +80,8 @@ Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
         Context "Testing Backup Path Access on $psitem" {
             if (-not (Get-DbcConfigValue policy.storage.backuppath)) {
                 $backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
-            } else {
+            }
+            else {
                 $backuppath = Get-DbcConfigValue policy.storage.backuppath
             }
 
@@ -353,8 +354,8 @@ Describe "Error Log Entries" -Tags ErrorLog, $filename {
     @(Get-Instance).ForEach{
         Context "Checking error log on $psitem" {
             It "Error log should be free of error severities 17-24 on $psitem" {
-               (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays(-$logWindow)).Text | Should -Not -Match "Severity: 1[7-9]" -Because "these severities indicate serious problems"
-               (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays(-$logWindow)).Text | Should -Not -Match "Severity: 2[0-4]" -Because "these severities indicate serious problems"
+                (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow)).Text | Should -Not -Match "Severity: 1[7-9]" -Because "these severities indicate serious problems"
+                (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow)).Text | Should -Not -Match "Severity: 2[0-4]" -Because "these severities indicate serious problems"
             }
         }
     }
