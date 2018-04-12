@@ -1,12 +1,12 @@
-. "$PSScriptRoot/../../assertions/Database.SuspectPageCount.ps1"
+. "$PSScriptRoot/../../confirms/Database.SuspectPageCount.ps1"
 
-Describe "Testing Suspect Page Count Assertions" -Tags SuspectPage {
+Describe "Testing Suspect Page Count Confirms" -Tags SuspectPage {
     Context "Validate the suspect pages check" {
         It "The test should pass when there are no suspect pages" {
             @{
                 SuspectPages = 0
             } |
-            Assert-SuspectPageCount  
+            Confirm-SuspectPageCount  
         }
         
         It "The test should fail when there is even one suspect page" {
@@ -14,7 +14,7 @@ Describe "Testing Suspect Page Count Assertions" -Tags SuspectPage {
                 @{
                     SuspectPages = 1
                 } | 
-                Assert-SuspectPageCount 
+                Confirm-SuspectPageCount 
             } | Should -Throw
         }
 
@@ -23,7 +23,7 @@ Describe "Testing Suspect Page Count Assertions" -Tags SuspectPage {
                 @{
                     SuspectPages = 10
                 } | 
-                Assert-SuspectPageCount 
+                Confirm-SuspectPageCount 
             } | Should -Throw
         }
     }

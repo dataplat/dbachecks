@@ -1,20 +1,20 @@
 . $PSScriptRoot/../internal/functions/Convert-ConfigValueToBoolean.ps1 
 
-function Get-SettingsForAutoCloseCheck {
+function Get-ConfigForAutoCloseCheck {
     return @{
         AutoClose = (Get-DbcConfigValue policy.database.autoclose | Convert-ConfigValueToBoolean)
     }
 } 
 
-function Assert-AutoClose {
+function Confirm-AutoClose {
     param (
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject,
         [parameter(Mandatory=$true)][Alias("With")]
-        [object]$TestSettings,
+        [object]$config,
         [string]$Because
     )
     process {
-        $TestObject.AutoClose | Should -Be $TestSettings.AutoClose -Because $Because
+        $TestObject.AutoClose | Should -Be $config.AutoClose -Because $Because
     }
 }

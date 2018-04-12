@@ -1,6 +1,6 @@
-. "$PSScriptRoot/../../assertions/Database.AutoUpdateStatistics.ps1"
+. "$PSScriptRoot/../../confirms/Database.AutoShrink.ps1"
 
-Describe "Testing Auto Update Statistics Assertion" -Tags AutoUpdateStatistics {
+Describe "Testing Auto Shrink Assertion" -Tags AutoShrink {
     $cases = @(
         @{ ConfiguredValue = $true; ExpectedValue = "True"; ExpectedResult = "pass" },
         @{ ConfiguredValue = $true; ExpectedValue = "False"; ExpectedResult = "fail" },
@@ -10,19 +10,17 @@ Describe "Testing Auto Update Statistics Assertion" -Tags AutoUpdateStatistics {
 
     It "The test should <ExpectedResult> when the expected value is <ExpectedValue> and configured value is <ConfiguredValue>" -TestCases $cases {
         param([Boolean]$ConfiguredValue, [String]$ExpectedValue, [String]$ExpectedResult)
-        
-        Mock Get-DbcConfigValue { return $ExpectedValue } -ParameterFilter { $Name -like "policy.database.autoupdatestatistics" }
-        $testSettings = Get-SettingsForAutoUpdateStatisticsCheck 
-
+        Mock Get-DbcConfigValue { return $ExpectedValue } -ParameterFilter { $Name -like "policy.database.autoshrink" }
+        $config = Get-ConfigForAutoShrinkCheck 
         if ($ExpectedResult -eq "pass") {
             @{
-                AutoUpdateStatistics = $ConfiguredValue
-            } | Assert-AutoUpdateStatistics -With $testSettings
+                AutoShrink = $ConfiguredValue
+            } | Confirm-AutoShrink -With $config
         } else {
             {
                 @{
-                    AutoUpdateStatistics = $ConfiguredValue
-                } | Assert-AutoUpdateStatistics -With $testSettings
+                    AutoShrink = $ConfiguredValue
+                } | Confirm-AutoShrink -With $config
             } | Should -Throw
         }
     }

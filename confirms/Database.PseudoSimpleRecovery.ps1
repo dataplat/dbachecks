@@ -1,4 +1,4 @@
-function Assert-PseudoSimpleRecovery {
+function Confirm-PseudoSimpleRecovery {
     param (
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject,

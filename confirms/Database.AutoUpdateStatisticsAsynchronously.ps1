@@ -1,20 +1,20 @@
 . $PSScriptRoot/../internal/functions/Convert-ConfigValueToBoolean.ps1 
 
-function Get-SettingsForAutoUpdateStatisticsAsynchronouslyCheck {
+function Get-ConfigForAutoUpdateStatisticsAsynchronouslyCheck {
     return @{
         AutoUpdateStatisticsAsynchronously = (Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously | Convert-ConfigValueToBoolean)
     }
 } 
 
-function Assert-AutoUpdateStatisticsAsynchronously {
+function Confirm-AutoUpdateStatisticsAsynchronously {
     param (
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject,
         [parameter(Mandatory=$true)][Alias("With")]
-        [object]$TestSettings,
+        [object]$config,
         [string]$Because
     )
     process {
-        $TestObject.AutoUpdateStatisticsAsynchronously | Should -Be $TestSettings.AutoUpdateStatisticsAsynchronously -Because $Because
+        $TestObject.AutoUpdateStatisticsAsynchronously | Should -Be $config.AutoUpdateStatisticsAsynchronously -Because $Because
     }
 }

@@ -1,12 +1,12 @@
-. "$PSScriptRoot/../../assertions/Database.PseudoSimpleRecovery.ps1"
+. "$PSScriptRoot/../../confirms/Database.PseudoSimpleRecovery.ps1"
 
-Describe "Testing Pseudo Simple Recovery Assertions" -Tags PseudoSimpleRecovery {
+Describe "Testing Pseudo Simple Recovery Confirms" -Tags PseudoSimpleRecovery {
     It "The test should pass when database is in simple recovery model" {
         @{
             RecoveryModel = "SIMPLE"
             DataFilesWithoutBackup = 3
         } |
-        Assert-PseudoSimpleRecovery
+        Confirm-PseudoSimpleRecovery
     }
 
     It "The test should pass when database is in full recovery model and full backup exists" {
@@ -14,7 +14,7 @@ Describe "Testing Pseudo Simple Recovery Assertions" -Tags PseudoSimpleRecovery 
             RecoveryModel = "FULL"
             DataFilesWithoutBackup = 0
         } |
-        Assert-PseudoSimpleRecovery
+        Confirm-PseudoSimpleRecovery
     }
     
     It "The test should fail when recovery model is not simple and there is no full backup" {
@@ -23,7 +23,7 @@ Describe "Testing Pseudo Simple Recovery Assertions" -Tags PseudoSimpleRecovery 
                 RecoveryModel = "FULL"
                 DataFilesWithoutBackup = 2
             } | 
-            Assert-SuspectPageCount 
+            Confirm-SuspectPageCount 
         } | Should -Throw
     }
 }

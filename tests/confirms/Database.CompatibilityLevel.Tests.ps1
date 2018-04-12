@@ -1,4 +1,4 @@
-. "$PSScriptRoot/../../assertions/Database.CompatibilityLevel.ps1"
+. "$PSScriptRoot/../../confirms/Database.CompatibilityLevel.ps1"
 
 Describe "Testing Compatibility Level Assertion" -Tags CompatibilityLevel {
     Context "Validate compatibility level checks" {
@@ -7,7 +7,7 @@ Describe "Testing Compatibility Level Assertion" -Tags CompatibilityLevel {
                 CompatibilityLevel = "100"
                 InstanceCompatibilityLevel = "100"
             } |
-            Assert-CompatibilityLevel
+            Confirm-CompatibilityLevel
         }
 
         It "The test should fail when the current recovery model is not what is expected" {
@@ -16,7 +16,7 @@ Describe "Testing Compatibility Level Assertion" -Tags CompatibilityLevel {
                     CompatibilityLevel = "100"
                     InstanceCompatibilityLevel = "110"
                 } |
-                Assert-CompatibilityLevel
+                Confirm-CompatibilityLevel
             } | Should -Throw 
         }
     }

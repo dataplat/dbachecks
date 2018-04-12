@@ -1,6 +1,6 @@
-. "$PSScriptRoot/../../assertions/Database.AutoUpdateStatisticsAsynchronously.ps1"
+. "$PSScriptRoot/../../confirms/Database.AutoCreateStatistics.ps1"
 
-Describe "Testing Auto Update Statistics Asynchronously Assertion" -Tags AutoUpdateStatisticsAsynchronously {
+Describe "Testing Auto Create Statistics Assertion" -Tags AutoCreateStatistic {
     $cases = @(
         @{ ConfiguredValue = $true; ExpectedValue = "True"; ExpectedResult = "pass" },
         @{ ConfiguredValue = $true; ExpectedValue = "False"; ExpectedResult = "fail" },
@@ -10,17 +10,17 @@ Describe "Testing Auto Update Statistics Asynchronously Assertion" -Tags AutoUpd
 
     It "The test should <ExpectedResult> when the expected value is <ExpectedValue> and configured value is <ConfiguredValue>" -TestCases $cases {
         param([Boolean]$ConfiguredValue, [String]$ExpectedValue, [String]$ExpectedResult)
-        Mock Get-DbcConfigValue { return $ExpectedValue } -ParameterFilter { $Name -like "policy.database.autoupdatestatisticsasynchronously" }
-        $testSettings = Get-SettingsForAutoUpdateStatisticsAsynchronouslyCheck 
+        Mock Get-DbcConfigValue { return $ExpectedValue } -ParameterFilter { $Name -like "policy.database.autocreatestatistics" }
+        $config = Get-ConfigForAutoCreateStatisticsCheck 
         if ($ExpectedResult -eq "pass") {
             @{
-                AutoUpdateStatisticsAsynchronously = $ConfiguredValue
-            } | Assert-AutoUpdateStatisticsAsynchronously -With $testSettings
+                AutoCreateStatistics = $ConfiguredValue
+            } | Confirm-AutoCreateStatistics -With $config
         } else {
             {
                 @{
-                    AutoUpdateStatisticsAsynchronously = $ConfiguredValue
-                } | Assert-AutoUpdateStatisticsAsynchronously -With $testSettings
+                    AutoCreateStatistics = $ConfiguredValue
+                } | Confirm-AutoCreateStatistics -With $config
             } | Should -Throw
         }
     }

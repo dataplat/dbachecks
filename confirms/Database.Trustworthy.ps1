@@ -1,4 +1,4 @@
-function Assert-Trustworthy {
+function Confirm-Trustworthy {
     param (
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject,

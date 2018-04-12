@@ -1,4 +1,4 @@
-function Get-SettingsForRecoveryModelCheck {
+function Get-ConfigForRecoveryModelCheck {
     $RecoveryModelValidValues = @("FULL", "SIMPLE")
     $RecoveryModel = Get-DbcConfigValue policy.recoverymodel.type
     if (!($RecoveryModel -in $RecoveryModelValidValues)) {
@@ -10,17 +10,17 @@ function Get-SettingsForRecoveryModelCheck {
     }
 }
 
-function Assert-RecoveryModel {
+function Confirm-RecoveryModel {
     param (
         [parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [object[]]$TestObject, 
         [parameter(Mandatory=$true)][Alias("With")]
-        [object]$TestSettings,
+        [object]$config,
         [string]$Because
     )
     process {
-        if (!($TestObject.Database -in $TestSettings.ExcludedDatabase)) {
-            $TestObject.RecoveryModel | Should -Be $TestSettings.RecoveryModel -Because $Because
+        if (!($TestObject.Database -in $config.ExcludedDatabase)) {
+            $TestObject.RecoveryModel | Should -Be $config.RecoveryModel -Because $Because
         }
     }
 }

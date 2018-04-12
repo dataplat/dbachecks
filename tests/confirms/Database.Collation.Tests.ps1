@@ -1,10 +1,10 @@
-. "$PSScriptRoot/../../assertions/Database.Collation.ps1"
+. "$PSScriptRoot/../../confirms/Database.Collation.ps1"
 
 Describe "Testing Collaction Assertion" -Tags DatabaseCollation {
     Context "Validate the database collation check" {
         Mock Get-DbcConfigValue { return "mySpecialDbWithUniqueCollation" } -ParameterFilter { $Name -like "policy.database.wrongcollation" }
         
-        $testSettings = Get-SettingsForDatabaseCollactionCheck
+        $config = Get-ConfigForDatabaseCollactionCheck
 
         It "The test should pass when the database is not on the exclusion list and the collations match" {
             @{
@@ -12,7 +12,7 @@ Describe "Testing Collaction Assertion" -Tags DatabaseCollation {
                 InstanceCollation = "collation1"
                 DatabaseCollation = "collation1"
             } |
-            Assert-DatabaseCollation -With $testSettings
+            Confirm-DatabaseCollation -With $config
         }
 
         It "The test should pass when the database is on the exclusion list and the collations do not match" {
@@ -21,7 +21,7 @@ Describe "Testing Collaction Assertion" -Tags DatabaseCollation {
                 InstanceCollation = "collation1"
                 DatabaseCollation = "collation2"
             } |
-            Assert-DatabaseCollation -With $testSettings
+            Confirm-DatabaseCollation -With $config
         }
 
         It "The test should pass when the database is ReportingServer and the collations do not match" {
@@ -30,7 +30,7 @@ Describe "Testing Collaction Assertion" -Tags DatabaseCollation {
                 InstanceCollation = "collation1"
                 DatabaseCollation = "collation2"
             } |
-            Assert-DatabaseCollation -With $testSettings
+            Confirm-DatabaseCollation -With $config
         }
 
         It "The test should fail when the database is not on the exclusion list and the collations do not match" {
@@ -40,7 +40,7 @@ Describe "Testing Collaction Assertion" -Tags DatabaseCollation {
                     InstanceCollation = "collation1"
                     DatabaseCollation = "collation2"
                 } |
-                Assert-DatabaseCollation -With $testSettings
+                Confirm-DatabaseCollation -With $config
             } | Should -Throw
         }
 
@@ -50,7 +50,7 @@ Describe "Testing Collaction Assertion" -Tags DatabaseCollation {
                 InstanceCollation = "collation1"
                 DatabaseCollation = "collation2"
             } |
-            Assert-DatabaseCollation -With $testSettings
+            Confirm-DatabaseCollation -With $config
         }
     }
 }

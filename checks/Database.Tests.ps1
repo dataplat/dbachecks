@@ -5,9 +5,9 @@
  # in separate files. Writing a new test, or modifying an existing one typically involves 
  # modifications to the three related files:
  #
- # /assertions/Database.<CheckName>.ps1                     - where the assertions and config functions are defined
- # /checks/Database.Tests.ps1 (this file)                   - where the assertions are used to check stuff
- # /tests/assertions/Database.<CheckName>.Tests.ps1         - where the assertions are unit tested
+ # /confirms/Database.<CheckName>.ps1                     - where the confirms and config functions are defined
+ # /checks/Database.Tests.ps1 (this file)                 - where the confirms are used to check stuff
+ # /tests/confirms/Database.<CheckName>.Tests.ps1         - where the confirms are unit tested
  #>
 
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
@@ -15,15 +15,15 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . "$PSScriptRoot/../internal/functions/Get-DatabaseInfo.ps1"
 
 # dot source the assertion files
-@(Get-ChildItem "$PSScriptRoot/../assertions/$filename.*.ps1").ForEach{ . $psItem.FullName }
+@(Get-ChildItem "$PSScriptRoot/../confirms/$filename.*.ps1").ForEach{ . $psItem.FullName }
 
 Describe "Auto Close" -Tags AutoClose, FastDatabase, $filename {
-    $settings = Get-SettingsForAutoCloseCheck
+    $settings = Get-ConfigForAutoCloseCheck
     @(Get-Instance).ForEach{
         Context "Testing Auto Close on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) should have Auto Close set to $($settings.AutoClose)" {
-                    $psitem | Assert-AutoClose -With $settings -Because "Because!"
+                    $psitem | Confirm-AutoClose -With $settings -Because "Because!"
                 }
             }
         }
@@ -31,12 +31,12 @@ Describe "Auto Close" -Tags AutoClose, FastDatabase, $filename {
 }
 
 Describe "Auto Create Statistics" -Tags AutoCreateStatistics, FastDatabase, $filename {
-    $settings = Get-SettingsForAutoCreateStatisticsCheck
+    $settings = Get-ConfigForAutoCreateStatisticsCheck
     @(Get-Instance).ForEach{
         Context "Testing Auto Create Statistics on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) on $($psitem.SqlInstance) should have Auto Create Statistics set to $($settings.AutoCreateStatistics)" {
-                    $psitem | Assert-AutoCreateStatistics -With $settings -Because "This is value expeceted for autocreate statistics"
+                    $psitem | Confirm-AutoCreateStatistics -With $settings -Because "This is value expeceted for autocreate statistics"
                 }
             }
         }
@@ -44,12 +44,12 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, FastDatabase, $fil
 }
 
 Describe "Auto Shrink" -Tags AutoShrink, $filename {
-    $settings = Get-SettingsForAutoShrinkCheck
+    $settings = Get-ConfigForAutoShrinkCheck
     @(Get-Instance).ForEach{
         Context "Testing Auto Shrink on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) on $($psitem.SqlInstance) should have Auto Shrink set to $($settings.AutoShrink)" {
-                    $psitem | Assert-AutoShrink -With $settings -Because "Shrinking databases causes fragmentation and performance issues"
+                    $psitem | Confirm-AutoShrink -With $settings -Because "Shrinking databases causes fragmentation and performance issues"
                 }
             }
         }
@@ -57,12 +57,12 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
 }
 
 Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, FastDatabase, $filename {
-    $settings = Get-SettingsForAutoUpdateStatisticsCheck
+    $settings = Get-ConfigForAutoUpdateStatisticsCheck
     @(Get-Instance).ForEach{
         Context "Testing Auto Update Statistics on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) on $($psitem.SqlInstance) should have Auto Update Statistics set to $($settings.AutoUpdateStatistics)" {
-                    $psitem | Assert-AutoUpdateStatistics -With $settings -Because "This is value expeceted for autoupdate statistics"
+                    $psitem | Confirm-AutoUpdateStatistics -With $settings -Because "This is value expeceted for autoupdate statistics"
                 }
             }
         }
@@ -70,12 +70,12 @@ Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, FastDatabase, $fil
 }
 
 Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, FastDatabase, $filename {
-    $settings = Get-SettingsForAutoUpdateStatisticsAsynchronouslyCheck
+    $settings = Get-ConfigForAutoUpdateStatisticsAsynchronouslyCheck
     @(Get-Instance).ForEach{
         Context "Testing Auto Update Statistics Asynchronously on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) on $($psitem.SqlInstance) should have Auto Update Statistics Asynchronously set to $($settings.AutoUpdateStatisticsAsynchronously)" {
-                    $psitem | Assert-AutoUpdateStatisticsAsynchronously -With $settings -Because "This is value expeceted for autoupdate statistics asynchronously"
+                    $psitem | Confirm-AutoUpdateStatisticsAsynchronously -With $settings -Because "This is value expeceted for autoupdate statistics asynchronously"
                 }
             }
         }
@@ -87,7 +87,7 @@ Describe "Compatibility Level" -Tags CompatibilityLevel, FastDatabase, $filename
         Context "Testing database compatibility level matches server compatibility level on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
-                    Assert-CompatibilityLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
+                    Confirm-CompatibilityLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
                 }
             }
         }
@@ -95,12 +95,12 @@ Describe "Compatibility Level" -Tags CompatibilityLevel, FastDatabase, $filename
 }
 
 Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
-    $settings = Get-SettingsForDatabaseCollactionCheck
+    $settings = Get-ConfigForDatabaseCollactionCheck
     @(Get-Instance).ForEach{
         Context "Testing database collations on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Collation of [$($psitem.Database)] should be as expected" {
-                    $psitem | Assert-DatabaseCollation -With $settings -Because 'you will get collation conflict errors in tempdb' 
+                    $psitem | Confirm-DatabaseCollation -With $settings -Because 'you will get collation conflict errors in tempdb' 
                 }
             }
         }
@@ -108,12 +108,12 @@ Describe "Database Collation" -Tags DatabaseCollation, FastDatabase, $filename {
 }
 
 Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabase, $filename {
-    $settings = Get-SettingsForDatabaseOwnerIsNotInvalidCheck
+    $settings = Get-ConfigForDatabaseOwnerIsNotInvalidCheck
     @(Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should Not be in this list ($( [String]::Join(", ", $settings.InvalidOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsNotInvalid -With $settings -Because "The database owner was one specified as incorrect"
+                    $psitem | Confirm-DatabaseOwnerIsNotInvalid -With $settings -Because "The database owner was one specified as incorrect"
                 }
             }
         }
@@ -121,12 +121,12 @@ Describe "Database Owner is not invalid" -Tags InvalidDatabaseOwner, FastDatabas
 }
 
 Describe "Page Verify" -Tags PageVerify, FastDatabase, $filename {
-    $settings = Get-SettingsForPageVerifyCheck 
+    $settings = Get-ConfigForPageVerifyCheck 
     @(Get-Instance).ForEach{
         Context "Testing page verify on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) should have page verify set to $($settings.PageVerify)" {
-                    $psitem | Assert-PageVerify -With $settings -Because "Page verify helps SQL Server to detect corruption"
+                    $psitem | Confirm-PageVerify -With $settings -Because "Page verify helps SQL Server to detect corruption"
                 }
             }
         }
@@ -138,7 +138,7 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, FastDatabase, $filena
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$($psitem.Database) has PseudoSimple recovery model equal false on $($psitem.SqlInstance)" {
-                    $psitem | Assert-PseudoSimpleRecovery -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
+                    $psitem | Confirm-PseudoSimpleRecovery -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
                 }
             }
         }
@@ -146,12 +146,12 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, FastDatabase, $filena
 }
 
 Describe "Recovery Model" -Tags RecoveryModel, DISA, FastDatabase, $filename {
-    $settings = Get-SettingsForRecoveryModelCheck
+    $settings = Get-ConfigForRecoveryModelCheck
     @(Get-Instance).ForEach{
         Context "Testing Recovery Model on $psitem" {
             (Get-DatabaseInfo -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 It "$($psitem.Database) should be set to $($settings.RecoveryModel) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-RecoveryModel -With $settings -Because "You expect this recovery model"
+                    $psitem | Confirm-RecoveryModel -With $settings -Because "You expect this recovery model"
                 }
             }
         }
@@ -163,7 +163,7 @@ Describe "Suspect Page" -Tags SuspectPage, FastDatabase, $filename {
         Context "Testing suspect pages on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "$psitem should return 0 suspect pages on $($psitem.SqlInstance)" {
-                    $psitem | Assert-SuspectPageCount -Because 'You do not want any suspect pages'
+                    $psitem | Confirm-SuspectPageCount -Because 'You do not want any suspect pages'
                 }
             }
         }
@@ -175,7 +175,7 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, FastDatabase, $filename {
         Context "Testing database trustworthy option on $psitem" {
             @((Get-DatabaseInfo -SqlInstance $psitem).Where{$psitem.Database -ne 'msdb'}).ForEach{
                 It "Trustworthy is set to false on $($psitem.Name)" {
-                    $psitem | Assert-Trustworthy -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
+                    $psitem | Confirm-Trustworthy -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
                 }
             }
         }
@@ -183,12 +183,12 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, FastDatabase, $filename {
 }
 
 Describe "Database Owner is valid" -Tags ValidDatabaseOwner, FastDatabase, $filename {
-    $settings = Get-SettingsForDatabaseOwnerIsValidCheck
+    $settings = Get-ConfigForDatabaseOwnerIsValidCheck
     (Get-Instance).ForEach{
         Context "Testing Database Owners on $psitem" {
             @(Get-DatabaseInfo -SqlInstance $psitem).ForEach{
                 It "Database $($psitem.Database) - owner $($psitem.Owner) should be in ($([String]::Join(",", $settings.ExpectedOwner))) on $($psitem.SqlInstance)" {
-                    $psitem | Assert-DatabaseOwnerIsValid -With $settings -Because "The database owner was one specified as incorrect"
+                    $psitem | Confirm-DatabaseOwnerIsValid -With $settings -Because "The database owner was one specified as incorrect"
                 }
             }
         }
