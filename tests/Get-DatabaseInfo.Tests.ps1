@@ -1,36 +1,39 @@
 $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
-. "$PSScriptRoot/../internal/functions/Get-DatabaseDetail.ps1"
+. "$PSScriptRoot/../internal/functions/Get-DatabaseInfo.ps1"
 
 Describe "Integration testing of $commandname" -Tags SqlIntegrationTests,IntegrationTests {
     @(Get-DbcConfigValue testing.integration.instance).ForEach{
-        Context "Collecting database details for checks from $psitem" {
+        Context "Collecting database configuration details for checks from $psitem" {
             BeforeAll {
                 $expectedProperties = @{
-                    ServerCollation = [string]
+                    InstanceCollation = [string]
+                    InstanceCompatibilityLevel = [string]
                     SqlInstance = [string]
                     SqlVersion = [int]
                     DatabaseCollation = [string]
-                    CurrentOwner = [string]
+                    Owner = [string]
                     AutoShrink = [bool]
                     AutoClose = [bool]
-                    AutoCreateStatisticsEnabled = [bool]
-                    AutoUpdateStatisticsEnabled = [bool]
-                    AutoUpdateStatisticsAsync = [bool]
+                    AutoCreateStatistics = [bool]
+                    AutoUpdateStatistics = [bool]
+                    AutoUpdateStatisticsAsynchronously = [bool]
                     Trustworthy = [bool]
                     PageVerify = [string]
+                    RecoveryModel = [string]
                     SuspectPages = [int]
                     Status = [string]
+                    DataFilesWithoutBackup = [int]
                 }
 
-                $script:databases = (Get-DatabaseDetail -SqlInstance $psitem)
+                $script:databases = (Get-DatabaseInfo -SqlInstance $psitem)
             }
 
-            It "Execution of Get-DatabaseDetail should not throw exceptions" {
-                { Get-DatabaseDetail -SqlInstance $psitem } | Should -Not -Throw -Because "we expect data not exceptions"
+            It "Execution of Get-DatabaseInfo should not throw exceptions" {
+                { Get-DatabaseInfo -SqlInstance $psitem } | Should -Not -Throw -Because "we expect data not exceptions"
             }
   
-            It "Get-DatabaseDetail should return at least the system databases" {
+            It "Get-DatabaseInfo should return at least the system databases" {
                 $script:databases.Count | Should -BeGreaterOrEqual 4 -Because "we expect at least to have the system databases on any instance"
             }
 
