@@ -112,7 +112,7 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
                 }
                 if ($AgentAlertNotification) {
                     It "$psitem should have notification for Severity $sev Alert" {
-                        ($alerts.Where{$psitem.Severity -eq $sev}).HasNotification -eq 1 | Should -be $true -Because "Should notify by Agent notifications"
+                        ($alerts.Where{$psitem.Severity -eq $sev}).HasNotification -in 1,2,3,4,5,6,7  | Should -be $true -Because "Should notify by Agent notifications"
                     }
                 }
             }
@@ -132,7 +132,7 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
                 }
                 if ($AgentAlertNotification) {
                     It "$psitem should have notification for Message_ID $mid Alert" {
-                        ($alerts.Where{$psitem.messageid -eq $mid}).HasNotification -eq 1 | Should -be $true -Because "Should notify by Agent notifications"
+                        ($alerts.Where{$psitem.messageid -eq $mid}).HasNotification -in 1,2,3,4,5,6,7 | Should -be $true -Because "Should notify by Agent notifications"
                     }
                 }
             }
