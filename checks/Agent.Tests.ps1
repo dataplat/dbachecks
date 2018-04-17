@@ -97,21 +97,21 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
     $AgentAlertNotification = Get-DbcConfigValue agent.alert.Notification
     @(Get-Instance).ForEach{
         $alerts = Get-DbaAgentAlert -SqlInstance $psitem
-        Context "Testing Agent Alerts Severity exists on $psitem" {   
+        Context "Testing Agent Alerts Severity exists on $psitem" {
             ForEach ($sev in $severity) {
-                It "Should have Severity $sev Alert" {
+                It "$psitem should have Severity $sev Alert" {
                     ($alerts.Where{$psitem.Severity -eq $sev}) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
                 }
-                It "Should have Severity $sev Alert enabled" {
+                It "$psitem should have Severity $sev Alert enabled" {
                     ($alerts.Where{$psitem.Severity -eq $sev}) | Should -be $true -Because "Configured alerts should be enabled"
                 }
                 if ($AgentAlertJob) {
-                    It "Should have Jobname for Severity $sev Alert" {
+                    It "$psitem should have Jobname for Severity $sev Alert" {
                         ($alerts.Where{$psitem.Severity -eq $sev}).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
                     }
                 }
                 if ($AgentAlertNotification) {
-                    It "Should have notification for Severity $sev Alert" {
+                    It "$psitem should have notification for Severity $sev Alert" {
                         ($alerts.Where{$psitem.Severity -eq $sev}).HasNotification -eq 1 | Should -be $true -Because "Should notify by Agent notifications"
                     }
                 }
@@ -119,19 +119,19 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
         }
         Context "Testing Agent Alerts MessageID exists on $psitem" {
             ForEach ($mid in $messageid) {
-                It "Should have Message_ID $mid Alert" {
+                It "$psitem should have Message_ID $mid Alert" {
                     ($alerts.Where{$psitem.messageid -eq $mid}) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
                 }
-                It "Should have Message_ID $mid Alert enabled" {
+                It "$psitem should have Message_ID $mid Alert enabled" {
                     ($alerts.Where{$psitem.messageid -eq $mid}) | Should -be $true -Because "Configured alerts should be enabled"
                 }
                 if ($AgentAlertJob) {
-                    It "Should have Job name for Message_ID $mid Alert" {
+                    It "$psitem should have Job name for Message_ID $mid Alert" {
                         ($alerts.Where{$psitem.messageid -eq $mid}).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
                     }
                 }
                 if ($AgentAlertNotification) {
-                    It "Should have notification for Message_ID $mid Alert" {
+                    It "$psitem should have notification for Message_ID $mid Alert" {
                         ($alerts.Where{$psitem.messageid -eq $mid}).HasNotification -eq 1 | Should -be $true -Because "Should notify by Agent notifications"
                     }
                 }
