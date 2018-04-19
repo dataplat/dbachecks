@@ -63,9 +63,16 @@ foreach ($clustervm in $clusters) {
             }
         }
         Context "Cluster resources for $clustername" {
-            $return.Resources.foreach{
+            # Get the resources that are no IP Addresses with an owner of Availability Group
+            $return.Resources.Where{$_.ResourceType -notin ($_.ResourceType -eq  'IP Address' -and $_.OwnerGroup -in $Return.Ags)}.ForEach{
                 It "Resource $($psitem.Name) should be online" {
                     $psitem.State | Should -Be 'Online' -Because 'All of the cluster resources should be online'
+                }
+            }
+            # Get teh resources where IP Address is owned by AG and group by AG
+            ($return.Resources.Where{$_.ResourceType -eq 'IP Address'-and $_.OwnerGroup -in $return.AGs} | Group-Object -Property OwnerGroup).ForEach{
+                It "One of the IP Addresses for Availability Group $($Psitem.Name) Should be online" {
+                    $psitem.Group.Where{$_.State -eq 'Online'}.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
                 }
             }
         }
@@ -168,7 +175,7 @@ foreach ($clustervm in $clusters) {
                         It "Database $($psitem.DatabaseName) should be synchronising on the secondary as it is Async" {
                             $psitem.SynchronizationState | Should -Be 'Synchronizing' -Because 'The database on the asynchronous secondary replica should be synchronising'
                         }
-                        It "Database $($psitem.DatabaseName) should be failover ready on the secondary replica $($psitem.Replica)" {
+                        It "Database $($psitem.DatabaseName) should not be failover ready on the secondary replica $($psitem.Replica)" {
                             $psitem.IsFailoverReady | Should -BeFalse -Because 'The database on the asynchronous secondary replica should be ready to failover'
                         }
                         It "Database $($psitem.DatabaseName) should be joined on the secondary replica $($psitem.Replica)" {
