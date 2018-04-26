@@ -1,3 +1,5 @@
+. $script:ModuleRoot/internal/functions/Invoke-ConfigurationScript.ps1
+
 function Reset-DbcConfig {
 <#
     .SYNOPSIS
@@ -57,8 +59,4 @@ function Reset-DbcConfig {
             Get-DbcConfig -Name $psitem 
         }
     }
-}
-
-function Invoke-ConfigurationScript {
-    & $script:ModuleRoot\internal\configurations\configuration.ps1
 }
