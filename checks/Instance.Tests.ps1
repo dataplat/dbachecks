@@ -44,19 +44,19 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
     @(Get-Instance).ForEach{
         Context "Testing TempDB Configuration on $psitem" {
             $TempDBTest = Test-DbaTempDbConfiguration -SqlServer $psitem
-            It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDb1118) {
+            It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDb1118) {
                 $TempDBTest[0].CurrentSetting | Should -Be $TempDBTest[0].Recommended -Because 'TF 1118 should be enabled'
             }
-            It "should have $($TempDBTest[1].Recommended) TempDB Files on $($TempDBTest[1].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.tempdbfileCount) {
+            It "should have $($TempDBTest[1].Recommended) TempDB Files on $($TempDBTest[1].SqlInstance)" -Skip:(Get-DbcConfigValue skip.tempdbfileCount) {
                 $TempDBTest[1].CurrentSetting | Should -Be $TempDBTest[1].Recommended -Because 'This is the recommended number of tempdb files for your server'
             }
-            It "should not have TempDB Files autogrowth set to percent on $($TempDBTest[2].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileGrowthPercent) {
+            It "should not have TempDB Files autogrowth set to percent on $($TempDBTest[2].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFileGrowthPercent) {
                 $TempDBTest[2].CurrentSetting | Should -Be $TempDBTest[2].Recommended -Because 'Auto growth type should not be percent'
             }
-            It "should not have TempDB Files on the C Drive on $($TempDBTest[3].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFilesonC) {
+            It "should not have TempDB Files on the C Drive on $($TempDBTest[3].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFilesonC) {
                 $TempDBTest[3].CurrentSetting | Should -Be $TempDBTest[3].Recommended -Because 'You dot want the tempdb files on the same drive as the operating system'
             }
-            It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileSizeMax) {
+            It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFileSizeMax) {
                 $TempDBTest[4].CurrentSetting | Should -Be $TempDBTest[4].Recommended -Because 'Tempdb files should be able to grow'
             }
         }
@@ -161,7 +161,7 @@ Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
 }
 
 Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
-    $maxdumps = Get-DbcConfigValue -Name policy.dump.maxcount
+    $maxdumps = Get-DbcConfigValue  policy.dump.maxcount
     @(Get-Instance).ForEach{
         Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
             $count = (Get-DbaDump -SqlInstance $psitem).Count
@@ -173,7 +173,7 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
 }
 
 Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
-    $BuildWarning = Get-DbcConfigValue -Name  policy.build.warningwindow
+    $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
     @(Get-Instance).ForEach{
         Context "Checking that build is still supportedby Microsoft for $psitem" {
             $results = Get-DbaSqlBuildReference -SqlInstance $psitem
