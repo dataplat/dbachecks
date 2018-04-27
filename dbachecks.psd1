@@ -12,7 +12,7 @@
     
     # Version number of this module.
     
-    ModuleVersion          = '1.1.123'
+    ModuleVersion          = '1.1.124'
     
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
