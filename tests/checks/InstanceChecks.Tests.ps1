@@ -29,6 +29,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         Assert-MockCalled @assertMockParams
     }
 
+    <#
         It "Should not run for SQL 2005 and below"{
             # Mock Get-Version
             function Get-Version {}
@@ -45,7 +46,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             }
             Assert-MockCalled @assertMockParams
     }
-
+#>
 
 }
 }
