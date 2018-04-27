@@ -77,7 +77,6 @@
         'Get-DbcConfig',
         'Get-DbcConfigValue',
         'Set-DbcConfig',
-        'Reset-DbcConfig',
         'Invoke-DbcCheck',
         'Invoke-DbcConfigFile',
         'Import-DbcConfig',
