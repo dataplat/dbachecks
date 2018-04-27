@@ -1,6 +1,6 @@
 $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
-. "$PSScriptRoot/../internal/functions/Get-CheckFile.ps1"
+. "$PSScriptRoot/../../internal/functions/Get-CheckFile.ps1"
 
 Describe "Testing Get-CheckFile function" {
     Mock Get-ChildItem { 
