@@ -36,6 +36,7 @@ function New-Json {
     $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{$_.Name -eq 1}.Value
     $Config = ''
     $configs.foreach{$config += "$_ "}
+    if(-not $config){$config = "None"}
         $collection += [pscustomobject]@{
             Group         = $filename
             Type          = $type
@@ -73,6 +74,7 @@ foreach ($olaname in $olanames) {
         Description    = $olaname.Description
         UniqueTag      = $olaname.Prefix
         AllTags        = "$($olaname.Prefix), MaintenanceSolution"
+        Config        = "policy.ola.*"
     }
 }
 
