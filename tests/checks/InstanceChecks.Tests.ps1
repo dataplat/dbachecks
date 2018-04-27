@@ -19,26 +19,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
         Assert-BackupCompression -Instance 'Dummy' -defaultbackupcompression $expected
         }
-
-        <#
-        It "Should not run for SQL 2005 and below"{
-            # Mock Get-Version
-            function Get-Version {}
-            Mock Get-Version {9} -ModuleName dbachecks
-        # Mock the version check for not running the tests
-        Mock Get-DbaSpConfigure {@{"ConfiguredValue" = 1}}
-        $Pester = Invoke-DbcCheck -SQLInstance Dummy -Check DefaultBackupCompression -PassThru -Show None
-        $Pester.TotalCount | Should -Be 1
-        $Pester.SkippedCount | Should -Be 1
-        $assertMockParams = @{
-            'CommandName' = 'Get-Version'
-            'Times'       = 1
-            'Exactly'     = $true
-            }
-            Assert-MockCalled @assertMockParams
-    }
-    #>
-        # Validate we have called the mock the correct number of times
+                # Validate we have called the mock the correct number of times
     It "Should call the mocks" {
         $assertMockParams = @{
         'CommandName' = 'Get-DbaSpConfigure'
@@ -47,5 +28,24 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         }
         Assert-MockCalled @assertMockParams
     }
+
+        It "Should not run for SQL 2005 and below"{
+            # Mock Get-Version
+            function Get-Version {}
+            Mock Get-Version {9} 
+        # Mock the version check for not running the tests
+        Mock Get-DbaSpConfigure {@{"ConfiguredValue" = 1}}
+        $Pester = Invoke-DbcCheck -SQLInstance Dummy -Check DefaultBackupCompression -PassThru -Show None
+       # $Pester.TotalCount | Should -Be 1
+       # $Pester.SkippedCount | Should -Be 1
+        $assertMockParams = @{
+            'CommandName' = 'Get-Version'
+            'Times'       = 1
+            'Exactly'     = $true
+            }
+            Assert-MockCalled @assertMockParams
+    }
+
+
 }
 }
