@@ -33,7 +33,7 @@ function New-Json {
     else  {
         $type = $null
     }
-    $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-z]*.[a-z]*.[a-z]*.)").groups.Where{$_.Name -eq 1}.Value
+    $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-zA-Z]*.[a-zA-Z]*.[a-zA-Z]*\b)").groups.Where{$_.Name -eq 1}.Value
     $Config = ''
     $configs.foreach{$config += $_}
         $collection += [pscustomobject]@{
