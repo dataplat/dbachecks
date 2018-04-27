@@ -173,7 +173,7 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
 }
 
 Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
-    $BuildWarning = Get-DbcConfigValue   policy.build.warningwindow
+    $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
     @(Get-Instance).ForEach{
         Context "Checking that build is still supportedby Microsoft for $psitem" {
             $results = Get-DbaSqlBuildReference -SqlInstance $psitem
