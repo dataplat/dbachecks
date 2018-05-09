@@ -128,7 +128,7 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
     $maxpercentage = Get-DbcConfigValue policy.identity.usagepercent
     @(Get-Instance).ForEach{
         Context "Testing Column Identity Usage on $psitem" {
-            $exclude = (Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.IsAccessible -eq $false}.Name @(Test-DbaIdentityUsage -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
+            $exclude = (Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.IsAccessible -eq $false}.Name
             @(Test-DbaIdentityUsage -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 if ($psitem.Database -ne "tempdb") {
                     $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
