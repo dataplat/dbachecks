@@ -143,6 +143,18 @@ Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryenabled -Val
 Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryscheduled -Validation bool -Value $true -Initialize -Description "Ola's Delete Backup History should be scheduled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryenabled -Validation bool -Value $true -Initialize -Description "Ola's Purge Job History should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Validation bool -Value $true -Initialize -Description "Ola's Purge Job History should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.PurgeBackupHistoryCleanUp -Value 30 -Initialize -Description "Ola's Purge Backup History Cleanup setting should be this many days"
+Set-PSFConfig -Module dbachecks -name ola.JobName.SystemFull -Value 'DatabaseBackup - SYSTEM_DATABASES - FULL' -Initialize -Description "The name for the Ola System Full Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserFull -Value 'DatabaseBackup - USER_DATABASES - FULL' -Initialize -Description "The name for the Ola User Full Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserDiff -Value 'DatabaseBackup - USER_DATABASES - DIFF' -Initialize -Description "The name for the Ola User Diff Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserLog -Value 'DatabaseBackup - USER_DATABASES - Log' -Initialize -Description "The name for the Ola User Log Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.CommandLogCleanup -Value 'CommandLog Cleanup' -Initialize -Description "The name for the Ola CommandLog Cleanup Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.SystemIntegrity -Value 'DatabaseIntegrityCheck - SYSTEM_DATABASES' -Initialize -Description "The name for the Ola System Integrity Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserIntegrity -Value 'DatabaseIntegrityCheck - USER_DATABASES' -Initialize -Description "The name for the Ola User Integrity Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserIndex -Value 'IndexOptimize - USER_DATABASES' -Initialize -Description "The name for the Ola User Index Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.OutputFileCleanup -Value 'Output File Cleanup' -Initialize -Description "The name for the Ola Output File Cleanup Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.DeleteBackupHistory -Value 'sp_delete_backuphistory' -Initialize -Description "The name for the Ola Delete Backup History Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.PurgeBackupHistory -Value 'sp_purge_jobhistory' -Initialize -Description "The name for the Ola Delete Purge History Job"
 
 # xevents
 Set-PSFConfig -Module dbachecks -Name policy.xevent.validrunningsession -Value $null -Initialize -Description "List of XE Sessions that can be be running."
