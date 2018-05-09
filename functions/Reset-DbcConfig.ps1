@@ -43,9 +43,9 @@ function Reset-DbcConfig {
         @($resolvedName).ForEach{
             $localName = $psitem.ToLower()
             if (-not (Get-DbcConfig -Name $localName)) {
-                Stop-PSFFunction -Message "Setting named $localName does not exist. Use Get-DbcCheck to get the list of supported settings."
+                Stop-PSFFunction -FunctionName Reset-DbcConfig -Message "Setting named $localName does not exist. Use Get-DbcCheck to get the list of supported settings."
             } else { 
-                Write-PSFMessage -Message "resetting $localName"
+                Write-PSFMessage -FunctionName Reset-DbcConfig -Message "resetting $localName" 
                 Unregister-PSFConfig -Module dbachecks -Name $localName
                 [PSFramework.Configuration.ConfigurationHost]::Configurations.Remove("dbachecks.$localName") | Out-Null
             }
