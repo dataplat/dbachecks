@@ -141,6 +141,7 @@ Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupscheduled -Val
 Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanUp -Value 30 -Initialize -Description "Ola's OutputFile Cleanup setting should be this many days"
 Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryenabled -Validation bool -Value $true -Initialize -Description "Ola's Delete Backup History should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryscheduled -Validation bool -Value $true -Initialize -Description "Ola's Delete Backup History should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryCleanUp -Value 30 -Initialize -Description "Ola's Delete Backup History Cleanup setting should be this many days"
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryenabled -Validation bool -Value $true -Initialize -Description "Ola's Purge Job History should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Validation bool -Value $true -Initialize -Description "Ola's Purge Job History should be scheduled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeBackupHistoryCleanUp -Value 30 -Initialize -Description "Ola's Purge Backup History Cleanup setting should be this many days"
