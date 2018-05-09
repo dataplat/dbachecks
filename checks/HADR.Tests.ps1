@@ -107,8 +107,8 @@ foreach ($clustervm in $clusters) {
                     It "Listener $($results.SqlInstance) domain name should be $domainname" {
                         $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
                     }
-                    It "Listener $($results.SqlInstance) TCP port should be $tcpport" {
-                        $results.TCPPort | Should -Be $tcpport -Because "$tcpport is what we said the TCP port should be"
+                    It "Listener $($results.SqlInstance) TCP port should be in $tcpport" {
+                        $results.TCPPort | Should -BeIn $tcpport -Because "We expect the TCP Port to be in $tcpport"
                     }
                 }
 
@@ -123,8 +123,8 @@ foreach ($clustervm in $clusters) {
                     It "Replica $($results.SqlInstance) domain name should be $domainname" {
                         $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
                     }
-                    It "Replica $($results.SqlInstance) TCP port should be $tcpport" {
-                        $results.TCPPort | Should -Be $tcpport -Because "$tcpport is what we said the TCP port should be"
+                    It "Replica $($results.SqlInstance) TCP port should be in $tcpport" {
+                        $results.TCPPort | Should -BeIn $tcpport -Because "We expect the TCP Port to be in $tcpport"
                     }
                 }
             }

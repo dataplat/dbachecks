@@ -199,11 +199,12 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
 }
 
 Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
+    . $PSScriptRoot/../internal/assertions/Assert-BackupCompression.ps1 
     $defaultbackupcompression = Get-DbcConfigValue policy.backup.defaultbackupcompression
     @(Get-Instance).ForEach{
         Context "Testing Default Backup Compression on $psitem" {
-            It "Default Backup Compression is set to $defaultbackupcompression on $psitem" {
-                (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'DefaultBackupCompression').ConfiguredValue -eq 1 | Should -Be $defaultbackupcompression -Because 'The default backup compression should be set correctly'
+            It "Default Backup Compression is set to $defaultbackupcompression on $psitem" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
+               Assert-BackupCompression -Instance $psitem -defaultbackupcompression $defaultbackupcompression
             }
         }
     }

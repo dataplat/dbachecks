@@ -43,7 +43,7 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
         $destlog = Get-DbcConfigValue policy.backup.logdir
         @(Get-Instance).ForEach{
             Context "Testing Backup Restore & Integrity Checks on $psitem" {
-            @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).Name -VerifyOnly).ForEach{
+                @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).Name -VerifyOnly).ForEach{
                     
                     if ($psitem.DBCCResult -notmatch "skipped for restored master") {
                         It "DBCC for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
@@ -128,7 +128,7 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
     $maxpercentage = Get-DbcConfigValue policy.identity.usagepercent
     @(Get-Instance).ForEach{
         Context "Testing Column Identity Usage on $psitem" {
-            $exclude = (Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.IsAccessible -eq $false}.Name 
+            $exclude = (Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.IsAccessible -eq $false}.Name @(Test-DbaIdentityUsage -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
             @(Test-DbaIdentityUsage -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 if ($psitem.Database -ne "tempdb") {
                     $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
@@ -257,11 +257,12 @@ Describe "Auto Shrink" -Tags AutoShrink, $filename {
 Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA, $filename {
     $maxfull = Get-DbcConfigValue policy.backup.fullmaxdays
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
+    $skipreadonly = Get-DbcConfigValue skip.backup.readonly
     @(Get-Instance).ForEach{
         Context "Testing last full backups on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
-                $offline = ($psitem.Status -match "Offline")
-                It -Skip:$offline "$($psitem.Name) full backups on $($psitem.Parent.Name) Should Be less than $maxfull days" {
+                $skip = ($psitem.Status -match "Offline") -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                It -Skip:$skip "$($psitem.Name) full backups on $($psitem.Parent.Name) Should Be less than $maxfull days" {
                     $psitem.LastBackupDate | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because "Taking regular backups is extraordinarily important"
                 }
             }
@@ -273,11 +274,12 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
     if (-not (Get-DbcConfigValue skip.diffbackuptest)) {
         $maxdiff = Get-DbcConfigValue policy.backup.diffmaxhours
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
+        $skipreadonly = Get-DbcConfigValue skip.backup.readonly
         @(Get-Instance).ForEach{
             Context "Testing last diff backups on $psitem" {
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
-                    $offline = ($psitem.Status -match "Offline")
-                    It -Skip:$offline "$($psitem.Name) diff backups on $($psitem.Parent.Name) Should Be less than $maxdiff hours" {
+                    $skip = ($psitem.Status -match "Offline") -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                    It -Skip:$skip "$($psitem.Name) diff backups on $($psitem.Parent.Name) Should Be less than $maxdiff hours" {
                         $psitem.LastDifferentialBackupDate | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
                     }
                 }
@@ -289,12 +291,13 @@ Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA
 Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, $filename {
     $maxlog = Get-DbcConfigValue policy.backup.logmaxminutes
     $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
+    $skipreadonly = Get-DbcConfigValue skip.backup.readonly
     @(Get-Instance).ForEach{
         Context "Testing last log backups on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
                 if ($psitem.RecoveryModel -ne "Simple") {
-                    $offline = ($psitem.Status -match "Offline")
-                    It -Skip:$offline "$($psitem.Name) log backups on $($psitem.Parent.Name) Should Be less than $maxlog minutes" {
+                    $skip = ($psitem.Status -match "Offline") -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                    It -Skip:$skip  "$($psitem.Name) log backups on $($psitem.Parent.Name) Should Be less than $maxlog minutes" {
                         $psitem.LastLogBackupDate | Should -BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
                     }
                 }
@@ -340,7 +343,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
     @(Get-Instance).ForEach{
         Context "Testing Log File count and size for $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
+            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name -and ($Psitem.IsAccessible -eq $true)}.ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                 $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
                 $Splat = @{$LogFileSizeComparison = $true;
@@ -509,9 +512,8 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
     @(Get-Instance).ForEach{
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb' -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
-                $simpleRecovery = ($psitem.RecoveryModel -like "simple")
-                It -Skip:$simpleRecovery "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" {
-                    (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
+                if (-not($psitem.RecoveryModel -eq "Simple")) {
+                    It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
                 }
             }
         }

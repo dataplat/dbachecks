@@ -4,7 +4,7 @@ function New-Json {
     $repos = Get-CheckRepo
     $collection = $groups = $repofiles = @()
     foreach ($repo in $repos) {
-        $repofiles += (Get-ChildItem "$repo\*.Tests.ps1" | Where-Object { $_.Name -ne 'MaintenanceSolution.Tests.ps1' })
+        $repofiles += (Get-ChildItem "$repo\*.Tests.ps1")
     }
     
     $tokens = $null
@@ -52,32 +52,6 @@ function New-Json {
         $unique = $singletags | Where-Object { $_.Name -in ($check.AllTags -split ",").Trim() }
         $check.UniqueTag = $unique.Name
     }
-
-    
-$olanames = @()
-$olanames += [pscustomobject]@{ Description = 'Ola System Full Backup'; prefix = 'OlaSystemFull' }
-$olanames += [pscustomobject]@{ Description = 'Ola System Full Backup'; prefix = 'OlaUserFull' }
-$olanames += [pscustomobject]@{ Description = 'Ola User Diff Backup'; prefix = 'OlaUserDiff' }
-$olanames += [pscustomobject]@{ Description = 'Ola User Log Backup'; prefix = 'OlaUserLog' }
-$olanames += [pscustomobject]@{ Description = 'Ola CommandLog Cleanup'; prefix = 'OlaCommandLog' }
-$olanames += [pscustomobject]@{ Description = 'Ola System Integrity Check'; prefix = 'OlaSystemIntegrityCheck' }
-$olanames += [pscustomobject]@{ Description = 'Ola User Integrity Check'; prefix = 'OlaUserIntegrityCheck' }
-$olanames += [pscustomobject]@{ Description = 'Ola User Index Optimize'; prefix = 'OlaUserIndexOptimize' }
-$olanames += [pscustomobject]@{ Description = 'Ola Output File Cleanup'; prefix = 'OlaOutputFileCleanup' }
-$olanames += [pscustomobject]@{ Description = 'Ola Delete Backup History'; prefix = 'OlaDeleteBackupHistory' }
-$olanames += [pscustomobject]@{ Description = 'Ola Purge Job History'; prefix = 'OlaPurgeJobHistory' }
-
-foreach ($olaname in $olanames) {
-    $collection += [pscustomobject]@{
-        Group          = 'MaintenanceSolution'
-        Type           = 'Sqlinstance'
-        Description    = $olaname.Description
-        UniqueTag      = $olaname.Prefix
-        AllTags        = "$($olaname.Prefix), MaintenanceSolution"
-        Config        = "policy.ola.*"
-    }
-}
-
     ConvertTo-Json -InputObject $collection | Out-File "$script:localapp\checks.json"
     }
     
