@@ -61,7 +61,7 @@ $jobnames | ForEach-Object {
             
             if ($Retention) {
                 Context "Checking the backup retention on $psitem" {
-                    $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" }
+                    $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
                     if ($jobsteps) {
                         $results = $jobsteps.Command.Split("@") | Where-Object { $_ -match "CleanupTime" }
                     }
@@ -71,7 +71,7 @@ $jobnames | ForEach-Object {
                     
                     It "Is the backup retention set to at least $Retention hours" {
                         if ($results) {
-                            $hours = $results.split("=")[1].split(",").split(" ")[1]
+                            [int]$hours = $results.split("=")[1].split(",").split(" ")[1]
                         }
                         $hours | Should -BeGreaterOrEqual $Retention -Because 'The backup retention needs to be correct'
                     }
