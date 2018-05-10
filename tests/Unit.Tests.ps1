@@ -6,7 +6,7 @@ if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
 $tokens = $null
 $errors = $null
 Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" -Tags UnitTest {
-    $Checks = (Get-ChildItem $ModuleBase\checks).Where{$PSItem.Name -ne 'MaintenanceSolution.Tests.ps1'}
+    $Checks = (Get-ChildItem $ModuleBase\checks) #.Where{$PSItem.Name -ne 'MaintenanceSolution.Tests.ps1'}
     $Checks.ForEach{
         $Check = Get-Content $PSItem.FullName -Raw
         Context "$($PSItem.Name) - Checking Describes titles and tags" {
@@ -19,10 +19,10 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                     $ast.CommandElements[0].Value -eq 'describe'
                 }, $true) |
                 ForEach-Object {
-                    $CE = $PSItem.CommandElements
-                    $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
-                    $tagIdx = $CE.IndexOf(($CE | Where-Object ParameterName -eq 'Tags')) + 1
-                    $tags = if ($tagIdx -and $tagIdx -lt $CE.Count) {
+                $CE = $PSItem.CommandElements
+                $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
+                $tagIdx = $CE.IndexOf(($CE | Where-Object ParameterName -eq 'Tags')) + 1
+                $tags = if ($tagIdx -and $tagIdx -lt $CE.Count) {
                     $CE[$tagIdx].Extent
                 }
                 New-Object PSCustomObject -Property @{
@@ -41,7 +41,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 }
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
-                    $PSItem.Tags.Text.Split(',').Trim().Where{($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') }.ForEach{
+                    $PSItem.Tags.Text.Split(',').Trim().Where{($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') }.ForEach{
                         It "$PSItem Should Be Singular" {
                             $PSItem.ToString().Endswith('s') | Should -BeFalse -Because 'Our coding standards say tags should be singular'
                         }
@@ -87,12 +87,14 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             ## Ignore the filename line
             @($Statements.Where{$PSItem.StartLineNumber -ne 1}).ForEach{
                 # make sure we only regex if the title contains a describe
-                if ($PSItem.Text -contains 'Describe') {
+                if ($PSItem.Text -match 'Describe') {
                     $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
-                    It "$title Should Use Get-Instance or Get-ComputerName" {
-                        ($PSItem.text -Match 'Get-Instance') -or ($PSItem.text -match 'Get-ComputerName') | Should -BeTrue -Because 'These are the commands to use to get Instances or Computers'
+                    if ($title -ne 'Cluster $clustername Health using Node $clustervm') {
+                        It "$title Should Use Get-Instance or Get-ComputerName" {
+                            ($PSItem.text -Match 'Get-Instance') -or ($PSItem.text -match 'Get-ComputerName') | Should -BeTrue -Because 'These are the commands to use to get Instances or Computers'
+                        }
                     }
-                    if ($title -ne 'Cluster Health') {
+                    if ($title -ne 'Cluster $clustername Health using Node $clustervm') {
                         It "$title Should use the ForEach Method" {
                             ($PSItem.text -match 'Get-Instance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -BeTrue # use the \ to escape the ) -Because 'We use the ForEach method in our coding standards'
                         }

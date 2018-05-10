@@ -14,6 +14,7 @@
 					<TableColumnHeader/>
 					<TableColumnHeader/>
 					<TableColumnHeader/>
+					<TableColumnHeader/>
 				</TableHeaders>
 				<TableRowEntries>
 					<TableRowEntry>
@@ -32,6 +33,9 @@
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>AllTags</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Config</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>

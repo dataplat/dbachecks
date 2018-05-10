@@ -129,6 +129,7 @@ Set-PSFConfig -Module dbachecks -name policy.ola.userdiffretention -Value 192 -I
 Set-PSFConfig -Module dbachecks -name policy.ola.userlogretention -Value 192 -Initialize -Description "Ola's Log User Database Backup retention number of hours"
 Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogenabled -Validation bool -Value $true -Initialize -Description "Ola's CommandLog Cleanup should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogscheduled -Validation bool -Value $true -Initialize -Description "Ola's CommandLog Cleanup should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.CommandLogCleanUp -Value 30 -Initialize -Description "Ola's CommandLog Cleanup setting should be this many days"
 Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Ola's System Database Integrity should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.SystemIntegrityCheckscheduled -Validation bool -Value $true -Initialize -Description "Ola's System Database Integrity should be scheduled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.UserIntegrityCheckenabled -Validation bool -Value $true -Initialize -Description "Ola's User Database Integrity should be enabled `$true or disabled `$false"
@@ -137,10 +138,24 @@ Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizeenabled -Valid
 Set-PSFConfig -Module dbachecks -name policy.ola.UserIndexOptimizescheduled -Validation bool -Value $true -Initialize -Description "Ola's User Index Optimization should be scheduled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupenabled -Validation bool -Value $true -Initialize -Description "Ola's Output File Cleanup should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanupscheduled -Validation bool -Value $true -Initialize -Description "Ola's Output File Cleanup should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.OutputFileCleanUp -Value 30 -Initialize -Description "Ola's OutputFile Cleanup setting should be this many days"
 Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryenabled -Validation bool -Value $true -Initialize -Description "Ola's Delete Backup History should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryscheduled -Validation bool -Value $true -Initialize -Description "Ola's Delete Backup History should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.DeleteBackupHistoryCleanUp -Value 30 -Initialize -Description "Ola's Delete Backup History Cleanup setting should be this many days"
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryenabled -Validation bool -Value $true -Initialize -Description "Ola's Purge Job History should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -name policy.ola.PurgeJobHistoryscheduled -Validation bool -Value $true -Initialize -Description "Ola's Purge Job History should be scheduled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -name policy.ola.PurgeconfigCleanUp -Value 30 -Initialize -Description "Ola's Purge Backup History Cleanup setting should be this many days"
+Set-PSFConfig -Module dbachecks -name ola.JobName.SystemFull -Value 'DatabaseBackup - SYSTEM_DATABASES - FULL' -Initialize -Description "The name for the Ola System Full Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserFull -Value 'DatabaseBackup - USER_DATABASES - FULL' -Initialize -Description "The name for the Ola User Full Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserDiff -Value 'DatabaseBackup - USER_DATABASES - DIFF' -Initialize -Description "The name for the Ola User Diff Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserLog -Value 'DatabaseBackup - USER_DATABASES - Log' -Initialize -Description "The name for the Ola User Log Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.CommandLogCleanup -Value 'CommandLog Cleanup' -Initialize -Description "The name for the Ola CommandLog Cleanup Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.SystemIntegrity -Value 'DatabaseIntegrityCheck - SYSTEM_DATABASES' -Initialize -Description "The name for the Ola System Integrity Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserIntegrity -Value 'DatabaseIntegrityCheck - USER_DATABASES' -Initialize -Description "The name for the Ola User Integrity Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.UserIndex -Value 'IndexOptimize - USER_DATABASES' -Initialize -Description "The name for the Ola User Index Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.OutputFileCleanup -Value 'Output File Cleanup' -Initialize -Description "The name for the Ola Output File Cleanup Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.DeleteBackupHistory -Value 'sp_delete_backuphistory' -Initialize -Description "The name for the Ola Delete Backup History Job"
+Set-PSFConfig -Module dbachecks -name ola.JobName.PurgeBackupHistory -Value 'sp_purge_jobhistory' -Initialize -Description "The name for the Ola Delete Purge History Job"
 
 # xevents
 Set-PSFConfig -Module dbachecks -Name policy.xevent.validrunningsession -Value $null -Initialize -Description "List of XE Sessions that can be be running."
@@ -161,6 +176,7 @@ Set-PSFConfig -Module dbachecks -Name policy.build.warningwindow -Value 6 -Initi
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
+Set-PSFConfig -Module dbachecks -Name skip.backup.readonly -Validation bool -Value $false -Initialize -Description "Check read-only databases for last backup"
 Set-PSFConfig -Module dbachecks -Name skip.tempdb1118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 1118"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilecount -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Count"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
@@ -176,6 +192,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (expecially useful for Azure and AWS)"
+
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
@@ -203,7 +220,6 @@ Set-PSFConfig -Module dbachecks -Name mail.subject  -Value 'dbachecks results' -
 # Command parameter default values
 Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludecheck -Value @() -Initialize -Description "Invoke-DbcCheck: The checks that should be skipped by default."
 Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludedatabases -Value @() -Initialize -Description "Invoke-DbcCheck: The databases that should be skipped by default."
-
 
 # config for integration testing 
 Set-PSFConfig -Module dbachecks -Name testing.integration.instance -Value @("localhost") -Initialize -Description "Default SQL Server instances to be used by integration tests"
