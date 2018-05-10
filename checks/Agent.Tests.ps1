@@ -2,14 +2,14 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -eq "Express Edition"){}
+        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}
             else{
             Context "Testing SQL Agent is running on $psitem" {
                 @(Get-DbaSqlService -ComputerName $psitem -Type Agent).ForEach{
-                    It "SQL Agent Should Be running on $psitem" {
+                    It "SQL Agent Should Be running on $($psitem.ComputerName)" {
                         $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
                     }
-                    It "SQL Agent service should have a start mode of Automatic on $psitem" {
+                    It "SQL Agent service should have a start mode of Automatic on $($psitem.ComputerName)" {
                         $psitem.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
                     }
                 }
@@ -20,7 +20,7 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
 
 Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
     @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -eq "Express Edition"){}
+        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}
         else{
         Context "Testing DBA Operators exists on $psitem" {
             $operatorname = Get-DbcConfigValue agent.dbaoperatorname
@@ -45,7 +45,7 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
     @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -eq "Express Edition"){}else{
+        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
             Context "Testing failsafe operator exists on $psitem" {
                 $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
                 It "failsafe operator on $psitem exists" {
@@ -58,7 +58,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 
 Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
     @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -eq "Express Edition"){}else{
+        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
             Context "Testing database mail profile is set on $psitem" {
                 $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
                 It "database mail profile on $psitem is $databasemailprofile" {
@@ -71,7 +71,7 @@ Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
 
 Describe "Failed Jobs" -Tags FailedJob, $filename {
     @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -eq "Express Edition"){}else{
+        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
             Context "Checking for failed enabled jobs on $psitem" {
                 @(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
                     if ($psitem.LastRunOutcome -eq "Unknown") {
@@ -92,7 +92,7 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
 Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
     [string[]]$targetowner = Get-DbcConfigValue agent.validjobowner.name
     @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -eq "Express Edition"){}else{
+        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
             Context "Testing job owners on $psitem" {
                 @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
                     It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
@@ -110,7 +110,7 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
     $AgentAlertJob = Get-DbcConfigValue agent.alert.Job
     $AgentAlertNotification = Get-DbcConfigValue agent.alert.Notification
     @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -eq "Express Edition"){}else{
+        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
             $alerts = Get-DbaAgentAlert -SqlInstance $psitem
             Context "Testing Agent Alerts Severity exists on $psitem" {
                 ForEach ($sev in $severity) {
