@@ -1,0 +1,342 @@
+[
+    {
+        "UniqueTag":  "AgentServiceAccount",
+        "Description":  "Tests that the SQL Agent Account is running and set to automatic"
+    },
+    {
+        "UniqueTag":  "DbaOperator",
+        "Description":  "Tests that the specified DBA Operators exist and have the correct email address"
+    },
+    {
+        "UniqueTag":  "FailsafeOperator",
+        "Description":  "Tests that the specified Failsafe Operator exists"
+    },
+    {
+        "UniqueTag":  "DatabaseMailProfile",
+        "Description":  "Tests that the specified Database Mail Profile exists"
+    },
+    {
+        "UniqueTag":  "FailedJob",
+        "Description":  "Tests that enabled Agent Jobs last outcome was succeeded"
+    },
+    {
+        "UniqueTag":  "ValidJobOwner",
+        "Description":  "Testst that all Agent Jobs have a Job Owner in the list specified"
+    },
+    {
+        "UniqueTag":  "AgentAlert",
+        "Description":  "Checks that there are Agent Alerts set up for the specified alert severities and ids and if specified Agent Jobs and/or notifications"
+    },
+    {
+        "UniqueTag":  "DatabaseCollation",
+        "Description":  "Tests that the Database Collation matches the instance collation except for specified databases"
+    },
+    {
+        "UniqueTag":  "SuspectPage",
+        "Description":  "Tests that there are 0 Suspect Pages for the database"
+    },
+    {
+        "UniqueTag":  "TestLastBackup",
+        "Description":  "Restores the last backup of a database onto a specified restore server (or the same server if not specified) and checks if the DBCC result was succesful as well as the DBCC result. This can obviously take some time for large databases!"
+    },
+    {
+        "UniqueTag":  "TestLastBackupVerifyOnly",
+        "Description":  "Does a verify only restore of the last backup of the database and test the result"
+    },
+    {
+        "UniqueTag":  "ValidDatabaseOwner",
+        "Description":  "Tests that the database owner is in the specified list"
+    },
+    {
+        "UniqueTag":  "InvalidDatabaseOwner",
+        "Description":  "Tests that the Database Owner is NOT in the specified list"
+    },
+    {
+        "UniqueTag":  "LastGoodCheckDb",
+        "Description":  "Tests that there was a Last Good DBCC CHECKDB within the specified limit and if specified that the DATA_PURITY flag is set"
+    },
+    {
+        "UniqueTag":  "IdentityUsage",
+        "Description":  "Tests that identity columns values are not above the specified percentage of the maximum value for that data type"
+    },
+    {
+        "UniqueTag":  "RecoveryModel",
+        "Description":  "Recovery Model"
+    },
+    {
+        "UniqueTag":  "DuplicateIndex",
+        "Description":  "Duplicate Index"
+    },
+    {
+        "UniqueTag":  "UnusedIndex",
+        "Description":  "Unused Index"
+    },
+    {
+        "UniqueTag":  "DisabledIndex",
+        "Description":  "Disabled Index"
+    },
+    {
+        "UniqueTag":  "DatabaseGrowthEvent",
+        "Description":  "Database Growth Event"
+    },
+    {
+        "UniqueTag":  "PageVerify",
+        "Description":  "Page Verify"
+    },
+    {
+        "UniqueTag":  "AutoClose",
+        "Description":  "Auto Close"
+    },
+    {
+        "UniqueTag":  "AutoShrink",
+        "Description":  "Auto Shrink"
+    },
+    {
+        "UniqueTag":  "LastFullBackup",
+        "Description":  "Last Full Backup Times"
+    },
+    {
+        "UniqueTag":  "LastDiffBackup",
+        "Description":  "Last Diff Backup Times"
+    },
+    {
+        "UniqueTag":  "LastLogBackup",
+        "Description":  "Last Log Backup Times"
+    },
+    {
+        "UniqueTag":  "VirtualLogFile",
+        "Description":  "Virtual Log Files"
+    },
+    {
+        "UniqueTag":  "LogfileCount",
+        "Description":  "Log File Count Checks"
+    },
+    {
+        "UniqueTag":  "LogfileSize",
+        "Description":  "Log File Size Checks"
+    },
+    {
+        "UniqueTag":  "FutureFileGrowth",
+        "Description":  "Future File Growth"
+    },
+    {
+        "UniqueTag":  "FileGroupBalanced",
+        "Description":  "Correctly sized Filegroup members"
+    },
+    {
+        "UniqueTag":  "CertificateExpiration",
+        "Description":  "Certificate Expiration"
+    },
+    {
+        "UniqueTag":  "AutoCreateStatistics",
+        "Description":  "Auto Create Statistics"
+    },
+    {
+        "UniqueTag":  "AutoUpdateStatistics",
+        "Description":  "Auto Update Statistics"
+    },
+    {
+        "UniqueTag":  "AutoUpdateStatisticsAsynchronously",
+        "Description":  "Auto Update Statistics Asynchronously"
+    },
+    {
+        "UniqueTag":  "DatafileAutoGrowthType",
+        "Description":  "Datafile Auto Growth Configuration"
+    },
+    {
+        "UniqueTag":  "Trustworthy",
+        "Description":  "Trustworthy Option"
+    },
+    {
+        "UniqueTag":  "OrphanedUser",
+        "Description":  "Database Orphaned User"
+    },
+    {
+        "UniqueTag":  "PseudoSimple",
+        "Description":  "PseudoSimple Recovery Model"
+    },
+    {
+        "UniqueTag":  "CompatibilityLevel",
+        "Description":  "Compatibility Level"
+    },
+    {
+        "UniqueTag":  "DomainName",
+        "Description":  "Active Directory Domain Name"
+    },
+    {
+        "UniqueTag":  "OrganizationalUnit",
+        "Description":  "Active Directory OU"
+    },
+    {
+        "UniqueTag":  "ClusterHealth",
+        "Description":  "Cluster $clustername Health using Node $clustervm"
+    },
+    {
+        "UniqueTag":  "SqlEngineServiceAccount",
+        "Description":  "SQL Engine Service"
+    },
+    {
+        "UniqueTag":  "SqlBrowserServiceAccount",
+        "Description":  "SQL Browser Service"
+    },
+    {
+        "UniqueTag":  "TempDbConfiguration",
+        "Description":  "TempDB Configuration"
+    },
+    {
+        "UniqueTag":  "AdHocWorkload",
+        "Description":  "Ad Hoc Workload Optimization"
+    },
+    {
+        "UniqueTag":  "BackupPathAccess",
+        "Description":  "Backup Path Access"
+    },
+    {
+        "UniqueTag":  "DAC",
+        "Description":  "Dedicated Administrator Connection"
+    },
+    {
+        "UniqueTag":  "NetworkLatency",
+        "Description":  "Network Latency"
+    },
+    {
+        "UniqueTag":  "LinkedServerConnection",
+        "Description":  "Linked Servers"
+    },
+    {
+        "UniqueTag":  "MaxMemory",
+        "Description":  "Max Memory"
+    },
+    {
+        "UniqueTag":  "OrphanedFile",
+        "Description":  "Orphaned Files"
+    },
+    {
+        "UniqueTag":  "ServerNameMatch",
+        "Description":  "SQL + Windows names match"
+    },
+    {
+        "UniqueTag":  "MemoryDump",
+        "Description":  "SQL Memory Dumps"
+    },
+    {
+        "UniqueTag":  "SupportedBuild",
+        "Description":  "Supported Build"
+    },
+    {
+        "UniqueTag":  "SaRenamed",
+        "Description":  "SA Login Renamed"
+    },
+    {
+        "UniqueTag":  "DefaultBackupCompression",
+        "Description":  "Default Backup Compression"
+    },
+    {
+        "UniqueTag":  "XESessionStopped",
+        "Description":  "XE Sessions That Should Be Stopped"
+    },
+    {
+        "UniqueTag":  "XESessionRunning",
+        "Description":  "XE Sessions That Should Be Running"
+    },
+    {
+        "UniqueTag":  "XESessionRunningAllowed",
+        "Description":  "XE Sessions That Are Allowed to Be Running"
+    },
+    {
+        "UniqueTag":  "OLEAutomation",
+        "Description":  "OLE Automation"
+    },
+    {
+        "UniqueTag":  "WhoIsActiveInstalled",
+        "Description":  "sp_whoisactive is Installed"
+    },
+    {
+        "UniqueTag":  "ModelDbGrowth",
+        "Description":  "Model Database Growth"
+    },
+    {
+        "UniqueTag":  "ADUser",
+        "Description":  "Ad Users and Groups "
+    },
+    {
+        "UniqueTag":  "ErrorLog",
+        "Description":  "Error Log Entries"
+    },
+    {
+        "UniqueTag":  "LogShippingPrimary",
+        "Description":  "Log Shipping Status Primary"
+    },
+    {
+        "UniqueTag":  "LogShippingSecondary",
+        "Description":  "Log Shipping Status Secondary"
+    },
+    {
+        "UniqueTag":  "OlaInstalled",
+        "Description":  "Ola maintenance solution installed"
+    },
+    {
+        "UniqueTag":  "SystemFull",
+        "Description":  "Ola - $SysFullJobName"
+    },
+    {
+        "UniqueTag":  "UserFull",
+        "Description":  "Ola - $UserFullJobName"
+    },
+    {
+        "UniqueTag":  "UserDiff",
+        "Description":  "Ola - $UserDiffJobName"
+    },
+    {
+        "UniqueTag":  "UserLog",
+        "Description":  "Ola - $UserLogJobName"
+    },
+    {
+        "UniqueTag":  "CommandLog",
+        "Description":  "Ola - $CommandLogJobName"
+    },
+    {
+        "UniqueTag":  "SystemIntegrityCheck",
+        "Description":  "Ola - $SysIntegrityJobName"
+    },
+    {
+        "UniqueTag":  "UserIntegrityCheck",
+        "Description":  "Ola - $UserIntegrityJobName"
+    },
+    {
+        "UniqueTag":  "UserIndexOptimize",
+        "Description":  "Ola - $UserIndexJobName"
+    },
+    {
+        "UniqueTag":  "OutputFileCleanup",
+        "Description":  "Ola - $OutputFileJobName"
+    },
+    {
+        "UniqueTag":  "DeleteBackupHistory",
+        "Description":  "Ola - $DeleteBackupJobName"
+    },
+    {
+        "UniqueTag":  "PurgeJobHistory",
+        "Description":  "Ola - $PurgeBackupJobName"
+    },
+    {
+        "UniqueTag":  "PowerPlan",
+        "Description":  "Server Power Plan Configuration"
+    },
+    {
+        "UniqueTag":  "InstanceConnection",
+        "Description":  "Instance Connection"
+    },
+    {
+        "UniqueTag":  "SPN",
+        "Description":  "SPNs"
+    },
+    {
+        "UniqueTag":  "DiskCapacity",
+        "Description":  "Disk Space"
+    },
+    {
+        "UniqueTag":  "PingComputer",
+        "Description":  "Ping Computer"
+    }
+]
