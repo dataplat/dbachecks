@@ -42,8 +42,15 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
         $destdata = Get-DbcConfigValue policy.backup.datadir
         $destlog = Get-DbcConfigValue policy.backup.logdir
         @(Get-Instance).ForEach{
+            if(-not $destserver){
+            $destserver = $psitem
+            }
             Context "Testing Backup Restore & Integrity Checks on $psitem" {
-                @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).Name -VerifyOnly).ForEach{
+                $srv = Connect-DbaInstance -SqlInstance $psitem
+                $dbs = ($srv.Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).Name
+                if(-not ($destdata)){$destdata -eq $srv.DefaultFile}
+                if(-not ($destlog)){$destlog -eq $srv.DefaultLog}
+                @(Test-DbaLastBackup -SqlInstance $psitem -Database $dbs -Destination $destserver -DataDirectory $destdata -LogDirectory $destlog -VerifyOnly).ForEach{
                     
                     if ($psitem.DBCCResult -notmatch "skipped for restored master") {
                         It "DBCC for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
