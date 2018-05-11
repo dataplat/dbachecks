@@ -44,6 +44,28 @@ function New-Json {
             }
             $Config = ''
             $configs.foreach{$config += "$_ "}
+            if ($filename -eq 'MaintenanceSolution') {
+                switch ($tags -match $PSItem) {
+                    {$Tags.Contains('SystemFull')} {$config = 'ola.JobName.SystemFull ' + $config}                
+                    {$Tags.Contains('UserFull')} {$config = 'ola.JobName.UserFull ' + $config}                
+                    {$Tags.Contains('UserDiff')} {$config = 'ola.JobName.UserDiff ' + $config}                
+                    {$Tags.Contains('UserLog')} {$config = 'ola.JobName.UserLog ' + $config}                
+                    {$Tags.Contains('CommandLog')} {$config = 'ola.JobName.CommandLogCleanup ' + $config}                
+                    {$Tags.Contains('SystemIntegrityCheck')} {$config = 'ola.JobName.SystemIntegrity ' + $config}                
+                    {$Tags.Contains('UserIntegrityCheck')} {$config = 'ola.JobName.UserIntegrity ' + $config}                
+                    {$Tags.Contains('UserIndexOptimize')} {$config = 'ola.JobName.UserIndex ' + $config}                
+                    {$Tags.Contains('OutputFileCleanup')} {$config = 'ola.JobName.OutputFileCleanup ' + $config}                
+                    {$Tags.Contains('DeleteBackupHistory')} {$config = 'ola.JobName.DeleteBackupHistory ' + $config}                
+                    {$Tags.Contains('PurgeJobHistory')} {$config = 'ola.JobName.PurgeBackupHistory ' + $config}                
+                    Default {}
+                }
+            }
+            switch ($type) {
+                SqlInstance {$config = 'app.sqlinstance' + $config}
+                ComputerName {$config = 'app.computername' + $config}
+                ClusterNode {$config = 'app.sqlinstance' + $config}
+                Default {}
+            }
             if (-not $config) {$config = "None"}
             $collection += [pscustomobject]@{
                 Group       = $filename
