@@ -70,7 +70,7 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
         Context "VerifyOnly tests of last backups on $psitem" {
             @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).Name -VerifyOnly).ForEach{
                 It "restore for $($psitem.Database) on $($psitem.SourceServer) Should be success" {
-                    $psitem.RestoreResult | Should -Be "Success" -Because "The restore file has not successfully restored - you have no backup"
+                    $psitem.RestoreResult | Should -Be "Success" -Because "The restore file has not successfully verified - you have no backup"
                 }
                 It "file exists for last backup of $($psitem.Database) on $($psitem.SourceServer)" {
                     $psitem.FileExists | Should -BeTrue -Because "Without a backup file you have no backup"
