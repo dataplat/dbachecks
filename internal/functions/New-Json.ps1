@@ -83,9 +83,11 @@ function New-Json {
         }
     }
     $singletags = (($collection.AllTags -split ",").Trim() | Group-Object | Where-Object { $_.Count -eq 1 -and $_.Name -notin $groups })
+    $Descriptions = Get-Content .\internal\configurations\DbcCheckDescriptions.json | ConvertFrom-Json
     foreach ($check in $collection) {
         $unique = $singletags | Where-Object { $_.Name -in ($check.AllTags -split ",").Trim() }
         $check.UniqueTag = $unique.Name
+        $Check.Description = $Descriptions.Where{$_.UniqueTag -eq $Check.UniqueTag}.Description
     }
     ConvertTo-Json -InputObject $collection | Out-File "$script:localapp\checks.json"
 }
