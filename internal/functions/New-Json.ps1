@@ -12,6 +12,7 @@ function New-Json {
     foreach ($file in $repofiles) {
         $filename = $file.Name.Replace(".Tests.ps1", "")
         $Check = Get-Content $file -Raw
+        ## Parse the file with AST and get each describe block
         $Describes = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
         FindAll([Func[Management.Automation.Language.Ast, bool]] {
                 param ($ast)
@@ -24,19 +25,21 @@ function New-Json {
             $Describe = $_.CommandElements.Where{$PSItem.StaticType.name -eq 'string'}[1]
             $title = $Describe.Value
             $Tags = $PSItem.CommandElements.Where{$PSItem.StaticType.name -eq 'Object[]' -and $psitem.Value -eq $null}.Extent.Text.ToString().Replace(', $filename', '')
+            # CHoose the type            
             if ($Describe.Parent -match "Get-Instance") {
                 $type = "Sqlinstance"
             }
             elseif ($Describe.Parent -match "Get-ComputerName") {
                 $type = "ComputerName"
             }
-            elseif ($Describe.Parent -match "Get-ClusterObject"){
+            elseif ($Describe.Parent -match "Get-ClusterObject") {
                 $Type = "ClusteNode"
             }
             else {
                 $type = $null
             }
-            if ($filename -eq 'HADR'){
+            if ($filename -eq 'HADR') {
+                ## HADR configs are outside of describe
                 $configs = [regex]::matches($check, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{$_.Name -eq 1}.Value
             }
             else {
@@ -45,6 +48,7 @@ function New-Json {
             $Config = ''
             $configs.foreach{$config += "$_ "}
             if ($filename -eq 'MaintenanceSolution') {
+                # The Maintenance Solution needs a bit of faffing as the configs for the jobnames are used to create the titles
                 switch ($tags -match $PSItem) {
                     {$Tags.Contains('SystemFull')} {$config = 'ola.JobName.SystemFull ' + $config}                
                     {$Tags.Contains('UserFull')} {$config = 'ola.JobName.UserFull ' + $config}                
@@ -60,6 +64,7 @@ function New-Json {
                     Default {}
                 }
             }
+            # add the config for the type
             switch ($type) {
                 SqlInstance {$config = 'app.sqlinstance' + $config}
                 ComputerName {$config = 'app.computername' + $config}
