@@ -531,3 +531,21 @@ Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
         }
     }
 }
+
+Describe "Foreign keys and check constraints not trusted" -Tags FKTrusted, CKTrusted , $filename {
+    @(Get-Instance).ForEach{
+        Context "Testing foreign Keys and check constraints not trusted $psitem" {
+            @(Get-DbaDbForeignKey -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases).Where{$_.NotForReplication -eq $false}.ForEach{
+                It "$($psitem.Name) foreign key on table $($psitem.Parent) within database $($psitem.Database) should be trusted." {
+                    $psitem.IsChecked | Should -Be $true -Because "can have a huge performance impact on queries. SQL Server won’t use untrusted constraints to build better execution plans. Also to avoid data violation"
+                }
+            }
+
+            @(Get-DbaDbCheckConstraint -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases).Where{$_.NotForReplication -eq $false -and $_.IsEnabled -eq $true}.ForEach{
+                It "$($psitem.Name) check constraint on table $($psitem.Parent) within database $($psitem.Database) should be trusted." {
+                    $psitem.IsChecked | Should -Be $true -Because "can have a huge performance impact on queries. SQL Server won’t use untrusted constraints to build better execution plans. Also to avoid data violation"
+                }
+            }
+        }
+    }
+}
