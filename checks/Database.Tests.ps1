@@ -347,7 +347,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     $LogFileSizePercentage = Get-DbcConfigValue policy.database.logfilesizepercentage
     $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
     @(Get-Instance).ForEach{
-        Context "Testing Log File count and size for $psitem" {
+        Context "Testing Log File size for $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name -and ($Psitem.IsAccessible -eq $true)}.ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                 $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
