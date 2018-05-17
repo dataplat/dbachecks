@@ -121,79 +121,79 @@
     },
     {
         "UniqueTag":  "FileGroupBalanced",
-        "Description":  "Correctly sized Filegroup members"
+        "Description":  "Tests that all of the files within each filegroup are sized within the specified percentage (default 5) of the average"
     },
     {
         "UniqueTag":  "CertificateExpiration",
-        "Description":  "Certificate Expiration"
+        "Description":  "Tests that all certificates have not expired and are not due to expire within the specified (default 1) number of months"
     },
     {
         "UniqueTag":  "AutoCreateStatistics",
-        "Description":  "Auto Create Statistics"
+        "Description":  "Tests the Auto Create Statistics property on each database is set to the specified (default false) value"
     },
     {
         "UniqueTag":  "AutoUpdateStatistics",
-        "Description":  "Auto Update Statistics"
+        "Description":  "Tests the Auto Update Statistics property on each database is set to the specified (default true) value"
     },
     {
         "UniqueTag":  "AutoUpdateStatisticsAsynchronously",
-        "Description":  "Auto Update Statistics Asynchronously"
+        "Description":  "Tests the Auto Update Statistics Asynchronously property on each database is set to the specified (default false) value"
     },
     {
         "UniqueTag":  "DatafileAutoGrowthType",
-        "Description":  "Datafile Auto Growth Configuration"
+        "Description":  "Tests that the Datafile Auto Growth type and value on each database except those specified is set to the specified (default type = kb, value = 65535) values"
     },
     {
         "UniqueTag":  "Trustworthy",
-        "Description":  "Trustworthy Option"
+        "Description":  "Tests thatt the Trustworthy Option for each database is set to false"
     },
     {
         "UniqueTag":  "OrphanedUser",
-        "Description":  "Database Orphaned User"
+        "Description":  "Tests that each database has 0 orphaned users"
     },
     {
         "UniqueTag":  "PseudoSimple",
-        "Description":  "PseudoSimple Recovery Model"
+        "Description":  "Tests that databases are not in PseudoSimple Recovery Model"
     },
     {
         "UniqueTag":  "CompatibilityLevel",
-        "Description":  "Compatibility Level"
+        "Description":  "tests that the servers compatibility level matches the compatibility level"
     },
     {
         "UniqueTag":  "DomainName",
-        "Description":  "Active Directory Domain Name"
+        "Description":  "Uses WMI Win32_ComputerSystem to check that the host machine is on the correct domain"
     },
     {
         "UniqueTag":  "OrganizationalUnit",
-        "Description":  "Active Directory OU"
+        "Description":  "Currently skipped - Active Directory OU"
     },
     {
         "UniqueTag":  "ClusterHealth",
-        "Description":  "Cluster $clustername Health using Node $clustervm"
+        "Description":  "Runs a suite of tests against an Availability Group on a Windows cluster to ensure that everything is as it should be. Tests cluster resources are online, cluster nodes are up, at least one IP Address for the AG listener is available, that each replica and listener are pingable (listener ping check can be skipped), can be connected to via T-SQL, have the correct domain name and TCP port, that each replica is synchronised/ing, is connected, is not in an unknown state, each database is synchronised/ing, failover ready and joined to the domain and that the Always On Health Extended Event sessions are running and set to auto-start"
     },
     {
         "UniqueTag":  "SqlEngineServiceAccount",
-        "Description":  "SQL Engine Service"
+        "Description":  "Tests that the SQL Engine Service is started and set to auto-start"
     },
     {
         "UniqueTag":  "SqlBrowserServiceAccount",
-        "Description":  "SQL Browser Service"
+        "Description":  "Tests that the SQL Browser Service is started and set to auto-start if there are multiple instances and stopped and set to disabled if there is only one "
     },
     {
         "UniqueTag":  "TempDbConfiguration",
-        "Description":  "TempDB Configuration"
+        "Description":  "Tests that the TempDB Configuration is correct, that TF118 is enabled, there are the recommended number of files, autogrowth is not set to percent, that the files can grow and that they are not located on the C drive (each of these tests can be configured individually to be skipped"
     },
     {
         "UniqueTag":  "AdHocWorkload",
-        "Description":  "Ad Hoc Workload Optimization"
+        "Description":  "Tests that the AAd Hoc Workload Optimization is enabled"
     },
     {
         "UniqueTag":  "BackupPathAccess",
-        "Description":  "Backup Path Access"
+        "Description":  "Tests that the SQL Service account has access to the default backup path or the specified folder path"
     },
     {
         "UniqueTag":  "DAC",
-        "Description":  "Dedicated Administrator Connection"
+        "Description":  "Tests that the Dedicated Administrator Connection configuration setting matches the speified value (default true)"
     },
     {
         "UniqueTag":  "NetworkLatency",
