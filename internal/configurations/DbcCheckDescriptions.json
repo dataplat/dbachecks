@@ -61,63 +61,63 @@
     },
     {
         "UniqueTag":  "RecoveryModel",
-        "Description":  "Recovery Model"
+        "Description":  "Tests that the Recovery model for all of the databases is set as specified except for any specified in policy.recoverymodel.excludedb"
     },
     {
         "UniqueTag":  "DuplicateIndex",
-        "Description":  "Duplicate Index"
+        "Description":  "Tests for any duplicate indexes"
     },
     {
         "UniqueTag":  "UnusedIndex",
-        "Description":  "Unused Index"
+        "Description":  "Tests for any unused indexes"
     },
     {
         "UniqueTag":  "DisabledIndex",
-        "Description":  "Disabled Index"
+        "Description":  "Tests for any disabled indexes"
     },
     {
         "UniqueTag":  "DatabaseGrowthEvent",
-        "Description":  "Database Growth Event"
+        "Description":  "Tests for any database growth events in nthe default system trace"
     },
     {
         "UniqueTag":  "PageVerify",
-        "Description":  "Page Verify"
+        "Description":  "Tests the page verify settings"
     },
     {
         "UniqueTag":  "AutoClose",
-        "Description":  "Auto Close"
+        "Description":  "Tests the auto-close setting"
     },
     {
         "UniqueTag":  "AutoShrink",
-        "Description":  "Auto Shrink"
+        "Description":  "Tests the Auto Shrink setting"
     },
     {
         "UniqueTag":  "LastFullBackup",
-        "Description":  "Last Full Backup Times"
+        "Description":  "Tests if the last full backup of a database is less than the specified number of days (default 7) except for offline databases and read-only databases (read-only if specified) and databases created recently (if specified)"
     },
     {
         "UniqueTag":  "LastDiffBackup",
-        "Description":  "Last Diff Backup Times"
+        "Description":  "Tests if the last diff backup of a database is less than the specified number of hours (default 24) except for offline databases and read-only databases (read-only if specified) and databases created recently (if specified)"
     },
     {
         "UniqueTag":  "LastLogBackup",
-        "Description":  "Last Log Backup Times"
+        "Description":  "Tests if the last log backup of a database is less than the specified number of minutes (default 30) except for simple databases, offline databases and read-only databases (read-only if specified) and databases created recently (if specified)"
     },
     {
         "UniqueTag":  "VirtualLogFile",
-        "Description":  "Virtual Log Files"
+        "Description":  "Tests the number of the Virtual Log Files are less than the specified number"
     },
     {
         "UniqueTag":  "LogfileCount",
-        "Description":  "Log File Count Checks"
+        "Description":  "Tests that the number of log files are less than the specified amount (default is 1) in all databases except those specified to be skipped by default"
     },
     {
         "UniqueTag":  "LogfileSize",
-        "Description":  "Log File Size Checks"
+        "Description":  "Tests that the database log files are less than the specified percentage of the specified comparison (maximum size or average - default is average) of the data file size (default 100)"
     },
     {
         "UniqueTag":  "FutureFileGrowth",
-        "Description":  "Future File Growth"
+        "Description":  "Tests if a database (except for those specified to be skipped explicitly) has free space less than the specified percentage (default 20)"
     },
     {
         "UniqueTag":  "FileGroupBalanced",
