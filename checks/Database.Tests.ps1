@@ -395,9 +395,9 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
                 @($FileGroups).ForEach{
                     $Unbalanced = 0
                     $Average = ($psitem.Group.Size | Measure-Object -Average).Average
-
+                    ## files where average size is less than 95% of the average or more than 105% of the average filegroup size (using default 5% config value)
                     $Unbalanced = $psitem | Where-Object {$psitem.group.Size -lt ((1 - ($Tolerance / 100)) * $Average) -or $psitem.group.Size -gt ((1 + ($Tolerance / 100)) * $Average)}
-                    It "$($psitem.Name) of $($psitem.Group[0].Database) on $($psitem.Group[0].SqlInstance)  Should have FileGroup members with sizes within 5% of the average" {
+                    It "$($psitem.Name) of $($psitem.Group[0].Database) on $($psitem.Group[0].SqlInstance)  Should have FileGroup members with sizes within $tolerance % of the average" {
                         $Unbalanced.count | Should -Be 0 -Because "If your file groups are not balanced SQL Server wont be optimal"
                     }
                 }
