@@ -78,13 +78,10 @@ Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
 Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Backup Path Access on $psitem" {
-            if (-not (Get-DbcConfigValue policy.storage.backuppath)) {
+            $backuppath = Get-DbcConfigValue policy.storage.backuppath
+            if (-not $backuppath) {
                 $backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
             }
-            else {
-                $backuppath = Get-DbcConfigValue policy.storage.backuppath
-            }
-
             It "can access backup path ($backuppath) on $psitem" {
                 Test-DbaSqlPath -SqlInstance $psitem -Path $backuppath | Should -BeTrue -Because 'The SQL Service account needs to have access to the backup path to backup your databases'
             }
