@@ -330,7 +330,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
     $LogFileCount = Get-DbcConfigValue policy.database.logfilecount
     If (-not $LogFileCountTest) {
         @(Get-Instance).ForEach{
-            Context "Testing Log File count and size for $psitem" {
+            Context "Testing Log File count for $psitem" {
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $_.Name}).ForEach{
                     $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                     $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
