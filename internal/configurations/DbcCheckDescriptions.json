@@ -285,39 +285,39 @@
     },
     {
         "UniqueTag":  "UserDiff",
-        "Description":  "Ola - $UserDiffJobName"
+        "Description":  "Tests that the Ola - User Diff Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))"
     },
     {
         "UniqueTag":  "UserLog",
-        "Description":  "Ola - $UserLogJobName"
+        "Description":  "Tests that the Ola - User Log Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))"
     },
     {
         "UniqueTag":  "CommandLog",
-        "Description":  "Ola - $CommandLogJobName"
+        "Description":  "Tests that the Ola - Command Log Cleanup Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))"
     },
     {
         "UniqueTag":  "SystemIntegrityCheck",
-        "Description":  "Ola - $SysIntegrityJobName"
+        "Description":  "Tests that the Ola - System Integrity Check Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled"
     },
     {
         "UniqueTag":  "UserIntegrityCheck",
-        "Description":  "Ola - $UserIntegrityJobName"
+        "Description":  "Tests that the Ola - User Integrity Check Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled"
     },
     {
         "UniqueTag":  "UserIndexOptimize",
-        "Description":  "Ola - $UserIndexJobName"
+        "Description":  "Tests that the Ola - User Index Optimise Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled"
     },
     {
         "UniqueTag":  "OutputFileCleanup",
-        "Description":  "Ola - $OutputFileJobName"
+        "Description":  "Tests that the Ola - Output File Cleanup Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))"
     },
     {
         "UniqueTag":  "DeleteBackupHistory",
-        "Description":  "Ola - $DeleteBackupJobName"
+        "Description":  "Tests that the Ola - Delete Backup History Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))"
     },
     {
         "UniqueTag":  "PurgeJobHistory",
-        "Description":  "Ola - $PurgeBackupJobName"
+        "Description":  "Tests that the Ola - Purge Job History Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))"
     },
     {
         "UniqueTag":  "PowerPlan",
