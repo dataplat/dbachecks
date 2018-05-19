@@ -75,15 +75,15 @@ function New-Json {
             $collection += [pscustomobject]@{
                 Group       = $filename
                 Type        = $type
-                Description = $title
                 UniqueTag   = $null
                 AllTags     = "$tags, $filename"
                 Config      = $config
+                Description = $title
             }
         }
     }
     $singletags = (($collection.AllTags -split ",").Trim() | Group-Object | Where-Object { $_.Count -eq 1 -and $_.Name -notin $groups })
-    $Descriptions = Get-Content .\internal\configurations\DbcCheckDescriptions.json | ConvertFrom-Json
+    $Descriptions = Get-Content $ModuleRoot\internal\configurations\DbcCheckDescriptions.json | ConvertFrom-Json
     foreach ($check in $collection) {
         $unique = $singletags | Where-Object { $_.Name -in ($check.AllTags -split ",").Trim() }
         $check.UniqueTag = $unique.Name
