@@ -5,15 +5,15 @@
     },
     {
         "UniqueTag":  "DbaOperator",
-        "Description":  "Tests that the specified DBA Operators exist and have the correct email address"
+        "Description":  "Tests that the specified (default blank) DBA Operators exist and have the correct email address"
     },
     {
         "UniqueTag":  "FailsafeOperator",
-        "Description":  "Tests that the specified Failsafe Operator exists"
+        "Description":  "Tests that the specified (default blank) Failsafe Operator exists"
     },
     {
         "UniqueTag":  "DatabaseMailProfile",
-        "Description":  "Tests that the specified Database Mail Profile exists"
+        "Description":  "Tests that the specified (default blank) Database Mail Profile exists"
     },
     {
         "UniqueTag":  "FailedJob",
@@ -21,11 +21,11 @@
     },
     {
         "UniqueTag":  "ValidJobOwner",
-        "Description":  "Testst that all Agent Jobs have a Job Owner in the list specified"
+        "Description":  "Testst that all Agent Jobs have a Job Owner in the list specified (default sa)"
     },
     {
         "UniqueTag":  "AgentAlert",
-        "Description":  "Checks that there are Agent Alerts set up for the specified alert severities and ids and if specified Agent Jobs and/or notifications"
+        "Description":  "Tests that there are Agent Alerts set up for the specified (default 16-25) alert severities and ids (default 823-825) and if specified Agent Jobs and/or notifications"
     },
     {
         "UniqueTag":  "DatabaseCollation",
@@ -37,7 +37,7 @@
     },
     {
         "UniqueTag":  "TestLastBackup",
-        "Description":  "Restores the last backup of a database onto a specified restore server (or the same server if not specified) and checks if the DBCC result was succesful as well as the DBCC result. This can obviously take some time for large databases!"
+        "Description":  "Restores the last backup of a database onto a specified (default blank so will use the same instance) restore instance and checks if the DBCC result was succesful as well as the DBCC result. This can obviously take some time for large databases!"
     },
     {
         "UniqueTag":  "TestLastBackupVerifyOnly",
@@ -45,23 +45,23 @@
     },
     {
         "UniqueTag":  "ValidDatabaseOwner",
-        "Description":  "Tests that the database owner is in the specified list"
+        "Description":  "Tests that the database owner is in the specified (default blank) list"
     },
     {
         "UniqueTag":  "InvalidDatabaseOwner",
-        "Description":  "Tests that the Database Owner is NOT in the specified list"
+        "Description":  "Tests that the Database Owner is NOT in the specified (default blank) list"
     },
     {
         "UniqueTag":  "LastGoodCheckDb",
-        "Description":  "Tests that there was a Last Good DBCC CHECKDB within the specified limit and if specified that the DATA_PURITY flag is set"
+        "Description":  "Tests that there was a Last Good DBCC CHECKDB within the specified limit (default blank) and if specified that the DATA_PURITY flag is set"
     },
     {
         "UniqueTag":  "IdentityUsage",
-        "Description":  "Tests that identity columns values are not above the specified percentage of the maximum value for that data type"
+        "Description":  "Tests that identity columns values are not above the specified percentage (default blank) of the maximum value for that data type"
     },
     {
         "UniqueTag":  "RecoveryModel",
-        "Description":  "Tests that the Recovery model for all of the databases is set as specified except for any specified in policy.recoverymodel.excludedb"
+        "Description":  "Tests that the Recovery model for all of the databases is set as specified (default blank) except for any specified"
     },
     {
         "UniqueTag":  "DuplicateIndex",
@@ -77,7 +77,7 @@
     },
     {
         "UniqueTag":  "DatabaseGrowthEvent",
-        "Description":  "Tests for any database growth events in nthe default system trace"
+        "Description":  "Tests for any database growth events in the default system trace"
     },
     {
         "UniqueTag":  "PageVerify",
@@ -265,11 +265,11 @@
     },
     {
         "UniqueTag":  "LogShippingPrimary",
-        "Description":  "Test that the Log Shipping Primary status is ok"
+        "Description":  "Tests that the Log Shipping Primary status is ok"
     },
     {
         "UniqueTag":  "LogShippingSecondary",
-        "Description":  "Test that the Log Shipping Secondary status is ok"
+        "Description":  "Tests that the Log Shipping Secondary status is ok"
     },
     {
         "UniqueTag":  "OlaInstalled",
