@@ -273,15 +273,15 @@
     },
     {
         "UniqueTag":  "OlaInstalled",
-        "Description":  "Ola maintenance solution installed"
+        "Description":  "Tests that Ola maintenance solution is installed by testing the specified (default master) database for the command log table adn the stored procedures"
     },
     {
         "UniqueTag":  "SystemFull",
-        "Description":  "Ola - $SysFullJobName"
+        "Description":  "Tests that the Ola - System Full Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))"
     },
     {
         "UniqueTag":  "UserFull",
-        "Description":  "Ola - $UserFullJobName"
+        "Description":  "Tests that the Ola - User Full Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))"
     },
     {
         "UniqueTag":  "UserDiff",
@@ -321,22 +321,22 @@
     },
     {
         "UniqueTag":  "PowerPlan",
-        "Description":  "Server Power Plan Configuration"
+        "Description":  "Tests that the Server Power Plan is set to High Performance"
     },
     {
         "UniqueTag":  "InstanceConnection",
-        "Description":  "Instance Connection"
+        "Description":  "Tests that a SQL query can be run, that the specified authentication scheme (default kerboros) is being used, that the host responds to one ping and that the host supports PS Remoting"
     },
     {
         "UniqueTag":  "SPN",
-        "Description":  "SPNs"
+        "Description":  "Tests that all default SQL SPNs have been correctly registered"
     },
     {
         "UniqueTag":  "DiskCapacity",
-        "Description":  "Disk Space"
+        "Description":  "Tests that each drive has at least the specified percentage (default 20) free space"
     },
     {
         "UniqueTag":  "PingComputer",
-        "Description":  "Ping Computer"
+        "Description":  "Tests that a host has been pinged a specified number of times (default 3) and that the average response time is less than specified (default 10ms)"
     }
 ]
