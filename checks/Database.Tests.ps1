@@ -537,7 +537,7 @@ Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
     }
 }
 
-Describe "Foreign keys and check constraints not trusted" -Tags FKTrusted, CKTrusted , $filename {
+Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted , $filename {
     @(Get-Instance).ForEach{
         Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
             @(Get-DbaDbForeignKey -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases).Where{$_.NotForReplication -eq $false}.ForEach{
