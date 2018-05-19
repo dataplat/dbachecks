@@ -197,79 +197,79 @@
     },
     {
         "UniqueTag":  "NetworkLatency",
-        "Description":  "Network Latency"
+        "Description":  "Tests that the Network Latency is less than the specified (default 40) ms"
     },
     {
         "UniqueTag":  "LinkedServerConnection",
-        "Description":  "Linked Servers"
+        "Description":  "Tests for successful connection to all Linked Servers"
     },
     {
         "UniqueTag":  "MaxMemory",
-        "Description":  "Max Memory"
+        "Description":  "Tests an instances Max Memory"
     },
     {
         "UniqueTag":  "OrphanedFile",
-        "Description":  "Orphaned Files"
+        "Description":  "Tests that there are 0 orphaned data files"
     },
     {
         "UniqueTag":  "ServerNameMatch",
-        "Description":  "SQL + Windows names match"
+        "Description":  "Tests that the SQL + Windows names match"
     },
     {
         "UniqueTag":  "MemoryDump",
-        "Description":  "SQL Memory Dumps"
+        "Description":  "Tests that there are less than the specified (default 1) number of SQL Memory Dumps"
     },
     {
         "UniqueTag":  "SupportedBuild",
-        "Description":  "Supported Build"
+        "Description":  "Tests that the instance is still under Microsoft support and that it will still be under support in a specfied (default 6) months"
     },
     {
         "UniqueTag":  "SaRenamed",
-        "Description":  "SA Login Renamed"
+        "Description":  "Tests that the SA Login has been renamed"
     },
     {
         "UniqueTag":  "DefaultBackupCompression",
-        "Description":  "Default Backup Compression"
+        "Description":  "Tests that an instances Default Backup Compression is set to the specified (default true) setting"
     },
     {
         "UniqueTag":  "XESessionStopped",
-        "Description":  "XE Sessions That Should Be Stopped"
+        "Description":  "Tests that the specified (default blank) XE Sessions are stopped"
     },
     {
         "UniqueTag":  "XESessionRunning",
-        "Description":  "XE Sessions That Should Be Running"
+        "Description":  "Tests that the specified (default blank) XE Sessions that are expected to be running are running"
     },
     {
         "UniqueTag":  "XESessionRunningAllowed",
-        "Description":  "XE Sessions That Are Allowed to Be Running"
+        "Description":  "Tests that the specified (default blank) XE Sessions that are allowed to be running are running"
     },
     {
         "UniqueTag":  "OLEAutomation",
-        "Description":  "OLE Automation"
+        "Description":  "Tests that OLE Automation is set to the specified (default false) setting"
     },
     {
         "UniqueTag":  "WhoIsActiveInstalled",
-        "Description":  "sp_whoisactive is Installed"
+        "Description":  "Tests that sp_whoisactive is Installed by testig the specified (default master) database for the stored procedure"
     },
     {
         "UniqueTag":  "ModelDbGrowth",
-        "Description":  "Model Database Growth"
+        "Description":  "Tests that the Model Database Growth settings are not set to default"
     },
     {
         "UniqueTag":  "ADUser",
-        "Description":  "Ad Users and Groups "
+        "Description":  "Tests that Ad Users and Groups, except those specified, that are logins on a SQL Server exist in Active Directory, do not have an expired password, are not locked out, are enabled in AD and on the SQL Server "
     },
     {
         "UniqueTag":  "ErrorLog",
-        "Description":  "Error Log Entries"
+        "Description":  "Tests that the SQL Server Error Log does not have any Severity 17-24 level entries within the specified (default 2) days"
     },
     {
         "UniqueTag":  "LogShippingPrimary",
-        "Description":  "Log Shipping Status Primary"
+        "Description":  "Test that the Log Shipping Primary status is ok"
     },
     {
         "UniqueTag":  "LogShippingSecondary",
-        "Description":  "Log Shipping Status Secondary"
+        "Description":  "Test that the Log Shipping Secondary status is ok"
     },
     {
         "UniqueTag":  "OlaInstalled",
