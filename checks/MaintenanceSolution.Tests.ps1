@@ -18,23 +18,23 @@ Describe "Ola maintenance solution installed" -Tags OlaInstalled, $filename {
     }
 }
 
-$SysFullJobName = Get-DbcConfigValue -Name ola.JobName.SystemFull
-$UserFullJobName = Get-DbcConfigValue -Name ola.JobName.UserFull
-$UserDiffJobName = Get-DbcConfigValue -Name ola.JobName.UserDiff
-$UserLogJobName = Get-DbcConfigValue -Name ola.JobName.UserLog
-$CommandLogJobName = Get-DbcConfigValue -Name ola.JobName.CommandLogCleanup 
-$SysIntegrityJobName = Get-DbcConfigValue -Name ola.JobName.SystemIntegrity
-$UserIntegrityJobName = Get-DbcConfigValue -Name ola.JobName.UserIntegrity 
-$UserIndexJobName = Get-DbcConfigValue -Name ola.JobName.UserIndex 
-$OutputFileJobName = Get-DbcConfigValue -Name ola.JobName.OutputFileCleanup
-$DeleteBackupJobName = Get-DbcConfigValue -Name ola.JobName.DeleteBackupHistory
-$PurgeBackupJobName = Get-DbcConfigValue -Name ola.JobName.PurgeBackupHistory
+$SysFullJobName = Get-DbcConfigValue ola.JobName.SystemFull
+$UserFullJobName = Get-DbcConfigValue ola.JobName.UserFull
+$UserDiffJobName = Get-DbcConfigValue ola.JobName.UserDiff
+$UserLogJobName = Get-DbcConfigValue ola.JobName.UserLog
+$CommandLogJobName = Get-DbcConfigValue ola.JobName.CommandLogCleanup 
+$SysIntegrityJobName = Get-DbcConfigValue ola.JobName.SystemIntegrity
+$UserIntegrityJobName = Get-DbcConfigValue ola.JobName.UserIntegrity 
+$UserIndexJobName = Get-DbcConfigValue ola.JobName.UserIndex 
+$OutputFileJobName = Get-DbcConfigValue ola.JobName.OutputFileCleanup
+$DeleteBackupJobName = Get-DbcConfigValue ola.JobName.DeleteBackupHistory
+$PurgeBackupJobName = Get-DbcConfigValue ola.JobName.PurgeBackupHistory
 
 
 Describe "Ola - $SysFullJobName" -Tags SystemFull, OlaJobs, $filename {
-    $Enabled = Get-DbcConfigValue -Name policy.ola.SystemFullenabled
-    $Scheduled = Get-DbcConfigValue -Name policy.ola.SystemFullscheduled
-    $Retention = Get-DbcConfigValue -Name policy.ola.SystemFullretention
+    $Enabled = Get-DbcConfigValue policy.ola.SystemFullenabled
+    $Scheduled = Get-DbcConfigValue policy.ola.SystemFullscheduled
+    $Retention = Get-DbcConfigValue policy.ola.SystemFullretention
 
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $SysFullJobName
@@ -78,9 +78,9 @@ Describe "Ola - $UserFullJobName" -Tags UserFull, OlaJobs, $filename {
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $UserFullJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.UserFullenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.UserFullscheduled
-        $Retention = Get-DbcConfigValue -Name policy.ola.UserFullretention
+        $Enabled = Get-DbcConfigValue policy.ola.UserFullenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.UserFullscheduled
+        $Retention = Get-DbcConfigValue policy.ola.UserFullretention
 
         Context  "Is job enabled on $psitem" {
             It "$UserFullJobName Should Be enabled - $Enabled " {
@@ -122,9 +122,9 @@ Describe "Ola - $UserDiffJobName" -Tags UserDiff, OlaJobs, $filename {
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $UserDiffJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.UserDiffenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.UserDiffscheduled
-        $Retention = Get-DbcConfigValue -Name policy.ola.UserDiffretention
+        $Enabled = Get-DbcConfigValue policy.ola.UserDiffenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.UserDiffscheduled
+        $Retention = Get-DbcConfigValue policy.ola.UserDiffretention
 
         Context  "Is job enabled on $psitem" {
             It "$UserDiffJobName Should Be enabled - $Enabled " {
@@ -166,9 +166,9 @@ Describe "Ola - $UserLogJobName" -Tags UserLog, OlaJobs, $filename {
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $UserLogJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.UserLogenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.UserLogscheduled
-        $Retention = Get-DbcConfigValue -Name policy.ola.UserLogretention
+        $Enabled = Get-DbcConfigValue policy.ola.UserLogenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.UserLogscheduled
+        $Retention = Get-DbcConfigValue policy.ola.UserLogretention
 
         Context  "Is job enabled on $psitem" {
             It "$UserLogJobName Should Be enabled - $Enabled " {
@@ -210,9 +210,9 @@ Describe "Ola - $CommandLogJobName" -Tags CommandLog, OlaJobs, $filename {
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $CommandLogJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.CommandLogenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.CommandLogscheduled
-        $CleanUp = Get-DbcConfigValue -Name policy.ola.CommandLogCleanUp 
+        $Enabled = Get-DbcConfigValue policy.ola.CommandLogenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.CommandLogscheduled
+        $CleanUp = Get-DbcConfigValue policy.ola.CommandLogCleanUp 
 
         Context  "Is job enabled on $psitem" {
             It "$CommandLogJobName Should Be enabled - $Enabled " {
@@ -244,8 +244,8 @@ Describe "Ola - $SysIntegrityJobName" -Tags SystemIntegrityCheck, OlaJobs, $file
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $SysIntegrityJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.SystemIntegrityCheckenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.SystemIntegrityCheckscheduled
+        $Enabled = Get-DbcConfigValue policy.ola.SystemIntegrityCheckenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.SystemIntegrityCheckscheduled
 
         Context  "Is job enabled on $psitem" {
             It "$SysIntegrityJobName Should Be enabled - $Enabled " {
@@ -268,8 +268,8 @@ Describe "Ola - $UserIntegrityJobName" -Tags UserIntegrityCheck, OlaJobs, $filen
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $UserIntegrityJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.UserIntegrityCheckenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.UserIntegrityCheckscheduled
+        $Enabled = Get-DbcConfigValue policy.ola.UserIntegrityCheckenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.UserIntegrityCheckscheduled
 
         Context  "Is job enabled on $psitem" {
             It "$UserIntegrityJobName Should Be enabled - $Enabled " {
@@ -292,8 +292,8 @@ Describe "Ola - $UserIndexJobName" -Tags UserIndexOptimize, OlaJobs, $filename {
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $UserIndexJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.UserIndexOptimizeenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.UserIndexOptimizescheduled
+        $Enabled = Get-DbcConfigValue policy.ola.UserIndexOptimizeenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.UserIndexOptimizescheduled
 
         Context  "Is job enabled on $psitem" {
             It "$UserIndexJobName Should Be enabled - $Enabled " {
@@ -316,9 +316,9 @@ Describe "Ola - $OutputFileJobName" -Tags OutputFileCleanup, OlaJobs, $filename 
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $OutputFileJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.OutputFileCleanupenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.OutputFileCleanupscheduled
-        $CleanUp = Get-DbcConfigValue -Name policy.ola.OutputFileCleanUp 
+        $Enabled = Get-DbcConfigValue policy.ola.OutputFileCleanupenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.OutputFileCleanupscheduled
+        $CleanUp = Get-DbcConfigValue policy.ola.OutputFileCleanUp 
 
         Context  "Is job enabled on $psitem" {
             It "$OutputFileJobName Should Be enabled - $Enabled " {
@@ -335,7 +335,7 @@ Describe "Ola - $OutputFileJobName" -Tags OutputFileCleanup, OlaJobs, $filename 
             }
         }
 
-        Context "Checking the Command Log Clenup Time on $psitem" {
+        Context "Checking the Output File Job Clenup Time on $psitem" {
             $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
             $days = [regex]::matches($jobsteps.Command, "\/d\s-(\d\d)").groups[1].value
 
@@ -350,9 +350,9 @@ Describe "Ola - $DeleteBackupJobName" -Tags DeleteBackupHistory, OlaJobs, $filen
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $DeleteBackupJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.DeleteBackupHistoryenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.DeleteBackupHistoryscheduled
-        $CleanUp = Get-DbcConfigValue -Name policy.ola.DeleteBackupHistoryCleanUp 
+        $Enabled = Get-DbcConfigValue policy.ola.DeleteBackupHistoryenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.DeleteBackupHistoryscheduled
+        $CleanUp = Get-DbcConfigValue policy.ola.DeleteBackupHistoryCleanUp 
 
         Context  "Is job enabled on $psitem" {
             It "$DeleteBackupJobName Should Be enabled - $Enabled " {
@@ -384,9 +384,9 @@ Describe "Ola - $PurgeBackupJobName" -Tags PurgeJobHistory, OlaJobs, $filename {
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $PurgeBackupJobName
 
-        $Enabled = Get-DbcConfigValue -Name policy.ola.PurgeJobHistoryenabled
-        $Scheduled = Get-DbcConfigValue -Name policy.ola.PurgeJobHistoryscheduled
-        $CleanUp = Get-DbcConfigValue -Name policy.ola.PurgeJobHistoryCleanUp 
+        $Enabled = Get-DbcConfigValue policy.ola.PurgeJobHistoryenabled
+        $Scheduled = Get-DbcConfigValue policy.ola.PurgeJobHistoryscheduled
+        $CleanUp = Get-DbcConfigValue policy.ola.PurgeJobHistoryCleanUp 
 
         Context  "Is job enabled on $psitem" {
             It "$PurgeBackupJobName Should Be enabled - $Enabled " {

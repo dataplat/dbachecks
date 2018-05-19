@@ -30,8 +30,8 @@
     [CmdletBinding()]
     param (
         [string]$Path = "$env:windir\temp\dbachecks",
-        [string]$Enviornment,
+        [string]$Environment,
         [switch]$EnableException
     )
-    $null = Remove-Item "$Path\*$Enviornment*.json" -ErrorAction SilentlyContinue
+    $null = Remove-Item "$Path\*$Environment*.json" -ErrorAction SilentlyContinue
 }

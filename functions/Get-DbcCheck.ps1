@@ -39,7 +39,7 @@
                         $_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern -or $_.Type -match $Pattern
                     }
                     @($output).ForEach{
-                        Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'Description', 'UniqueTag', 'AllTags', 'Config'
+                        Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags', 'Config', 'Description'
                     }
                 }
             }
@@ -50,7 +50,7 @@
                         $_.UniqueTag -like $Pattern -or $_.AllTags -like $Pattern -or $_.Type -like $Pattern
                     }
                     @($output).ForEach{
-                        Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'Description', 'UniqueTag', 'AllTags' ,'Config'
+                        Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags' ,'Config', 'Description'
                     }
                 }
             }
@@ -58,7 +58,7 @@
         else {
             $output = Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json
             $output.ForEach{
-                Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'Description', 'UniqueTag', 'AllTags', 'Config'
+                Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags', 'Config', 'Description'
             }
         }
     }

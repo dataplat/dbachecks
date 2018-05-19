@@ -111,6 +111,14 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
     }
 }
 
+Describe "Checking that there is a description for each check" -Tags UnitTest {
+    (Get-DbcCheck).ForEach{
+        It "$($psitem.UniqueTag) Should have a description in the DbcCheckDescriptions.json"{
+            $psitem.description | Should -Not -BeNullOrEmpty -Because "We need a description in the .\internal\configurations\DbcCheckDescriptions.json for $psitem.uniquetag so that Get-DbcCheck shows it"
+        }
+    }
+}
+
 # This should stop people making breaking changes to the tests without first altering the test
 Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
 Import-Module $ModuleBase\dbachecks.psd1 
