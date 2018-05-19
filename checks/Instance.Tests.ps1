@@ -255,7 +255,7 @@ Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllo
             Context "Checking sessions on $psitem" {
                 @(Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.ForEach{
                     It "Session $($Psitem.Name) is allowed to be running" {
-                        $psitem.name | Should -BeIn $xesession -Because "Only these sessions are  allowed to be running"
+                        $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
                     }
                 }
             }
@@ -321,7 +321,7 @@ Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
                     It "Active Directory user $($psitem.login) should not be lockedout in $($psitem.domain)" {
                         $psitem.lockedout | Should -Be $false -Because "$($psitem.login) should mot be locked out"
                     }
-                    It "Active Directory user $($psitem.login) should be enabled on $($psitem.domin)" {
+                    It "Active Directory user $($psitem.login) should be enabled on $($psitem.domain)" {
                         $psitem.Enabled | Should -Be $true -Because "$($psitem.login) should be enabled"
                     }
                     It "Active Directory user $($psitem.login) should not be disabled in SQL Server on $($psitem.Server)" {
