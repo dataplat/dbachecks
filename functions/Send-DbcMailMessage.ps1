@@ -81,6 +81,9 @@
     Uses the Secure Sockets Layer (SSL) protocol to establish a connection to the remote computer to send mail. By
     default, SSL is not used.
 
+    .PARAMETER ExcludeHtmlAttachment
+    By default, the HTML will be attached. Use ExcludeHtmlAttachment to send without the HTML.
+
     .PARAMETER ExcludeXmlAttachment
     By default, the raw XML will be attached. Use ExcludeXmlAttachment to send without the raw xml.
 

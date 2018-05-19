@@ -78,13 +78,10 @@ Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
 Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Backup Path Access on $psitem" {
-            if (-not (Get-DbcConfigValue policy.storage.backuppath)) {
+            $backuppath = Get-DbcConfigValue policy.storage.backuppath
+            if (-not $backuppath) {
                 $backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
             }
-            else {
-                $backuppath = Get-DbcConfigValue policy.storage.backuppath
-            }
-
             It "can access backup path ($backuppath) on $psitem" {
                 Test-DbaSqlPath -SqlInstance $psitem -Path $backuppath | Should -BeTrue -Because 'The SQL Service account needs to have access to the backup path to backup your databases'
             }
@@ -258,7 +255,7 @@ Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllo
             Context "Checking sessions on $psitem" {
                 @(Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.ForEach{
                     It "Session $($Psitem.Name) is allowed to be running" {
-                        $psitem.name | Should -BeIn $xesession -Because "Only these sessions are  allowed to be running"
+                        $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
                     }
                 }
             }
@@ -324,7 +321,7 @@ Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
                     It "Active Directory user $($psitem.login) should not be lockedout in $($psitem.domain)" {
                         $psitem.lockedout | Should -Be $false -Because "$($psitem.login) should mot be locked out"
                     }
-                    It "Active Directory user $($psitem.login) should be enabled on $($psitem.domin)" {
+                    It "Active Directory user $($psitem.login) should be enabled on $($psitem.domain)" {
                         $psitem.Enabled | Should -Be $true -Because "$($psitem.login) should be enabled"
                     }
                     It "Active Directory user $($psitem.login) should not be disabled in SQL Server on $($psitem.Server)" {

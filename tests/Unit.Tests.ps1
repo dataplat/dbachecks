@@ -47,7 +47,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                         }
                     }
                     It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) Should Be in the unique Tags returned from Get-DbcCheck" {
-                        $UniqueTags | Should -Contain $PSItem.Tags.Text.Split(',')[0].ToString() -Because 'We need a unique tag for each test'
+                        $UniqueTags | Should -Contain $PSItem.Tags.Text.Split(',')[0].ToString() -Because 'We need a unique tag for each test - Format should be -Tags space UniqueTag comma'
                     }
                 }
                 else {
@@ -107,6 +107,19 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                     }
                 }
             }
+        }
+    }
+    (Get-DbcCheck).ForEach{
+        It "Should have one Unique Tag for each check"{
+            $psitem.UniqueTag.Count | Should -Be 1 -Because "We want to only have one Unique Tag per test and we got $($psitem.UniqueTag) instead"
+        }
+    }
+}
+
+Describe "Checking that there is a description for each check" -Tags UnitTest {
+    (Get-DbcCheck).ForEach{
+        It "$($psitem.UniqueTag) Should have a description in the DbcCheckDescriptions.json"{
+            $psitem.description | Should -Not -BeNullOrEmpty -Because "We need a description in the .\internal\configurations\DbcCheckDescriptions.json for $($psitem.uniquetag) so that Get-DbcCheck shows it"
         }
     }
 }

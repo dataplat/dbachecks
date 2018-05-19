@@ -6,71 +6,70 @@
 # Generated on: 12/18/2017
 #
 @{
-    
+
     # Script module or binary module file associated with this manifest.
     RootModule             = 'dbachecks.psm1'
-    
+
     # Version number of this module.
-    
     ModuleVersion          = '1.1.127'
-    
+
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
-    
+
     # Author of this module
     Author                 = 'SQL Community Collaborative'
-    
+
     # Company or vendor of this module
     CompanyName            = 'SQL Community Collaborative'
-    
+
     # Copyright statement for this module
     Copyright              = '(c) 2017. All rights reserved.'
-    
+
     # Description of the functionality provided by this module
     Description            = 'SQL Server Infrastructure Tests'
-    
+
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion      = '4.0'
-    
+
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName     = ''
-    
+
     # Minimum version of the Windows PowerShell host required by this module
     PowerShellHostVersion  = ''
-    
+
     # Minimum version of the .NET Framework required by this module
     DotNetFrameworkVersion = ''
-    
+
     # Minimum version of the common language runtime (CLR) required by this module
     CLRVersion             = ''
-    
+
     # Processor architecture (None, X86, Amd64, IA64) required by this module
     ProcessorArchitecture  = ''
-    
+
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
         @{ ModuleName = 'Pester'; ModuleVersion = '4.2.0' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.317' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.329' }
         @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.13.35' }
     )
-    
+
     # Assemblies that must be loaded prior to importing this module
     RequiredAssemblies     = @()
-    
+
     # Script files () that are run in the caller's environment prior to importing this module
     ScriptsToProcess       = @()
-    
+
     # Type files (xml) to be loaded when importing this module
     TypesToProcess         = @()
-    
+
     # Format files (xml) to be loaded when importing this module
     # "xml\dbachecks.Format.ps1xml"
     # worry about this later
     FormatsToProcess       = @("xml\dbachecks.Format.ps1xml")
-    
+
     # Modules to import as nested modules of the module specified in ModuleToProcess
     NestedModules          = @()
-    
+
     # Functions to export from this module
     # This is the stuff in \enduser-functions
     FunctionsToExport      = @(

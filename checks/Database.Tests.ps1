@@ -42,10 +42,15 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
         $destdata = Get-DbcConfigValue policy.backup.datadir
         $destlog = Get-DbcConfigValue policy.backup.logdir
         @(Get-Instance).ForEach{
+            if (-not $destserver) {
+                $destserver = $psitem
+            }
             Context "Testing Backup Restore & Integrity Checks on $psitem" {
-                @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).Name -VerifyOnly).ForEach{
-                    
-                    if ($psitem.DBCCResult -notmatch "skipped for restored master") {
+                $srv = Connect-DbaInstance -SqlInstance $psitem
+                $dbs = ($srv.Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).Name
+                if (-not ($destdata)) {$destdata -eq $srv.DefaultFile}
+                if (-not ($destlog)) {$destlog -eq $srv.DefaultLog}
+                @(Test-DbaLastBackup -SqlInstance $psitem -Database $dbs -Destination $destserver -DataDirectory $destdata -LogDirectory $destlog -VerifyOnly).ForEach{                    if ($psitem.DBCCResult -notmatch "skipped for restored master") {
                         It "DBCC for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
                             $psitem.DBCCResult | Should -Be "Success" -Because "You need to run DBCC CHECKDB to ensure your database is consistent"
                         }
@@ -65,7 +70,7 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
         Context "VerifyOnly tests of last backups on $psitem" {
             @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).Name -VerifyOnly).ForEach{
                 It "restore for $($psitem.Database) on $($psitem.SourceServer) Should be success" {
-                    $psitem.RestoreResult | Should -Be "Success" -Because "The restore file has not successfully restored - you have no backup"
+                    $psitem.RestoreResult | Should -Be "Success" -Because "The restore file has not successfully verified - you have no backup"
                 }
                 It "file exists for last backup of $($psitem.Database) on $($psitem.SourceServer)" {
                     $psitem.FileExists | Should -BeTrue -Because "Without a backup file you have no backup"
@@ -325,7 +330,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, $filename {
     $LogFileCount = Get-DbcConfigValue policy.database.logfilecount
     If (-not $LogFileCountTest) {
         @(Get-Instance).ForEach{
-            Context "Testing Log File count and size for $psitem" {
+            Context "Testing Log File count for $psitem" {
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $_.Name}).ForEach{
                     $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                     $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
@@ -342,7 +347,7 @@ Describe "Log File Size Checks" -Tags LogfileSize, $filename {
     $LogFileSizePercentage = Get-DbcConfigValue policy.database.logfilesizepercentage
     $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
     @(Get-Instance).ForEach{
-        Context "Testing Log File count and size for $psitem" {
+        Context "Testing Log File size for $psitem" {
             @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name -and ($Psitem.IsAccessible -eq $true)}.ForEach{
                 $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                 $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
@@ -390,10 +395,10 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
                 @($FileGroups).ForEach{
                     $Unbalanced = 0
                     $Average = ($psitem.Group.Size | Measure-Object -Average).Average
-
+                    ## files where average size is less than 95% of the average or more than 105% of the average filegroup size (using default 5% config value)
                     $Unbalanced = $psitem | Where-Object {$psitem.group.Size -lt ((1 - ($Tolerance / 100)) * $Average) -or $psitem.group.Size -gt ((1 + ($Tolerance / 100)) * $Average)}
-                    It "$($psitem.Name) of $($psitem.Group[0].Database) on $($psitem.Group[0].SqlInstance)  Should have FileGroup members with sizes within 5% of the average" {
-                        $Unbalanced.count | Should -Be 0 -Because "If your file groups are not balanced SQL Server wont be optimal"
+                    It "$($psitem.Name) of $($psitem.Group[0].Database) on $($psitem.Group[0].SqlInstance) Should have FileGroup members with sizes within $tolerance % of the average" {
+                        $Unbalanced.count | Should -Be 0 -Because "If your file groups are not balanced the files with the most free space will become allocation hotspots"
                     }
                 }
             }
@@ -526,6 +531,24 @@ Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
             @(Test-DbaDatabaseCompatibility -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases).ForEach{
                 It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
                     $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
+                }
+            }
+        }
+    }
+}
+
+Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, $filename {
+    @(Get-Instance).ForEach{
+        Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
+            @(Get-DbaDbForeignKey -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases).Where{$_.NotForReplication -eq $false}.ForEach{
+                It "$($psitem.Name) foreign key on table $($psitem.Parent) within database $($psitem.Database) should be trusted." {
+                    $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won’t use untrusted constraints to build better execution plans. It will also avoid data violation"
+                }
+            }
+
+            @(Get-DbaDbCheckConstraint -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases).Where{$_.NotForReplication -eq $false -and $_.IsEnabled -eq $true}.ForEach{
+                It "$($psitem.Name) check constraint on table $($psitem.Parent) within database $($psitem.Database) should be trusted." {
+                    $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won’t use untrusted constraints to build better execution plans. It will also avoid data violation"
                 }
             }
         }

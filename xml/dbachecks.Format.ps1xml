@@ -26,9 +26,6 @@
 								<PropertyName>Type</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
-								<PropertyName>Description</PropertyName>
-							</TableColumnItem>
-							<TableColumnItem>
 								<PropertyName>UniqueTag</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
@@ -36,6 +33,9 @@
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>Config</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Description</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>
