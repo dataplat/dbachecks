@@ -8,6 +8,9 @@
     
         .PARAMETER Path
             The location of the pbix file. "$script:ModuleRoot\bin\dbachecks.pbix" by default.
+
+        .PARAMETER DataSource
+            The location of the json file "C:\windows\Temp\dbachecks\*.json" by default
     
         .PARAMETER EnableException
             By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
