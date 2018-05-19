@@ -335,7 +335,7 @@ Describe "Ola - $OutputFileJobName" -Tags OutputFileCleanup, OlaJobs, $filename 
             }
         }
 
-        Context "Checking the Command Log Clenup Time on $psitem" {
+        Context "Checking the Output File Job Clenup Time on $psitem" {
             $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
             $days = [regex]::matches($jobsteps.Command, "\/d\s-(\d\d)").groups[1].value
 
