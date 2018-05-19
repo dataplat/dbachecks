@@ -338,5 +338,9 @@
     {
         "UniqueTag":  "PingComputer",
         "Description":  "Tests that a host has been pinged a specified number of times (default 3) and that the average response time is less than specified (default 10ms)"
+    },
+    {
+        "UniqueTag":  "FKCKTrusted",
+        "Description":  "Tests that each foreign key and each constraint is trusted"
     }
 ]
