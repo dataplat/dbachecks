@@ -15,8 +15,14 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 if ($SkipHelpTest) { return }
 . "$PSScriptRoot\InModule.Help.Exceptions.ps1"
 
+$ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+# This should stop people making breaking changes to the tests without first altering the test
+Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
+Import-Module $ModuleBase\..\dbachecks.psd1 
+
 $includedNames = (Get-ChildItem "$PSScriptRoot\..\functions" | Where-Object Name -like "*.ps1" ).BaseName
-$commands = Get-Command -Module (Get-Module dbatools) -CommandType Cmdlet, Function, Workflow | Where-Object Name -in $includedNames
+$commands = Get-Command -Module (Get-Module dbachecks) -CommandType Cmdlet, Function, Workflow | Where-Object Name -in $includedNames
 
 ## When testing help, remember that help is cached at the beginning of each session.
 ## To test, restart session.
@@ -32,7 +38,7 @@ foreach ($command in $commands) {
     $Help = Get-Help $commandName -ErrorAction SilentlyContinue
     $testhelperrors = 0
     $testhelpall = 0
-    Describe "Test help for $commandName" {
+    Describe "Test help for $commandName" -Tag Help{
 
         $testhelpall += 1
         if ($Help.Synopsis -like '*`[`<CommonParameters`>`]*') {
@@ -80,12 +86,11 @@ foreach ($command in $commands) {
         $testparamserrors = 0
         Context "Test parameter help for $commandName" {
             
-            $Common = 'Debug', 'ErrorAction', 'ErrorVariable', 'InformationAction', 'InformationVariable', 'OutBuffer', 'OutVariable',
-            'PipelineVariable', 'Verbose', 'WarningAction', 'WarningVariable'
+            $Common = 'Debug', 'ErrorAction', 'ErrorVariable', 'InformationAction', 'InformationVariable', 'OutBuffer', 'OutVariable', 'PipelineVariable', 'Verbose', 'WarningAction', 'WarningVariable', 'Confirm', 'WhatIf'
             
-            $parameters = $command.ParameterSets.Parameters | Sort-Object -Property Name -Unique | Where-Object Name -notin $common
+            $parameters = $command.ParameterSets.Parameters | Where-Object {$psitem.IsDynamic -eq $false} | Sort-Object -Property Name -Unique | Where-Object Name -notin $common
             $parameterNames = $parameters.Name
-            $HelpParameterNames = $Help.Parameters.Parameter.Name | Sort-Object -Unique
+            $HelpParameterNames = ($Help.Parameters.Parameter | Sort-Object -Unique | Where-Object Name -notin $common).Name
             foreach ($parameter in $parameters) {
                 $parameterName = $parameter.Name
                 $parameterHelp = $Help.parameters.parameter | Where-Object Name -EQ $parameterName
