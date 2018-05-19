@@ -78,7 +78,7 @@ function New-Json {
                 UniqueTag   = $null
                 AllTags     = "$tags, $filename"
                 Config      = $config
-                Description = $title
+                Description = $null
             }
         }
     }
