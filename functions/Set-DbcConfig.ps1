@@ -19,6 +19,9 @@
 
             Is only executed if the validation was successful (assuming there was a validation, of course)
     
+        .PARAMETER Append
+            Adds the value to the existing configuration instead of overwriting it
+    
         .PARAMETER Temporary
             The setting is not persisted outside the current session.
             By default, settings will be remembered across all powershell sessions.
