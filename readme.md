@@ -33,6 +33,8 @@ Have questions about development? Please visit our [Wiki](https://github.com/sql
   </tbody>
 </table> 
 
+Want to know how our CD process works? Read this [blog post](https://sqldbawithabeard.com/2018/05/01/version-update-code-signing-and-publishing-to-the-powershell-gallery-with-vsts/) and see how the team manage it
+
 ## Prerequisites
 ### Client requirements
 * PowerShell 4+ is required.
@@ -252,11 +254,17 @@ Read more about dbachecks from a number of our original contributors!
 * [Checking backups with dbachecks by Jess Promfret](http://jesspomfret.com/checking-backups-with-dbachecks/)
 * [dbachecks please! by Garry Bargsley](http://blog.garrybargsley.com/dbachecks-please)
 * [dbachecks – Configuration Deep Dive by Rob Sewell](https://sqldbawithabeard.com/2018/02/22/dbachecks-configuration-deep-dive/)
-* [Test Log Shipping with dbachecks](https://www.sqlstad.nl/powershell/test-log-shipping-with-dbachecks/)
+* [Test Log Shipping with dbachecks by Sander Stad](https://www.sqlstad.nl/powershell/test-log-shipping-with-dbachecks/)
 * [Checking your backup strategy with dbachecks by Joshua Corrick](https://corrick.io/blog/checking-your-backup-strategy-with-dbachecks)
 * [Enterprise-level reporting with dbachecks by Jason Squires](http://www.sqlnotnull.com/2018/02/20/enterprise-level-reporting-with-dbachecks-from-the-makers-of-dbatools)
 * [Adding your own checks to dbachecks by Shane O'Neill](http://nocolumnname.blog/2018/02/22/adding-your-own-checks-to-dbachecks)
 * [dbachecks - A different approach for an in-progress and incremental validation by Cláudio Silva](http://claudioessilva.eu/2018/02/22/dbachecks-a-different-approach-for-a-in-progress-and-incremental-validation/)
+* [dbachecks - Improved Descriptions by Rob Sewell](https://sqldbawithabeard.com/2018/05/19/dbachecks-improved-descriptions/)
+* [DBACHECKS – SQL SERVER COMPLIANCE TESTING WITH SIMPLE CONFIGURATION MANAGEMENT by Stuart Moore](https://stuart-moore.com/dbachecks-sql-server-compliance-testing-simple-configuration-management/)
+* [dbachecks – Which Configuration Item For Which Check ? by Rob Sewell](https://sqldbawithabeard.com/2018/05/15/dbachecks-which-configuration-item-for-which-check/)
+*[https://sqldbawithabeard.com/2018/04/08/checking-availability-groups-with-dbachecks/ by Rob Sewell](https://sqldbawithabeard.com/2018/04/08/checking-availability-groups-with-dbachecks/)
+
+Know of any more blog posts about dbachecks? - Please add them here.
 
 ## Party
 
