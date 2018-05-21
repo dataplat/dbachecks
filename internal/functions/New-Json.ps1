@@ -66,9 +66,9 @@ function New-Json {
             }
             # add the config for the type
             switch ($type) {
-                SqlInstance {$config = 'app.sqlinstance' + $config}
-                ComputerName {$config = 'app.computername' + $config}
-                ClusterNode {$config = 'app.sqlinstance' + $config}
+                SqlInstance {$config = 'app.sqlinstance ' + $config}
+                ComputerName {$config = 'app.computername ' + $config}
+                ClusterNode {$config = 'app.sqlinstance ' + $config}
                 Default {}
             }
             if (-not $config) {$config = "None"}
@@ -79,6 +79,7 @@ function New-Json {
                 AllTags     = "$tags, $filename"
                 Config      = $config
                 Description = $null
+                Describe    = $title
             }
         }
     }
