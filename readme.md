@@ -13,7 +13,7 @@ This open source module allows us to crowdsource our checklists using [Pester](h
 * Disk space is not about to run out
 * All enabled jobs have succeeded
 
-Have questions about development? Please visit our [Wiki](https://github.com/potatoqualitee/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
+Have questions about development? Please visit our [Wiki](https://github.com/sqlcollaborative/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
 
 ## Build Status
 <table>
@@ -34,7 +34,7 @@ Have questions about development? Please visit our [Wiki](https://github.com/pot
 </table> 
 
 ## Prerequisites
-
+### Client requirements
 * PowerShell 4+ is required.
 * Automatic installation of the dependent modules will only be provided via the [PowerShell Gallery](https://www.powershellgallery.com).
 
@@ -62,6 +62,10 @@ Import-Module Pester -Force
 ````
 
 You may need to do the same thing for the PSFramework or dbatools modules also
+
+### SQL requirements
+
+dbachecks uses dbatools for most of it's data gathering so it supports SQL Versions from SQL 2000 to SQL vNext including SQL running on Linux. (dbachecks will not install on PowerShell Core yet so can not be run on a Linux client) Obviously some of the Services adn disk space checks will not work against instances running on Linux as they are usin gWindows API calls.
 
 ## Getting started
 
