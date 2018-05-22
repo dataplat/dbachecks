@@ -201,7 +201,7 @@ Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename 
     @(Get-Instance).ForEach{
         Context "Testing Default Backup Compression on $psitem" {
             It "Default Backup Compression is set to $defaultbackupcompression on $psitem" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
-               Assert-BackupCompression -Instance $psitem -defaultbackupcompression $defaultbackupcompression
+                Assert-BackupCompression -Instance $psitem -defaultbackupcompression $defaultbackupcompression
             }
         }
     }
@@ -354,6 +354,21 @@ Describe "Error Log Entries" -Tags ErrorLog, $filename {
             It "Error log should be free of error severities 17-24 on $psitem" {
                 (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow)).Text | Should -Not -Match "Severity: 1[7-9]" -Because "these severities indicate serious problems"
                 (Get-DbaSqlLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow)).Text | Should -Not -Match "Severity: 2[0-4]" -Because "these severities indicate serious problems"
+            }
+        }
+    }
+}
+
+Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, $filename {
+    . $PSScriptRoot/../internal/assertions/Assert-InstanceMaxDop.ps1
+    $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
+    $MaxDop = Get-DbcConfigValue -Module dbachecks -Name policy.instancemaxdop.maxdop
+    $ExcludeInstance = Get-DbcConfigValue -Module dbachecks -Name policy.instancemaxdop.excludeinstance
+    @(Get-Instance).ForEach{
+        if ($psitem -in $ExcludeInstance) {$Skip = $true}else {$skip = $false}
+        Context "Testing Instance MaxDop Value on $psitem" {
+            It "Instance Level MaxDop setting should be correct on $psitem" -Skip:$Skip {
+                Assert-InstanceMaxDop -Instance $psitem -UseRecommended:$UseRecommended -MaxDopValue $MaxDop
             }
         }
     }
