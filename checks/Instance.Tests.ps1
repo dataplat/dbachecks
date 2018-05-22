@@ -362,8 +362,8 @@ Describe "Error Log Entries" -Tags ErrorLog, $filename {
 Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, $filename {
     . $PSScriptRoot/../internal/assertions/Assert-InstanceMaxDop.ps1
     $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
-    $MaxDop = Get-DbcConfigValue -Module dbachecks -Name policy.instancemaxdop.maxdop
-    $ExcludeInstance = Get-DbcConfigValue -Module dbachecks -Name policy.instancemaxdop.excludeinstance
+    $MaxDop = Get-DbcConfigValue policy.instancemaxdop.maxdop
+    $ExcludeInstance = Get-DbcConfigValue policy.instancemaxdop.excludeinstance
     @(Get-Instance).ForEach{
         if ($psitem -in $ExcludeInstance) {$Skip = $true}else {$skip = $false}
         Context "Testing Instance MaxDop Value on $psitem" {
