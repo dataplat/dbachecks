@@ -1,4 +1,4 @@
-﻿# Fred magic
+# Fred magic
 #Set-PSFConfig -Handler { if (Get-PSFTaskEngineCache -Module dbachecks -Name module-imported) { Write-PSFMessage -Level Warning -Message "This setting will only take effect on the next console start" } }
 
 #Add some validation for values with limited options
@@ -94,6 +94,11 @@ Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize 
 
 #pageverify
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
+
+# InstanceMaxDop
+Set-PSFConfig -Module dbachecks -Name policy.instancemaxdop.userecommended -Value $false -Initialize -Description "Use the recommendation from Test-DbaMaxDop to test the Max DOP settings - If set to false the value in policy.instancemaxdop.maxdop is used"
+Set-PSFConfig -Module dbachecks -Name policy.instancemaxdop.maxdop -Value 0 -Initialize -Description "The value for the Instance Level MaxDop Settings we expect"
+Set-PSFConfig -Module dbachecks -Name policy.instancemaxdop.excludeinstance -Value @() -Initialize -Description "Any Instances to exclude from checking Instance Level MaxDop - Useful if your estate contains SQL instances supporting Sharepoint for example"
 
 # Database
 Set-PSFConfig -Module dbachecks -Name policy.database.autoclose -Validation bool -Value $false -Initialize -Description "Auto Close should be allowed `$true or disallowed `$false"
