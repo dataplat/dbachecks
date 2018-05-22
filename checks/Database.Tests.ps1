@@ -554,3 +554,18 @@ Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, $fi
         }
     }
 }
+
+Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
+    $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
+    $ExcludedDatabases = Get-DbcConfigValue policy.database.maxdopexcludedb
+    if($ExcludedDatabases){Write-Warning "Excluded $ExcludedDatabases from testing"}
+    @(Get-Instance).ForEach{
+        Context "Database MaxDop setting is correct on $psitem" {
+            @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $_.Database -notin $ExcludedDatabases}.ForEach{
+                It "Database $($psitem.Database) should have the correct MaxDop setting" {
+                    Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue $MaxDopValue
+                }
+            }
+        }
+    }
+}
