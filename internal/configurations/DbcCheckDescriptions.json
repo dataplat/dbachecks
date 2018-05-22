@@ -342,5 +342,13 @@
     {
         "UniqueTag":  "FKCKTrusted",
         "Description":  "Tests that each foreign key and each constraint is trusted"
+    },
+    {
+        "UniqueTag":  "MaxDopInstance",
+        "Description":  "Tests that the instance level MaxDop settings on all instances (except those specified default blank) are set to the recommended value if specified (default false) or to the specified value (default 0)"
+    },
+    {
+        "UniqueTag":  "MaxDopDatabase",
+        "Description":  "Tests that the database level MaxDop settings for all databases on all instances from version 2016 up are set to the specified value (default 0)"
     }
 ]
