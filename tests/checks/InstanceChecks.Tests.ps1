@@ -11,41 +11,41 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $actual, $expected)
             Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-        {Assert-BackupCompression -Instance 'Dummy' -defaultbackupcompression $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The default backup compression should be set correctly, but got `$$actual"
+            {Assert-BackupCompression -Instance 'Dummy' -defaultbackupcompression $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The default backup compression should be set correctly, but got `$$actual"
         }
         $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
         It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $expected)
             Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-        Assert-BackupCompression -Instance 'Dummy' -defaultbackupcompression $expected
+            Assert-BackupCompression -Instance 'Dummy' -defaultbackupcompression $expected
         }
-                # Validate we have called the mock the correct number of times
-    It "Should call the mocks" {
-        $assertMockParams = @{
-        'CommandName' = 'Get-DbaSpConfigure'
-        'Times'       = 4
-        'Exactly'     = $true
-        }
-        Assert-MockCalled @assertMockParams
-    }
-    <#
-        It "Should not run for SQL 2005 and below"{
-            # Mock Get-Version
-            function Get-Version {}
-            Mock Get-Version {9} 
-        # Mock the version check for not running the tests
-        Mock Get-DbaSpConfigure {@{"ConfiguredValue" = 1}}
-        $Pester = Invoke-DbcCheck -SQLInstance Dummy -Check DefaultBackupCompression -PassThru -Show None
-       # $Pester.TotalCount | Should -Be 1
-       # $Pester.SkippedCount | Should -Be 1
-        $assertMockParams = @{
-            'CommandName' = 'Get-Version'
-            'Times'       = 1
-            'Exactly'     = $true
+        # Validate we have called the mock the correct number of times
+        It "Should call the mocks" {
+            $assertMockParams = @{
+                'CommandName' = 'Get-DbaSpConfigure'
+                'Times'       = 4
+                'Exactly'     = $true
             }
             Assert-MockCalled @assertMockParams
-    }
-#>
+        }
+        <#
+                It "Should not run for SQL 2005 and below"{
+                    # Mock Get-Version
+                    function Get-Version {}
+                    Mock Get-Version {9} 
+                # Mock the version check for not running the tests
+                Mock Get-DbaSpConfigure {@{"ConfiguredValue" = 1}}
+                $Pester = Invoke-DbcCheck -SQLInstance Dummy -Check DefaultBackupCompression -PassThru -Show None
+               # $Pester.TotalCount | Should -Be 1
+               # $Pester.SkippedCount | Should -Be 1
+                $assertMockParams = @{
+                    'CommandName' = 'Get-Version'
+                    'Times'       = 1
+                    'Exactly'     = $true
+                    }
+                    Assert-MockCalled @assertMockParams
+            }
+        #>
 
     }
     Context "Checking Instance MaxDop" {
@@ -86,5 +86,5 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                 }
                 Assert-MockCalled @assertMockParams
             }
-}
+    }
 }
