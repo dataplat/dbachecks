@@ -556,6 +556,7 @@ Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, $fi
 }
 
 Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
+    . $PSScriptRoot/../internal/assertions/Assert-DatabaseMaxDop.ps1 
     $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
     $ExcludedDatabases = Get-DbcConfigValue policy.database.maxdopexcludedb
     if($ExcludedDatabases){Write-Warning "Excluded $ExcludedDatabases from testing"}
