@@ -117,7 +117,9 @@ Set-PSFConfig -Module dbachecks -Name policy.database.filebalancetolerance -Valu
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthfreespacethreshold -Value 20 -Initialize -Description "Integer representing percentage of free space within a database file before warning"
 Set-PSFConfig -Module dbachecks -Name policy.database.wrongcollation -Value @() -Initialize -Description "Databases that doesnt match server collation check"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxdopexcludedb -Value @() -Initialize -Description "Database Names that we don't want to check for maxdop"
-Set-PSFConfig -Module dbachecks -Name policy.database.maxdop -Value 0 -Initialize -Description "The value for the database maxdop that we expect"
+Set-PSFConfig -Module dbachecks -Name policy.database.status.excludereadonly -Value @() -Initialize -Description "Database names that we expect to be readonly"
+Set-PSFConfig -Module dbachecks -Name policy.database.status.excludeoffline -Value @() -Initialize -Description "Database names that we expect to be offline"
+Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -Value @() -Initialize -Description "Database names that we expect to be restoring"
 
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
