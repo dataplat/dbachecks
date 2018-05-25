@@ -41,7 +41,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 }
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
-                    $PSItem.Tags.Text.Split(',').Trim().Where{($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') }.ForEach{
+                    $PSItem.Tags.Text.Split(',').Trim().Where{($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') -and ($PSItem -notlike '*status*') }.ForEach{
                         It "$PSItem Should Be Singular" {
                             $PSItem.ToString().Endswith('s') | Should -BeFalse -Because 'Our coding standards say tags should be singular'
                         }
