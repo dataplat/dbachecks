@@ -350,5 +350,9 @@
     {
         "UniqueTag":  "MaxDopDatabase",
         "Description":  "Tests that the database level MaxDop settings for all databases on all instances from version 2016 up are set to the specified value (default 0)"
+    },
+    {
+        "UniqueTag":  "DatabaseStatus",
+        "Description":  "Tests that there are no databases on an instance that are in a state of AutoClose, Offline, ReadOnly, Restoring, Recovery, Recovery Pending, EmergencyMode, Suspect or StandBy. Databases that are in ReadOnly,Offline and Restoring mode can be specified (default none)"
     }
 ]

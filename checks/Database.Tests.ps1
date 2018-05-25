@@ -570,3 +570,19 @@ Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
         }
     }
 }
+
+Describe "Database Status" -Tags DatabaseStatus, $filename {
+    . $PSScriptRoot/../internal/assertions/Assert-DatabaseStatus.ps1 
+    $Excludedbs = Get-DbcConfigValue command.invokedbccheck.excludedatabases
+    $ExcludeReadOnly = Get-DbcConfigValue policy.database.status.excludereadonly
+    $ExcludeOffline = Get-DbcConfigValue policy.database.status.excludeoffline
+    $ExcludeRestoring = Get-DbcConfigValue policy.database.status.excluderestoring
+
+    @(Get-Instance).ForEach{
+        Context "Database status is correct on $psitem" {
+            It "All Databases should have the expected status" {
+                Assert-DatabaseStatus -Instance $psitem -Excludedbs $Excludedbs -ExcludeReadOnly $ExcludeReadOnly -ExcludeOffline $ExcludeOffline -ExcludeRestoring $ExcludeRestoring
+            }
+        }
+    }
+}
