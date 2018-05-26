@@ -124,6 +124,15 @@ Describe "Checking that there is a description for each check" -Tags UnitTest {
     }
 }
 
+Describe "Each Config referenced in a check should exist" -Tags UnitTest {
+    $dbcConfig = (Get-DbcConfig).Name
+    ((Get-DbcCheck).Config.Split(' ') | Sort-Object -Unique).Where{$Psitem -ne ''}.ForEach{
+        It "Config Value $psitem Shoudl exist in Get-DbcConfig" {
+            $Psitem | Should -BeIn $dbcConfig
+        }
+    }
+}
+
 # This should stop people making breaking changes to the tests without first altering the test
 Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
 Import-Module $ModuleBase\dbachecks.psd1 
