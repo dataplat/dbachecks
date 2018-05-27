@@ -37,7 +37,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             Get-Database -Instance Dummy -Requiredinfo Name | Should -Be 'Dummy1', 'Dummy2'
         }
         It "Should Exclude Databases that are specified for the Name  Required Info" {
-            Get-Database -Instance Dummy -Requiredinfo Name -ExcludedDatabases Dummy1 | Should -Be 'Dummy2'
+            Get-Database -Instance Dummy -Requiredinfo Name -ExcludedDbs Dummy1 | Should -Be 'Dummy2'
         }
         It "Should Exclude none accessible databases if the NotAccessible value for Exclusions parameter is used"{
             Get-Database -Instance Dummy -Requiredinfo Name -Exclusions NotAccessible | Should -Be 'Dummy1'
