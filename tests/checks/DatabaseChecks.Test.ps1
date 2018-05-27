@@ -1,8 +1,8 @@
 # load all of the assertion functions
 (Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
 
-Describe "Checking Database.Tests.ps1 checks" -Tag UnitTest {
-    Context "Testing Database Max Dop" {
+Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest {
+    Context "Testing Assert-DatabaseMaxDop " {
         ## Mock for Passing
         Mock Test-DbaMaxDop {
             @{Database = 'N/A'; DatabaseMaxDop = 'N/A'},
@@ -25,7 +25,7 @@ Describe "Checking Database.Tests.ps1 checks" -Tag UnitTest {
         }
     }
 
-    Context "Testing Database Status" {
+    Context "Testing Assert-DatabaseStatus " {
         #mock for passing
         Mock Connect-DbaInstance {
             @{
