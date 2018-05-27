@@ -572,7 +572,6 @@ Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
 }
 
 Describe "Database Status" -Tags DatabaseStatus, $filename {
-    . $PSScriptRoot/../internal/assertions/Assert-DatabaseStatus.ps1 
     $Excludedbs = Get-DbcConfigValue command.invokedbccheck.excludedatabases
     $ExcludeReadOnly = Get-DbcConfigValue policy.database.status.excludereadonly
     $ExcludeOffline = Get-DbcConfigValue policy.database.status.excludeoffline
