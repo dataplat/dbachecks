@@ -1,7 +1,7 @@
 function Get-Database {
     Param(
         [string]$Instance,
-        [string[]]$ExcludedDatabases,
+        [string[]]$ExcludedDbs,
         [ValidateSet('Name')]
         [string]$Requiredinfo,
         [ValidateSet('NotAccessible')]
@@ -9,9 +9,9 @@ function Get-Database {
     )
 
     switch ($Exclusions) {
-        NotAccessible { $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{($ExcludedDatabases -notcontains $PsItem.Name) -and $psitem.IsAccessible -eq $true} }
+        NotAccessible { $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{($ExcludedDbs -notcontains $PsItem.Name) -and $psitem.IsAccessible -eq $true} }
         Default {
-            $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{($ExcludedDatabases -notcontains $PsItem.Name)}
+            $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{($ExcludedDbs -notcontains $PsItem.Name)}
         }
     }
     switch ($Requiredinfo) {
