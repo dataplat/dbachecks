@@ -37,14 +37,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
     Context "Testing Assert-DatabaseStatus " {
         #mock for passing
         Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Normal';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
@@ -57,14 +57,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
         # Mock for readonly failing
         Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Normal';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $True;
                         Status   = 'Normal';
@@ -80,14 +80,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
         # Mock for offline failing
         Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Offline, AutoClosed';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
@@ -103,14 +103,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
        }
           # Mock for restoring failing
           Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Restoring';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
@@ -126,14 +126,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
        }
           # Mock for recovery failing
           Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Recovering';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
@@ -146,14 +146,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
           # Mock for recovery pending failing
           Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'RecoveryPending';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
@@ -166,14 +166,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
           # Mock for autoclosed failing
           Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'AutoClosed';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
@@ -187,14 +187,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         
           # Mock for EmergencyMode failing
           Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'EmergencyMode';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
@@ -208,14 +208,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         
           # Mock for Suspect failing
           Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Suspect';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
@@ -229,14 +229,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         
           # Mock for Standby failing
           Mock Connect-DbaInstance {
-            @{
+            [PSCustomObject]@{
                 Databases = @(
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Standby';
                     },
-                    @{
+                    [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
