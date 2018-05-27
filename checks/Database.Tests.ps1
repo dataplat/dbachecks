@@ -165,10 +165,10 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
     @(Get-Instance).ForEach{
         Context "Testing duplicate indexes on $psitem" {
-            @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.ForEach{
-                $results = Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name
-                It "$($psitem.Name) on $($psitem.Parent.Name) should return 0 duplicate indexes" {
-                    @($results).Count | Should -Be 0 -Because "Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory"
+            $instance = $Psitem
+            @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -ExcludedDatabases $ExcludedDatabases).ForEach{
+                It "$($psitem) on $Instance should return 0 duplicate indexes" {
+                    Assert-DatabaseDuplicateIndex -Instance $instance -Database $psItem
                 }
             }
         }
