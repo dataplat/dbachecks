@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-
+. $PSScriptRoot/../internal/assertions/Instance.assertions.ps1 
 Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
         Context "Testing SQL Engine Service on $psitem" {
@@ -196,7 +196,6 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
 }
 
 Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
-    . $PSScriptRoot/../internal/assertions/Assert-BackupCompression.ps1 
     $defaultbackupcompression = Get-DbcConfigValue policy.backup.defaultbackupcompression
     @(Get-Instance).ForEach{
         Context "Testing Default Backup Compression on $psitem" {
@@ -360,7 +359,6 @@ Describe "Error Log Entries" -Tags ErrorLog, $filename {
 }
 
 Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, $filename {
-    . $PSScriptRoot/../internal/assertions/Assert-InstanceMaxDop.ps1
     $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
     $MaxDop = Get-DbcConfigValue policy.instancemaxdop.maxdop
     $ExcludeInstance = Get-DbcConfigValue policy.instancemaxdop.excludeinstance
