@@ -254,7 +254,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
        It "Shoudl call the Mocks successfully"{
            $assertMockParams = @{
            'CommandName' = 'Connect-DbaInstance'
-           'Times'       = 1
+           'Times'       = 14
            'Exactly'     = $true
            }
            Assert-MockCalled @assertMockParams
