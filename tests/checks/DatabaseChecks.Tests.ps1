@@ -1,7 +1,7 @@
 # load all of the assertion functions
-(Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
+. /../internal/assertions/Database.Assertions.ps1 
 
-Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest {
+Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions {
     Context "Testing Assert-DatabaseMaxDop " {
         ## Mock for Passing
         Mock Test-DbaMaxDop {
@@ -22,6 +22,15 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest {
             It "Fails the test successfully" {
                 {Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue 4} | Should -Throw -ExpectedMessage "Expected 4, because We expect the Database MaxDop Value 5 to be the specified value 4, but got '5'."
             }
+        }
+
+        It "Calls the Mocks successfully" {
+            $assertMockParams = @{
+            'CommandName' = 'Test-DbaMaxDop'
+            'Times'       = 2
+            'Exactly'     = $true
+            }
+            Assert-MockCalled @assertMockParams
         }
     }
 
@@ -243,4 +252,5 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest {
         Assert-DatabaseStatus Dummy -Excludedbs 'Dummy1'
        }
     }
+
 }
