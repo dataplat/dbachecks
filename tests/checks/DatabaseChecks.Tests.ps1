@@ -4,16 +4,16 @@
 Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions {
     Context "Testing Get-Database" {
         It "Should have a Instance parameter" {
-            (Get-Command Get-Database).Parameters['Instance'] | Should -Not -BeNullOrEmpty
+            (Get-Command Get-Database).Parameters['Instance'] | Should -Not -BeNullOrEmpty -Because "We Need to pass the instance in"
         }
-        It "Should have a ExcludedDatabases parameter" {
-            (Get-Command Get-Database).Parameters['ExcludedDatabases'] | Should -Not -BeNullOrEmpty
+        It "Should have a ExcludedDbs parameter" {
+            (Get-Command Get-Database).Parameters['ExcludedDbs'] | Should -Not -BeNullOrEmpty -Because "We need to pass in the Excluded Databases - Don't forget that the ExcludedDatabases parameter is set by default so dont use that"
         }
         It "Should have a Requiredinfo parameter" {
-            (Get-Command Get-Database).Parameters['Requiredinfo'] | Should -Not -BeNullOrEmpty
+            (Get-Command Get-Database).Parameters['Requiredinfo'] | Should -Not -BeNullOrEmpty -Because "We want to be able to choose the infomration we return"
         }
         It "Should have a Exclusions parameter" {
-            (Get-Command Get-Database).Parameters['Exclusions'] | Should -Not -BeNullOrEmpty
+            (Get-Command Get-Database).Parameters['Exclusions'] | Should -Not -BeNullOrEmpty -Because "We need to be able to excluded databases for various reasons like readonly etc"
         }
         Mock Connect-DbaInstance {
             [PSCustomObject]@{
