@@ -88,3 +88,13 @@ Describe "CPUPrioritisation" -Tags CPUPrioritisation, $filename {
         }
     }
 }
+
+Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, $filename {
+    @(Get-ComputerName).ForEach{
+        Context "Testing disk allocation unit on $psitem" {
+            It "Should be set to 64kb " -Skip:$exclude {
+                Assert-DiskAllocation -ComputerName $psitem
+            }
+        }
+    }
+}
