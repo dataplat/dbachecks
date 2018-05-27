@@ -22,11 +22,13 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Normal';
+                        IsAccessible = $True;
                     },
                     [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $False;
                         Status   = 'Normal';
+                        IsAccessible = $false;
                     }
                 );
             }
@@ -43,9 +45,9 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
         It "Should call the Mocks" {
             $assertMockParams = @{
-            'CommandName' = 'Connect-DbaInstance'
+                'CommandName' = 'Connect-DbaInstance'
                 'Times'       = 3
-            'Exactly'     = $true
+                'Exactly'     = $true
             }
             Assert-MockCalled @assertMockParams
         }
@@ -74,9 +76,9 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
 
         It "Calls the Mocks successfully" {
             $assertMockParams = @{
-            'CommandName' = 'Test-DbaMaxDop'
-            'Times'       = 2
-            'Exactly'     = $true
+                'CommandName' = 'Test-DbaMaxDop'
+                'Times'       = 2
+                'Exactly'     = $true
             }
             Assert-MockCalled @assertMockParams
         }
@@ -147,9 +149,9 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
         It "It Should Not Fail for a database that is offline when it is excluded" {
             Assert-DatabaseStatus Dummy -ExcludeOffline 'Dummy1'
-       }
-          # Mock for restoring failing
-          Mock Connect-DbaInstance {
+        }
+        # Mock for restoring failing
+        Mock Connect-DbaInstance {
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
@@ -170,9 +172,9 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
         It "It Should Not Fail for a database that is restoring when it is excluded" {
             Assert-DatabaseStatus Dummy -ExcludeRestoring 'Dummy1'
-       }
-          # Mock for recovery failing
-          Mock Connect-DbaInstance {
+        }
+        # Mock for recovery failing
+        Mock Connect-DbaInstance {
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
@@ -191,8 +193,8 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "It Should Fail for a database that is Recovering" {
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'Recover' to not match 'Recovering', because We expect that there will be no databases going through the recovery process or in a recovery pending state, but it did match."
         }
-          # Mock for recovery pending failing
-          Mock Connect-DbaInstance {
+        # Mock for recovery pending failing
+        Mock Connect-DbaInstance {
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
@@ -211,8 +213,8 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "It Should Fail for a database that is Recovery pending" {
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'Recover' to not match 'RecoveryPending', because We expect that there will be no databases going through the recovery process or in a recovery pending state, but it did match."
         }
-          # Mock for autoclosed failing
-          Mock Connect-DbaInstance {
+        # Mock for autoclosed failing
+        Mock Connect-DbaInstance {
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
@@ -232,8 +234,8 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'AutoClosed' to not match 'AutoClosed', because We expect that there will be no databases that have been auto closed, but it did match."
         }
         
-          # Mock for EmergencyMode failing
-          Mock Connect-DbaInstance {
+        # Mock for EmergencyMode failing
+        Mock Connect-DbaInstance {
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
@@ -253,8 +255,8 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'Emergency' to not match 'EmergencyMode', because We expect that there will be no databases in EmergencyMode, but it did match."
         }
         
-          # Mock for Suspect failing
-          Mock Connect-DbaInstance {
+        # Mock for Suspect failing
+        Mock Connect-DbaInstance {
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
@@ -274,8 +276,8 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'Suspect' to not match 'Suspect', because We expect that there will be no databases in a Suspect state, but it did match."
         }
         
-          # Mock for Standby failing
-          Mock Connect-DbaInstance {
+        # Mock for Standby failing
+        Mock Connect-DbaInstance {
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
@@ -295,17 +297,76 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'Standby' to not match 'Standby', because We expect that there will be no databases in Standby, but it did match."
         }
     
-       It "Should Not Fail for databases that are excluded" {
-        Assert-DatabaseStatus Dummy -Excludedbs 'Dummy1'
-       }
-       It "Shoudl call the Mocks successfully"{
-           $assertMockParams = @{
-           'CommandName' = 'Connect-DbaInstance'
-           'Times'       = 14
-           'Exactly'     = $true
-           }
-           Assert-MockCalled @assertMockParams
-       }
+        It "Should Not Fail for databases that are excluded" {
+            Assert-DatabaseStatus Dummy -Excludedbs 'Dummy1'
+        }
+        It "Should call the Mocks successfully" {
+            $assertMockParams = @{
+                'CommandName' = 'Connect-DbaInstance'
+                'Times'       = 14
+                'Exactly'     = $true
+            }
+            Assert-MockCalled @assertMockParams
+        }
     }
+    Context "Testing Assert-DatabaseDuplicateIndex" {
+        #Mock for passing
+        Mock Find-DbaDuplicateIndex {}
+        It "Should pass when there are no Duplicate Indexes" {
+            Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1
+        }
+        # Mock for failing for 1 index
+        Mock Find-DbaDuplicateIndex {
+            [PSCustomObject]@{
+                DatabaseName           = "msdb"
+                TableName              = "dbo.log_shipping_primary_databases"
+                IndexName              = "UQ__log_ship__2A5EF6DCB9BFAE2F"
+                KeyColumns             = "primary_database ASC"
+                IncludedColumns        = ""
+                IndexType              = "NONCLUSTERED"
+                IndexSizeMB            = "0.000000"
+                CompressionDescription = "NONE"
+                RowCount               = "0"
+                IsDisabled             = "False"
+                IsFiltered             = "False"
+            }
+        }
+        It "Should fail for one duplicate index" {
+            {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory, but got 1.'
+        }
+        #Mock for failing for 2 indexes
+        Mock Find-DbaDuplicateIndex {
+            @([PSCustomObject]@{
+                    DatabaseName           = "msdb"
+                    TableName              = "dbo.log_shipping_primary_databases"
+                    IndexName              = "UQ__log_ship__2A5EF6DCB9BFAE2F"
+                    KeyColumns             = "primary_database ASC"
+                    IncludedColumns        = ""
+                    IndexType              = "NONCLUSTERED"
+                    IndexSizeMB            = "0.000000"
+                    CompressionDescription = "NONE"
+                    RowCount               = "0"
+                    IsDisabled             = "False"
+                    IsFiltered             = "False"
+                },
+                [PSCustomObject]@{
+                    DatabaseName           = "msdb"
+                    TableName              = "dbo.log_shipping_primary_databases"
+                    IndexName              = "UQ__log_ship__2A5EF6DCB9BFAE2F"
+                    KeyColumns             = "primary_database ASC"
+                    IncludedColumns        = ""
+                    IndexType              = "NONCLUSTERED"
+                    IndexSizeMB            = "0.000000"
+                    CompressionDescription = "NONE"
+                    RowCount               = "0"
+                    IsDisabled             = "False"
+                    IsFiltered             = "False"
+                }
+            )
+        }
 
+        It "Should fail for more than one duplicate index"{
+            {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory, but got 2.'
+        }
+    }
 }
