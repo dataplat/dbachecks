@@ -1,4 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+. $PSScriptRoot/../internal/assertions/Database.Assertions.ps1 
 
 Describe "Database Collation" -Tags DatabaseCollation, $filename {
     $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
@@ -556,7 +557,6 @@ Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, $fi
 }
 
 Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
-    . $PSScriptRoot/../internal/assertions/Assert-DatabaseMaxDop.ps1 
     $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
     $ExcludedDatabases = Get-DbcConfigValue policy.database.maxdopexcludedb
     if($ExcludedDatabases){Write-Warning "Excluded $ExcludedDatabases from testing"}
