@@ -1,3 +1,16 @@
+function Get-Database {
+        Param(
+            [string]$instance,
+            [string[]]$ExcludedDatabases,
+            [ValidateSet('Name')]
+            [string]$Requiredinfo
+        )
+
+        switch ($Requiredinfo) {
+            Name { (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$ExcludedDatabases -notcontains $PsItem.Name}.Name}
+            Default {}
+        }
+}
 function Assert-DatabaseMaxDop {
     Param(
         [pscustomobject]$MaxDop,
@@ -25,3 +38,15 @@ function Assert-DatabaseStatus {
     $results.Status | Should -Not -Match 'Suspect' -Because "We expect that there will be no databases in a Suspect state"
 }
 
+function Assert-DatabaseDuplicateIndex {
+    Param(
+        [string]$instance,
+        [string[]]$Excludedbs
+    )
+   
+        $results = Find-DbaDuplicateIndex -SqlInstance $psitem.Parent -Database $psitem.Name
+        It "$($psitem.Name) on $($psitem.Parent.Name) should return 0 duplicate indexes" {
+            @($results).Count | Should -Be 0 -Because "Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory"
+        }
+    
+}
