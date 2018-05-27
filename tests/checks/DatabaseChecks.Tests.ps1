@@ -2,6 +2,47 @@
 . /../internal/assertions/Database.Assertions.ps1 
 
 Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions {
+    Context "Testing Get-Database" {
+        It "Should have a Instance parameter" {
+            (Get-Command Get-Database).Parameters['Instance'] | Should -Not -BeNullOrEmpty
+        }
+        It "Should have a ExcludedDatabases parameter" {
+            (Get-Command Get-Database).Parameters['ExcludedDatabases'] | Should -Not -BeNullOrEmpty
+        }
+        It "Should have a Requiredinfo parameter" {
+            (Get-Command Get-Database).Parameters['Requiredinfo'] | Should -Not -BeNullOrEmpty
+        }
+        Mock Connect-DbaInstance {
+            [PSCustomObject]@{
+                Databases = @(
+                    [PSCustomObject]@{
+                        Name     = 'Dummy1';
+                        ReadOnly = $False;
+                        Status   = 'Normal';
+                    },
+                    [PSCustomObject]@{
+                        Name     = 'Dummy2';
+                        ReadOnly = $False;
+                        Status   = 'Normal';
+                    }
+                );
+            }
+        }
+        It "Should return the Database Names with the Requiredinfo switch parameter value Name" {
+            Get-Database -Instance Dummy -Requiredinfo Name | Should -Be 'Dummy1', 'Dummy2'
+        }
+        It "Should Exclude Databases that are specified for the Name  Required Info" {
+            Get-Database -Instance Dummy -Requiredinfo Name -ExcludedDatabases Dummy1 | Should -Be 'Dummy2'
+        }
+        It "Should call the Mocks" {
+            $assertMockParams = @{
+            'CommandName' = 'Connect-DbaInstance'
+            'Times'       = 2
+            'Exactly'     = $true
+            }
+            Assert-MockCalled @assertMockParams
+        }
+    }
     Context "Testing Assert-DatabaseMaxDop " {
         ## Mock for Passing
         Mock Test-DbaMaxDop {
