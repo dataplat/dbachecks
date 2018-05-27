@@ -251,6 +251,14 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
        It "Should Not Fail for databases that are excluded" {
         Assert-DatabaseStatus Dummy -Excludedbs 'Dummy1'
        }
+       It "Shoudl call the Mocks successfully"{
+           $assertMockParams = @{
+           'CommandName' = 'Connect-DbaInstance'
+           'Times'       = 1
+           'Exactly'     = $true
+           }
+           Assert-MockCalled @assertMockParams
+       }
     }
 
 }
