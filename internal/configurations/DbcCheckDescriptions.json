@@ -354,5 +354,9 @@
     {
         "UniqueTag":  "DatabaseStatus",
         "Description":  "Tests that there are no databases on an instance that are in a state of AutoClose, Offline, ReadOnly, Restoring, Recovery, Recovery Pending, EmergencyMode, Suspect or StandBy. Databases that are in ReadOnly,Offline and Restoring mode can be specified (default none)"
+    },
+    {
+        "UniqueTag":  "CPUPrioritisation",
+        "Description":  "Tests that the CPU is prioritised for background activity over user UI experience. unless specified to ignore (default true)"
     }
 ]
