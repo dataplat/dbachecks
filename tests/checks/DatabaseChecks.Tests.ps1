@@ -12,6 +12,9 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "Should have a Requiredinfo parameter" {
             (Get-Command Get-Database).Parameters['Requiredinfo'] | Should -Not -BeNullOrEmpty
         }
+        It "Should have a Exclusions parameter" {
+            (Get-Command Get-Database).Parameters['Exclusions'] | Should -Not -BeNullOrEmpty
+        }
         Mock Connect-DbaInstance {
             [PSCustomObject]@{
                 Databases = @(
