@@ -37,6 +37,10 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "Should Exclude Databases that are specified for the Name  Required Info" {
             Get-Database -Instance Dummy -Requiredinfo Name -ExcludedDatabases Dummy1 | Should -Be 'Dummy2'
         }
+        It "Should Exclude none accessible databases if the NotAccessible value for Exclusions parameter is used"{
+            Get-Database -Instance Dummy -Requiredinfo Name -Exclusions NotAccessible | Should -Be 'Dummy1'
+
+        }
         It "Should call the Mocks" {
             $assertMockParams = @{
             'CommandName' = 'Connect-DbaInstance'
@@ -77,7 +81,6 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             Assert-MockCalled @assertMockParams
         }
     }
-
     Context "Testing Assert-DatabaseStatus " {
         #mock for passing
         Mock Connect-DbaInstance {
