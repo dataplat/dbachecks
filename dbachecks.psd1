@@ -75,7 +75,7 @@
     FunctionsToExport      = @(
         'Get-DbcConfig',
         'Get-DbcConfigValue',
-        'Get-ReleaseNote',
+        'Get-DbcReleaseNote',
         'Set-DbcConfig',
         'Reset-DbcConfig',
         'Invoke-DbcCheck',
