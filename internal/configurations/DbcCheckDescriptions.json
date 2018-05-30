@@ -21,7 +21,7 @@
     },
     {
         "UniqueTag": "ValidJobOwner",
-        "Description": "Testst that all Agent Jobs have a Job Owner in the list specified (default sa)"
+        "Description": "Tests that all Agent Jobs have a Job Owner in the list specified (default sa)"
     },
     {
         "UniqueTag": "AgentAlert",
@@ -37,7 +37,7 @@
     },
     {
         "UniqueTag": "TestLastBackup",
-        "Description": "Restores the last backup of a database onto a specified (default blank so will use the same instance) restore instance and checks if the DBCC result was succesful as well as the DBCC result. This can obviously take some time for large databases!"
+        "Description": "Restores the last backup of a database onto a specified (default blank so will use the same instance) restore instance and checks if the DBCC result was successful as well as the DBCC result. This can obviously take some time for large databases!"
     },
     {
         "UniqueTag": "TestLastBackupVerifyOnly",
@@ -145,7 +145,7 @@
     },
     {
         "UniqueTag": "Trustworthy",
-        "Description": "Tests thatt the Trustworthy Option for each database is set to false"
+        "Description": "Tests that the Trustworthy Option for each database is set to false"
     },
     {
         "UniqueTag": "OrphanedUser",
@@ -193,7 +193,7 @@
     },
     {
         "UniqueTag": "DAC",
-        "Description": "Tests that the Dedicated Administrator Connection configuration setting matches the speified value (default true)"
+        "Description": "Tests that the Dedicated Administrator Connection configuration setting matches the specified value (default true)"
     },
     {
         "UniqueTag": "NetworkLatency",
@@ -221,7 +221,7 @@
     },
     {
         "UniqueTag": "SupportedBuild",
-        "Description": "Tests that the instance is still under Microsoft support and that it will still be under support in a specfied (default 6) months"
+        "Description": "Tests that the instance is still under Microsoft support and that it will still be under support in a specified (default 6) months"
     },
     {
         "UniqueTag": "SaRenamed",
@@ -249,7 +249,7 @@
     },
     {
         "UniqueTag": "WhoIsActiveInstalled",
-        "Description": "Tests that sp_whoisactive is Installed by testig the specified (default master) database for the stored procedure"
+        "Description": "Tests that sp_whoisactive is Installed by testing the specified (default master) database for the stored procedure"
     },
     {
         "UniqueTag": "ModelDbGrowth",
@@ -273,7 +273,7 @@
     },
     {
         "UniqueTag": "OlaInstalled",
-        "Description": "Tests that Ola maintenance solution is installed by testing the specified (default master) database for the command log table adn the stored procedures"
+        "Description": "Tests that Ola maintenance solution is installed by testing the specified (default master) database for the command log table and the stored procedures"
     },
     {
         "UniqueTag": "SystemFull",
@@ -363,4 +363,4 @@
         "UniqueTag": "DiskAllocationUnit",
         "Description": "Tests that the disks available to the server are formatted for optimum performance (64KB allocation unit)"
     }
-]
+ ] 
