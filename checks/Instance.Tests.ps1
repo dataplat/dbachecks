@@ -66,7 +66,7 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
 Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Ad Hoc Workload Optimization on $psitem" {
-            It "$psitem Should Be Optimised for Ad Hoc workloads" {
+            It "$psitem Should Be Optimised for Ad Hoc workloads" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
                 @(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
                     $psitem.CurrentOptimizeAdHoc | Should -Be $psitem.RecommendedOptimizeAdHoc
                 }
