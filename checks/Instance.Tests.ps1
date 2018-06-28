@@ -141,7 +141,7 @@ Describe "Orphaned Files" -Tags OrphanedFile, $filename {
     @(Get-Instance).ForEach{
         Context "Checking for orphaned database files on $psitem" {
             It "$psitem doesn't have orphan files" {
-                (Find-DbaOrphanedFile -SqlInstance $psitem).Count | Should -Be 0 -Because 'You dont want any orphaned files - Use Find-DbaOrphanedFiles to locate them'
+                (Find-DbaOrphanedFile -SqlInstance $psitem).Count | Should -Be 0 -Because 'You dont want any orphaned files - Use Find-DbaOrphanedFile to locate them'
             }
         }
     }
