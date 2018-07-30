@@ -1,6 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
-Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
+Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
         try {
             $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
@@ -32,7 +32,7 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $file
     }
 }
 
-Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
+Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
     @(Get-Instance).ForEach{
         try {
             $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
@@ -71,7 +71,7 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
     }
 }
 
-Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
+Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
     @(Get-Instance).ForEach{
         try {
             $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
@@ -99,7 +99,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
     }
 }
 
-Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
+Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
     @(Get-Instance).ForEach{
         try {
             $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
@@ -127,7 +127,7 @@ Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
     }
 }
 
-Describe "Failed Jobs" -Tags FailedJob, $filename {
+Describe "Failed Jobs" -Tags FailedJob, $filename {
     @(Get-Instance).ForEach{
         try {
             $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
@@ -163,7 +163,7 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
     }
 }
 
-Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
+Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
     [string[]]$targetowner = Get-DbcConfigValue agent.validjobowner.name
     @(Get-Instance).ForEach{
         try {
@@ -193,7 +193,7 @@ Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
     }
 }
 
-Describe "Agent Alerts" -Tags AgentAlert, $filename {
+Describe "Agent Alerts" -Tags AgentAlert, $filename {
     $severity = Get-DbcConfigValue agent.alert.Severity
     $messageid = Get-DbcConfigValue agent.alert.messageid
     $AgentAlertJob = Get-DbcConfigValue agent.alert.Job
