@@ -1,9 +1,23 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
-    @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}
-            else{
+        @(Get-Instance).ForEach{
+                try {
+                    $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                }
+                catch {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                
+                if (($connectioncheck).Edition -like "Express Edition*") {}
+                elseif ($null -eq $connectioncheck.version) {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                else {
             Context "Testing SQL Agent is running on $psitem" {
                 @(Get-DbaSqlService -ComputerName $psitem -Type Agent).ForEach{
                     It "SQL Agent Should Be running on $($psitem.ComputerName)" {
@@ -19,9 +33,23 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
 }
 
 Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
-    @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}
-        else{
+        @(Get-Instance).ForEach{
+                try {
+                    $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                }
+                catch {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                
+                if (($connectioncheck).Edition -like "Express Edition*") {}
+                elseif ($null -eq $connectioncheck.version) {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                else {
         Context "Testing DBA Operators exists on $psitem" {
             $operatorname = Get-DbcConfigValue agent.dbaoperatorname
             $operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
@@ -44,8 +72,23 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
 }
 
 Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
-    @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
+        @(Get-Instance).ForEach{
+                try {
+                    $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                }
+                catch {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                
+                if (($connectioncheck).Edition -like "Express Edition*") {}
+                elseif ($null -eq $connectioncheck.version) {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                else {
             Context "Testing failsafe operator exists on $psitem" {
                 $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
                 It "failsafe operator on $psitem exists" {
@@ -57,8 +100,23 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 }
 
 Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
-    @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
+        @(Get-Instance).ForEach{
+                try {
+                    $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                }
+                catch {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                
+                if (($connectioncheck).Edition -like "Express Edition*") {}
+                elseif ($null -eq $connectioncheck.version) {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                else {
             Context "Testing database mail profile is set on $psitem" {
                 $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
                 It "database mail profile on $psitem is $databasemailprofile" {
@@ -70,8 +128,23 @@ Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
 }
 
 Describe "Failed Jobs" -Tags FailedJob, $filename {
-    @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
+        @(Get-Instance).ForEach{
+                try {
+                    $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                }
+                catch {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                
+                if (($connectioncheck).Edition -like "Express Edition*") {}
+                elseif ($null -eq $connectioncheck.version) {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                else {
             Context "Checking for failed enabled jobs on $psitem" {
                 @(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
                     if ($psitem.LastRunOutcome -eq "Unknown") {
@@ -91,8 +164,23 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
 
 Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
     [string[]]$targetowner = Get-DbcConfigValue agent.validjobowner.name
-    @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
+        @(Get-Instance).ForEach{
+                try {
+                    $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                }
+                catch {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                
+                if (($connectioncheck).Edition -like "Express Edition*") {}
+                elseif ($null -eq $connectioncheck.version) {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                else {
             Context "Testing job owners on $psitem" {
                 @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
                     It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
@@ -109,8 +197,23 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
     $messageid = Get-DbcConfigValue agent.alert.messageid
     $AgentAlertJob = Get-DbcConfigValue agent.alert.Job
     $AgentAlertNotification = Get-DbcConfigValue agent.alert.Notification
-    @(Get-Instance).ForEach{
-        if((Connect-DbaInstance -SqlInstance $Psitem).Edition -like "Express Edition*"){}else{
+        @(Get-Instance).ForEach{
+                try {
+                    $connectioncheck = Connect-DbaInstance -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                }
+                catch {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                
+                if (($connectioncheck).Edition -like "Express Edition*") {}
+                elseif ($null -eq $connectioncheck.version) {
+                    It "Can't Connect to $Psitem" {
+                        $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                else {
             $alerts = Get-DbaAgentAlert -SqlInstance $psitem
             Context "Testing Agent Alerts Severity exists on $psitem" {
                 ForEach ($sev in $severity) {
