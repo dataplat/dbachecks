@@ -110,6 +110,19 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                         }
                     }
                     else{
+                        $Contexts = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
+                        FindAll([Func[Management.Automation.Language.Ast, bool]] {
+                                param ($ast)
+                                $ast.CommandElements -and
+                                $ast.CommandElements[0].Value -eq 'Context'
+                            }, $true) |
+                            ForEach-Object {
+                            $CE = $PSItem.CommandElements
+                            $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
+                            New-Object PSCustomObject -Property @{
+                                Name = $secondString
+                            }
+                        }
                         It "$CheckName should have the right number of Context blocks as the AST doesnt parse how I like and I cant be bothered to fix it right now"{
                             $Contexts.Count | Should -Be 8 -Because "There should be 8 context blocks in the Agent checks file"
                         }
