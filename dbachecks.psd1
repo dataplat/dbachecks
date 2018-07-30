@@ -48,9 +48,9 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
-        @{ ModuleName = 'Pester'; ModuleVersion = '4.2.0' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.354' }
-        @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.22.68' }
+        @{ ModuleName = 'Pester'; ModuleVersion = '4.4.0' },
+        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.381' }
+        @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.23.82' }
     )
 
     # Assemblies that must be loaded prior to importing this module
