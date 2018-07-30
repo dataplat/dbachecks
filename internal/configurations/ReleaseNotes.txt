@@ -2,6 +2,8 @@
 
 Updated Required Module versions - Thank you @cl
 Updated Agent Checks to fail a test on no connection rather than throw all the PowerShell errors - Thanks @sqldbawithbeard
+Updated HADR Checks for PS4 compatability Issue #513
+
 
 ## Date 28/06/2018
 
