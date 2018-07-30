@@ -6,7 +6,7 @@ if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
 $tokens = $null
 $errors = $null
 Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" -Tags UnitTest {
-    $Checks = (Get-ChildItem $ModuleBase\checks) #.Where{$PSItem.Name -ne 'MaintenanceSolution.Tests.ps1'}
+    $Checks = (Get-ChildItem $ModuleBase\checks) #.Where{$PSItem.Name -eq 'Agent.Tests.ps1'}
     $Checks.ForEach{
         $CheckName = $psitem.Name
         $Check = Get-Content $PSItem.FullName -Raw
@@ -82,6 +82,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             }
         }
         Context "$($PSItem.Name) - Checking Code" {
+            $CheckName = $psitem.Name
             ## This just grabs all the code
             $AST = [System.Management.Automation.Language.Parser]::ParseInput($Check, [ref]$null, [ref]$null)
             $Statements = $AST.EndBlock.statements.Extent
