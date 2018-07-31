@@ -19,15 +19,15 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
-                        Name     = 'Dummy1';
-                        ReadOnly = $False;
-                        Status   = 'Normal';
+                        Name         = 'Dummy1';
+                        ReadOnly     = $False;
+                        Status       = 'Normal';
                         IsAccessible = $True;
                     },
                     [PSCustomObject]@{
-                        Name     = 'Dummy2';
-                        ReadOnly = $False;
-                        Status   = 'Normal';
+                        Name         = 'Dummy2';
+                        ReadOnly     = $False;
+                        Status       = 'Normal';
                         IsAccessible = $false;
                     }
                 );
