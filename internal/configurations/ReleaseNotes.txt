@@ -1,9 +1,15 @@
+## Date 31/07/2018
+
+Added check for Database Exists - Thanks @sqldbawithbeard
+Added excluded databases config to each Database Check and wrote Pester Test for that #506
+Added msdb to exclusion fro duplicate index #506
+Fixed offline install bug #484
+
 ## Date 30/07/2018
 
 Updated Required Module versions - Thank you @cl
 Updated Agent Checks to fail a test on no connection rather than throw all the PowerShell errors - Thanks @sqldbawithbeard
 Updated HADR Checks for PS4 compatability Issue #513
-
 
 ## Date 28/06/2018
 
