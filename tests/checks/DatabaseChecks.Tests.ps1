@@ -379,20 +379,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
 
         # Mock for Passing
         Mock Get-Database {
-            @(
-                [PSCustomObject]@{
-                    Name = 'Expected1'
-                },
-                [PSCustomObject]@{
-                    Name = 'Expected2'
-                },
-                [PSCustomObject]@{
-                    Name = 'Expected3'
-                },
-                [PSCustomObject]@{
-                    Name = 'Expected4'
-                }
-            )
+             @('Expected1','Expected2','Expected3','Expected4')
         }
         @('Expected1', 'Expected2', 'Expected3', 'Expected4').ForEach{
             It "Should Pass when the database exists" {
