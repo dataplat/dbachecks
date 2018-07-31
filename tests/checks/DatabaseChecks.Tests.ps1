@@ -369,4 +369,39 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory, but got 2.'
         }
     }
+    Context "Testing Assert-DatabaseExists" {
+        It "Should have a Instance parameter" {
+            (Get-Command Assert-DatabaseExists).Parameters['Instance'] | Should -Not -BeNullOrEmpty -Because "We Need to pass the instance in"
+        }
+        It "Should have a ExpectedDB parameter" {
+            (Get-Command Assert-DatabaseExists).Parameters['ExpectedDB'] | Should -Not -BeNullOrEmpty -Because "We Need to pass the Expected DB in"
+        }
+
+        # Mock for Passing
+        Mock Get-Database {
+            @(
+                [PSCustomObject]@{
+                    Name = 'Expected1'
+                },
+                [PSCustomObject]@{
+                    Name = 'Expected2'
+                },
+                [PSCustomObject]@{
+                    Name = 'Expected3'
+                },
+                [PSCustomObject]@{
+                    Name = 'Expected4'
+                }
+            )
+        }
+        @('Expected1', 'Expected2', 'Expected3', 'Expected4').ForEach{
+            It "Should Pass when the database exists" {
+                Assert-DatabaseExists -Instance Instance -ExpectedDb $psitem
+            }
+        }
+
+        It "Should Fail when the database doesnot exist" {
+            {Assert-DatabaseExists -Instance Instance -ExpectedDb NotThere} | Should -Throw -ExpectedMessage "We expect NotThere to be on Instance"
+        }
+    }
 }
