@@ -585,3 +585,17 @@ Describe "Database Status" -Tags DatabaseStatus, $filename {
         }
     }
 }
+
+Describe "Database Exists" -Tags DatabaseExists, $filename {
+    $expected = Get-DbcConfigValue database.exists
+    @(Get-Instance).ForEach{
+        $instance = $psitem
+        Context "Database exists on $psitem" {
+            $expected.ForEach{
+                It "Database $psitem should exist" {
+                    Assert-DatabaseExists -Instance $instance -Expecteddb $$psitem 
+                }
+            }
+        }
+    }
+}
