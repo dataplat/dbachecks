@@ -53,3 +53,12 @@ function Assert-DatabaseDuplicateIndex {
     )
     @(Find-DbaDuplicateIndex -SqlInstance $Instance -Database $Database).Count | Should -Be 0 -Because "Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory"
 }
+
+function Assert-DatabaseExists {
+    Param (
+        [string]$Instance,
+        [string]$ExpectedDB
+    )
+    $Actual = Get-Database -Instance $instance -Requiredinfo Name
+    $Actual.Name | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
+}
