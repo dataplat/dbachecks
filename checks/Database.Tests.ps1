@@ -166,10 +166,11 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 }
 
 Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
+    $Excludeddbs = $ExcludedDatabases  + 'msdb'
     @(Get-Instance).ForEach{
         Context "Testing duplicate indexes on $psitem" {
             $instance = $Psitem
-            @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -ExcludedDatabases $ExcludedDatabases).ForEach{
+            @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -ExcludedDatabases $Excludeddbs).ForEach{
                 It "$($psitem) on $Instance should return 0 duplicate indexes" {
                     Assert-DatabaseDuplicateIndex -Instance $instance -Database $psItem
                 }
