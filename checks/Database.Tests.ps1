@@ -593,7 +593,7 @@ Describe "Database Exists" -Tags DatabaseExists, $filename {
         Context "Database exists on $psitem" {
             $expected.ForEach{
                 It "Database $psitem should exist" {
-                    Assert-DatabaseExists -Instance $instance -Expecteddb $$psitem 
+                    Assert-DatabaseExists -Instance $instance -Expecteddb $psitem 
                 }
             }
         }
