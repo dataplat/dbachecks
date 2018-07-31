@@ -53,7 +53,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 }
                 else {
                     It "You haven't used the Tags Parameter so we can't check the tags" {
-                        $false | Should -BeTrue -Because 'We use teh Tags parameter'
+                        $false | Should -BeTrue -Because 'We use the Tags parameter'
                     }
                 }  
             }
