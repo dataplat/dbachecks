@@ -1,6 +1,8 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1 
 
+$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
+
 Describe "Database Collation" -Tags DatabaseCollation, $filename {
     $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
     $exclude = "ReportingServer", "ReportingServerTempDB"
@@ -134,7 +136,8 @@ Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
     $maxpercentage = Get-DbcConfigValue policy.identity.usagepercent
     @(Get-Instance).ForEach{
         Context "Testing Column Identity Usage on $psitem" {
-            $exclude = (Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.IsAccessible -eq $false}.Name
+            $exclude = $ExcludedDatabases
+            $exclude += (Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.IsAccessible -eq $false}.Name
             @(Test-DbaIdentityUsage -SqlInstance $psitem -ExcludeDatabase $exclude).ForEach{
                 if ($psitem.Database -ne "tempdb") {
                     $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
@@ -163,10 +166,11 @@ Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
 }
 
 Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
+    $Excludeddbs = $ExcludedDatabases  + 'msdb'
     @(Get-Instance).ForEach{
         Context "Testing duplicate indexes on $psitem" {
             $instance = $Psitem
-            @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -ExcludedDatabases $ExcludedDatabases).ForEach{
+            @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -ExcludedDbs $Excludeddbs).ForEach{
                 It "$($psitem) on $Instance should return 0 duplicate indexes" {
                     Assert-DatabaseDuplicateIndex -Instance $instance -Database $psItem
                 }
@@ -179,7 +183,7 @@ Describe "Unused Index" -Tags UnusedIndex, $filename {
     @(Get-Instance).ForEach{
         Context "Testing Unused indexes on $psitem" {
             try {
-                @($results = Find-DbaUnusedIndex -SqlInstance $psitem -EnableException).ForEach{
+                @($results = Find-DbaUnusedIndex -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -EnableException).ForEach{
                     It "$psitem on $($psitem.SQLInstance) should return 0 Unused indexes" {
                         @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                     }
@@ -267,7 +271,7 @@ Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA
     @(Get-Instance).ForEach{
         Context "Testing last full backups on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
-                $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false)  -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
                 It -Skip:$skip "$($psitem.Name) full backups on $($psitem.Parent.Name) Should Be less than $maxfull days" {
                     $psitem.LastBackupDate | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because "Taking regular backups is extraordinarily important"
                 }
@@ -410,6 +414,7 @@ Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename 
 Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
     $CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
     $exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
+    $exclude += $ExcludedDatabases
     @(Get-Instance).ForEach{
         Context "Checking that encryption certificates have not expired on $psitem" {
             @(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs | Where-Object {$_.Encryption -eq "Certificate" -and !($exclude.contains($_.Database))}).ForEach{
@@ -506,7 +511,7 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
 Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
     @(Get-Instance).ForEach{
         Context "Testing database orphaned user event on $psitem" {
-            $results = Get-DbaOrphanUser -SqlInstance $psitem
+            $results = Get-DbaOrphanUser -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases
             It "$psitem should return 0 orphaned users" {
                 @($results).Count | Should -Be 0 -Because "We dont want orphaned users"
             }
@@ -517,7 +522,7 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
 Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
     @(Get-Instance).ForEach{
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-            @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb' -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
+            @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb' -and $_.Name -ne 'model' -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
                 if (-not($psitem.RecoveryModel -eq "Simple")) {
                     It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
                 }
@@ -558,11 +563,12 @@ Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, $fi
 
 Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
     $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
-    $ExcludedDatabases = Get-DbcConfigValue policy.database.maxdopexcludedb
-    if($ExcludedDatabases){Write-Warning "Excluded $ExcludedDatabases from testing"}
+    $Excluded = Get-DbcConfigValue policy.database.maxdopexcludedb
+    $excluded += $ExcludedDatabases
+    if ($Excluded) {Write-Warning "Excluded $Excluded from testing"}
     @(Get-Instance).ForEach{
         Context "Database MaxDop setting is correct on $psitem" {
-            @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $_.Database -notin $ExcludedDatabases}.ForEach{
+            @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $_.Database -notin $Excluded}.ForEach{
                 It "Database $($psitem.Database) should have the correct MaxDop setting" {
                     Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue $MaxDopValue
                 }
@@ -576,11 +582,27 @@ Describe "Database Status" -Tags DatabaseStatus, $filename {
     $ExcludeReadOnly = Get-DbcConfigValue policy.database.status.excludereadonly
     $ExcludeOffline = Get-DbcConfigValue policy.database.status.excludeoffline
     $ExcludeRestoring = Get-DbcConfigValue policy.database.status.excluderestoring
+    $Excludedbs += $ExcludedDatabases
 
     @(Get-Instance).ForEach{
         Context "Database status is correct on $psitem" {
             It "All Databases should have the expected status" {
                 Assert-DatabaseStatus -Instance $psitem -Excludedbs $Excludedbs -ExcludeReadOnly $ExcludeReadOnly -ExcludeOffline $ExcludeOffline -ExcludeRestoring $ExcludeRestoring
+            }
+        }
+    }
+}
+
+Describe "Database Exists" -Tags DatabaseExists, $filename {
+    $Excludedbs = $ExcludedDatabases
+    $expected = Get-DbcConfigValue database.exists
+    @(Get-Instance).ForEach{
+        $instance = $psitem
+        Context "Database exists on $psitem" {
+            $expected.Where{$psitem -notin $Excludedbs}.ForEach{
+                It "Database $psitem should exist" {
+                    Assert-DatabaseExists -Instance $instance -Expecteddb $psitem 
+                }
             }
         }
     }

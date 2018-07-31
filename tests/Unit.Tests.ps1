@@ -42,7 +42,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 }
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
-                    $PSItem.Tags.Text.Split(',').Trim().Where{($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') -and ($PSItem -notlike '*status*') }.ForEach{
+                    $PSItem.Tags.Text.Split(',').Trim().Where{($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') -and ($PSItem -notlike '*status*')  -and ($PSItem -notlike '*exists')  -and ($PSItem -notlike '*Ops')}.ForEach{
                         It "$PSItem Should Be Singular" {
                             $PSItem.ToString().Endswith('s') | Should -BeFalse -Because 'Our coding standards say tags should be singular'
                         }
@@ -53,7 +53,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 }
                 else {
                     It "You haven't used the Tags Parameter so we can't check the tags" {
-                        $false | Should -BeTrue -Because 'We use teh Tags parameter'
+                        $false | Should -BeTrue -Because 'We use the Tags parameter'
                     }
                 }  
             }
@@ -155,6 +155,31 @@ Describe "Each Config referenced in a check should exist" -Tags UnitTest {
     }
 }
 
+Describe "Database Tests Exclusions"{
+    $DbChecks = (Get-ChildItem $ModuleBase\checks).Where{$PSItem.Name -eq 'Database.Tests.ps1'}
+    $Check = Get-Content $DbChecks.FullName -Raw
+
+    $Describes = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
+    FindAll([Func[Management.Automation.Language.Ast, bool]] {
+            param ($ast)
+            $ast.CommandElements -and
+            $ast.CommandElements[0].Value -eq 'describe'
+        }, $true) |
+        ForEach-Object {
+        $CE = $PSItem.CommandElements
+        $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
+        [PSCustomObject] @{
+            Name = $secondString.Value
+            Extent = $secondString.Parent.Extent.Text
+        }
+    }
+
+    $Describes.ForEach{
+        It "$($Psitem.Name) should reference the gloabl exclude configuration" {
+            $psitem.Extent -like "*`$ExcludedDatabases*" | Should -BeTrue -Because "We need to exclude the databases specified in the config command.invokedbccheck.excludedatabases"
+        }
+    }
+}
 # This should stop people making breaking changes to the tests without first altering the test
 Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
 Import-Module $ModuleBase\dbachecks.psd1 
