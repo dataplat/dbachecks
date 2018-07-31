@@ -170,7 +170,7 @@ Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
     @(Get-Instance).ForEach{
         Context "Testing duplicate indexes on $psitem" {
             $instance = $Psitem
-            @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -ExcludedDatabases $Excludeddbs).ForEach{
+            @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -ExcludedDbs $Excludeddbs).ForEach{
                 It "$($psitem) on $Instance should return 0 duplicate indexes" {
                     Assert-DatabaseDuplicateIndex -Instance $instance -Database $psItem
                 }
@@ -522,7 +522,7 @@ Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
 Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
     @(Get-Instance).ForEach{
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-            @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb' -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
+            @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb' -and $_.Name -ne 'model' -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
                 if (-not($psitem.RecoveryModel -eq "Simple")) {
                     It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
                 }
