@@ -60,5 +60,5 @@ function Assert-DatabaseExists {
         [string]$ExpectedDB
     )
     $Actual = Get-Database -Instance $instance -Requiredinfo Name
-    $Actual.Name | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
+    $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
 }
