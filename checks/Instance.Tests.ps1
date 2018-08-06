@@ -309,7 +309,7 @@ Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
     $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
     @(Get-Instance).ForEach{
         Context "Testing active Directory users on $psitem" {
-            @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
+            @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
                 It "Active Directory user $($psitem.login) was found in $($psitem.domain)" {
                     $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                 }
@@ -332,7 +332,7 @@ Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
         }
 
         Context "Testing active Directory groups on $psitem" {
-            @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
+            @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
                 It "Active Directory group $($psitem.login) was found in $($psitem.domain)" {
                     $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                 }
