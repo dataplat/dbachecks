@@ -10,7 +10,7 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
                 }
                 if ($IsClustered) {
                     It "SQL Engine service account should have a start mode of Manual on FailOver Clustered Instance $($psitem.InstanceName)" {
-                        $psitem.StartMode | Should -Be "Automatic" -Because 'Clustered Instances required that the SQL engine service is set to manual'
+                        $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the SQL engine service is set to manual'
                     }
                 }
                 else {
