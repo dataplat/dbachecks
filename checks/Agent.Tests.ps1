@@ -23,9 +23,17 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
                     It "SQL Agent Should Be running on $($psitem.ComputerName)" {
                         $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
                     }
-                    It "SQL Agent service should have a start mode of Automatic on $($psitem.ComputerName)" {
-                        $psitem.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
+                    if($connectioncheck.IsClustered){
+                        It "SQL Agent service should have a start mode of Manual on FailOver Clustered Instance $($psitem.ComputerName)" {
+                            $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
+                        }
                     }
+                    else{
+                        It "SQL Agent service should have a start mode of Automatic on standalone instance $($psitem.ComputerName)" {
+                            $psitem.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
+                        }
+                    }
+
                 }
             }
         }
