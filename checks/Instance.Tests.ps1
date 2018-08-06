@@ -59,6 +59,9 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
             It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFileSizeMax) {
                 $TempDBTest[4].CurrentSetting | Should -Be $TempDBTest[4].Recommended -Because 'Tempdb files should be able to grow'
             }
+            It "The data files should all be the same size" {
+                Assert-TempDBSize -Instance $Psitem
+            }
         }
     }
 }
