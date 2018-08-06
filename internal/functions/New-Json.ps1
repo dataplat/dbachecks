@@ -46,7 +46,7 @@ function New-Json {
                 $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{$_.Name -eq 1}.Value
             }
             $Config = ''
-            foreach($c in $Configs){$config += "$c"}
+            foreach($c in $Configs){$config += "$c "} # DON't DELETE THE SPACE in "$c "
             if ($filename -eq 'MaintenanceSolution') {
                 # The Maintenance Solution needs a bit of faffing as the configs for the jobnames are used to create the titles
                 switch ($tags -match $PSItem) {
