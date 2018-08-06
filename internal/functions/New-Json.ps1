@@ -46,7 +46,7 @@ function New-Json {
                 $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{$_.Name -eq 1}.Value
             }
             $Config = ''
-            $configs.foreach{$config += "$_ "}
+            foreach($c in $Configs){$config += "$c"}
             if ($filename -eq 'MaintenanceSolution') {
                 # The Maintenance Solution needs a bit of faffing as the configs for the jobnames are used to create the titles
                 switch ($tags -match $PSItem) {
@@ -84,7 +84,7 @@ function New-Json {
         }
     }
     $singletags = (($collection.AllTags -split ",").Trim() | Group-Object | Where-Object { $_.Count -eq 1 -and $_.Name -notin $groups })
-    $Descriptions = Get-Content $script:ModuleRoot\internal\configurations\DbcCheckDescriptions.json | ConvertFrom-Json
+    $Descriptions = Get-Content $script:ModuleRoot\internal\configurations\DbcCheckDescriptions.json -Raw| ConvertFrom-Json
     foreach ($check in $collection) {
         $unique = $singletags | Where-Object { $_.Name -in ($check.AllTags -split ",").Trim() }
         $check.UniqueTag = $unique.Name
