@@ -213,7 +213,7 @@ Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEv
         @(Get-Instance).ForEach{
             Context "Checking sessions on $psitem" {
                 $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
-                $xesession.ForEach{
+                @($xesession).ForEach{
                     It "Session $psitem should not be running" {
                         $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
                     }
@@ -233,7 +233,7 @@ Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEv
         @(Get-Instance).ForEach{
             Context "Checking running sessions on $psitem" {
                 $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
-                $xesession.ForEach{
+                @($xesession).ForEach{
                     It "session $psitem Should Be running" {
                         $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
                     }
