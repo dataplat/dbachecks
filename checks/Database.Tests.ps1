@@ -524,7 +524,7 @@ Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
         Context "Testing database is not in PseudoSimple recovery model on $psitem" {
             @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -ne 'tempdb' -and $_.Name -ne 'model' -and ($ExcludedDatabases -notcontains $PsItem.Name)}).ForEach{
                 if (-not($psitem.RecoveryModel -eq "Simple")) {
-                    It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaFullRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
+                    It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
                 }
             }
         }
