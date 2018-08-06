@@ -19,3 +19,9 @@ function Assert-BackupCompression {
     Param($Instance,$defaultbackupcompression)
     (Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'DefaultBackupCompression').ConfiguredValue -eq 1 | Should -Be $defaultbackupcompression -Because 'The default backup compression should be set correctly'
 }
+
+function Assert-TempDBSize {
+    Param($Instance)
+
+    @((Get-DbaDatabaseFile -SqlInstance localhost -Database tempdb).Where{$_.Type -eq 0}.Size.Megabyte |Select-Object -Unique).Count | Should -Be 1 -Because "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
+}

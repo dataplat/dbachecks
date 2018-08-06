@@ -77,14 +77,77 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Mock Test-DbaMaxDop {@{"CurrentInstanceMaxDop" = 4; "RecommendedMaxDop" = 73}}
             {Assert-InstanceMaxDop -Instance 'Dummy' -MaxDopValue $MaxDopValue} | Should -Throw -ExpectedMessage "Expected $MaxDopValue, because We expect the MaxDop Setting 4 to be $MaxDopValue"
         }
-             # Validate we have called the mock the correct number of times
-             It "Should call the mocks" {
-                $assertMockParams = @{
-                    'CommandName' = 'Test-DbaMaxDop'
-                    'Times'       = 5
-                    'Exactly'     = $true
-                }
-                Assert-MockCalled @assertMockParams
+        # Validate we have called the mock the correct number of times
+        It "Should call the mocks" {
+            $assertMockParams = @{
+                'CommandName' = 'Test-DbaMaxDop'
+                'Times'       = 5
+                'Exactly'     = $true
             }
+            Assert-MockCalled @assertMockParams
+        }
+    }
+    Context "Checking tempdb size" {
+        Mock Get-DbaDatabaseFile {@(
+            [PSCustomObject]@{
+                Type = 0
+                Size = [PSCustomObject]@{
+                     Megabyte = 8
+                }
+            },
+            [PSCustomObject]@{
+                Type = 0
+                Size = [PSCustomObject]@{
+                     Megabyte = 8
+                }
+            },
+            [PSCustomObject]@{
+                Type = 0
+                Size = [PSCustomObject]@{
+                     Megabyte = 8
+                }
+            },
+            [PSCustomObject]@{
+                Type = 0
+                Size = [PSCustomObject]@{
+                     Megabyte = 8
+                }
+            }
+        )}
+
+        It "Should pass the test when all tempdb files are the same size" {
+            Assert-TempDBSize
+        }
+
+        Mock Get-DbaDatabaseFile {@(
+            [PSCustomObject]@{
+                Type = 0
+                Size = [PSCustomObject]@{
+                     Megabyte = 8
+                }
+            },
+            [PSCustomObject]@{
+                Type = 0
+                Size = [PSCustomObject]@{
+                     Megabyte = 6
+                }
+            },
+            [PSCustomObject]@{
+                Type = 0
+                Size = [PSCustomObject]@{
+                     Megabyte = 8
+                }
+            },
+            [PSCustomObject]@{
+                Type = 0
+                Size = [PSCustomObject]@{
+                     Megabyte = 7
+                }
+            }
+        )}
+
+        It "Should fail when all of the tempdb files are not the same size" {
+            {Assert-TempDBSize} | Should -Throw -ExpectedMessage "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
+        }
     }
 }

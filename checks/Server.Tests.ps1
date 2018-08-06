@@ -4,8 +4,17 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
     @(Get-ComputerName).ForEach{
         Context "Testing Server Power Plan Configuration on $psitem" {
-            It "PowerPlan is High Performance on $psitem" {
-                (Test-DbaPowerPlan -ComputerName $psitem).IsBestPractice | Should -BeTrue
+            
+            $PowerPlan = Test-DbaPowerPlan -ComputerName $psitem -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+            if ($PowerPlan) {
+                It "PowerPlan is High Performance on $psitem" {
+                    $PowerPlan.IsBestPractice | Should -BeTrue -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"
+                }       
+            }
+            else{
+                It "PowerPlan is High Performance on $psitem" -Skip {
+                    $PowerPlan | Should -Not -BeNullOrEmpty
+                }
             }
         }
     }

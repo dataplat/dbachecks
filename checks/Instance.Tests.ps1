@@ -2,13 +2,21 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Instance.assertions.ps1 
 Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
+        $IsClustered = $Psitem.$IsClustered
         Context "Testing SQL Engine Service on $psitem" {
-            @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
-                It "SQL Engine service account Should Be running on $($psitem.InstanceName)" {
+            @(Get-DbaSqlService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
+                It "SQL Engine service account should Be running on $($psitem.InstanceName)" {
                     $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
                 }
-                It "SQL Engine service account should have a start mode of Automatic on $($psitem.InstanceName)" {
-                    $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessibl'
+                if ($IsClustered) {
+                    It "SQL Engine service account should have a start mode of Manual on FailOver Clustered Instance $($psitem.InstanceName)" {
+                        $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the SQL engine service is set to manual'
+                    }
+                }
+                else {
+                    It "SQL Engine service account should have a start mode of Automatic on standalone instance $($psitem.InstanceName)" {
+                        $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessible'
+                    }
                 }
             }
         }
@@ -58,6 +66,9 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
             }
             It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFileSizeMax) {
                 $TempDBTest[4].CurrentSetting | Should -Be $TempDBTest[4].Recommended -Because 'Tempdb files should be able to grow'
+            }
+            It "The data files should all be the same size" {
+                Assert-TempDBSize -Instance $Psitem
             }
         }
     }
@@ -213,7 +224,7 @@ Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEv
         @(Get-Instance).ForEach{
             Context "Checking sessions on $psitem" {
                 $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
-                $xesession.ForEach{
+                @($xesession).ForEach{
                     It "Session $psitem should not be running" {
                         $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
                     }
@@ -233,7 +244,7 @@ Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEv
         @(Get-Instance).ForEach{
             Context "Checking running sessions on $psitem" {
                 $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
-                $xesession.ForEach{
+                @($xesession).ForEach{
                     It "session $psitem Should Be running" {
                         $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
                     }
@@ -309,7 +320,7 @@ Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
     $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
     @(Get-Instance).ForEach{
         Context "Testing active Directory users on $psitem" {
-            @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
+            @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
                 It "Active Directory user $($psitem.login) was found in $($psitem.domain)" {
                     $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                 }
@@ -332,7 +343,7 @@ Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
         }
 
         Context "Testing active Directory groups on $psitem" {
-            @(Test-DbaValidLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
+            @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
                 It "Active Directory group $($psitem.login) was found in $($psitem.domain)" {
                     $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                 }
