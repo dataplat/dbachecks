@@ -2,13 +2,21 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Instance.assertions.ps1 
 Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
+        $IsClustered = $Psitem.$IsClustered
         Context "Testing SQL Engine Service on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
-                It "SQL Engine service account Should Be running on $($psitem.InstanceName)" {
+                It "SQL Engine service account should Be running on $($psitem.InstanceName)" {
                     $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
                 }
-                It "SQL Engine service account should have a start mode of Automatic on $($psitem.InstanceName)" {
-                    $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessibl'
+                if ($IsClustered) {
+                    It "SQL Engine service account should have a start mode of Manual on FailOver Clustered Instance $($psitem.InstanceName)" {
+                        $psitem.StartMode | Should -Be "Automatic" -Because 'Clustered Instances required that the SQL engine service is set to manual'
+                    }
+                }
+                else {
+                    It "SQL Engine service account should have a start mode of Automatic on standalone instance $($psitem.InstanceName)" {
+                        $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessible'
+                    }
                 }
             }
         }
