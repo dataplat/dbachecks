@@ -5,6 +5,7 @@ Skip PowerPlan test if no connection thanks @cl #490
 Fixed bug with XESession and PSv4 thank you @kylejdoyle #517
 Error silently on failing Service check (thanks Rob ;-) ) 
 Fixed dbatools command names
+Fixed PSv4 support for importing the module also
 ##Latest
 
 ## Date 31/07/2018
