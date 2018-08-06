@@ -1,3 +1,12 @@
+## Date 06/08/2018
+Added New Check for tempdb data file sizes to be the same - Thank you @garethnewman #512
+Altered Services Check so that clustered instances start mode is checked correctly thank you @kylejdoyle #516
+Skip PowerPlan test if no connection thanks @cl #490
+Fixed bug with XESession and PSv4 thank you @kylejdoyle #517
+Error silently on failing Service check (thanks Rob ;-) ) 
+Fixed dbatools command names
+##Latest
+
 ## Date 31/07/2018
 
 Added check for Database Exists - Thanks @sqldbawithbeard
@@ -20,7 +29,6 @@ Updated required version and dbatools error log command name Thank you Our Glori
 ## Date 30/05/2018
 New Release Notes command added
 Spelling
-##Latest
 
 ## Date 29/05/2012
 
