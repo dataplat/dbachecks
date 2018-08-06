@@ -3,7 +3,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
         Context "Testing SQL Engine Service on $psitem" {
-            @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
+            @(Get-DbaSqlService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
                 It "SQL Engine service account Should Be running on $($psitem.InstanceName)" {
                     $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
                 }
