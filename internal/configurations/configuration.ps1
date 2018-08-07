@@ -239,3 +239,6 @@ Set-PSFConfig -Module dbachecks -Name policy.server.cpuprioritisation -Value $tr
 
 # Devops
 Set-PSFConfig -Module dbachecks -Name database.exists -Value @("master","msdb","tempdb","model") -Initialize -Description "The databases we expect to be on the instances"
+
+# Not Contactable
+Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @() -Initialize -Description "This is used within the checks to avoid trying to contact none-responsive instances many times - do not set manually"
