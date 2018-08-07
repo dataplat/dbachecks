@@ -339,6 +339,8 @@
                     }
 
                     Push-Location -Path $repo
+                    ## remove any previous entries ready for this run
+                    Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @()
                     Invoke-Pester @PSBoundParameters
                 }
             }
