@@ -1,3 +1,10 @@
+## Date 13/08/2018
+Fixed #504 by enabling FileName parameter on Update-PowerBiDataSouce
+Added in new function to begin to reduce the number of calls to each instance
+Reduced required Pester version to 4.3.1
+Further PowerShell V4 improvements
+##Latest
+
 ## Date 06/08/2018
 Added New Check for tempdb data file sizes to be the same - Thank you @garethnewman #512
 Altered Services Check so that clustered instances start mode is checked correctly thank you @kylejdoyle #516
@@ -6,7 +13,6 @@ Fixed bug with XESession and PSv4 thank you @kylejdoyle #517
 Error silently on failing Service check (thanks Rob ;-) ) 
 Fixed dbatools command names
 Fixed PSv4 support for importing the module also
-##Latest
 
 ## Date 31/07/2018
 
