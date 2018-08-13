@@ -17,11 +17,8 @@
         .PARAMETER Path
             The directory to store your JSON files. "C:\windows\temp\dbachecks\*.json" by default
 
-        .PARAMETER Environment
-            Tag your JSON filename with an enviornment
-
-        .PARAMETER Append
-            Don't delete previous default data sources.
+        .PARAMETER FileName
+            Name your Json File
     
         .PARAMETER Force
             Delete all json files in the data source folder.
@@ -52,13 +49,14 @@
         [parameter(ValueFromPipeline, Mandatory)]
         [pscustomobject]$InputObject,
         [string]$Path = "$env:windir\temp\dbachecks",
-        [string]$Environment = "Default",
-        [switch]$Append,
+        [parameter(ValueFromPipeline, Mandatory)]
+        [alias('Environment')]
+        [string]$FileName = "Default",
         [switch]$Force,
         [switch]$EnableException
     )
     begin {
-        if ($Environment -ne "Default" -and -not $Append) {
+        if ($FileName -ne "Default") {
             $null = Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
         }
         if ($Force) {
@@ -76,14 +74,14 @@
             Stop-PSFFunction -Message "Failure" -ErrorRecord $_
             return
         }
-        
         $basename = "dbachecks_$i"
-        if ($InputObject.TagFilter) {
-            $basename = "$basename`_$($InputObject.TagFilter -join "_")"
+        if ($FileName) {
+            $basename = "$basename`_$FileName"
         }
-        
-        if ($Environment) {
-            $basename = "$basename`_$Environment"
+        else {
+            if ($InputObject.TagFilter) {
+                $basename = "$basename`_$($InputObject.TagFilter -join "_")"
+            }
         }
         
         $filename = "$Path\$basename.json"

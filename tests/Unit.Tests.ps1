@@ -124,7 +124,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                             }
                         }
                         It "$CheckName should have the right number of Context blocks as the AST doesnt parse how I like and I cant be bothered to fix it right now"{
-                            $Contexts.Count | Should -Be 8 -Because "There should be 8 context blocks in the Agent checks file"
+                            $Contexts.Count | Should -Be 18 -Because "There should be 8 context blocks in the Agent checks file"
                         }
                     }
                 }

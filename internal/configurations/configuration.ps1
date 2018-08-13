@@ -19,7 +19,8 @@ Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $Emai
 
 # some configs to help with autocompletes and other module level stuff
 #apps
-Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value "$script:ModuleRoot\checks" -Initialize -Description "Where Pester tests/checks are stored"
+$defaultRepo = "$script:ModuleRoot\checks"
+Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value @($defaultRepo) -Initialize -Description "Where Pester tests/checks are stored"
 Set-PSFConfig -Module dbachecks -Name app.sqlinstance -Value $null -Initialize -Description "List of SQL Server instances that SQL-based tests will run against"
 Set-PSFConfig -Module dbachecks -Name app.computername -Value $null -Initialize -Description "List of Windows Servers that Windows-based tests will run against"
 Set-PSFConfig -Module dbachecks -Name app.sqlcredential -Value $null -Initialize -Description "The universal SQL credential if Trusted/Windows Authentication is not used"
@@ -239,3 +240,6 @@ Set-PSFConfig -Module dbachecks -Name policy.server.cpuprioritisation -Value $tr
 
 # Devops
 Set-PSFConfig -Module dbachecks -Name database.exists -Value @("master","msdb","tempdb","model") -Initialize -Description "The databases we expect to be on the instances"
+
+# Not Contactable
+Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @() -Initialize -Description "This is used within the checks to avoid trying to contact none-responsive instances many times - do not set manually"

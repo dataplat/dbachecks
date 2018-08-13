@@ -48,7 +48,7 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
-        @{ ModuleName = 'Pester'; ModuleVersion = '4.4.0' },
+        @{ ModuleName = 'Pester'; ModuleVersion = '4.3.1' },
         @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.381' }
         @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.23.82' }
     )

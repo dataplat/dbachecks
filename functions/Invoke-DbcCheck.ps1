@@ -298,9 +298,9 @@
         $null = $PSBoundParameters.Remove('ExcludeCheck')
         $null = $PSBoundParameters.Add('Tag', $Check)
         $null = $PSBoundParameters.Add('ExcludeTag', $ExcludeCheck)
-
         
         $globalexcludedchecks = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludecheck
+        $global:ChecksToExclude = $ExcludeCheck + $globalexcludedchecks
         [string[]]$Script:ExcludedDatabases = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludedatabases
         $Script:ExcludedDatabases += $ExcludeDatabase
 
@@ -339,6 +339,8 @@
                     }
 
                     Push-Location -Path $repo
+                    ## remove any previous entries ready for this run
+                    Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @()
                     Invoke-Pester @PSBoundParameters
                 }
             }
