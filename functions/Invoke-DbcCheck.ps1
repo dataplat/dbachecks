@@ -298,9 +298,9 @@
         $null = $PSBoundParameters.Remove('ExcludeCheck')
         $null = $PSBoundParameters.Add('Tag', $Check)
         $null = $PSBoundParameters.Add('ExcludeTag', $ExcludeCheck)
-
         
         $globalexcludedchecks = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludecheck
+        $global:ChecksToExclude = $ExcludeCheck + $globalexcludedchecks
         [string[]]$Script:ExcludedDatabases = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludedatabases
         $Script:ExcludedDatabases += $ExcludeDatabase
 
