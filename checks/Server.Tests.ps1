@@ -1,19 +1,21 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Server.Assertions.ps1
 
-Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
-    @(Get-ComputerName).ForEach{
+$Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
+
+@(Get-ComputerName).ForEach{
+    $AllServerInfo = Get-AllServerInfo -ComputerName $Psitem -Tags $Tags
+    Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
+    
         Context "Testing Server Power Plan Configuration on $psitem" {
-            
-            $PowerPlan = Test-DbaPowerPlan -ComputerName $psitem -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-            if ($PowerPlan) {
+            if ($AllServerInfo.PowerPlan) {
                 It "PowerPlan is High Performance on $psitem" {
-                    $PowerPlan.IsBestPractice | Should -BeTrue -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"
+                    $AllServerInfo.PowerPlan.IsBestPractice | Should -BeTrue -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"
                 }       
             }
-            else{
+            else {
                 It "PowerPlan is High Performance on $psitem" -Skip {
-                    $PowerPlan | Should -Not -BeNullOrEmpty
+                    $AllServerInfo.PowerPlan | Should -Not -BeNullOrEmpty
                 }
             }
         }
