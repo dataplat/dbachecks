@@ -29,7 +29,7 @@ function New-Json {
             if ($Describe.Parent -match "Get-Instance") {
                 $type = "Sqlinstance"
             }
-            elseif ($Describe.Parent -match "Get-ComputerName") {
+            elseif ($Describe.Parent -match "Get-ComputerName" -or $Describe.Parent -match "AllServerInfo") {
                 $type = "ComputerName"
             }
             elseif ($Describe.Parent -match "Get-ClusterObject") {
