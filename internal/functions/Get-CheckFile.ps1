@@ -10,7 +10,7 @@ function Get-CheckFile {
 
     if ($Check.Count -gt 0) { 
         # specific checks were requested. find them.
-        (Get-ChildItem -Path "$Repo\*.Tests.ps1").ForEach{
+        @(Get-ChildItem -Path "$Repo\*.Tests.ps1").ForEach{
             $script:checksFile = $psitem.FullName
             
             if ($Check -contains ($PSItem.Name -replace ".Tests.ps1", "")) {
