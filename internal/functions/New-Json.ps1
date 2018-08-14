@@ -12,9 +12,17 @@ function New-Json {
     foreach ($file in $repofiles) {
         $filename = $file.Name.Replace(".Tests.ps1", "")
         $Check = Get-Content $file -Raw
-        ## Parse the file with AST and get each describe block
-        $Describes = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
-        FindAll([Func[Management.Automation.Language.Ast, bool]] {
+        ## Parse the file with AST 
+        $CheckFileAST = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors)
+
+        ## New code uses a Computer Name loop to speed up execution so need to find that as well
+        $ComputerNameForEach = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
+                param ($ast) 
+                $ast -is [System.Management.Automation.Language.InvokeMemberExpressionAst] -and $ast.expression.Subexpression.Extent.Text -eq 'Get-ComputerName'
+            }, $true).Extent
+
+        ## Old code we can use the describes
+        $Describes = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
                 param ($ast)
                 $ast.CommandElements -and
                 $ast.CommandElements[0].Value -eq 'describe'
@@ -36,8 +44,15 @@ function New-Json {
                 $Type = "ClusteNode"
             }
             else {
-                $type = $null
+                #Choose the type from teh new way from inside the foreach
+                if ($ComputerNameForEach -match $title) {
+                    $type = "ComputerName"
+                }
+                else {
+                    $type = $null
+                }
             }
+
             if ($filename -eq 'HADR') {
                 ## HADR configs are outside of describe
                 $configs = [regex]::matches($check, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{$_.Name -eq 1}.Value
@@ -46,7 +61,7 @@ function New-Json {
                 $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{$_.Name -eq 1}.Value
             }
             $Config = ''
-            foreach($c in $Configs){$config += "$c "} # DON't DELETE THE SPACE in "$c "
+            foreach ($c in $Configs) {$config += "$c "} # DON't DELETE THE SPACE in "$c "
             if ($filename -eq 'MaintenanceSolution') {
                 # The Maintenance Solution needs a bit of faffing as the configs for the jobnames are used to create the titles
                 switch ($tags -match $PSItem) {
