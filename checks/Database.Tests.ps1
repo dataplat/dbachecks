@@ -152,7 +152,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
         }
         else {
             Context "Testing Database Owners on $psitem" {
-                @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.Name -notin $exclude -and ($ExcludedDatabases -notcontains $_.Name)}).ForEach{
+                @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if($database){$_.Name -in $database}else{$_.Name -notin $exclude -and ($ExcludedDatabases -notcontains $_.Name)}}).ForEach{
                     It "Database $($psitem.Name) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.Parent.Name)" {
                         $psitem.Owner | Should -BeIn $TargetOwner -Because "The account that is the database owner is not what was expected"
                     }
