@@ -20,7 +20,7 @@ function Get-CheckFile {
                 }
             } else {
                 @($check).ForEach{
-                    if (@(Get-Content -Path $script:checksFile | Select-String -Pattern "^Describe.*-Tags\s+.*($psitem)[`",\s]+[,\w]?.*`$").Matches.Count) {
+                    if (@(Get-Content -Path $script:checksFile | Select-String -Pattern "^\s*Describe.*-Tags\s+.*($psitem)").Matches.Count) {
                         # file matches by one of the tags
                         if (!($script:selectedFiles -contains $script:checksFile)) {
                             $script:selectedFiles.Add($script:checksFile)
