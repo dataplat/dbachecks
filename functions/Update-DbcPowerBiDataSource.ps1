@@ -19,6 +19,9 @@
 
         .PARAMETER FileName
             Name your Json File
+
+        .PARAMETER Environment
+            A Naem to give your suite of tests IE Prod - This will also alter the name
     
         .PARAMETER Force
             Delete all json files in the data source folder.
