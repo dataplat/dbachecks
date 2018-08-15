@@ -97,7 +97,7 @@ Describe "Last Backup Restore Test" -Tags TestLastBackup, Backup, $filename {
                 }
                 Context "Testing Backup Restore & Integrity Checks on $psitem" {
                     $srv = Connect-DbaInstance -SqlInstance $psitem
-                    $dbs = ($srv.Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and (if($Database){$_.Name -in $Database}else{$ExcludedDatabases -notcontains $PsItem.Name})}).Name
+                    $dbs = ($srv.Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if($Database){$_.Name -in $Database}else{$ExcludedDatabases -notcontains $PsItem.Name})}).Name
                     if (-not ($destdata)) {$destdata -eq $srv.DefaultFile}
                     if (-not ($destlog)) {$destlog -eq $srv.DefaultLog}
                     @(Test-DbaLastBackup -SqlInstance $psitem -Database $dbs -Destination $destserver -DataDirectory $destdata -LogDirectory $destlog -VerifyOnly).ForEach{                    if ($psitem.DBCCResult -notmatch "skipped for restored master") {
@@ -127,7 +127,7 @@ Describe "Last Backup VerifyOnly" -Tags TestLastBackupVerifyOnly, Backup, $filen
         }
         else {
             Context "VerifyOnly tests of last backups on $psitem" {
-                @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and (if($Database){$_.Name -in $Database}else{$ExcludedDatabases -notcontains $PsItem.Name})}).Name -VerifyOnly).ForEach{
+                @(Test-DbaLastBackup -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if($Database){$_.Name -in $Database}else{$ExcludedDatabases -notcontains $PsItem.Name})}).Name -VerifyOnly).ForEach{
                     It "restore for $($psitem.Database) on $($psitem.SourceServer) Should be success" {
                         $psitem.RestoreResult | Should -Be "Success" -Because "The restore file has not successfully verified - you have no backup"
                     }
