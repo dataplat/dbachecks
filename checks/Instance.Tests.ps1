@@ -19,11 +19,9 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
 
         }
     }
-}
 
-Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
-Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
-    @(Get-Instance).ForEach{
+    
+    Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database collation on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -52,44 +50,8 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
             }
         }
     }
-}
 
-Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename { 
-    @(Get-ComputerName).ForEach{ 
-        if ($NotContactable -contains $psitem) {
-            Context "Testing SQL Browser Service on $psitem" { 
-                It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
-                }
-            }
-        }
-        else {
-            Context "Testing SQL Browser Service on $psitem" { 
-                $Services = Get-DbaSqlService -ComputerName $psitem 
-                if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
-                    It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" { 
-                        $Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service' 
-                    } 
-                }
-                else { 
-                    It "SQL browser service on $psitem Should Be Running as multiple instances are installed" { 
-                        $Services.Where{$_.ServiceType -eq 'Browser'}.State| Should -Be "Running" -Because 'You need the browser service with multiple instances' } 
-                } 
-                if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) { 
-                    It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" { 
-                        $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' } 
-                }
-                else { 
-                    It "SQL browser service startmode Should Be Automatic on $psitem as multiple instances are installed" { 
-                        $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Automatic" 
-                    } 
-                } 
-            } 
-        }
-    } 
-}
-Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
-    @(Get-Instance).ForEach{
+    Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing TempDB Configuration on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -121,10 +83,8 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
             }
         }
     }
-}
 
-Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
-    @(Get-Instance).ForEach{
+    Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -142,10 +102,8 @@ Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
             }
         }
     }
-}
 
-Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
-    @(Get-Instance).ForEach{
+    Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Backup Path Access on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -165,11 +123,9 @@ Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
             }
         }
     }
-}
 
-Describe "Dedicated Administrator Connection" -Tags DAC, $filename {
-    $dac = Get-DbcConfigValue policy.dacallowed
-    @(Get-Instance).ForEach{
+    Describe "Dedicated Administrator Connection" -Tags DAC, $filename {
+        $dac = Get-DbcConfigValue policy.dacallowed
         if ($NotContactable -contains $psitem) {
             Context "Testing Dedicated Administrator Connection on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -185,11 +141,9 @@ Describe "Dedicated Administrator Connection" -Tags DAC, $filename {
             }
         }
     }
-}
 
-Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
-    $max = Get-DbcConfigValue policy.network.latencymaxms
-    @(Get-Instance).ForEach{
+    Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
+        $max = Get-DbcConfigValue policy.network.latencymaxms
         if ($NotContactable -contains $psitem) {
             Context "Testing Network Latency on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -207,10 +161,9 @@ Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
             }
         }
     }
-}
 
-Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename {
-    @(Get-Instance).ForEach{
+
+    Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Linked Servers on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -228,10 +181,8 @@ Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename 
             }
         }
     }
-}
 
-Describe "Max Memory" -Tags MaxMemory, $filename {
-    @(Get-Instance).ForEach{
+    Describe "Max Memory" -Tags MaxMemory, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Max Memory on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -249,10 +200,8 @@ Describe "Max Memory" -Tags MaxMemory, $filename {
             }
         }
     }
-}
 
-Describe "Orphaned Files" -Tags OrphanedFile, $filename {
-    @(Get-Instance).ForEach{
+    Describe "Orphaned Files" -Tags OrphanedFile, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Checking for orphaned database files on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -268,10 +217,9 @@ Describe "Orphaned Files" -Tags OrphanedFile, $filename {
             }
         }
     }
-}
 
-Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
-    @(Get-Instance).ForEach{
+
+    Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing instance name matches Windows name for $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -287,11 +235,9 @@ Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
             }
         }
     }
-}
 
-Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
-    $maxdumps = Get-DbcConfigValue  policy.dump.maxcount
-    @(Get-Instance).ForEach{
+    Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
+        $maxdumps = Get-DbcConfigValue  policy.dump.maxcount
         if ($NotContactable -contains $psitem) {
             Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -308,11 +254,9 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
             }
         }
     }
-}
 
-Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
-    $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
-    @(Get-Instance).ForEach{
+    Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
+        $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
         if ($NotContactable -contains $psitem) {
             Context "Checking that build is still supportedby Microsoft for $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -332,10 +276,8 @@ Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
             }
         }
     }
-}
 
-Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
-    @(Get-Instance).ForEach{
+    Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Checking that sa login has been renamed on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -352,11 +294,9 @@ Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
             }
         }
     }
-}
 
-Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
-    $defaultbackupcompression = Get-DbcConfigValue policy.backup.defaultbackupcompression
-    @(Get-Instance).ForEach{
+    Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
+        $defaultbackupcompression = Get-DbcConfigValue policy.backup.defaultbackupcompression
         if ($NotContactable -contains $psitem) {
             Context "Testing Default Backup Compression on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -372,13 +312,11 @@ Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename 
             }
         }
     }
-}
 
-Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
-    # no point running if we dont have something to check
-    if ($xesession) {
-        @(Get-Instance).ForEach{
+    Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEvent, $filename {
+        $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
+        # no point running if we dont have something to check
+        if ($xesession) {
             if ($NotContactable -contains $psitem) {
                 Context "Checking sessions on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -397,17 +335,15 @@ Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEv
                 }
             }
         }
+        else {
+            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredstoppedsession -Value to add some Extended Events session names to run this check"
+        }
     }
-    else {
-        Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredstoppedsession -Value to add some Extended Events session names to run this check"
-    }
-}
 
-Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
-    # no point running if we dont have something to check
-    if ($xesession) {
-        @(Get-Instance).ForEach{
+    Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEvent, $filename {
+        $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
+        # no point running if we dont have something to check
+        if ($xesession) {
             if ($NotContactable -contains $psitem) {
                 Context "Checking running sessions on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -426,17 +362,15 @@ Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEv
                 }
             }
         }
+        else {
+            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value to add some Extended Events session names to run this check"
+        }
     }
-    else {
-        Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value to add some Extended Events session names to run this check"
-    }
-}
 
-Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
-    $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
-    # no point running if we dont have something to check
-    if ($xesession) {
-        @(Get-Instance).ForEach{
+    Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
+        $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
+        # no point running if we dont have something to check
+        if ($xesession) {
             if ($NotContactable -contains $psitem) {
                 Context "Checking sessions on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -454,14 +388,12 @@ Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllo
                 }
             }
         }
+        else {
+            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
+        }
     }
-    else {
-        Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
-    }
-}
-Describe "OLE Automation" -Tags OLEAutomation, $filename {
-    $OLEAutomation = Get-DbcConfigValue policy.oleautomation
-    @(Get-Instance).ForEach{
+    Describe "OLE Automation" -Tags OLEAutomation, $filename {
+        $OLEAutomation = Get-DbcConfigValue policy.oleautomation
         if ($NotContactable -contains $psitem) {
             Context "Testing OLE Automation on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -477,11 +409,9 @@ Describe "OLE Automation" -Tags OLEAutomation, $filename {
             }
         }
     }
-}
 
-Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, $filename {
-    $db = Get-DbcConfigValue policy.whoisactive.database
-    @(Get-Instance).ForEach{
+    Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, $filename {
+        $db = Get-DbcConfigValue policy.whoisactive.database
         if ($NotContactable -contains $psitem) {
             Context "Testing WhoIsActive exists on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -497,12 +427,10 @@ Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, $filename {
             }
         }
     }
-}
 
-Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
-    $modeldbgrowthtest = Get-DbcConfigValue skip.instance.modeldbgrowth
-    if (-not $modeldbgrowthtest) {
-        @(Get-Instance).ForEach{
+    Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
+        $modeldbgrowthtest = Get-DbcConfigValue skip.instance.modeldbgrowth
+        if (-not $modeldbgrowthtest) {
             if ($NotContactable -contains $psitem) {
                 Context "Testing model database growth setting is not default on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -524,12 +452,11 @@ Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
             }
         }
     }
-}
 
-Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
-    $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
-    $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
-    @(Get-Instance).ForEach{
+    Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
+        $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
+        $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
+
         if ($NotContactable -contains $psitem) {
             Context "Testing active Directory users on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -581,10 +508,9 @@ Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
             }
         }
     }
-}
-Describe "Error Log Entries" -Tags ErrorLog, $filename {
-    $logWindow = Get-DbcConfigValue policy.errorlog.warningwindow
-    @(Get-Instance).ForEach{
+
+    Describe "Error Log Entries" -Tags ErrorLog, $filename {
+        $logWindow = Get-DbcConfigValue policy.errorlog.warningwindow
         if ($NotContactable -contains $psitem) {
             Context "Checking error log on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -595,19 +521,19 @@ Describe "Error Log Entries" -Tags ErrorLog, $filename {
         else {
             Context "Checking error log on $psitem" {
                 It "Error log should be free of error severities 17-24 on $psitem" {
-                    (Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow)).Text | Should -Not -Match "Severity: 1[7-9]" -Because "these severities indicate serious problems"
-                    (Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow)).Text | Should -Not -Match "Severity: 2[0-4]" -Because "these severities indicate serious problems"
+                    $errorlog = (Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow)).Text 
+                    $errorlog| Should -Not -Match "Severity: 1[7-9]" -Because "these severities indicate serious problems"
+                    $errorlog | Should -Not -Match "Severity: 2[0-4]" -Because "these severities indicate serious problems"
                 }
             }
         }
     }
-}
 
-Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, $filename {
-    $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
-    $MaxDop = Get-DbcConfigValue policy.instancemaxdop.maxdop
-    $ExcludeInstance = Get-DbcConfigValue policy.instancemaxdop.excludeinstance
-    @(Get-Instance).ForEach{
+    Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, $filename {
+        $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
+        $MaxDop = Get-DbcConfigValue policy.instancemaxdop.maxdop
+        $ExcludeInstance = Get-DbcConfigValue policy.instancemaxdop.excludeinstance
+
         if ($NotContactable -contains $psitem) {
             Context "Testing Instance MaxDop Value on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -625,3 +551,41 @@ Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, $filename {
         }
     }
 }
+
+Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename { 
+    @(Get-ComputerName).ForEach{ 
+        if ($NotContactable -contains $psitem) {
+            Context "Testing SQL Browser Service on $psitem" { 
+                It "Can't Connect to $Psitem" {
+                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing SQL Browser Service on $psitem" { 
+                $Services = Get-DbaSqlService -ComputerName $psitem 
+                if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
+                    It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" { 
+                        $Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service' 
+                    } 
+                }
+                else { 
+                    It "SQL browser service on $psitem Should Be Running as multiple instances are installed" { 
+                        $Services.Where{$_.ServiceType -eq 'Browser'}.State| Should -Be "Running" -Because 'You need the browser service with multiple instances' } 
+                } 
+                if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) { 
+                    It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" { 
+                        $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' } 
+                }
+                else { 
+                    It "SQL browser service startmode Should Be Automatic on $psitem as multiple instances are installed" { 
+                        $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Automatic" 
+                    } 
+                } 
+            } 
+        }
+    } 
+}
+
+
+Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
