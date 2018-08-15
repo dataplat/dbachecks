@@ -86,7 +86,7 @@
         'Update-DbcPowerBiDataSource',
         'Get-DbcTagCollection',
         'Get-DbcCheck',
-        'Send-DbcMailMessage',
+        # 'Send-DbcMailMessage',
         'Clear-DbcPowerBiDataSource',
         'Save-DbcRequiredModules',
         'Update-DbcRequiredModules'

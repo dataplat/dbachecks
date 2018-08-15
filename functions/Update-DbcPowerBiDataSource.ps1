@@ -19,6 +19,9 @@
 
         .PARAMETER FileName
             Name your Json File
+
+        .PARAMETER Environment
+            A Naem to give your suite of tests IE Prod - This will also alter the name
     
         .PARAMETER Force
             Delete all json files in the data source folder.
@@ -29,14 +32,34 @@
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
         .EXAMPLE
-            Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource 
 
-            Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
+            Runs the DatabaseStatus checks against $Instance then saves to json to $env:windir\temp\dbachecks\dbachecks_1_DatabaseStatus.json
 
         .EXAMPLE
-            Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Path C:\Temp
 
-            Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
+            Runs the DatabaseStatus checks against $Instance then saves to json to C:\Temp\dbachecks_1_DatabaseStatus.json
+
+        .EXAMPLE
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Path C:\Temp  -FileName BeardyTests
+
+            Runs the DatabaseStatus checks against $Instance then saves to json to C:\Temp\BeardyTests.json
+
+        .EXAMPLE
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Path C:\Temp  -FileName BeardyTests.json
+
+            Runs the DatabaseStatus checks against $Instance then saves to json to C:\Temp\BeardyTests.json
+
+        .EXAMPLE
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Path C:\Temp  -Environment Prod_DBChecks
+
+            Runs the DatabaseStatus checks against $Instance then saves to json to  C:\Temp\dbachecks_1_Prod_DBChecks_DatabaseStatus.json
+
+        .EXAMPLE
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Environment Prod_DBChecks
+
+            Runs the DatabaseStatus checks against $Instance then saves to json to  C:\Windows\temp\dbachecks\dbachecks_1_Prod_DBChecks_DatabaseStatus.json
 
         .EXAMPLE
             Invoke-DbcCheck -SqlInstance sql2017 -Tag Backup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Path \\nas\projects\dbachecks.json
@@ -49,9 +72,8 @@
         [parameter(ValueFromPipeline, Mandatory)]
         [pscustomobject]$InputObject,
         [string]$Path = "$env:windir\temp\dbachecks",
-        [parameter(ValueFromPipeline, Mandatory)]
-        [alias('Environment')]
-        [string]$FileName = "Default",
+        [string]$FileName,
+        [string]$Environment,
         [switch]$Force,
         [switch]$EnableException
     )
@@ -75,21 +97,28 @@
             return
         }
         $basename = "dbachecks_$i"
+        if($Environment){
+            $basename = "dbachecks_$i" + "_$Environment"
+        }
         if ($FileName) {
-            $basename = "$basename`_$FileName"
+            $basename = $FileName
+            if($basename.EndsWith('.json')){}
+            else{
+                $basename = $basename + ".json"
+            }
         }
         else {
             if ($InputObject.TagFilter) {
-                $basename = "$basename`_$($InputObject.TagFilter -join "_")"
+                $basename = "$basename`_$($InputObject.TagFilter -join "_")" + ".json"
             }
-        }
-        
-        $filename = "$Path\$basename.json"
-        
+        }  
+
+        $FilePath = "$Path\$basename"
+
         if ($InputObject.TotalCount -gt 0) {
             try {
-                $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $filename
-                Write-PSFMessage -Level Output -Message "Wrote results to $filename"
+                $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
+                Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
             }
             catch {
                 Stop-PSFFunction -Message "Failure" -ErrorRecord $_
