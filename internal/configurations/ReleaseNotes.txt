@@ -1,5 +1,12 @@
-## Date 14/08/2018
+## Date 15/08/2018
+Fixed issue 521 ExcludeDatabase parameter doesn't work - THANK YOU @jpomfret
+THANK YOU @jpomfret - Issue 509 -Database should only check databases listed and exclude all others
+Further update to Update-DbcPowerBiDataSource to allow Environment as well as specify filename
 Improved performance of the Server checks
+Improved performance of the Instance checks
+Improved performance of the Database checks
+Improved performance of the ErrorLog checks
+Removed Send-DbcSendMailMessage until it can be re-coded
 
 ##Latest
 
