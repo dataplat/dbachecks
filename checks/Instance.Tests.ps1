@@ -221,7 +221,7 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
     }
 
 
-    Describe "SQL + Windows names match" -Tags ServerNameMatch, $filename {
+    Describe "SQL and Windows names match" -Tags ServerNameMatch, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing instance name matches Windows name for $psitem" {
                 It "Can't Connect to $Psitem" {
