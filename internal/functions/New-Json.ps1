@@ -21,6 +21,13 @@ function New-Json {
                 $ast -is [System.Management.Automation.Language.InvokeMemberExpressionAst] -and $ast.expression.Subexpression.Extent.Text -eq 'Get-ComputerName'
             }, $true).Extent
 
+        ## New code uses a Computer Name loop to speed up execution so need to find that as well
+        $InstanceNameForEach = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
+            param ($ast) 
+            $ast -is [System.Management.Automation.Language.InvokeMemberExpressionAst] -and $ast.expression.Subexpression.Extent.Text -eq 'Get-Instance'
+        }, $true).Extent
+
+
         ## Old code we can use the describes
         $Describes = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
                 param ($ast)
@@ -44,9 +51,12 @@ function New-Json {
                 $Type = "ClusteNode"
             }
             else {
-                #Choose the type from teh new way from inside the foreach
+                #Choose the type from the new way from inside the foreach
                 if ($ComputerNameForEach -match $title) {
                     $type = "ComputerName"
+                }
+                elseif($InstanceNameForEach -match $title){
+                    $type = "Sqlinstance"
                 }
                 else {
                     $type = $null
