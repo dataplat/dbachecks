@@ -25,7 +25,8 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
     }
 
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
-    Describe "Database Collation" -Tags DatabaseCollation, $filename {
+
+        Describe "Database Collation" -Tags DatabaseCollation, $filename {
         $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
         $exclude = "ReportingServer", "ReportingServerTempDB"
         $exclude += $Wrongcollation
@@ -55,7 +56,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
         }
     
-
+    }
 
         Describe "Suspect Page" -Tags SuspectPage, $filename {
             if ($NotContactable -contains $psitem) {
@@ -843,7 +844,6 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
         }
 
-
         Describe "Database Status" -Tags DatabaseStatus, $filename {
             $Excludedbs = Get-DbcConfigValue command.invokedbccheck.excludedatabases
             $ExcludeReadOnly = Get-DbcConfigValue policy.database.status.excludereadonly
@@ -888,6 +888,5 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
                 }
             }
         }
-    }
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
