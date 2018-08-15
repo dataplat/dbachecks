@@ -29,14 +29,34 @@
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
         .EXAMPLE
-            Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource 
 
-            Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
+            Runs the DatabaseStatus checks against $Instance then saves to json to $env:windir\temp\dbachecks\dbachecks_1_DatabaseStatus.json
 
         .EXAMPLE
-            Invoke-DbcCheck -SqlInstance sql2017 -Tag identity -Show Summary -PassThru | Update-DbcPowerBiDataSource
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Path C:\Temp
 
-            Runs backup tests against sql2017 then saves to json to "$env:windir\temp\dbachecks\dbachecks_identity.json"
+            Runs the DatabaseStatus checks against $Instance then saves to json to C:\Temp\dbachecks_1_DatabaseStatus.json
+
+        .EXAMPLE
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Path C:\Temp  -FileName BeardyTests
+
+            Runs the DatabaseStatus checks against $Instance then saves to json to C:\Temp\BeardyTests.json
+
+        .EXAMPLE
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Path C:\Temp  -FileName BeardyTests.json
+
+            Runs the DatabaseStatus checks against $Instance then saves to json to C:\Temp\BeardyTests.json
+
+        .EXAMPLE
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Path C:\Temp  -Environment Prod_DBChecks
+
+            Runs the DatabaseStatus checks against $Instance then saves to json to  C:\Temp\dbachecks_1_Prod_DBChecks_DatabaseStatus.json
+
+        .EXAMPLE
+            Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource -Environment Prod_DBChecks
+
+            Runs the DatabaseStatus checks against $Instance then saves to json to  C:\Windows\temp\dbachecks\dbachecks_1_Prod_DBChecks_DatabaseStatus.json
 
         .EXAMPLE
             Invoke-DbcCheck -SqlInstance sql2017 -Tag Backup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Path \\nas\projects\dbachecks.json
