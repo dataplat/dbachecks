@@ -660,7 +660,7 @@ Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
         }
         else {
             Context "Checking that encryption certificates have not expired on $psitem" {
-                @(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs | Where-Object {$_.Encryption -eq "Certificate" -and !($exclude.contains($_.Database))}).ForEach{
+                @(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object {$_.Encryption -eq "Certificate" -and !($exclude.contains($_.Database))}).ForEach{
                     It "$($psitem.Name) in $($psitem.Database) has not expired" {
                         $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date) -Because "this certificate should not be expired"
                     }
