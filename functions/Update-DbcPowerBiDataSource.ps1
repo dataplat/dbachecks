@@ -49,9 +49,8 @@
         [parameter(ValueFromPipeline, Mandatory)]
         [pscustomobject]$InputObject,
         [string]$Path = "$env:windir\temp\dbachecks",
-        [parameter(ValueFromPipeline, Mandatory)]
-        [alias('Environment')]
-        [string]$FileName = "Default",
+        [string]$FileName,
+        [string]$Environment,
         [switch]$Force,
         [switch]$EnableException
     )
@@ -75,21 +74,28 @@
             return
         }
         $basename = "dbachecks_$i"
+        if($Environment){
+            $basename = "dbachecks_$i" + "_$Environment"
+        }
         if ($FileName) {
-            $basename = "$basename`_$FileName"
+            $basename = $FileName
+            if($basename.EndsWith('.json')){}
+            else{
+                $basename = $basename + ".json"
+            }
         }
         else {
             if ($InputObject.TagFilter) {
-                $basename = "$basename`_$($InputObject.TagFilter -join "_")"
+                $basename = "$basename`_$($InputObject.TagFilter -join "_")" + ".json"
             }
-        }
-        
-        $filename = "$Path\$basename.json"
-        
+        }  
+
+        $FilePath = "$Path\$basename"
+
         if ($InputObject.TotalCount -gt 0) {
             try {
-                $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $filename
-                Write-PSFMessage -Level Output -Message "Wrote results to $filename"
+                $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
+                Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
             }
             catch {
                 Stop-PSFFunction -Message "Failure" -ErrorRecord $_
