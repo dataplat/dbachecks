@@ -116,7 +116,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         )}
 
         It "Should pass the test when all tempdb files are the same size" {
-            Assert-TempDBSize
+            Assert-TempDBSize -Instance Dummy
         }
 
         Mock Get-DbaDatabaseFile {@(
@@ -147,7 +147,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         )}
 
         It "Should fail when all of the tempdb files are not the same size" {
-            {Assert-TempDBSize} | Should -Throw -ExpectedMessage "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
+            {Assert-TempDBSize -Instance Dummy} | Should -Throw -ExpectedMessage "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
         }
     }
 }
