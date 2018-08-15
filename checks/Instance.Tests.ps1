@@ -12,11 +12,13 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
         catch {
             $NotContactable += $Instance
         }
-        if ($null -eq $connectioncheck.version) {
-            $NotContactable += $Instance
-        }
-        else {
+        if ($NotContactable -notcontains $psitem) {
+            if ($null -eq $connectioncheck.version) {
+                $NotContactable += $Instance
+            }
+            else {
 
+            }
         }
     }
 
