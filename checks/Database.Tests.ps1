@@ -2,6 +2,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1 
 
 $ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
+$ExcludedDatabases += $ExcludeDatabase
 $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable 
 
 @(Get-Instance).ForEach{
