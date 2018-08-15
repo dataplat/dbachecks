@@ -521,9 +521,7 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
         else {
             Context "Checking error log on $psitem" {
                 It "Error log should be free of error severities 17-24 on $psitem" {
-                    $errorlog = (Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow)).Text 
-                    $errorlog| Should -Not -Match "Severity: 1[7-9]" -Because "these severities indicate serious problems"
-                    $errorlog | Should -Not -Match "Severity: 2[0-4]" -Because "these severities indicate serious problems"
+                    Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 1[7-9]|Severity: 2[0-4]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
                 }
             }
         }
