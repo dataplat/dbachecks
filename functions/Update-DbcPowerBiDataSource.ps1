@@ -102,16 +102,17 @@
         }
         if ($FileName) {
             $basename = $FileName
-            if($basename.EndsWith('.json')){}
-            else{
-                $basename = $basename + ".json"
-            }
         }
         else {
             if ($InputObject.TagFilter) {
                 $basename = "$basename`_$($InputObject.TagFilter -join "_")" + ".json"
             }
         }  
+        
+        if($basename.EndsWith('.json')){}
+        else{
+            $basename = $basename + ".json"
+        }
 
         $FilePath = "$Path\$basename"
 
