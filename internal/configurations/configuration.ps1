@@ -177,6 +177,7 @@ Set-PSFConfig -Module dbachecks -Name policy.whoisactive.database -Value "master
 
 #Build
 Set-PSFConfig -Module dbachecks -Name policy.build.warningwindow -Value 6 -Initialize -Description "The number of months prior to a build being unsupported that you want warning about"
+Set-PSFConfig -Module dbachecks -Name policy.build.behindvalue -Value $null -Initialize -Description "The max number of service packs and/or cumulative updates a build can be behind by"
 
 # The frequency of the Ola Hallengrens User Full backups
 # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx
