@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.1.139'
+    ModuleVersion          = '1.1.147'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -48,9 +48,9 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
-        @{ ModuleName = 'Pester'; ModuleVersion = '4.2.0' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.354' }
-        @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.22.68' }
+        @{ ModuleName = 'Pester'; ModuleVersion = '4.3.1' },
+        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.381' }
+        @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.23.82' }
     )
 
     # Assemblies that must be loaded prior to importing this module
@@ -86,7 +86,7 @@
         'Update-DbcPowerBiDataSource',
         'Get-DbcTagCollection',
         'Get-DbcCheck',
-        'Send-DbcMailMessage',
+        # 'Send-DbcMailMessage',
         'Clear-DbcPowerBiDataSource',
         'Save-DbcRequiredModules',
         'Update-DbcRequiredModules'

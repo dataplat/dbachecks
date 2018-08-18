@@ -1,3 +1,10 @@
+function Get-AllServerInfo {
+    Param($ComputerName, $Tags)
+     [PSCustomObject]@{
+        PowerPlan = Test-DbaPowerPlan -ComputerName $psitem -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+    }
+}
+
 function Assert-CPUPrioritisation {
     Param(
         [string]$ComputerName
