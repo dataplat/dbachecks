@@ -259,6 +259,7 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
 
     Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
         $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
+        $BuildBehind = Get-DbcConfigValue policy.build.behindvalue
         if ($NotContactable -contains $psitem) {
             Context "Checking that build is still supportedby Microsoft for $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -268,16 +269,23 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
         }
         else {
             Context "Checking that build is still supportedby Microsoft for $psitem" {
-                $results = Get-DbaSqlBuildReference -SqlInstance $psitem
+                if ($BuildBehind -eq $null) { 
+                    $results = Test-DbaSQLBuild -SqlInstance $psitem -Latest 
+                    $Skip = $true
+                }
+                else { 
+                    $results = Test-DbaSQLBuild -SqlInstance $psitem -MaxBehind $BuildBehind
+                }
                 It "$($results.Build) on $psitem is still supported" {
-                    $results.SupportedUntil  | Should -BeGreaterThan (Get-Date) -Because 'This build is now unsupported by Microsoft'
+                    $results.SupportedUntil  | Should -BeGreaterThan (Get-Date) -Because "this build is now unsupported by Microsoft"
                 }
                 It "$($results.Build) on $psitem is supported for more than $BuildWarning Months" {
-                    $results.SupportedUntil  | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning) -Because 'This build will soon be unsupported by Microsoft'
+                    $results.SupportedUntil  | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning) -Because "this build will soon be unsupported by Microsoft"
                 }
-            }
-        }
-    }
+                It "$($results.Build) on $psitem is at most $BuildBehind behind the latest build" -Skip:$Skip {
+				            $results.Compliant | Should -Be $true -Because "this build should not be behind the required build"
+          }
+      }
 
     Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
         if ($NotContactable -contains $psitem) {

@@ -150,4 +150,23 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             {Assert-TempDBSize -Instance Dummy} | Should -Throw -ExpectedMessage "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
         }
     }
+    Context "Checking Supported Build" {
+        $TestCases = @{"MaxBehind" = "1SP"}, @{"MaxBehind" = "1CU"}
+        #if MaxBehind it should pass if build is >= SP/CU behind specified
+        It "Passes check correctly with a specified value <MaxBehind>" -TestCases $TestCases {
+            Param($MaxBehind)
+            #Mock to pass 
+            Mock Test-DbaSqlBuild {@{"SPLevel" = "{SP4, LATEST}"; "CULevel" = ""}}
+            {Assert-InstanceSupportedBuild -Instance 'Dummy' -MaxBehind $MaxBehind} 
+        }
+        $TestCases = @{"MaxBehind" = "1SP"; "BuildWarning" = 6}, @{"MaxBehind" = "1CU"; "BuildWarning" = 6}
+        #if MaxBehind it should fail if build is <= SP/CU behind specified
+        It "Failed check correctly with a specified value <MaxBehind>" -TestCases $TestCases {
+            Param($MaxBehind)
+            #Mock to fail 
+            Mock Test-DbaSqlBuild {@{"Compliant" = $false; "SupportedUntil" = (Get-Date).AddMonths(-1)}}
+            {Assert-InstanceSupportedBuild -Instance 'Dummy' -Latest} | Should -Throw -ExpectedMessage "Expected $(Get-Date) to be greater than the actual value, because this build is now unsupported by Microsoft, but got $(Get-Date).AddMonths(-1)"
+        }
+
+    }
 }
