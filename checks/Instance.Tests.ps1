@@ -171,24 +171,24 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
 
 Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
     $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
-	$BehindValue = Get-DbcConfigValue policy.build.behindvalue
+	$BuildBehind = Get-DbcConfigValue policy.build.behindvalue
     @(Get-Instance).ForEach{
         Context "Checking that build is still supportedby Microsoft for $psitem" {
-			if ($BehindValue -eq $null) { 
+			if ($BuildBehind -eq $null) { 
 				$results = Test-DbaSQLBuild -SqlInstance $psitem -Latest 
 				$Skip = $true
 			}
 			else { 
-				$results = Test-DbaSQLBuild -SqlInstance $psitem -MaxBehind $BehindValue
+				$results = Test-DbaSQLBuild -SqlInstance $psitem -MaxBehind $BuildBehind
 			}
             It "$($results.Build) on $psitem is still supported" {
-                $results.SupportedUntil | Should -BeGreaterThan (Get-Date) -Because "This build is now unsupported by Microsoft"
+                $results.SupportedUntil | Should -BeGreaterThan (Get-Date) -Because "this build is now unsupported by Microsoft"
             }
             It "$($results.Build) on $psitem is supported for more than $BuildWarning Months" {
-                $results.SupportedUntil | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning) -Because "This build will soon be unsupported by Microsoft"
+                $results.SupportedUntil | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning) -Because "this build will soon be unsupported by Microsoft"
             }
-			It "$($results.Build) on $psitem is at most $BehindValue behind the latest build" -Skip:$Skip {
-				$results.Compliant | Should -Be $true -Because " this build should not be behind the required build"
+			It "$($results.Build) on $psitem is at most $BuildBehind behind the latest build" -Skip:$Skip {
+				$results.Compliant | Should -Be $true -Because "this build should not be behind the required build"
 			
 			}
         }
