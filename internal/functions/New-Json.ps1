@@ -75,17 +75,50 @@ function New-Json {
             if ($filename -eq 'MaintenanceSolution') {
                 # The Maintenance Solution needs a bit of faffing as the configs for the jobnames are used to create the titles
                 switch ($tags -match $PSItem) {
-                    {$Tags.Contains('SystemFull')} {$config = 'ola.JobName.SystemFull ' + $config}                
-                    {$Tags.Contains('UserFull')} {$config = 'ola.JobName.UserFull ' + $config}                
-                    {$Tags.Contains('UserDiff')} {$config = 'ola.JobName.UserDiff ' + $config}                
-                    {$Tags.Contains('UserLog')} {$config = 'ola.JobName.UserLog ' + $config}                
-                    {$Tags.Contains('CommandLog')} {$config = 'ola.JobName.CommandLogCleanup ' + $config}                
-                    {$Tags.Contains('SystemIntegrityCheck')} {$config = 'ola.JobName.SystemIntegrity ' + $config}                
-                    {$Tags.Contains('UserIntegrityCheck')} {$config = 'ola.JobName.UserIntegrity ' + $config}                
-                    {$Tags.Contains('UserIndexOptimize')} {$config = 'ola.JobName.UserIndex ' + $config}                
-                    {$Tags.Contains('OutputFileCleanup')} {$config = 'ola.JobName.OutputFileCleanup ' + $config}                
-                    {$Tags.Contains('DeleteBackupHistory')} {$config = 'ola.JobName.DeleteBackupHistory ' + $config}                
-                    {$Tags.Contains('PurgeJobHistory')} {$config = 'ola.JobName.PurgeBackupHistory ' + $config}                
+                    {$Tags.Contains('SystemFull')} {
+                        $config = 'ola.JobName.SystemFull ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.systemfull)
+                    }                
+                    {$Tags.Contains('UserFull')} {
+                        $config = 'ola.JobName.UserFull ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userfull)
+                    }                
+                    {$Tags.Contains('UserDiff')} {
+                        $config = 'ola.JobName.UserDiff ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userdiff)
+                    }                
+                    {$Tags.Contains('UserLog')} {
+                        $config = 'ola.JobName.UserLog ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userlog)
+                    }                
+                    {$Tags.Contains('CommandLog')} {
+                        $config = 'ola.JobName.CommandLogCleanup ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.commandlogcleanup)
+                    }                
+                    {$Tags.Contains('SystemIntegrityCheck')} {
+                        $config = 'ola.JobName.SystemIntegrity ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.systemintegrity)
+                    }                
+                    {$Tags.Contains('UserIntegrityCheck')} {
+                        $config = 'ola.JobName.UserIntegrity ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userintegrity)
+                    }                
+                    {$Tags.Contains('UserIndexOptimize')} {
+                        $config = 'ola.JobName.UserIndex ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userindex)
+                    }                
+                    {$Tags.Contains('OutputFileCleanup')} {
+                        $config = 'ola.JobName.OutputFileCleanup ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.outputfilecleanup)
+                    }                
+                    {$Tags.Contains('DeleteBackupHistory')} {
+                        $config = 'ola.JobName.DeleteBackupHistory ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.deletebackuphistory)
+                    }                
+                    {$Tags.Contains('PurgeJobHistory')} {
+                        $config = 'ola.JobName.PurgeBackupHistory ' + $config
+                        $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.purgebackuphistory)
+                    }                
                     Default {}
                 }
             }
