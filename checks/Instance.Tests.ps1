@@ -259,7 +259,7 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
 
     Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
         $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
-        $BuildBehind = Get-DbcConfigValue policy.build.behindvalue
+        $BuildBehind = Get-DbcConfigValue policy.build.behind
         if ($NotContactable -contains $psitem) {
             Context "Checking that build is still supportedby Microsoft for $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -283,7 +283,7 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
                     $results.SupportedUntil  | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning) -Because "this build will soon be unsupported by Microsoft"
                 }
                 It "$($results.Build) on $psitem is at most $BuildBehind behind the latest build" -Skip:$Skip {
-				            $results.Compliant | Should -Be $true -Because "this build should not be behind the required build"
+                    $results.Compliant | Should -Be $true -Because "this build should not be behind the required build"
           }
       }
 
