@@ -173,7 +173,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
 		#if not BuildBehind it should pass if support dates are valid
 		It "Failed check correctly with a specified value <BuildBehind>" -TestCases $TestCases {
 			Param($Date)
-			#Mock to fail
+			#Mock to pass
 			Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(1)}}
 			{Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date}
 		}
