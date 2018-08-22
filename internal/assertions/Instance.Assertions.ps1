@@ -41,8 +41,8 @@ function Assert-InstanceSupportedBuild {
 		$results.Compliant | Should -Be $true -Because "this build should not be behind the required build"
 	#If no $BuildBehind only check against support dates
      }	else {
-        $SupportedUntil = (Test-DbaSQLBuild -SqlInstance $Instance -Latest).SupportedUntil 
+        $SupportedUntil = (Test-DbaSQLBuild -SqlInstance $Instance -Latest).SupportedUntil
 		$SupportedUntil | Should -BeGreaterThan $Date -Because "this build is now unsupported by Microsoft"
         $SupportedUntil | Should -BeGreaterThan $(Get-Date).AddMonths(6) -Because "this build will soon be unsupported by Microsoft"
     }
-} 
+}
