@@ -1,7 +1,8 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1 
 
-$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
+
+[array]$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
 $ExcludedDatabases += $ExcludeDatabase
 $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable ).value
 
@@ -845,11 +846,9 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
         }
 
         Describe "Database Status" -Tags DatabaseStatus, $filename {
-            $Excludedbs = Get-DbcConfigValue command.invokedbccheck.excludedatabases
             $ExcludeReadOnly = Get-DbcConfigValue policy.database.status.excludereadonly
             $ExcludeOffline = Get-DbcConfigValue policy.database.status.excludeoffline
             $ExcludeRestoring = Get-DbcConfigValue policy.database.status.excluderestoring
-            $Excludedbs += $ExcludedDatabases
   
             if ($NotContactable -contains $psitem) {
                 Context "Database status is correct on $psitem" {
@@ -860,8 +859,11 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Database status is correct on $psitem" {
-                    It "All Databases should have the expected status" {
-                        Assert-DatabaseStatus -Instance $psitem -Excludedbs $Excludedbs -Database $Database -ExcludeReadOnly $ExcludeReadOnly -ExcludeOffline $ExcludeOffline -ExcludeRestoring $ExcludeRestoring
+                    $instance = $psitem
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                        It "Databases $($psitem.Name) has the expected status" {
+                            Assert-DatabaseStatus -Instance $instance -Database $Database -ExcludeReadOnly $ExcludeReadOnly -ExcludeOffline $ExcludeOffline -ExcludeRestoring $ExcludeRestoring
+                        }
                     }
                 }
             }
@@ -870,7 +872,8 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
         Describe "Database Exists" -Tags DatabaseExists, $filename {
             $Excludedbs = $ExcludedDatabases
             $expected = Get-DbcConfigValue database.exists
-            $expected += $Database
+            if($Database) {$expected += $Database}
+            $expected = $expected.where{$psitem -notin $ExcludeDatabase}
             if ($NotContactable -contains $psitem) {
                 Context "Database exists on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -881,7 +884,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             else {
                 $instance = $psitem
                 Context "Database exists on $psitem" {
-                    $expected.Where{$(if ($database) {$psitem -in $Database}else {$psitem -notin $Excludedbs})}.ForEach{
+                    $expected.ForEach{
                         It "Database $psitem should exist" {
                             Assert-DatabaseExists -Instance $instance -Expecteddb $psitem 
                         }
