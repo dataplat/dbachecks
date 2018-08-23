@@ -191,7 +191,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Last Good DBCC CHECKDB on $psitem" {
-                    @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($_.IsAccessible -eq $true) -and $(if ($database) {$psitem.name -eq $Database}else {$ExcludedDatabases -notcontains $_.Name})}).Name ).ForEach{
+                    @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($_.IsAccessible -eq $true) -and $(if ($database) {$psitem.name -in $Database}else {$ExcludedDatabases -notcontains $_.Name})}).Name ).ForEach{
                         if ($psitem.Database -ne "tempdb") {
                             It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should Be less than $maxdays days old" {
                                 $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).AddDays( - ($maxdays)) -Because "You should have run a DBCC CheckDB inside that time"
@@ -309,7 +309,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Disabled indexes on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($_.IsAccessible -eq $true)}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($_.IsAccessible -eq $true)}.ForEach{
                         $results = Find-DbaDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
                         It "$($psitem.Name) on $($psitem.Parent.Name) should return 0 Disabled indexes" {
                             @($results).Count | Should -Be 0 -Because "Disabled indexes are wasting disk space"
@@ -330,7 +330,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing database growth event on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)})}.ForEach{
                         $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
                         It "$($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                             @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
@@ -351,7 +351,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing page verify on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                         It "$($psitem.Name) on $($psitem.Parent.Name) should have page verify set to $pageverify" {
                             $psitem.PageVerify | Should -Be $pageverify -Because "Page verify helps SQL Server to detect corruption"
                         }
@@ -371,7 +371,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Auto Close on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                         It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Close set to $autoclose" {
                             $psitem.AutoClose | Should -Be $autoclose -Because "Because!"
                         }
@@ -391,7 +391,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Auto Shrink on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                         It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Shrink set to $autoshrink" {
                             $psitem.AutoShrink | Should -Be $autoshrink -Because "Shrinking databases causes fragmentation and performance issues"
                         }
@@ -413,7 +413,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing last full backups on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
                         It -Skip:$skip "$($psitem.Name) full backups on $($psitem.Parent.Name) Should Be less than $maxfull days" {
                             $psitem.LastBackupDate | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because "Taking regular backups is extraordinarily important"
@@ -437,7 +437,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
                 }
                 else {
                     Context "Testing last diff backups on $psitem" {
-                        @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).ForEach{
+                        @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).ForEach{
                             $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
                             It -Skip:$skip "$($psitem.Name) diff backups on $($psitem.Parent.Name) Should Be less than $maxdiff hours" {
                                 $psitem.LastDifferentialBackupDate | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
@@ -461,7 +461,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing last log backups on $psitem" {
-                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).ForEach{
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).ForEach{
                         if ($psitem.RecoveryModel -ne "Simple") {
                             $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
                             It -Skip:$skip  "$($psitem.Name) log backups on $($psitem.Parent.Name) Should Be less than $maxlog minutes" {
@@ -506,7 +506,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
                 }
                 else {
                     Context "Testing Log File count for $psitem" {
-                        @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}).ForEach{
+                        @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}).ForEach{
                             $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                             $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
                             It "$($psitem.Name) on $($psitem.Parent.Name) Should have less than $LogFileCount Log files" {
@@ -530,7 +530,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Log File size for $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($Psitem.IsAccessible -eq $true)}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($Psitem.IsAccessible -eq $true)}.ForEach{
                         $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
                         $Splat = @{$LogFileSizeComparison = $true;
@@ -558,7 +558,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing for files likely to grow soon on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$PsItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PsItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)})}.ForEach{
                         $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $Files | Add-Member ScriptProperty -Name PercentFree -Value {100 - [Math]::Round(([int64]$PSItem.UsedSpace.Byte / [int64]$PSItem.Size.Byte) * 100, 3)}
                         $Files | ForEach-Object {
@@ -584,7 +584,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing for balanced FileGroups on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $_).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $_).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                         $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $FileGroups = $Files | Where-Object {$_.TypeDescription -eq "ROWS"} | Group-Object -Property FileGroupName
                         @($FileGroups).ForEach{
@@ -637,7 +637,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Auto Create Statistics on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                         It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Create Statistics set to $autocreatestatistics" {
                             $psitem.AutoCreateStatisticsEnabled | Should -Be $autocreatestatistics -Because "This is value expeceted for autocreate statistics"
                         }
@@ -657,7 +657,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Auto Update Statistics on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                         It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics set to $autoupdatestatistics" {
                             $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because "This is value expeceted for autoupdate statistics"
                         }
@@ -677,7 +677,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Auto Update Statistics Asynchronously on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                         It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
                             $psitem.AutoUpdateStatisticsAsync | Should -Be $autoupdatestatisticsasynchronously  -Because "This is value expeceted for autoupdate statistics asynchronously"
                         }
@@ -731,7 +731,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing database trustworthy option on $psitem" {
-                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$psitem.Name -ne 'msdb' -and ($(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$psitem.Name -ne 'msdb' -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                         It "Trustworthy is set to false on $($psitem.Name)" {
                             $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
                         }
@@ -768,7 +768,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$psitem.Name -ne 'tempdb' -and $psitem.Name -ne 'model' -and ($(if ($Database) {$PsItem.Name -eq $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$psitem.Name -ne 'tempdb' -and $psitem.Name -ne 'model' -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                         if (-not($psitem.RecoveryModel -eq "Simple")) {
                             It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
                         }
@@ -835,7 +835,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Database MaxDop setting is correct on $psitem" {
-                    @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $(if ($database) {$PsItem.Database -eq $Database} else {$_.Database -notin $Excluded})}.ForEach{
+                    @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $(if ($database) {$PsItem.Database -in $Database} else {$_.Database -notin $Excluded})}.ForEach{
                         It "Database $($psitem.Database) should have the correct MaxDop setting" {
                             Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue $MaxDopValue
                         }
@@ -881,7 +881,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             else {
                 $instance = $psitem
                 Context "Database exists on $psitem" {
-                    $expected.Where{$(if ($database) {$psitem -eq $Database}else {$psitem -notin $Excludedbs})}.ForEach{
+                    $expected.Where{$(if ($database) {$psitem -in $Database}else {$psitem -notin $Excludedbs})}.ForEach{
                         It "Database $psitem should exist" {
                             Assert-DatabaseExists -Instance $instance -Expecteddb $psitem 
                         }
