@@ -45,7 +45,7 @@ $tcpport = Get-DbcConfigValue policy.hadr.tcpport
 
 #Check for Cluster config value
 if ($clusters.Count -eq 0) {
-    Write-Warning "No Clusters to look at. Please use Set-DbcConfig -Name app.clusters to add clusters for checking"
+    Write-Warning "No Clusters to look at. Please use Set-DbcConfig -Name app.cluster to add clusters for checking"
     break
 }
     
