@@ -870,6 +870,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
         Describe "Database Exists" -Tags DatabaseExists, $filename {
             $Excludedbs = $ExcludedDatabases
             $expected = Get-DbcConfigValue database.exists
+            $expected += $Database
             if ($NotContactable -contains $psitem) {
                 Context "Database exists on $psitem" {
                     It "Can't Connect to $Psitem" {
