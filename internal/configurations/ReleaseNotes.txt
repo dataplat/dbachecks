@@ -1,3 +1,9 @@
+## Date 23/08/2017
+Update to the help message for clusters by @LowlyDBA
+Potential Breaking Change - Removed Tags from names of json files so that PowerBi will correctly show Environment names
+
+##Latest
+
 ## Date 15/08/2018
 Fixed issue 521 ExcludeDatabase parameter doesn't work - THANK YOU @jpomfret
 THANK YOU @jpomfret - Issue 509 -Database should only check databases listed and exclude all others
@@ -7,8 +13,6 @@ Improved performance of the Instance checks
 Improved performance of the Database checks
 Improved performance of the ErrorLog checks
 Removed Send-DbcSendMailMessage until it can be re-coded
-
-##Latest
 
 ## Date 13/08/2018
 Fixed #504 by enabling FileName parameter on Update-PowerBiDataSouce
