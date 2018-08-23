@@ -751,9 +751,11 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing database orphaned user event on $psitem" {
-                    $results = Get-DbaOrphanUser -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database
-                    It "$psitem should return 0 orphaned users" {
-                        @($results).Count | Should -Be 0 -Because "We dont want orphaned users"
+                    $instance = $psitem
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                        It "$($psitem.Name) should return 0 orphaned users" {
+                            @(Get-DbaOrphanUser -SqlInstance $instance -ExcludeDatabase $ExcludedDatabases -Database $psitem.Name).Count | Should -Be 0 -Because "We dont want orphaned users"
+                        }
                     }
                 }
             }
