@@ -826,9 +826,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
 
         Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
             $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
-            $Excluded = Get-DbcConfigValue policy.database.maxdopexcludedb
-            $excluded += $ExcludedDatabases
-            if ($Excluded) {Write-Warning "Excluded $Excluded from testing"}
+            if ($ExcludedDatabases) {Write-Warning "Excluded $ExcludedDatabases from testing"}
             if ($NotContactable -contains $psitem) {
                 Context "Database MaxDop setting is correct on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -838,7 +836,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Database MaxDop setting is correct on $psitem" {
-                    @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $(if ($database) {$PsItem.Database -in $Database} else {$_.Database -notin $Excluded})}.ForEach{
+                    @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $(if ($database) {$PsItem.Database -in $Database} else {$_.Database -notin $ExcludedDatabases})}.ForEach{
                         It "Database $($psitem.Database) should have the correct MaxDop setting" {
                             Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue $MaxDopValue
                         }
