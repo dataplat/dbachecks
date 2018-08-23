@@ -266,8 +266,8 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
                 Context "Testing duplicate indexes on $psitem" {
                     $instance = $Psitem
                     @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $Excludeddbs).ForEach{
-                        It "$($psitem) on $Instance should return 0 duplicate indexes" {
-                            Assert-DatabaseDuplicateIndex -Instance $instance -Database $psItem
+                        It "$psitem on $Instance should return 0 duplicate indexes" {
+                            Assert-DatabaseDuplicateIndex -Instance $instance -Database $psitem
                         }
                     }
                 }
