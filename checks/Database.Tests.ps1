@@ -242,9 +242,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             else {
                 $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
                 Context "Testing Recovery Model on $psitem" {
-                    $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
-                    $exclude += $ExcludedDatabases 
-                    @(Get-DbaDbRecoveryModel -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
+                    @(Get-DbaDbRecoveryModel -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases).ForEach{
                         It "$($psitem.Name) should be set to $recoverymodel on $($psitem.SqlInstance)" {
                             $psitem.RecoveryModel | Should -Be $recoverymodel -Because "You expect this recovery model"
                         }
