@@ -131,9 +131,8 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-            ## Date 23/08/2017
-Update to the help message for clusters by LowlyDBA
-Potential Breaking Change - Removed Tags from names of json files so that PowerBi will correctly show Environment names
+            ## Date 24/08/2017
+Fixed Error with using Credential and stopped changing path when runnign checks from custom repos - Thank you @sammyxx
 
 Run Get-DbcReleaseNotes for all release notes
             "
