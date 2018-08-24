@@ -136,10 +136,11 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
                 }
             }
         }
-
+        
         Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
             [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
             [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
+            $exclude += $ExcludedDatabases 
             if ($NotContactable -contains $psitem) {
                 Context "Testing Database Owners on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -149,7 +150,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing Database Owners on $psitem" {
-                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($database) {$_.Name -in $database}else {$_.Name -notin $exclude -and ($ExcludedDatabases -notcontains $_.Name)}}).ForEach{
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($database) {$_.Name -in $database}else {$_.Name -notin $exclude}}).ForEach{
                         It "Database $($psitem.Name) - owner $($psitem.Owner) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.Parent.Name)" {
                             $psitem.Owner | Should -BeIn $TargetOwner -Because "The account that is the database owner is not what was expected"
                         }
@@ -161,6 +162,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
         Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
             [string[]]$targetowner = Get-DbcConfigValue policy.invaliddbowner.name
             [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
+            $exclude += $ExcludedDatabases 
             if ($NotContactable -contains $psitem) {
                 Context "Testing Database Owners on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -169,8 +171,8 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
                 }
             }
             else {
-                Context "Testing Database Owners on $psitem" {
-                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($database) {$_.Name -in $database}else {$_.Name -notin $exclude -and ($ExcludedDatabases -notcontains $_.Name)}}).ForEach{
+                Context "Testing Database Owners on $psitem" { 
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($database) {$_.Name -in $database}else {$_.Name -notin $exclude}}).ForEach{
                         It "Database $($psitem.Name) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.Parent.Name)" {
                             $psitem.Owner | Should -Not -BeIn $TargetOwner -Because "The database owner was one specified as incorrect"
                         }
@@ -242,7 +244,9 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             else {
                 $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
                 Context "Testing Recovery Model on $psitem" {
-                    @(Get-DbaDbRecoveryModel -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases).ForEach{
+                    $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
+                    $exclude += $ExcludedDatabases 
+                    @(Get-DbaDbRecoveryModel -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
                         It "$($psitem.Name) should be set to $recoverymodel on $($psitem.SqlInstance)" {
                             $psitem.RecoveryModel | Should -Be $recoverymodel -Because "You expect this recovery model"
                         }
@@ -547,7 +551,8 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
 
         Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
             $threshold = Get-DbcConfigValue policy.database.filegrowthfreespacethreshold
-            $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
+            [string[]]$exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
+            $exclude += $ExcludedDatabases 
             if ($NotContactable -contains $psitem) {
                 Context "Testing for files likely to grow soon on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -557,7 +562,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Testing for files likely to grow soon on $psitem" {
-                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PsItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)})}.ForEach{
+                    @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PsItem.Name -notin $exclude})}.ForEach{
                         $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $Files | Add-Member ScriptProperty -Name PercentFree -Value {100 - [Math]::Round(([int64]$PSItem.UsedSpace.Byte / [int64]$PSItem.Size.Byte) * 100, 3)}
                         $Files | ForEach-Object {
@@ -602,8 +607,8 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
 
         Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
             $CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
-            $exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
-            $exclude += $ExcludedDatabases
+            [string[]]$exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
+            $exclude += $ExcludedDatabases 
             if ($NotContactable -contains $psitem) {
                 Context "Checking that encryption certificates have not expired on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -613,7 +618,8 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Checking that encryption certificates have not expired on $psitem" {
-                    @(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object {$_.Encryption -eq "Certificate" -and !($exclude.contains($_.Database))}).ForEach{
+                    $exclude | ogv
+                    @(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object {$_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude)}).ForEach{
                         It "$($psitem.Name) in $($psitem.Database) has not expired" {
                             $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date) -Because "this certificate should not be expired"
                         }
@@ -824,7 +830,9 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
 
         Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
             $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
-            if ($ExcludedDatabases) {Write-Warning "Excluded $ExcludedDatabases from testing"}
+            [string[]]$exclude = Get-DbcConfigValue policy.database.maxdopexcludedb
+            $exclude += $ExcludedDatabases 
+            if ($exclude) {Write-Warning "Excluded $exclude from testing"}
             if ($NotContactable -contains $psitem) {
                 Context "Database MaxDop setting is correct on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -834,7 +842,7 @@ $NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable )
             }
             else {
                 Context "Database MaxDop setting is correct on $psitem" {
-                    @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $(if ($database) {$PsItem.Database -in $Database} else {$_.Database -notin $ExcludedDatabases})}.ForEach{
+                    @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $(if ($database) {$PsItem.Database -in $Database} else {$_.Database -notin $exclude})}.ForEach{
                         It "Database $($psitem.Database) should have the correct MaxDop setting" {
                             Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue $MaxDopValue
                         }
