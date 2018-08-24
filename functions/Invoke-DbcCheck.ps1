@@ -234,6 +234,7 @@
         
         if ($SqlCredential) {
             if ($PSDefaultParameterValues) {
+                $PSDefaultParameterValues.Remove('*:SqlCredential')
                 $newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $SqlCredential }
                 Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
             }
@@ -249,6 +250,7 @@
         
         if ($Credential) {
             if ($PSDefaultParameterValues) {
+                $PSDefaultParameterValues.Remove('*Dba*:Credential')
                 $newvalue = $PSDefaultParameterValues += @{ '*Dba*:Credential' = $Credential }
                 Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
             }
@@ -342,6 +344,7 @@
                     ## remove any previous entries ready for this run
                     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @()
                     Invoke-Pester @PSBoundParameters
+                    Pop-Location
                 }
             }
             $finishedAllTheChecks = $true
@@ -352,8 +355,8 @@
         finally {
             if (!($finishedAllTheChecks)) {
                 Write-PSFMessage -Level Warning -Message "Execution was cancelled!"
+                Pop-Location
             }
-            Pop-Location
         }
     }
 }
