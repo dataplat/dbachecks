@@ -151,47 +151,61 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
 		}
 	}
 	Context "Checking Supported Build" {
-		[DateTime]$Date = Get-Date
+		[DateTime]$Date = Get-Date -Format O
 
-		$TestCases = @{"BuildBehind" = "1SP"; "Date" = $Date}, @{"BuildBehind" = "1CU"; "Date" = $Date}
+		$TestCases = 	@{"Date" = $Date; "BuildBehind" = "1SP";}, 
+					 	@{"Date" = $Date; "BuildBehind" = "1CU";}
 		#if BuildBehind it should pass if build is >= SP/CU specified & Support Dates are valid
-		It "Passes check correctly with a specified value <BuildBehind>" -TestCases $TestCases {
+		It "Passed check correctly when the current build is not behind the BuildBehind value of <BuildBehind>" -TestCases $TestCases {
 			Param($BuildBehind, $Date)
 			#Mock to pass
 			Mock Test-DbaSqlBuild {@{"SPLevel" = "{SP4, LATEST}"; "CULevel" = "CU4"; "Compliant" = $true; "SupportedUntil" = $Date.AddMonths(1)}}
 			Assert-InstanceSupportedBuild -Instance 'Dummy' -BuildBehind $BuildBehind -Date $Date
 		}
-		$TestCases = @{"BuildBehind" = "1SP"; "BuildWarning" = 6; "Date" = $Date}, @{"BuildBehind" = "1CU"; "BuildWarning" = 6; "Date" = $Date}
+		$TestCases = 	@{"Date" = $Date; "BuildBehind" = "1SP"; "BuildWarning" = 6; "expected" = $true; "actual" = $false},
+					 	@{"Date" = $Date; "BuildBehind" = "1CU"; "BuildWarning" = 6; "expected" = $true; "actual" = $false}
 		#if BuildBehind it should fail if build is <= SP/CU specified & Support dates are valid
-		It "Failed check correctly with a specified value <BuildBehind>" -TestCases $TestCases {
-			Param($BuildBehind, $Date)
+		It "Failed check correctly when the current build is behind the BuildBehind value of <BuildBehind>" -TestCases $TestCases {
+			Param($BuildBehind, $Date, $expected, $actual)
 			#Mock to fail
-			Mock Test-DbaSqlBuild {@{"SPLevel" = "{SP2}"; "CULevel" = "CU2"; "SPTarget" = "SP4"; "CUTarget" = "CU4"; "Compliant" = $false; "SupportedUntil" = $Date.AddMonths(1)}}
-			{Assert-InstanceSupportedBuild -Instance 'Dummy' -BuildBehind $BuildBehind -Date $Date} | Should -Throw -ExpectedMessage "this build should not be behind the required build"
+			Mock Test-DbaSqlBuild {@{"SPLevel" = "{SP2}"; "CULevel" = "CU2"; "SPTarget" = "SP4"; "CUTarget" = "CU4"; "Compliant" = $false; "SupportedUntil" = $Date.AddMonths(1); "Build" = 42}}
+			{Assert-InstanceSupportedBuild -Instance 'Dummy' -BuildBehind $BuildBehind -Date $Date} | Should -Throw -ExpectedMessage "Expected `$$expected, because this build 42 should not be behind the required build, but got `$$actual"
 		}
 		$TestCases = @{"Date" = $Date}
 		#if not BuildBehind it should pass if support dates are valid
-		It "Failed check correctly with a specified value <BuildBehind>" -TestCases $TestCases {
+		It "Passed check correctly with a SupportedUntil date > today" -TestCases $TestCases {
 			Param($Date)
 			#Mock to pass
 			Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(1)}}
 			{Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date}
 		}
 		$TestCases = @{"Date" = $Date; "BuildWarning" = 6}
-		#if not BuildBehind it should fail if support date is out of the warning window
-		It "Failed check correctly with a specified value <BuildBehind>" -TestCases $TestCases {
+		#if not BuildBehind it should fail if support date is out of the support window
+		It "Failed check correctly with a SupportedUntil date < today" -TestCases $TestCases {
 			Param($Date, $BuildWarning)
 			#Mock to fail
-			Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(-1)}}
-			{Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date -BuildWarning $BuildWarning } | Should -Throw "this build is now unsupported by Microsoft"
+			Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(-1); "Build" = 42}}
+			$SupportedUntil = Get-Date $Date.AddMonths(-1) -Format O
+			$Date = Get-Date $Date -Format O
+			{Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date -BuildWarning $BuildWarning } | Should -Throw -ExpectedMessage "Expected the actual value to be greater than $Date, because this build 42 is now unsupported by Microsoft, but got $SupportedUntil"
 		}
 		$TestCases = @{"Date" = $Date; "BuildWarning" = 6}
 		#if not BuildBehind it should fail if support date is in the warning window
-		It "Failed check correctly with a specified value <BuildBehind>" -TestCases $TestCases {
+		It "Passed check correctly with the BuildWarning window > today" -TestCases $TestCases {
+			Param($Date, $BuildWarning)
+			#Mock to pass
+			Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(9); "Build" = 42}}
+			{Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date -BuildWarning $BuildWarning }
+		}
+		$TestCases = @{"Date" = $Date; "BuildWarning" = 6}
+		#if not BuildBehind it should fail if support date is in the warning window
+		It "Failed check correctly with the BuildWarning window < today" -TestCases $TestCases {
 			Param($Date, $BuildWarning)
 			#Mock to fail
-			Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(3)}}
-			{Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date -BuildWarning $BuildWarning } | Should -Throw "this build will soon be unsupported by Microsoft"
+			Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(3); "Build" = 42}}
+			$SupportedUntil = Get-Date $Date.AddMonths(3) -Format O
+			$expected = Get-Date $Date.AddMonths($BuildWarning) -Format O
+			{Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date -BuildWarning $BuildWarning } | Should -Throw -ExpectedMessage "Expected the actual value to be greater than $expected, because this build 42 will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away, but got $SupportedUntil"
 		}
 
 	}
