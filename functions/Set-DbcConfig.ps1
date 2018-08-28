@@ -63,6 +63,9 @@
         
         if ($Append) {
             $NewValue = (Get-DbcConfigValue -Name $Name)
+
+            # this is important to fix issue 535
+            # Need to process arrays correctly
             if($NewValue -is [System.Array]){
                 if($value -is [System.Array]){
                     $Value.ForEach{
@@ -73,6 +76,8 @@
                     $NewValue += $Value
                 }
             }
+        }else{
+            $NewValue = $Value
         }
         
         $Name = $Name.ToLower()
