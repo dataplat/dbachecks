@@ -131,8 +131,12 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-            ## Date 24/08/2017
-Fixed Error with using Credential and stopped changing path when runnign checks from custom repos - Thank you @sammyxx
+## Date 28/08/2018
+Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
+Ensured the Database paramter checks only the specified Databases-Thank you @jpomfret
+Updated Set-DbcConifg to allow Append to append arrays to arrays closes #535
+Altered json filename creation to avoid max characters error
+Altered PowerBi to display information correctly with filename changes
 
 Run Get-DbcReleaseNotes for all release notes
             "
