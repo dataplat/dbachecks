@@ -1,6 +1,7 @@
 
 function New-Json {
     # Parse repo for tags and descriptions then write json
+    $script:localapp = Get-DbcConfigValue -Name app.localapp
     $repos = Get-CheckRepo
     $collection = $groups = $repofiles = @()
     foreach ($repo in $repos) {
