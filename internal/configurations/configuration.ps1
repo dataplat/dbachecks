@@ -50,7 +50,7 @@ Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -In
 Set-PSFConfig -Module dbachecks -Name policy.dbcc.maxdays -Value 7 -Initialize -Description "Maximum number of days before DBCC CHECKDB is considered outdated"
 
 #Encryption
-Set-PSFConfig -Module dbachecks -Name policy.certificateexpiration.excludedb -Value '{master, msdb, model, tempdb}'  -Initialize -Description "Databases to exclude from expired certificate checks"
+Set-PSFConfig -Module dbachecks -Name policy.certificateexpiration.excludedb -Value @('master', 'msdb', 'model', 'tempdb')  -Initialize -Description "Databases to exclude from expired certificate checks"
 Set-PSFConfig -Module dbachecks -Name policy.certificateexpiration.warningwindow -Value 1  -Initialize -Description "The number of months prior to a certificate being expired that you want warning about"
 
 #Identity
@@ -178,6 +178,7 @@ Set-PSFConfig -Module dbachecks -Name policy.whoisactive.database -Value "master
 
 #Build
 Set-PSFConfig -Module dbachecks -Name policy.build.warningwindow -Value 6 -Initialize -Description "The number of months prior to a build being unsupported that you want warning about"
+Set-PSFConfig -Module dbachecks -Name policy.build.behind -Value $null -Initialize -Description "The max number of service packs or cumulative updates a build can be behind by (ex. 1SP or 3CU). Null by default."
 
 # The frequency of the Ola Hallengrens User Full backups
 # See https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.agent.jobschedule.frequencyinterval.aspx

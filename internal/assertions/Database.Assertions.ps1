@@ -10,9 +10,9 @@ function Get-Database {
     )
 
     switch ($Exclusions) {
-        NotAccessible { $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$(if($database){$PsItem.Name -eq $Database}else{$ExcludedDbs -notcontains $PsItem.Name}) -and $psitem.IsAccessible -eq $true} }
+        NotAccessible { $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$(if($database){$PsItem.Name -in $Database}else{$ExcludedDbs -notcontains $PsItem.Name}) -and $psitem.IsAccessible -eq $true} }
         Default {
-            $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$(if($database){$PsItem.Name -eq $Database}else{$ExcludedDbs -notcontains $PsItem.Name})}
+            $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$(if($database){$PsItem.Name -in $Database}else{$ExcludedDbs -notcontains $PsItem.Name})}
         }
     }
     switch ($Requiredinfo) {
