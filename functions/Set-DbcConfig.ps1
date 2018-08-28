@@ -61,13 +61,23 @@
             return
         }
         
-        if ($append) {
-            $Value = (Get-DbcConfigValue -Name $Name), $Value
+        if ($Append) {
+            $NewValue = (Get-DbcConfigValue -Name $Name)
+            if($NewValue -is [System.Array]){
+                if($value -is [System.Array]){
+                    $Value.ForEach{
+                        $NewValue += $psitem
+                    }
+                }
+                else{
+                    $NewValue += $Value
+                }
+            }
         }
         
         $Name = $Name.ToLower()
         
-        Set-PSFConfig -Module dbachecks -Name $name -Value $Value
+        Set-PSFConfig -Module dbachecks -Name $name -Value $NewValue
         try {
             if (-not $Temporary) { Register-PSFConfig -FullName dbachecks.$name -EnableException -WarningAction SilentlyContinue }
         }
