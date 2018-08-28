@@ -50,7 +50,7 @@ Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -In
 Set-PSFConfig -Module dbachecks -Name policy.dbcc.maxdays -Value 7 -Initialize -Description "Maximum number of days before DBCC CHECKDB is considered outdated"
 
 #Encryption
-Set-PSFConfig -Module dbachecks -Name policy.certificateexpiration.excludedb -Value '{master, msdb, model, tempdb}'  -Initialize -Description "Databases to exclude from expired certificate checks"
+Set-PSFConfig -Module dbachecks -Name policy.certificateexpiration.excludedb -Value @('master', 'msdb', 'model', 'tempdb')  -Initialize -Description "Databases to exclude from expired certificate checks"
 Set-PSFConfig -Module dbachecks -Name policy.certificateexpiration.warningwindow -Value 1  -Initialize -Description "The number of months prior to a certificate being expired that you want warning about"
 
 #Identity
