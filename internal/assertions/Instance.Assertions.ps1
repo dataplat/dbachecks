@@ -27,17 +27,29 @@ function Assert-InstanceSupportedBuild {
 		[string]$BehindValue
 	)
 
-	if ($BehindValue) {
-        #If $BehindValue check against SP/CU parameter to determine validity of the build in addition to support dates
-		$results = Test-DbaSQLBuild -SqlInstance $Instance -MaxBehind $BehindValue
-		$results.SupportedUntil | Should -BeGreaterThan (Get-Date) -Because "this build is now unsupported by Microsoft"
-		$results.SupportedUntil | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning) -Because "this build will soon be unsupported by Microsoft"
-		$results.Compliant | Should -Be $true -Because "this build should not be behind the required build"
-		
-	}	else {
-		#If no $BehindValue only check against support dates
-        $SupportedUntil = (Test-DbaSQLBuild -SqlInstance $Instance -Latest).SupportedUntil 
-		$SupportedUntil | Should -BeGreaterThan (Get-Date) -Because "this build is now unsupported by Microsoft"
-		$SupportedUntil | Should -BeGreaterThan (Get-Date).AddMonths($BuildWarning) -Because "this build will soon be unsupported by Microsoft"
+	if ($BuildBehind) {
+        $results = Test-DbaSQLBuild -SqlInstance $Instance -MaxBehind $BuildBehind
+        $SupportedUntil = Get-Date $results.SupportedUntil -Format O
+        $expected = ($Date).AddMonths($BuildWarning)
+        It "$Instance's build is supported by Microsoft" {
+            $results.SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
+        }
+        It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
+		    $results.SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+        }
+        It "$Instance's build is not behind the latest build by more than $BuildBehind" {
+            $results.Compliant | Should -Be $true -Because "this build $($Results.Build) should not be behind the required build"
+        }
+	#If no $BuildBehind only check against support dates
+     }	else {
+        $Results = Test-DbaSQLBuild -SqlInstance $Instance -Latest
+        $SupportedUntil = Get-Date $results.SupportedUntil -Format O
+        $expected = ($Date).AddMonths($BuildWarning)
+        It "$Instance's build is supported by Microsoft" {
+            $Results.SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
+        }
+        It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
+            $Results.SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+        }
     }
 }
