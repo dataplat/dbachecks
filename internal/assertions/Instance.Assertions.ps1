@@ -32,24 +32,25 @@ function Assert-InstanceSupportedBuild {
         $SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $expected = ($Date).AddMonths($BuildWarning)
         It "$Instance's build is supported by Microsoft" {
-            $results.SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
+            $SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
         }
         It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
-		    $results.SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+		    $SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
         }
         It "$Instance's build is not behind the latest build by more than $BehindValue" {
             $results.Compliant | Should -Be $true -Because "this build $($Results.Build) should not be behind the required build"
         }
 	#If no $BuildBehind only check against support dates
-     }	else {
+     }	
+     else {
         $Results = Test-DbaSQLBuild -SqlInstance $Instance -Latest
         $SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $expected = ($Date).AddMonths($BuildWarning)
         It "$Instance's build is supported by Microsoft" {
-            $Results.SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
+            $SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
         }
         It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
-            $Results.SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+            $SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
         }
     }
 }
