@@ -28,9 +28,9 @@ function Assert-TempDBSize {
 
 function Assert-InstanceSupportedBuild {
 	Param(
-    [string]$Instance,
-		[int]$BuildWarning,
-		[string]$BuildBehind
+	    [string]$Instance,
+	    [int]$BuildWarning,
+	    [string]$BuildBehind
 	)
 
 	if ($BuildBehind) {
@@ -38,10 +38,10 @@ function Assert-InstanceSupportedBuild {
         $SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $expected = ($Date).AddMonths($BuildWarning)
         It "$Instance's build is supported by Microsoft" {
-            $SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
+    	    $SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
         }
         It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
-		        $SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+	    $SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
         }
         It "$Instance's build is not behind the latest build by more than $BuildBehind" {
             $results.Compliant | Should -Be $true -Because "this build $($Results.Build) should not be behind the required build"
