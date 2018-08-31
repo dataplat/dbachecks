@@ -2,6 +2,7 @@ function Get-Database {
     Param(
         [string]$Instance,
         [string[]]$ExcludedDbs,
+        [string[]]$Database,
         [ValidateSet('Name')]
         [string]$Requiredinfo,
         [ValidateSet('NotAccessible')]
@@ -9,9 +10,9 @@ function Get-Database {
     )
 
     switch ($Exclusions) {
-        NotAccessible { $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{($ExcludedDbs -notcontains $PsItem.Name) -and $psitem.IsAccessible -eq $true} }
+        NotAccessible { $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$(if($database){$PsItem.Name -in $Database}else{$ExcludedDbs -notcontains $PsItem.Name}) -and $psitem.IsAccessible -eq $true} }
         Default {
-            $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{($ExcludedDbs -notcontains $PsItem.Name)}
+            $dbs = (Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$(if($database){$PsItem.Name -in $Database}else{$ExcludedDbs -notcontains $PsItem.Name})}
         }
     }
     switch ($Requiredinfo) {
@@ -30,12 +31,13 @@ function Assert-DatabaseMaxDop {
 function Assert-DatabaseStatus {
     Param(
         [string]$instance,
+        [string[]]$Database,
         [string[]]$Excludedbs,
         [string[]]$ExcludeReadOnly,
         [string[]]$ExcludeOffline,
         [string[]]$ExcludeRestoring
     )
-    $results = @((Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$psitem.Name -notin $Excludedbs} | Select-Object Name, Status, Readonly)
+    $results = @((Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$(if($Database){$psitem.Name -in $Database}else{$psitem.Name -notin $Excludedbs})} | Select-Object Name, Status, Readonly)
     $results.Where{$_.Name -notin $ExcludeReadOnly}.Readonly | Should -Not -Contain True -Because "We expect that there will be no Read-Only databases except for those specified"
     $results.Where{$_.Name -notin $ExcludeOffline}.Status | Should -Not -Match 'Offline' -Because "We expect that there will be no offline databases except for those specified"
     $results.Where{$_.Name -notin $ExcludeRestoring}.Status | Should -Not -Match 'Restoring' -Because "We expect that there will be no databases in a restoring state except for those specified"
@@ -52,4 +54,13 @@ function Assert-DatabaseDuplicateIndex {
         [string]$Database
     )
     @(Find-DbaDuplicateIndex -SqlInstance $Instance -Database $Database).Count | Should -Be 0 -Because "Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory"
+}
+
+function Assert-DatabaseExists {
+    Param (
+        [string]$Instance,
+        [string]$ExpectedDB
+    )
+    $Actual = Get-Database -Instance $instance -Requiredinfo Name
+    $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
 }

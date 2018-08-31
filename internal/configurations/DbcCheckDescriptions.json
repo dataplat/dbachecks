@@ -362,5 +362,9 @@
     {
         "UniqueTag": "DiskAllocationUnit",
         "Description": "Tests that the disks available to the server are formatted for optimum performance (64KB allocation unit)"
+    },
+    {
+        "UniqueTag": "DatabaseExists",
+        "Description": "Tests that the databases are specified are on the instance (Note - Does not check if they are avaiable - Use DatabaseStatus for that))"
     }
  ] 

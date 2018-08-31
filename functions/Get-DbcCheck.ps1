@@ -29,8 +29,9 @@
         [string]$Pattern,
         [switch]$EnableException
     )
-    
+   
     process {
+        $script:localapp = Get-DbcConfigValue -Name app.localapp
         if ($Pattern) {
             if ($Pattern -notmatch '\*') {
                 @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
@@ -57,7 +58,7 @@
         }
         else {
             $output = Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json
-            $output.ForEach{
+            @($output).ForEach{
                 Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags', 'Config', 'Description'
             }
         }

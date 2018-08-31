@@ -20,24 +20,30 @@ function Assert-BackupCompression {
     (Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'DefaultBackupCompression').ConfiguredValue -eq 1 | Should -Be $defaultbackupcompression -Because 'The default backup compression should be set correctly'
 }
 
+function Assert-TempDBSize {
+    Param($Instance)
+
+    @((Get-DbaDatabaseFile -SqlInstance $Instance -Database tempdb).Where{$_.Type -eq 0}.Size.Megabyte |Select-Object -Unique).Count | Should -Be 1 -Because "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
+}
+
 function Assert-InstanceSupportedBuild {
 	Param(
-        [string]$Instance,
+    [string]$Instance,
 		[int]$BuildWarning,
-		[string]$BehindValue
+		[string]$BuildBehind
 	)
 
-	if ($BehindValue) {
-        $results = Test-DbaSQLBuild -SqlInstance $Instance -MaxBehind $BehindValue
+	if ($BuildBehind) {
+        $results = Test-DbaSQLBuild -SqlInstance $Instance -MaxBehind $BuildBehind
         $SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $expected = ($Date).AddMonths($BuildWarning)
         It "$Instance's build is supported by Microsoft" {
             $SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
         }
         It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
-		    $SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+		        $SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
         }
-        It "$Instance's build is not behind the latest build by more than $BehindValue" {
+        It "$Instance's build is not behind the latest build by more than $BuildBehind" {
             $results.Compliant | Should -Be $true -Because "this build $($Results.Build) should not be behind the required build"
         }
 	#If no $BuildBehind only check against support dates

@@ -19,15 +19,15 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             [PSCustomObject]@{
                 Databases = @(
                     [PSCustomObject]@{
-                        Name     = 'Dummy1';
-                        ReadOnly = $False;
-                        Status   = 'Normal';
+                        Name         = 'Dummy1';
+                        ReadOnly     = $False;
+                        Status       = 'Normal';
                         IsAccessible = $True;
                     },
                     [PSCustomObject]@{
-                        Name     = 'Dummy2';
-                        ReadOnly = $False;
-                        Status   = 'Normal';
+                        Name         = 'Dummy2';
+                        ReadOnly     = $False;
+                        Status       = 'Normal';
                         IsAccessible = $false;
                     }
                 );
@@ -39,7 +39,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "Should Exclude Databases that are specified for the Name  Required Info" {
             Get-Database -Instance Dummy -Requiredinfo Name -ExcludedDbs Dummy1 | Should -Be 'Dummy2'
         }
-        It "Should Exclude none accessible databases if the NotAccessible value for Exclusions parameter is used"{
+        It "Should Exclude none accessible databases if the NotAccessible value for Exclusions parameter is used" {
             Get-Database -Instance Dummy -Requiredinfo Name -Exclusions NotAccessible | Should -Be 'Dummy1'
 
         }
@@ -365,8 +365,30 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             )
         }
 
-        It "Should fail for more than one duplicate index"{
+        It "Should fail for more than one duplicate index" {
             {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory, but got 2.'
+        }
+    }
+    Context "Testing Assert-DatabaseExists" {
+        It "Should have a Instance parameter" {
+            (Get-Command Assert-DatabaseExists).Parameters['Instance'] | Should -Not -BeNullOrEmpty -Because "We Need to pass the instance in"
+        }
+        It "Should have a ExpectedDB parameter" {
+            (Get-Command Assert-DatabaseExists).Parameters['ExpectedDB'] | Should -Not -BeNullOrEmpty -Because "We Need to pass the Expected DB in"
+        }
+
+        # Mock for Passing
+        Mock Get-Database {
+             @('Expected1','Expected2','Expected3','Expected4')
+        }
+        @('Expected1', 'Expected2', 'Expected3', 'Expected4').ForEach{
+            It "Should Pass when the database exists" {
+                Assert-DatabaseExists -Instance Instance -ExpectedDb $psitem
+            }
+        }
+
+        It "Should Fail when the database doesnot exist" {
+            {Assert-DatabaseExists -Instance Instance -ExpectedDb NotThere} | Should -Throw -ExpectedMessage "We expect NotThere to be on Instance"
         }
     }
 }

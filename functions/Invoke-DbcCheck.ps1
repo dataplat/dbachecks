@@ -234,6 +234,7 @@
         
         if ($SqlCredential) {
             if ($PSDefaultParameterValues) {
+                $PSDefaultParameterValues.Remove('*:SqlCredential')
                 $newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $SqlCredential }
                 Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
             }
@@ -249,6 +250,7 @@
         
         if ($Credential) {
             if ($PSDefaultParameterValues) {
+                $PSDefaultParameterValues.Remove('*Dba*:Credential')
                 $newvalue = $PSDefaultParameterValues += @{ '*Dba*:Credential' = $Credential }
                 Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue
             }
@@ -298,9 +300,9 @@
         $null = $PSBoundParameters.Remove('ExcludeCheck')
         $null = $PSBoundParameters.Add('Tag', $Check)
         $null = $PSBoundParameters.Add('ExcludeTag', $ExcludeCheck)
-
         
         $globalexcludedchecks = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludecheck
+        $global:ChecksToExclude = $ExcludeCheck + $globalexcludedchecks
         [string[]]$Script:ExcludedDatabases = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludedatabases
         $Script:ExcludedDatabases += $ExcludeDatabase
 
@@ -339,7 +341,10 @@
                     }
 
                     Push-Location -Path $repo
+                    ## remove any previous entries ready for this run
+                    Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @()
                     Invoke-Pester @PSBoundParameters
+                    Pop-Location
                 }
             }
             $finishedAllTheChecks = $true
@@ -350,8 +355,8 @@
         finally {
             if (!($finishedAllTheChecks)) {
                 Write-PSFMessage -Level Warning -Message "Execution was cancelled!"
+                Pop-Location
             }
-            Pop-Location
         }
     }
 }
