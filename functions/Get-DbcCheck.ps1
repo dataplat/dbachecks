@@ -29,8 +29,9 @@
         [string]$Pattern,
         [switch]$EnableException
     )
-    
+   
     process {
+        $script:localapp = Get-DbcConfigValue -Name app.localapp
         if ($Pattern) {
             if ($Pattern -notmatch '\*') {
                 @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{

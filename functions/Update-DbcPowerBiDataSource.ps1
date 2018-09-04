@@ -103,6 +103,12 @@
         if ($FileName) {
             $basename = $FileName
         }
+        else {
+            if ($InputObject.TagFilter) {
+                $tagnames = $InputObject.TagFilter[0..3] -join "_"
+                $basename = "$basename`_" + $tagnames + ".json"
+            }
+        }  
 
         if($basename.EndsWith('.json')){}
         else{
