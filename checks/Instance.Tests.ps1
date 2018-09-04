@@ -547,6 +547,24 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
 			}
 		}
 	}
+
+	Describe "Two Digit Year Cutoff" -Tags TwoDigitYearCutoff, $filename {
+		$twodigityearcutoff = Get-DbcConfigValue policy.twodigityearcutoff
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Two Digit Year Cutoff on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+			Context "Testing Two Digit Year Cutoff on $psitem" {
+				It "Two Digit Year Cutoff is set to $twodigityearcutoff on $psitem" {
+					(Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'TwoDigitYearCutoff').ConfiguredValue | Should -Be $twodigityearcutoff -Because 'This is the value that you have chosen for Two Digit Year Cutoff configuration'
+				}
+			}
+		}
+	}
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
