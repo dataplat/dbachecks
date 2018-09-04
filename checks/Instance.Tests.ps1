@@ -560,7 +560,7 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
 		else {
 			Context "Testing Two Digit Year Cutoff on $psitem" {
 				It "Two Digit Year Cutoff is set to $twodigityearcutoff on $psitem" {
-					(Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'TwoDigitYearCutoff').ConfiguredValue | Should -Be $twodigityearcutoff -Because 'This is the value that you have chosen for Two Digit Year Cutoff configuration'
+					Assert-TwoDigitYearCutoff -Instance $psitem -TwoDigitYearCutoff $twodigityearcutoff
 				}
 			}
 		}
