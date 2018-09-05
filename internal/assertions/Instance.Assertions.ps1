@@ -56,5 +56,5 @@ function Assert-TwoDigitYearCutoff {
         [string]$Instance,
         [int]$TwoDigitYearCutoff
     )
-    (Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'TwoDigitYearCutoff').ConfiguredValue | Should -Be $defaulTwoDigitYearCutofftbackupcompression -Because 'This is the value that you have chosen for Two Digit Year Cutoff configuration'
+    (Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'TwoDigitYearCutoff').ConfiguredValue | Should -Be $TwoDigitYearCutoff -Because 'This is the value that you have chosen for Two Digit Year Cutoff configuration'
 }
