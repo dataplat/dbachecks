@@ -10,6 +10,7 @@ function Get-ClusterObject {
     [pscustomobject]$return = @{}
     # Don't think you can use the cluster name here it won't run remotely
     try {
+        $ErrorActionPreference = 'Stop'
         $return.Cluster = (Get-Cluster -Name $clustervm)
         $return.Nodes = (Get-ClusterNode -Cluster $clustervm)
         $return.Resources = (Get-ClusterResource -Cluster $clustervm)
@@ -32,7 +33,6 @@ function Get-ClusterObject {
             $return.AvailabilityGroups[$AG.Name] = Get-DbaAvailabilityGroup -SqlInstance $Ag.OwnerNode.Name -AvailabilityGroup $AG.Name
         }
         catch {
-            $return.AvailabilityGroups[$AG.Name] = 'FailedToConnect'
         }
     }
     Return $return
@@ -64,8 +64,15 @@ if ($clusters.Count -eq 0) {
 }
     
 foreach ($clustervm in $clusters) {
+    try{
     # pick the name here for the output - we cant use it as we are accessing remotely
-    $clustername = (Get-Cluster -Name $clustervm).Name
+    $clustername = (Get-Cluster -Name $clustervm -ErrorAction Stop).Name 
+    }
+    catch{
+        # so that we dont get the error and Get-ClusterObject fills it as FailedtoConnect
+        $clustername = $clustervm
+    }
+
     Describe "Cluster $clustername Health using Node $clustervm" -Tags ClusterHealth, $filename {
         $return = @(Get-ClusterObject -Clustervm $clustervm)
     
