@@ -131,13 +131,12 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 28/08/2018
-Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
-Ensured the Database paramter checks only the specified Databases-Thank you @jpomfret
-Updated Set-DbcConifg to allow Append to append arrays to arrays closes #535
-Altered json filename creation to avoid max characters error
-Altered PowerBi to display information correctly with filename changes
-
+## Date 05/09/2018
+New Check for 2 digit cut off thanks @CláudioESSilva
+https://claudioessilva.eu/2018/09/04/dont-cutoff-yourself-when-dealing-with-dates-in-t-sql-did-you-know/
+Fixed bug with adding NoneContactable Instances to variable
+Improved error handling for HADR checks 
+            
 Run Get-DbcReleaseNotes for all release notes
             "
             
