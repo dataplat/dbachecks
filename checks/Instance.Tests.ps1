@@ -547,6 +547,24 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 			}
 		}
 	}
+
+	Describe "Two Digit Year Cutoff" -Tags TwoDigitYearCutoff, $filename {
+		$twodigityearcutoff = Get-DbcConfigValue policy.twodigityearcutoff
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Two Digit Year Cutoff on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+			Context "Testing Two Digit Year Cutoff on $psitem" {
+				It "Two Digit Year Cutoff is set to $twodigityearcutoff on $psitem" {
+					Assert-TwoDigitYearCutoff -Instance $psitem -TwoDigitYearCutoff $twodigityearcutoff
+				}
+			}
+		}
+	}
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
