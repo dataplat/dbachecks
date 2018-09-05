@@ -196,6 +196,10 @@
         "Description": "Tests that the Dedicated Administrator Connection configuration setting matches the specified value (default true)"
     },
     {
+        "UniqueTag": "TwoDigitYearCutoff",
+        "Description": "Tests that the 'Two Digit Year Cutoff' configuration setting matches the specified value (default 2049)"
+    },
+    {
         "UniqueTag": "NetworkLatency",
         "Description": "Tests that the Network Latency is less than the specified (default 40) ms"
     },
@@ -367,4 +371,4 @@
         "UniqueTag": "DatabaseExists",
         "Description": "Tests that the databases are specified are on the instance (Note - Does not check if they are avaiable - Use DatabaseStatus for that))"
     }
- ] 
+ ]

@@ -9,17 +9,31 @@ function Get-ClusterObject {
     
     [pscustomobject]$return = @{}
     # Don't think you can use the cluster name here it won't run remotely
-    $return.Cluster = (Get-Cluster -Name $clustervm)
-    $return.Nodes = (Get-ClusterNode -Cluster $clustervm)
-    $return.Resources = (Get-ClusterResource -Cluster $clustervm)
-    $return.Network = (Get-ClusterNetwork -Cluster $clustervm)
-    $return.Groups = (Get-ClusterGroup -Cluster $clustervm)
-    $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
+    try {
+        $ErrorActionPreference = 'Stop'
+        $return.Cluster = (Get-Cluster -Name $clustervm)
+        $return.Nodes = (Get-ClusterNode -Cluster $clustervm)
+        $return.Resources = (Get-ClusterResource -Cluster $clustervm)
+        $return.Network = (Get-ClusterNetwork -Cluster $clustervm)
+        $return.Groups = (Get-ClusterGroup -Cluster $clustervm)
+        $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
+    }
+    catch {
+        $return.Cluster = 'FailedToConnect'
+        $return.Nodes = 'FailedToConnect'
+        $return.Resources = 'FailedToConnect'
+        $return.Network = 'FailedToConnect'
+        $return.Groups = 'FailedToConnect'
+        $return.AGs = 'FailedToConnect'
+    }
     $return.AvailabilityGroups = @{}
     #Add all the AGs
     foreach ($Ag in $return.AGs) {
-
-        $return.AvailabilityGroups[$AG.Name] = Get-DbaAvailabilityGroup -SqlInstance $Ag.OwnerNode.Name -AvailabilityGroup $AG.Name
+        try {
+            $return.AvailabilityGroups[$AG.Name] = Get-DbaAvailabilityGroup -SqlInstance $Ag.OwnerNode.Name -AvailabilityGroup $AG.Name
+        }
+        catch {
+        }
     }
     Return $return
 }
@@ -50,8 +64,15 @@ if ($clusters.Count -eq 0) {
 }
     
 foreach ($clustervm in $clusters) {
+    try{
     # pick the name here for the output - we cant use it as we are accessing remotely
-    $clustername = (Get-Cluster -Name $clustervm).Name
+    $clustername = (Get-Cluster -Name $clustervm -ErrorAction Stop).Name 
+    }
+    catch{
+        # so that we dont get the error and Get-ClusterObject fills it as FailedtoConnect
+        $clustername = $clustervm
+    }
+
     Describe "Cluster $clustername Health using Node $clustervm" -Tags ClusterHealth, $filename {
         $return = @(Get-ClusterObject -Clustervm $clustervm)
     
@@ -64,13 +85,13 @@ foreach ($clustervm in $clusters) {
         }
         Context "Cluster resources for $clustername" {
             # Get the resources that are no IP Addresses with an owner of Availability Group
-            $return.Resources.Where{$_.ResourceType -notin ($_.ResourceType -eq  'IP Address' -and $_.OwnerGroup -in $Return.Ags)}.ForEach{
+            $return.Resources.Where{$_.ResourceType -notin ($_.ResourceType -eq 'IP Address' -and $_.OwnerGroup -in $Return.Ags)}.ForEach{
                 It "Resource $($psitem.Name) should be online" {
                     $psitem.State | Should -Be 'Online' -Because 'All of the cluster resources should be online'
                 }
             }
             # Get teh resources where IP Address is owned by AG and group by AG
-            @($return.Resources.Where{$_.ResourceType -eq 'IP Address'-and $_.OwnerGroup -in $return.AGs} | Group-Object -Property OwnerGroup).ForEach{
+            @($return.Resources.Where{$_.ResourceType -eq 'IP Address' -and $_.OwnerGroup -in $return.AGs} | Group-Object -Property OwnerGroup).ForEach{
                 It "One of the IP Addresses for Availability Group $($Psitem.Name) Should be online" {
                     $psitem.Group.Where{$_.State -eq 'Online'}.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
                 }
@@ -87,7 +108,13 @@ foreach ($clustervm in $clusters) {
         Context "HADR status for $clustername" {
             @($return.Nodes).ForEach{
                 It "HADR should be enabled on the node $($psitem.Name)" {
-                    (Get-DbaAgHadr -SqlInstance $psitem.Name).IsHadrEnabled | Should -BeTrue -Because 'All of the nodes should have HADR enabled'
+                    try {
+                        $HADREnabled = (Get-DbaAgHadr -SqlInstance $psitem.Name -WarningAction SilentlyContinue).IsHadrEnabled
+                    }
+                    catch {
+                        $HADREnabled = $false
+                    }
+                    $HADREnabled | Should -BeTrue -Because 'All of the nodes should have HADR enabled'
                 }
             }
         }
@@ -190,7 +217,12 @@ foreach ($clustervm in $clusters) {
         }
         @($return.Nodes).ForEach{
             Context "Always On extended event status for replica $($psitem.Name) on $clustername" {
-                $Xevents = Get-DbaXEsession -SqlInstance $psitem.Name
+                try {
+                    $Xevents = Get-DbaXEsession -SqlInstance $psitem.Name -WarningAction SilentlyContinue
+                }
+                catch {
+                    $Xevents = 'FailedToConnect'
+                }
                 It "Replica $($psitem.Name) should have an extended event session called AlwaysOn_health" {
                     $Xevents.Name  | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
                 }

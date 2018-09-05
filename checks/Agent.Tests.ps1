@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-$NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable 
+[string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 @(Get-Instance).ForEach{
     $Instance = $psitem
     try {  

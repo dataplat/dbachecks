@@ -1,7 +1,7 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Instance.assertions.ps1
 
-$NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
+[string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 
 @(Get-Instance).ForEach{
 	if ($NotContactable -notcontains $psitem) {
@@ -543,6 +543,24 @@ $NotContactable = Get-PSFConfig -Module dbachecks -Name global.notcontactable
 			Context "Testing Instance MaxDop Value on $psitem" {
 				It "Instance Level MaxDop setting should be correct on $psitem" -Skip:$Skip {
 					Assert-InstanceMaxDop -Instance $psitem -UseRecommended:$UseRecommended -MaxDopValue $MaxDop
+				}
+			}
+		}
+	}
+
+	Describe "Two Digit Year Cutoff" -Tags TwoDigitYearCutoff, $filename {
+		$twodigityearcutoff = Get-DbcConfigValue policy.twodigityearcutoff
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Two Digit Year Cutoff on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+			Context "Testing Two Digit Year Cutoff on $psitem" {
+				It "Two Digit Year Cutoff is set to $twodigityearcutoff on $psitem" {
+					Assert-TwoDigitYearCutoff -Instance $psitem -TwoDigitYearCutoff $twodigityearcutoff
 				}
 			}
 		}
