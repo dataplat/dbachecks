@@ -28,7 +28,6 @@ function Assert-TempDBSize {
 
 function Assert-InstanceSupportedBuild {
 	Param(
-        
         [string]$Instance,
 		[int]$BuildWarning,
         [string]$BuildBehind,
