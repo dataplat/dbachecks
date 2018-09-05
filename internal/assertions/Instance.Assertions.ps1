@@ -29,7 +29,7 @@ function Assert-TempDBSize {
 function Assert-InstanceSupportedBuild {
 	Param(
         [string]$Instance,
-		[int]$BuildWarning,
+        [int]$BuildWarning,
         [string]$BuildBehind,
         [DateTime]$Date
     )
@@ -38,18 +38,30 @@ function Assert-InstanceSupportedBuild {
         $results = Test-DbaSQLBuild -SqlInstance $Instance -MaxBehind $BuildBehind
         $SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $expected = ($Date).AddMonths($BuildWarning)
-		$results.SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
-		$results.SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
-		$results.Compliant | Should -Be $true -Because "this build $($Results.Build) should not be behind the required build"
+        It "$Instance's build is supported by Microsoft" {
+    	    $SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
+        }
+        It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
+	    $SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+        }
+        It "$Instance's build is not behind the latest build by more than $BuildBehind" {
+            $results.Compliant | Should -Be $true -Because "this build $($Results.Build) should not be behind the required build"
+        }
 	#If no $BuildBehind only check against support dates
-     }	else {
+     }	
+     else {
         $Results = Test-DbaSQLBuild -SqlInstance $Instance -Latest
         $SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $expected = ($Date).AddMonths($BuildWarning)
-		$Results.SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
-        $Results.SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+        It "$Instance's build is supported by Microsoft" {
+            $SupportedUntil | Should -BeGreaterThan $Date -Because "this build $($Results.Build) is now unsupported by Microsoft"
+        }
+        It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
+            $SupportedUntil | Should -BeGreaterThan $expected -Because "this build $($results.Build) will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away"
+        }
     }
 }
+
 function Assert-TwoDigitYearCutoff {
     Param(
         [string]$Instance,
