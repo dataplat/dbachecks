@@ -4,7 +4,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 [array]$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
 $ExcludedDatabases += $ExcludeDatabase
-$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable ).value
+[string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 
 @(Get-Instance).ForEach{
     if ($NotContactable -notcontains $psitem) {
