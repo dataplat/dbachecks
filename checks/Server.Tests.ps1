@@ -14,10 +14,10 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
     }
     Describe "SPNs" -Tags SPN, $filename {
         Context "Testing SPNs on $psitem" {
-            $computer = $psitem
-            @(Test-DbaSpn -ComputerName $psitem).ForEach{
-                It "$computer should have SPN for $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount)" {
-                    $psitem.Error | Should -Be 'None'
+            $computername = $psitem
+            @($AllServerInfo.SPNs).ForEach{
+                It "$computername should have a SPN $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount)" {
+                    Assert-SPN -SPN $psitem
                 }
             }
         }
