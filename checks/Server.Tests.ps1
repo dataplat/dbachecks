@@ -42,7 +42,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
             $results = Test-Connection -Count $pingcount -ComputerName $psitem -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ResponseTime
             $avgResponseTime = (($results | Measure-Object -Average).Average) / $pingcount
             It -skip:$skipping "Should have pinged $pingcount times for $psitem" {
-                $results.Count  | Should -Be $pingcount
+                Assert-Ping -AllServerInfo $AllServerInfo -Type Ping
             }
             It -skip:$skipping "Average response time (ms) should Be less than $pingmsmax (ms) for $psitem" {
                 $avgResponseTime | Should -BeLessThan $pingmsmax
