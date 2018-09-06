@@ -7,10 +7,10 @@ It starts with the Get-AllServerInfo which uses all of the unique
 
  The long term aim is to make Get-AllServerInfo as performant as 
  possible
-#>
-function Get-AllServerInfo {
+#>function Get-AllServerInfo {
     # Using the unique tags gather the information required
-    # 2018/09/06 - Added PowerPlan Tag - RMS
+    # 2018/09/04 - Added PowerPlan Tag - RMS
+    # 2018/09/06 - Added more Tags - RMS
     Param($ComputerName, $Tags)
     switch ($tags) {
         {$tags -contains 'PingComputer'} { 
@@ -25,10 +25,15 @@ function Get-AllServerInfo {
                 }
             }
         }
-        Default {}
+        {$tags -contains 'DiskAllocationUnit'} { 
+            try {
+                $DiskAllocation = Test-DbaDiskAllocation -ComputerName $ComputerName -EnableException -WarningAction SilentlyContinue -WarningVariable DiskAllocationWarning
     }
-     [PSCustomObject]@{
-        PowerPlan = $PowerPlan
+            catch {
+                $DiskAllocation = [PSCustomObject]@{
+                    Name           = '? '
+                    isbestpractice = $false
+                    IsSqlDisk      = $true
     }
 }
 
