@@ -26,9 +26,9 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
     Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
         $free = Get-DbcConfigValue policy.diskspace.percentfree
         Context "Testing Disk Space on $psitem" {
-            @(Get-DbaDiskSpace -ComputerName $psitem).ForEach{
+            @($AllServerInfo.DiskSpace).ForEach{
                 It "$($psitem.Name) with $($psitem.PercentFree)% free should be at least $free% free on $($psitem.ComputerName)" {
-                    $psitem.PercentFree  | Should -BeGreaterThan $free
+                    Assert-DiskSpace -Disk $psitem 
                 }
             }
         }
@@ -39,8 +39,6 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
         $pingcount = Get-DbcConfigValue policy.connection.pingcount
         $skipping = Get-DbcConfigValue skip.connection.ping
         Context "Testing Ping to $psitem" {
-            $results = Test-Connection -Count $pingcount -ComputerName $psitem -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ResponseTime
-            $avgResponseTime = (($results | Measure-Object -Average).Average) / $pingcount
             It -skip:$skipping "Should have pinged $pingcount times for $psitem" {
                 Assert-Ping -AllServerInfo $AllServerInfo -Type Ping
             }
@@ -64,29 +62,30 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
             @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
                 It "$($Psitem.Name) Should be set to 64kb " -Skip:$exclude {
                     Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
+                }
             }
         }
     }
-}
 
-Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
-    $skipremote = Get-DbcConfigValue skip.connection.remoting
-    $skipping = Get-DbcConfigValue skip.connection.ping
-    $authscheme = Get-DbcConfigValue policy.connection.authscheme
-    @(Get-Instance).ForEach{
-        Context "Testing Instance Connection on $psitem" {
-            $connection = Test-DbaConnection -SqlInstance $psitem
-            It "connects successfully to $psitem" {
-                $connection.connectsuccess | Should -BeTrue
-            }
-            It "auth scheme Should Be $authscheme on $psitem" {
-                $connection.AuthScheme | Should -Be $authscheme
-            }
-            It -Skip:$skipping "$psitem is pingable" {
-                $connection.IsPingable | Should -BeTrue
-            }
-            It -Skip:$skipremote "$psitem Is PSRemotebale" {
-                $Connection.PSRemotingAccessible | Should -BeTrue
+    Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
+        $skipremote = Get-DbcConfigValue skip.connection.remoting
+        $skipping = Get-DbcConfigValue skip.connection.ping
+        $authscheme = Get-DbcConfigValue policy.connection.authscheme
+        @(Get-Instance).ForEach{
+            Context "Testing Instance Connection on $psitem" {
+                $connection = Test-DbaConnection -SqlInstance $psitem
+                It "connects successfully to $psitem" {
+                    $connection.connectsuccess | Should -BeTrue
+                }
+                It "auth scheme Should Be $authscheme on $psitem" {
+                    $connection.AuthScheme | Should -Be $authscheme
+                }
+                It -Skip:$skipping "$psitem is pingable" {
+                    $connection.IsPingable | Should -BeTrue
+                }
+                It -Skip:$skipremote "$psitem Is PSRemotebale" {
+                    $Connection.PSRemotingAccessible | Should -BeTrue
+                }
             }
         }
     }
