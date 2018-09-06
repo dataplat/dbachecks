@@ -618,7 +618,6 @@ $ExcludedDatabases += $ExcludeDatabase
             }
             else {
                 Context "Checking that encryption certificates have not expired on $psitem" {
-                    $exclude | ogv
                     @(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object {$_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude)}).ForEach{
                         It "$($psitem.Name) in $($psitem.Database) has not expired" {
                             $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date) -Because "this certificate should not be expired"
