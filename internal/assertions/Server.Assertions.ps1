@@ -9,9 +9,26 @@ It starts with the Get-AllServerInfo which uses all of the unique
  possible
 #>
 function Get-AllServerInfo {
+    # Using the unique tags gather the information required
+    # 2018/09/06 - Added PowerPlan Tag - RMS
     Param($ComputerName, $Tags)
+    switch ($tags) {
+        {$tags -contains 'PowerPlan'} { 
+            try {
+                $PowerPlan = (Test-DbaPowerPlan -ComputerName $ComputerName -EnableException -WarningVariable PowerWarning -WarningAction SilentlyContinue).IsBestPractice
+            }
+            catch {
+                if ($PowerWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
+                    $PowerPlan = 'Could not connect'
+                }else{
+                    $PowerPlan = 'An Error occured'
+                }
+            }
+        }
+        Default {}
+    }
      [PSCustomObject]@{
-        PowerPlan = Test-DbaPowerPlan -ComputerName $psitem -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+        PowerPlan = $PowerPlan
     }
 }
 
