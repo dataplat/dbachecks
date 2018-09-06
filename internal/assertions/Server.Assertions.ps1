@@ -1,3 +1,13 @@
+<#
+This file is used to hold the Assertions for the Server.Tests
+
+It starts with the Get-AllServerInfo which uses all of the unique
+ tags that have been passed and gathers the required information
+ which can then be used for the assertions.
+
+ The long term aim is to make Get-AllServerInfo as performant as 
+ possible
+#>
 function Get-AllServerInfo {
     Param($ComputerName, $Tags)
      [PSCustomObject]@{
