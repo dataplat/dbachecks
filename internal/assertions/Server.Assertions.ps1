@@ -53,3 +53,8 @@ function Assert-DiskAllocationUnit {
         $PSItem.isbestpractice | Should -BeTrue -Because "SQL Server performance will be better when accessing data from a disk that is formatted with 64Kb block allocation unit"
     }
 }
+
+function Assert-PowerPlan {
+    Param($AllServerInfo)
+            $AllServerInfo.PowerPlan | Should -Be 'True' -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"   
+}
