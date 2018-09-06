@@ -22,38 +22,34 @@ It starts with the Get-AllServerInfo which uses all of the unique
                 $PingComputer = [PSCustomObject] @{
                     Count        = -1
                     ResponseTime = 50000000
-                }
+                } 
             }
         }
         {$tags -contains 'DiskAllocationUnit'} { 
             try {
                 $DiskAllocation = Test-DbaDiskAllocation -ComputerName $ComputerName -EnableException -WarningAction SilentlyContinue -WarningVariable DiskAllocationWarning
-    }
+            }
             catch {
                 $DiskAllocation = [PSCustomObject]@{
                     Name           = '? '
                     isbestpractice = $false
                     IsSqlDisk      = $true
-    }
-}
-    }
-
-    Get-RemoteRegistryValue | Should -BeExactly 24 -Because "a server should prioritise CPU to it's Services, not to the user experience when someone logs on"
-}
-
-function Assert-DiskAllocationUnit {
-    param(
-        [string]$ComputerName
-    )
-    (Test-DbaDiskAllocation -ComputerName $ComputerName).ForEach{
-        $PSItem.isbestpractice | Should -BeTrue -Because "SQL Server performance will be better when accessing data from a disk that is formatted with 64Kb block allocation unit"
-    }
-}
-
-function Assert-PowerPlan {
-    Param($AllServerInfo)
-            $AllServerInfo.PowerPlan | Should -Be 'True' -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"   
-}
+                } 
+            }
+        }
+        {$tags -contains 'PowerPlan'} { 
+            try {
+                $PowerPlan = (Test-DbaPowerPlan -ComputerName $ComputerName -EnableException -WarningVariable PowerWarning -WarningAction SilentlyContinue).IsBestPractice
+            }
+            catch {
+                if ($PowerWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
+                    $PowerPlan = 'Could not connect'
+                }
+                else {
+                    $PowerPlan = 'An Error occured'
+                }
+            }
+        }
         {$Tags -contains 'SPN'} {
             try {
                 $SPNs = Test-DbaSpn -ComputerName $ComputerName -EnableException -WarningVariable SPNWarning -WarningAction SilentlyContinue
