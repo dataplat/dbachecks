@@ -61,8 +61,9 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
 
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, $filename {
         Context "Testing disk allocation unit on $psitem" {
-            It "Should be set to 64kb " -Skip:$exclude {
-                Assert-DiskAllocationUnit -ComputerName $psitem
+            @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
+                It "$($Psitem.Name) Should be set to 64kb " -Skip:$exclude {
+                    Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
             }
         }
     }
