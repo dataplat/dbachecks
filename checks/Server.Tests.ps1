@@ -6,18 +6,10 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
 @(Get-ComputerName).ForEach{
     $AllServerInfo = Get-AllServerInfo -ComputerName $Psitem -Tags $Tags
     Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
-    
         Context "Testing Server Power Plan Configuration on $psitem" {
-            if ($AllServerInfo.PowerPlan) {
-                It "PowerPlan is High Performance on $psitem" {
-                    $AllServerInfo.PowerPlan.IsBestPractice | Should -BeTrue -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"
-                }       
-            }
-            else {
-                It "PowerPlan is High Performance on $psitem" -Skip {
-                    $AllServerInfo.PowerPlan | Should -Not -BeNullOrEmpty
-                }
-            }
+            It "PowerPlan is High Performance on $psitem" {
+                Assert-PowerPlan -AllServerInfo $AllServerInfo
+            }       
         }
     }
     Describe "SPNs" -Tags SPN, $filename {
