@@ -13,15 +13,15 @@ function Get-AllServerInfo {
     # 2018/09/06 - Added PowerPlan Tag - RMS
     Param($ComputerName, $Tags)
     switch ($tags) {
-        {$tags -contains 'PowerPlan'} { 
+        {$tags -contains 'PingComputer'} { 
             try {
-                $PowerPlan = (Test-DbaPowerPlan -ComputerName $ComputerName -EnableException -WarningVariable PowerWarning -WarningAction SilentlyContinue).IsBestPractice
+                $pingcount = Get-DbcConfigValue policy.connection.pingcount
+                $PingComputer = Test-Connection -Count $pingcount -ComputerName $ComputerName -ErrorAction Stop
             }
             catch {
-                if ($PowerWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
-                    $PowerPlan = 'Could not connect'
-                }else{
-                    $PowerPlan = 'An Error occured'
+                $PingComputer = [PSCustomObject] @{
+                    Count        = -1
+                    ResponseTime = 50000000
                 }
             }
         }
