@@ -45,7 +45,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
                 Assert-Ping -AllServerInfo $AllServerInfo -Type Ping
             }
             It -skip:$skipping "Average response time (ms) should Be less than $pingmsmax (ms) for $psitem" {
-                $avgResponseTime | Should -BeLessThan $pingmsmax
+                Assert-Ping -AllServerInfo $AllServerInfo -Type Average
             }
         }
     }
