@@ -98,7 +98,7 @@
         }
         $basename = "dbachecks_$i"
         if($Environment){
-            $basename = "dbachecks_$i" + "_$Environment"
+            $basename = "dbachecks_$i" + "_$Environment`_"
         }
         if ($FileName) {
             $basename = $FileName

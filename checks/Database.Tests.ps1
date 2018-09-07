@@ -1,4 +1,4 @@
-$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1 
 
 
@@ -42,13 +42,13 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing database collation on $psitem" {
-                @(Test-DbaDatabaseCollation -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
+                @(Test-DbaDbCollation -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
                     It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                         $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation -Because "You will get collation conflict errors in tempdb"
                     }
                 }
                 if ($Wrongcollation) {
-                    @(Test-DbaDatabaseCollation -SqlInstance $psitem -Database $Wrongcollation ).ForEach{
+                    @(Test-DbaDbCollation -SqlInstance $psitem -Database $Wrongcollation ).ForEach{
                         It "database collation ($($psitem.DatabaseCollation)) should not match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
                             $psitem.ServerCollation | Should -Not -Be $psitem.DatabaseCollation -Because "You have defined the database to have another collation then the server. You will get collation conflict errors in tempdb"
                         }
@@ -510,7 +510,7 @@ $ExcludedDatabases += $ExcludeDatabase
                 else {
                     Context "Testing Log File count for $psitem" {
                         @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}).ForEach{
-                            $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
+                            $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                             $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
                             It "$($psitem.Name) on $($psitem.Parent.Name) Should have less than $LogFileCount Log files" {
                                 $LogFiles.Count | Should -BeLessThan $LogFileCount -Because "You want the correct number of log files"
@@ -534,7 +534,7 @@ $ExcludedDatabases += $ExcludeDatabase
             else {
                 Context "Testing Log File size for $psitem" {
                     @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($Psitem.IsAccessible -eq $true)}.ForEach{
-                        $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
+                        $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
                         $Splat = @{$LogFileSizeComparison = $true;
                             property                      = "size"
@@ -563,7 +563,7 @@ $ExcludedDatabases += $ExcludeDatabase
             else {
                 Context "Testing for files likely to grow soon on $psitem" {
                     @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PsItem.Name -notin $exclude})}.ForEach{
-                        $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
+                        $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $Files | Add-Member ScriptProperty -Name PercentFree -Value {100 - [Math]::Round(([int64]$PSItem.UsedSpace.Byte / [int64]$PSItem.Size.Byte) * 100, 3)}
                         $Files | ForEach-Object {
                             if (-Not (($PSItem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
@@ -589,7 +589,7 @@ $ExcludedDatabases += $ExcludeDatabase
             else {
                 Context "Testing for balanced FileGroups on $psitem" {
                     @(Connect-DbaInstance -SqlInstance $_).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
-                        $Files = Get-DbaDatabaseFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
+                        $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $FileGroups = $Files | Where-Object {$_.TypeDescription -eq "ROWS"} | Group-Object -Property FileGroupName
                         @($FileGroups).ForEach{
                             $Unbalanced = 0
@@ -618,8 +618,7 @@ $ExcludedDatabases += $ExcludeDatabase
             }
             else {
                 Context "Checking that encryption certificates have not expired on $psitem" {
-                    $exclude | ogv
-                    @(Get-DbaDatabaseEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object {$_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude)}).ForEach{
+                    @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object {$_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude)}).ForEach{
                         It "$($psitem.Name) in $($psitem.Database) has not expired" {
                             $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date) -Because "this certificate should not be expired"
                         }
@@ -705,7 +704,7 @@ $ExcludedDatabases += $ExcludeDatabase
             }
             else {
                 Context "Testing datafile growth type on $psitem" {
-                    @(Get-DbaDatabaseFile -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude ).ForEach{
+                    @(Get-DbaDbFile -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude ).ForEach{
                         if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
                             It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
                                 $psitem.GrowthType | Should -Be $datafilegrowthtype -Because "We expect a certain file growth type"
@@ -794,7 +793,7 @@ $ExcludedDatabases += $ExcludeDatabase
             }
             else {
                 Context "Testing database compatibility level matches server compatibility level on $psitem" {
-                    @(Test-DbaDatabaseCompatibility -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).ForEach{
+                    @(Test-DbaDbCompatibility -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).ForEach{
                         It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
                             $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
                         }
@@ -815,13 +814,13 @@ $ExcludedDatabases += $ExcludeDatabase
                 Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
                     @(Get-DbaDbForeignKey -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).Where{$_.NotForReplication -eq $false}.ForEach{
                         It "$($psitem.Name) foreign key on table $($psitem.Parent) within database $($psitem.Database) should be trusted." {
-                            $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won’t use untrusted constraints to build better execution plans. It will also avoid data violation"
+                            $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server wonâ€™t use untrusted constraints to build better execution plans. It will also avoid data violation"
                         }
                     }
 
                     @(Get-DbaDbCheckConstraint -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).Where{$_.NotForReplication -eq $false -and $_.IsEnabled -eq $true}.ForEach{
                         It "$($psitem.Name) check constraint on table $($psitem.Parent) within database $($psitem.Database) should be trusted." {
-                            $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won’t use untrusted constraints to build better execution plans. It will also avoid data violation"
+                            $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server wonâ€™t use untrusted constraints to build better execution plans. It will also avoid data violation"
                         }
                     }
                 }
@@ -900,3 +899,6 @@ $ExcludedDatabases += $ExcludeDatabase
         }
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
+
+
+

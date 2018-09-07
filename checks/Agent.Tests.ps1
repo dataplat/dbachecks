@@ -1,4 +1,4 @@
-$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 @(Get-Instance).ForEach{
     $Instance = $psitem
@@ -56,7 +56,7 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
             }
             else {
                 Context "Testing SQL Agent is running on $psitem" {
-                    @(Get-DbaSqlService -ComputerName $psitem -Type Agent).ForEach{
+                    @(Get-DbaService -ComputerName $psitem -Type Agent).ForEach{
                         It "SQL Agent Should Be running on $($psitem.ComputerName)" {
                             $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
                         }

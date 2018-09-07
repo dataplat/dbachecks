@@ -6,26 +6,18 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
 @(Get-ComputerName).ForEach{
     $AllServerInfo = Get-AllServerInfo -ComputerName $Psitem -Tags $Tags
     Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
-    
         Context "Testing Server Power Plan Configuration on $psitem" {
-            if ($AllServerInfo.PowerPlan) {
-                It "PowerPlan is High Performance on $psitem" {
-                    $AllServerInfo.PowerPlan.IsBestPractice | Should -BeTrue -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"
-                }       
-            }
-            else {
-                It "PowerPlan is High Performance on $psitem" -Skip {
-                    $AllServerInfo.PowerPlan | Should -Not -BeNullOrEmpty
-                }
-            }
+            It "PowerPlan is High Performance on $psitem" {
+                Assert-PowerPlan -AllServerInfo $AllServerInfo
+            }       
         }
     }
     Describe "SPNs" -Tags SPN, $filename {
         Context "Testing SPNs on $psitem" {
-            $computer = $psitem
-            @(Test-DbaSpn -ComputerName $psitem).ForEach{
-                It "$computer should have SPN for $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount)" {
-                    $psitem.Error | Should -Be 'None'
+            $computername = $psitem
+            @($AllServerInfo.SPNs).ForEach{
+                It "$computername should have a SPN $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount)" {
+                    Assert-SPN -SPN $psitem
                 }
             }
         }
@@ -34,9 +26,9 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
     Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
         $free = Get-DbcConfigValue policy.diskspace.percentfree
         Context "Testing Disk Space on $psitem" {
-            @(Get-DbaDiskSpace -ComputerName $psitem).ForEach{
+            @($AllServerInfo.DiskSpace).ForEach{
                 It "$($psitem.Name) with $($psitem.PercentFree)% free should be at least $free% free on $($psitem.ComputerName)" {
-                    $psitem.PercentFree  | Should -BeGreaterThan $free
+                    Assert-DiskSpace -Disk $psitem 
                 }
             }
         }
@@ -47,13 +39,11 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
         $pingcount = Get-DbcConfigValue policy.connection.pingcount
         $skipping = Get-DbcConfigValue skip.connection.ping
         Context "Testing Ping to $psitem" {
-            $results = Test-Connection -Count $pingcount -ComputerName $psitem -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ResponseTime
-            $avgResponseTime = (($results | Measure-Object -Average).Average) / $pingcount
             It -skip:$skipping "Should have pinged $pingcount times for $psitem" {
-                $results.Count  | Should -Be $pingcount
+                Assert-Ping -AllServerInfo $AllServerInfo -Type Ping
             }
             It -skip:$skipping "Average response time (ms) should Be less than $pingmsmax (ms) for $psitem" {
-                $avgResponseTime | Should -BeLessThan $pingmsmax
+                Assert-Ping -AllServerInfo $AllServerInfo -Type Average
             }
         }
     }
@@ -69,31 +59,33 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
 
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, $filename {
         Context "Testing disk allocation unit on $psitem" {
-            It "Should be set to 64kb " -Skip:$exclude {
-                Assert-DiskAllocationUnit -ComputerName $psitem
+            @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
+                It "$($Psitem.Name) Should be set to 64kb " -Skip:$exclude {
+                    Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
+                }
             }
         }
     }
-}
 
-Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
-    $skipremote = Get-DbcConfigValue skip.connection.remoting
-    $skipping = Get-DbcConfigValue skip.connection.ping
-    $authscheme = Get-DbcConfigValue policy.connection.authscheme
-    @(Get-Instance).ForEach{
-        Context "Testing Instance Connection on $psitem" {
-            $connection = Test-DbaConnection -SqlInstance $psitem
-            It "connects successfully to $psitem" {
-                $connection.connectsuccess | Should -BeTrue
-            }
-            It "auth scheme Should Be $authscheme on $psitem" {
-                $connection.AuthScheme | Should -Be $authscheme
-            }
-            It -Skip:$skipping "$psitem is pingable" {
-                $connection.IsPingable | Should -BeTrue
-            }
-            It -Skip:$skipremote "$psitem Is PSRemotebale" {
-                $Connection.PSRemotingAccessible | Should -BeTrue
+    Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
+        $skipremote = Get-DbcConfigValue skip.connection.remoting
+        $skipping = Get-DbcConfigValue skip.connection.ping
+        $authscheme = Get-DbcConfigValue policy.connection.authscheme
+        @(Get-Instance).ForEach{
+            Context "Testing Instance Connection on $psitem" {
+                $connection = Test-DbaConnection -SqlInstance $psitem
+                It "connects successfully to $psitem" {
+                    $connection.connectsuccess | Should -BeTrue
+                }
+                It "auth scheme Should Be $authscheme on $psitem" {
+                    $connection.AuthScheme | Should -Be $authscheme
+                }
+                It -Skip:$skipping "$psitem is pingable" {
+                    $connection.IsPingable | Should -BeTrue
+                }
+                It -Skip:$skipremote "$psitem Is PSRemotebale" {
+                    $Connection.PSRemotingAccessible | Should -BeTrue
+                }
             }
         }
     }

@@ -49,7 +49,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
         @{ ModuleName = 'Pester'; ModuleVersion = '4.3.1' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.381' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.410' }
         @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.23.82' }
     )
 
@@ -131,11 +131,13 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 05/09/2018
-New Check for 2 digit cut off thanks @CláudioESSilva
-https://claudioessilva.eu/2018/09/04/dont-cutoff-yourself-when-dealing-with-dates-in-t-sql-did-you-know/
-Fixed bug with adding NoneContactable Instances to variable
-Improved error handling for HADR checks 
+## Date 07/09/2018
+Updated dbatools required module to 0.9.410
+Renamed all dbatools commands to new naming convention
+Fixed Bug with JSON file naming
+Improved Server Checks to remove Red and improve speed for none contactable servers
+Altered all server checks to use assertions and added pester Tests
+Removed left over ogv entry 
             
 Run Get-DbcReleaseNotes for all release notes
             "
