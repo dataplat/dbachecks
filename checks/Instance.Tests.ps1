@@ -220,7 +220,6 @@
 		}
 	}
 
-
 	Describe "SQL and Windows names match" -Tags ServerNameMatch, $filename {
 		if ($NotContactable -contains $psitem) {
 			Context "Testing instance name matches Windows name for $psitem" {
@@ -262,6 +261,7 @@
 		$BuildBehind = Get-DbcConfigValue policy.build.behind
 		$Date = Get-Date 
 
+
 		if ($NotContactable -contains $psitem) {
 			Context "Checking that build is still supportedby Microsoft for $psitem" {
 				It "Can't Connect to $Psitem" {
@@ -271,7 +271,19 @@
 		}
 		else {
 			Context "Checking that build is still supportedby Microsoft for $psitem" {
-				Assert-InstanceSupportedBuild -Instance $psitem -BuildWarning $BuildWarning -BuildBehind $BuildBehind -Date $Date
+				if ($BuildBehind) {
+					It "$psitem is not behind the latest build by more than $BuildBehind" {
+						Assert-InstanceSupportedBuild -Instance $psitem -BuildBehind $BuildBehind -Date $Date
+					}
+				}
+				It "$Instance's build is supported by Microsoft" {
+					Assert-InstanceSupportedBuild -Instance $psitem -Date $Date
+				}
+				It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
+					Assert-InstanceSupportedBuild -Instance $psitem -BuildWarning $BuildWarning -Date $Date
+				}
+
+
 	  		}
 		}
 	}
