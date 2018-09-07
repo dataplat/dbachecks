@@ -24,11 +24,11 @@
 
         .PARAMETER SqlInstance
             A list of SQL Servers to run the tests against. If this is not provided, it will be gathered from:
-            Get-DbaConfig -Name app.sqlinstance
+            Get-DbatoolsConfig -Name app.sqlinstance
 
         .PARAMETER ComputerName
             A list of computers to run the tests against. If this is not provided, it will be gathered from:
-            Get-DbaConfig -Name app.computername
+            Get-DbatoolsConfig -Name app.computername
 
         .PARAMETER SqlCredential
             Alternate SQL Server-based credential.
@@ -360,3 +360,4 @@
         }
     }
 }
+

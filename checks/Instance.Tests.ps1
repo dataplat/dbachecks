@@ -1,4 +1,4 @@
-$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Instance.assertions.ps1
 
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
@@ -34,7 +34,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 		else {
 			$IsClustered = $Psitem.$IsClustered
 			Context "Testing SQL Engine Service on $psitem" {
-				@(Get-DbaSqlService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
+				@(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
 					It "SQL Engine service account should Be running on $($psitem.InstanceName)" {
 						$psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
 					}
@@ -63,7 +63,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 		}
 		else {
 			Context "Testing TempDB Configuration on $psitem" {
-				$TempDBTest = Test-DbaTempDbConfiguration -SqlServer $psitem
+				$TempDBTest = Test-DbaTempdbConfig -SqlServer $psitem
 				It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDb1118) {
 					$TempDBTest[0].CurrentSetting | Should -Be $TempDBTest[0].Recommended -Because 'TF 1118 should be enabled'
 				}
@@ -120,7 +120,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 					$backuppath = (Get-DbaDefaultPath -SqlInstance $psitem).Backup
 				}
 				It "can access backup path ($backuppath) on $psitem" {
-					Test-DbaSqlPath -SqlInstance $psitem -Path $backuppath | Should -BeTrue -Because 'The SQL Service account needs to have access to the backup path to backup your databases'
+					Test-DbaPath -SqlInstance $psitem -Path $backuppath | Should -BeTrue -Because 'The SQL Service account needs to have access to the backup path to backup your databases'
 				}
 			}
 		}
@@ -286,7 +286,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 		}
 		else {
 			Context "Checking that sa login has been renamed on $psitem" {
-				$results = Get-DbaLogin -SqlInstance $psitem -Login sa
+				$results = Get-DbaErrorLogin -SqlInstance $psitem -Login sa
 				It "sa login does not exist on $psitem" {
 					$results | Should -Be $null -Because 'Renaming the sa account is a requirement'
 				}
@@ -421,7 +421,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 		else {
 			Context "Testing WhoIsActive exists on $psitem" {
 				It "WhoIsActive should exists on $db on $psitem" {
-					(Get-DbaSqlModule -SqlInstance $psitem -Database $db -Type StoredProcedure | Where-Object name -eq "sp_WhoIsActive") | Should -Not -Be $Null -Because 'The sp_WhoIsActive stored procedure should be installed'
+					(Get-DbaModule -SqlInstance $psitem -Database $db -Type StoredProcedure | Where-Object name -eq "sp_WhoIsActive") | Should -Not -Be $Null -Because 'The sp_WhoIsActive stored procedure should be installed'
 				}
 			}
 		}
@@ -439,7 +439,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 			}
 			else {
 				Context "Testing model database growth setting is not default on $psitem" {
-					@(Get-DbaDatabaseFile -SqlInstance $psitem -Database Model).ForEach{
+					@(Get-DbaDbFile -SqlInstance $psitem -Database Model).ForEach{
 						It "Model database growth settings should not be percent for file $($psitem.LogicalName) on $($psitem.SqlInstance)" {
 							$psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
 						}
@@ -578,7 +578,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 		}
 		else {
 			Context "Testing SQL Browser Service on $psitem" {
-				$Services = Get-DbaSqlService -ComputerName $psitem
+				$Services = Get-DbaService -ComputerName $psitem
 				if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
 					It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" {
 						$Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
@@ -604,3 +604,8 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
 
 
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
+
+
+
+
+
