@@ -7,18 +7,29 @@ It starts with the Get-AllServerInfo which uses all of the unique
 
  The long term aim is to make Get-AllServerInfo as performant as 
  possible
-#>function Get-AllServerInfo {
+#>
+function Get-AllServerInfo {
     # Using the unique tags gather the information required
     # 2018/09/04 - Added PowerPlan Tag - RMS
     # 2018/09/06 - Added more Tags - RMS
     Param($ComputerName, $Tags)
+    $There = $true
     switch ($tags) {
         {$tags -contains 'PingComputer'} { 
-            try {
-                $pingcount = Get-DbcConfigValue policy.connection.pingcount
-                $PingComputer = Test-Connection -Count $pingcount -ComputerName $ComputerName -ErrorAction Stop
+            if ($There) {
+                try {
+                    $pingcount = Get-DbcConfigValue policy.connection.pingcount
+                    $PingComputer = Test-Connection -Count $pingcount -ComputerName $ComputerName -ErrorAction Stop
+                }
+                catch {
+                    $There = $false
+                    $PingComputer = [PSCustomObject] @{
+                        Count        = -1
+                        ResponseTime = 50000000
+                    } 
+                }
             }
-            catch {
+            else {
                 $PingComputer = [PSCustomObject] @{
                     Count        = -1
                     ResponseTime = 50000000
@@ -26,10 +37,20 @@ It starts with the Get-AllServerInfo which uses all of the unique
             }
         }
         {$tags -contains 'DiskAllocationUnit'} { 
-            try {
-                $DiskAllocation = Test-DbaDiskAllocation -ComputerName $ComputerName -EnableException -WarningAction SilentlyContinue -WarningVariable DiskAllocationWarning
+            if ($There) {
+                try {
+                    $DiskAllocation = Test-DbaDiskAllocation -ComputerName $ComputerName -EnableException -WarningAction SilentlyContinue -WarningVariable DiskAllocationWarning
+                }
+                catch {
+                    $There = $false
+                    $DiskAllocation = [PSCustomObject]@{
+                        Name           = '? '
+                        isbestpractice = $false
+                        IsSqlDisk      = $true
+                    } 
+                }
             }
-            catch {
+            else {
                 $DiskAllocation = [PSCustomObject]@{
                     Name           = '? '
                     isbestpractice = $false
@@ -38,29 +59,49 @@ It starts with the Get-AllServerInfo which uses all of the unique
             }
         }
         {$tags -contains 'PowerPlan'} { 
-            try {
-                $PowerPlan = (Test-DbaPowerPlan -ComputerName $ComputerName -EnableException -WarningVariable PowerWarning -WarningAction SilentlyContinue).IsBestPractice
+            if ($There) {
+                try {
+                    $PowerPlan = (Test-DbaPowerPlan -ComputerName $ComputerName -EnableException -WarningVariable PowerWarning -WarningAction SilentlyContinue).IsBestPractice
+                }
+                catch {
+                    $There = $false
+                    if ($PowerWarning) {
+                        if ($PowerWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
+                            $PowerPlan = 'Could not connect'
+                        }
+                    }
+                    else {
+                        $PowerPlan = 'An Error occured'
+                    }
+                }
             }
-            catch {
-                if ($PowerWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
-                    $PowerPlan = 'Could not connect'
-                }
-                else {
-                    $PowerPlan = 'An Error occured'
-                }
+            else {
+                $PowerPlan = 'An Error occured'
             }
         }
         {$Tags -contains 'SPN'} {
-            try {
-                $SPNs = Test-DbaSpn -ComputerName $ComputerName -EnableException -WarningVariable SPNWarning -WarningAction SilentlyContinue
-                if ($SPNWarning[1].ToString().Contains('Cannot resolve IP address')) {
-                    $SPNs = [PSCustomObject]@{
-                        RequiredSPN            = 'Dont know the SPN'
-                        InstanceServiceAccount = 'Dont know the Account'
-                        Error                  = 'Could not connect'
+            if ($There) {
+                try {
+                    $SPNs = Test-DbaSpn -ComputerName $ComputerName -EnableException -WarningVariable SPNWarning -WarningAction SilentlyContinue
+                    if ($SPNWarning) {
+                        if ($SPNWarning[1].ToString().Contains('Cannot resolve IP address')) {
+                            $There = $false
+                            $SPNs = [PSCustomObject]@{
+                                RequiredSPN            = 'Dont know the SPN'
+                                InstanceServiceAccount = 'Dont know the Account'
+                                Error                  = 'Could not connect'
+                            }
+                        }
+                        else {
+                            $SPNs = [PSCustomObject]@{
+                                RequiredSPN            = 'Dont know the SPN'
+                                InstanceServiceAccount = 'Dont know the Account'
+                                Error                  = 'An Error Occured'
+                            }
+                        }
                     }
                 }
-                else {
+                catch {
                     $SPNs = [PSCustomObject]@{
                         RequiredSPN            = 'Dont know the SPN'
                         InstanceServiceAccount = 'Dont know the Account'
@@ -68,7 +109,7 @@ It starts with the Get-AllServerInfo which uses all of the unique
                     }
                 }
             }
-            catch {
+            else {
                 $SPNs = [PSCustomObject]@{
                     RequiredSPN            = 'Dont know the SPN'
                     InstanceServiceAccount = 'Dont know the Account'
@@ -77,24 +118,36 @@ It starts with the Get-AllServerInfo which uses all of the unique
             }
         }
         {$tags -contains 'DiskCapacity'} { 
-            try {
-                $DiskSpace = Get-DbaDiskSpace -ComputerName $ComputerName -EnableException -WarningVariable DiskSpaceWarning -WarningAction SilentlyContinue
+            if ($There) {
+                try {
+                    $DiskSpace = Get-DbaDiskSpace -ComputerName $ComputerName -EnableException -WarningVariable DiskSpaceWarning -WarningAction SilentlyContinue
+                }
+                catch {
+                    if ($DiskSpaceWarning) {
+                        $There = $false
+                        if ($DiskSpaceWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
+                            $DiskSpace = [PSCustomObject]@{
+                                Name         = 'Do not know the Name'
+                                PercentFree  = -1
+                                ComputerName = 'Cannot resolve ' + $ComputerName
+                            } 
+                        }
+                    }
+                    else {
+                        $DiskSpace = [PSCustomObject]@{
+                            Name         = 'Do not know the Name'
+                            PercentFree  = -1
+                            ComputerName = 'An Error occured ' + $ComputerName
+                        } 
+                    }
+                }
             }
-            catch {
-                if ($DiskSpaceWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
-                    $DiskSpace = [PSCustomObject]@{
-                        Name         = 'Do not know the Name'
-                        PercentFree  = -1
-                        ComputerName = 'Cannot resolve ' + $ComputerName
-                    } 
-                }
-                else {
-                    $DiskSpace = [PSCustomObject]@{
-                        Name         = 'Do not know the Name'
-                        PercentFree  = -1
-                        ComputerName = 'An Error occured ' + $ComputerName
-                    } 
-                }
+            else {
+                $DiskSpace = [PSCustomObject]@{
+                    Name         = 'Do not know the Name'
+                    PercentFree  = -1
+                    ComputerName = 'An Error occured ' + $ComputerName
+                } 
             }
         }
         Default {}
