@@ -22,7 +22,36 @@
 		}
 	}
 
-
+    Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
+        $skipremote = Get-DbcConfigValue skip.connection.remoting
+        $skipping = Get-DbcConfigValue skip.connection.ping
+		$authscheme = Get-DbcConfigValue policy.connection.authscheme
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Instance Connection on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+            Context "Testing Instance Connection on $psitem" {
+                $connection = Test-DbaConnection -SqlInstance $psitem
+                It "connects successfully to $psitem" {
+                    $connection.connectsuccess | Should -BeTrue
+                }
+                It "auth scheme Should Be $authscheme on $psitem" {
+                    $connection.AuthScheme | Should -Be $authscheme
+                }
+                It -Skip:$skipping "$psitem is pingable" {
+                    $connection.IsPingable | Should -BeTrue
+                }
+                It -Skip:$skipremote "$psitem Is PSRemotebale" {
+                    $Connection.PSRemotingAccessible | Should -BeTrue
+                }
+            }
+		}
+	}
+    
 	Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
 		if ($NotContactable -contains $psitem) {
 			Context "Testing database collation on $psitem" {
