@@ -65,3 +65,33 @@ function Assert-TwoDigitYearCutoff {
     (Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'TwoDigitYearCutoff').ConfiguredValue | Should -Be $TwoDigitYearCutoff -Because 'This is the value that you have chosen for Two Digit Year Cutoff configuration'
 }
 
+function Assert-TraceFlag {
+    Param(
+        [string]$SQLInstance,
+        [int[]]$ExpectedTraceFlag
+    )
+    if($null -eq $ExpectedTraceFlag){
+        $a = (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag
+        (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
+    }
+    else {
+        @($ExpectedTraceFlag).ForEach{
+            (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -Contain $PSItem -Because "We expect that Trace Flag $PsItem will be set on $SQLInstance"
+        }
+    }
+}
+function Assert-NotTraceFlag {
+    Param(
+        [string]$SQLInstance,
+        [int[]]$NotExpectedTraceFlag
+    )
+
+    if($null -eq $NotExpectedTraceFlag){
+        (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
+    }
+    else {
+        @($NotExpectedTraceFlag).ForEach{
+            (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -Not -Contain $PSItem -Because "We expect that Trace Flag $PsItem will not be set on $SQLInstance"
+        }
+    }
+}
