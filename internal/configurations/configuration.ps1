@@ -247,3 +247,5 @@ Set-PSFConfig -Module dbachecks -Name database.exists -Value @("master","msdb","
 
 # Not Contactable
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @() -Initialize -Description "This is used within the checks to avoid trying to contact none-responsive instances many times - do not set manually"
+Set-PSFConfig -Module dbachecks -Name policy.traceflags.expected -Value @() -Initialize -Description "The trace flags we expect to be running"
+Set-PSFConfig -Module dbachecks -Name policy.traceflags.notexpected -Value @() -Initialize -Description "The trace flags we expect not to be running"
