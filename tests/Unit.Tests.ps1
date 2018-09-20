@@ -48,7 +48,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                         }
                     }
                     It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) Should Be in the unique Tags returned from Get-DbcCheck" {
-                        $UniqueTags | Should -Contain $PSItem.Tags.Text.Split(',')[0].ToString() -Because 'We need a unique tag for each test - Format should be -Tags space UniqueTag comma'
+                        $UniqueTags | Should -Contain $PSItem.Tags.Text.Split(',')[0].ToString() -Because 'We need a unique tag for each test - Format should be -Tags space UniqueTag comma - Also if you are running this on a machine where dbachecks has already been imported previously try running reset-dbcconfig, which will create a new checks.json for Get-DbcCheck'
                     }
                 }
                 else {
