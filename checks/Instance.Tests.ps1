@@ -193,7 +193,6 @@
 		}
 	}
 
-
 	Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename {
 		if ($NotContactable -contains $psitem) {
 			Context "Testing Linked Servers on $psitem" {
@@ -561,7 +560,8 @@
 		else {
 			Context "Checking error log on $psitem" {
 				It "Error log should be free of error severities 17-24 on $psitem" {
-					Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 1[7-9]|Severity: 2[0-4]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
+					Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 1[7-9]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
+					Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 2[0-4]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
 				}
 			}
 		}
@@ -606,6 +606,42 @@
 			}
 		}
 	}
+
+	Describe "Trace Flags Expected" -Tags TraceFlagsExpected, TraceFlag $filename {
+		$ExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.expected
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Expected Trace Flags on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+			Context "Testing Expected Trace Flags on $psitem" {
+				It "Expected Trace Flags $ExpectedTraceFlags exist on $psitem" {
+					Assert-TraceFlag -SQLInstance $psitem -ExpectedTraceFlag $ExpectedTraceFlags
+				}
+			}
+		}
+	}
+	Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag $filename {
+		$NotExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.notexpected
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Not Expected Trace Flags on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+			Context "Testing Not Expected Trace Flags on $psitem" {
+				It "Expected Trace Flags $ExpectedTraceFlags to not exist on $psitem" {
+					Assert-TraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags
+				}
+			}
+		}
+	}
+
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
