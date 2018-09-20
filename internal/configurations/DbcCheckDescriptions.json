@@ -370,5 +370,13 @@
     {
         "UniqueTag": "DatabaseExists",
         "Description": "Tests that the databases are specified are on the instance (Note - Does not check if they are avaiable - Use DatabaseStatus for that))"
+    },
+    {
+        "UniqueTag": "TraceFlagsExpected",
+        "Description": "Tests that the specified (default none) trace flags are running on the instance"
+    },
+    {
+        "UniqueTag": "TraceFlagsNotExpected",
+        "Description": "Tests that the specified (default none) trace flags are not running on the instance"
     }
  ]
