@@ -225,7 +225,6 @@
     
     begin {
         $config = Get-PSFConfig -Module dbachecks
-        
         foreach ($key in $PSBoundParameters.Keys | Where-Object { $_ -like "Config*" }) {
             if ($item = $config | Where-Object { "Config$($_.Name.Replace('.', ''))" -eq $key }) {
                 Set-PSFConfig -Module dbachecks -Name $item.Name -Value $PSBoundParameters.$key
@@ -266,6 +265,12 @@
     }
     
     process {
+                #get the output config for dbatools and store it to set it back at the end
+                $dbatoolsoutputconfig =  Get-DbatoolsConfigValue -FullName message.consoleoutput.disable
+                if(!$dbatoolsoutputconfig){
+                    Set-DbatoolsConfig -FullName message.consoleoutput.disable -Value $true
+                }
+        
         
         if (-not $Script -and -not $TestName -and -not $Check -and -not $ExcludeCheck -and -not $AllChecks) {
             Stop-PSFFunction -Message "Please specify Check, ExcludeCheck, Script, TestName or AllChecks"
@@ -353,6 +358,9 @@
             Stop-PSFFunction -Message "There was a problem with execution of checks repos!" -ErrorRecord $psitem
         }
         finally {
+            # reset the config to original value
+            Set-DbatoolsConfig -FullName message.consoleoutput.disable -Value $dbatoolsoutputconfig
+
             if (!($finishedAllTheChecks)) {
                 Write-PSFMessage -Level Warning -Message "Execution was cancelled!"
                 Pop-Location
