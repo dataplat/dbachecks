@@ -607,7 +607,7 @@
 		}
 	}
 
-	Describe "Trace Flags Expected" -Tags TraceFlagsExpected, TraceFlag $filename {
+	Describe "Trace Flags Expected" -Tags TraceFlagsExpected, TraceFlag, $filename {
 		$ExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.expected
 		if ($NotContactable -contains $psitem) {
 			Context "Testing Expected Trace Flags on $psitem" {
@@ -624,7 +624,7 @@
 			}
 		}
 	}
-	Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag $filename {
+	Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag, $filename {
 		$NotExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.notexpected
 		if ($NotContactable -contains $psitem) {
 			Context "Testing Not Expected Trace Flags on $psitem" {
@@ -635,8 +635,8 @@
 		}
 		else {
 			Context "Testing Not Expected Trace Flags on $psitem" {
-				It "Expected Trace Flags $ExpectedTraceFlags to not exist on $psitem" {
-					Assert-TraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags
+				It "Expected Trace Flags $NotExpectedTraceFlags to not exist on $psitem" {
+					Assert-NotTraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags
 				}
 			}
 		}
