@@ -76,6 +76,9 @@
                     $NewValue += $Value
                 }
             }
+            else{
+                $NewValue = $NewValue, $Value
+            }
         }else{
             $NewValue = $Value
         }

@@ -22,7 +22,36 @@
 		}
 	}
 
-
+    Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
+        $skipremote = Get-DbcConfigValue skip.connection.remoting
+        $skipping = Get-DbcConfigValue skip.connection.ping
+		$authscheme = Get-DbcConfigValue policy.connection.authscheme
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Instance Connection on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+            Context "Testing Instance Connection on $psitem" {
+                $connection = Test-DbaConnection -SqlInstance $psitem
+                It "connects successfully to $psitem" {
+                    $connection.connectsuccess | Should -BeTrue
+                }
+                It "auth scheme Should Be $authscheme on $psitem" {
+                    $connection.AuthScheme | Should -Be $authscheme
+                }
+                It -Skip:$skipping "$psitem is pingable" {
+                    $connection.IsPingable | Should -BeTrue
+                }
+                It -Skip:$skipremote "$psitem Is PSRemotebale" {
+                    $Connection.PSRemotingAccessible | Should -BeTrue
+                }
+            }
+		}
+	}
+    
 	Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
 		if ($NotContactable -contains $psitem) {
 			Context "Testing database collation on $psitem" {
@@ -163,7 +192,6 @@
 			}
 		}
 	}
-
 
 	Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename {
 		if ($NotContactable -contains $psitem) {
@@ -532,7 +560,8 @@
 		else {
 			Context "Checking error log on $psitem" {
 				It "Error log should be free of error severities 17-24 on $psitem" {
-					Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 1[7-9]|Severity: 2[0-4]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
+					Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 1[7-9]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
+					Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 2[0-4]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
 				}
 			}
 		}
@@ -577,6 +606,42 @@
 			}
 		}
 	}
+
+	Describe "Trace Flags Expected" -Tags TraceFlagsExpected, TraceFlag, $filename {
+		$ExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.expected
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Expected Trace Flags on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+			Context "Testing Expected Trace Flags on $psitem" {
+				It "Expected Trace Flags $ExpectedTraceFlags exist on $psitem" {
+					Assert-TraceFlag -SQLInstance $psitem -ExpectedTraceFlag $ExpectedTraceFlags
+				}
+			}
+		}
+	}
+	Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag, $filename {
+		$NotExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.notexpected
+		if ($NotContactable -contains $psitem) {
+			Context "Testing Not Expected Trace Flags on $psitem" {
+				It "Can't Connect to $Psitem" {
+					$false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+				}
+			}
+		}
+		else {
+			Context "Testing Not Expected Trace Flags on $psitem" {
+				It "Expected Trace Flags $NotExpectedTraceFlags to not exist on $psitem" {
+					Assert-NotTraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags
+				}
+			}
+		}
+	}
+
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
