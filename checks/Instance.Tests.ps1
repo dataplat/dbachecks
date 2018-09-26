@@ -45,7 +45,7 @@
                 It -Skip:$skipping "$psitem is pingable" {
                     $connection.IsPingable | Should -BeTrue
                 }
-                It -Skip:$skipremote "$psitem Is PSRemotebale" {
+                It -Skip:$skipremote "$psitem Is PSRemoteable" {
                     $Connection.PSRemotingAccessible | Should -BeTrue
                 }
             }
