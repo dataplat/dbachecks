@@ -27,7 +27,7 @@ if ((Test-Path -Path $ChangeLog)) {
 $YMLText = "$YMLtext  - Functions:`n"
 
 $Params = @{
-    Module       = 'SQLDiagAPI'
+    Module       = 'dbachecks'
     Force        = $true
     OutputFolder = "$ProjectRoot\docs\functions"
     NoMetadata   = $true
