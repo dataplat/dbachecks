@@ -6,16 +6,22 @@ theme: readthedocs
 copyright: "dbachecks is licensed under the <a href='https://github.com/sqlcollaborative/dbachecks/raw/master/LICENSE'>MIT license"
 pages:
   - Home: index.md
+  - Release Notes: RELEASE.md
   - Functions:
-    - Get-SQLDiagAnalysis: functions/Get-SQLDiagAnalysis.md
-    - Get-SQLDiagAnalysisHistory: functions/Get-SQLDiagAnalysisHistory.md
-    - Get-SQLDiagDumpFile: functions/Get-SQLDiagDumpFile.md
-    - Get-SQLDiagFeature: functions/Get-SQLDiagFeature.md
-    - Get-SQLDiagFix: functions/Get-SQLDiagFix.md
-    - Get-SQLDiagLatestAnalysis: functions/Get-SQLDiagLatestAnalysis.md
-    - Get-SQLDiagLatestCU: functions/Get-SQLDiagLatestCU.md
-    - Get-SQLDiagProduct: functions/Get-SQLDiagProduct.md
-    - Get-SQLDiagRecommendations: functions/Get-SQLDiagRecommendations.md
-    - Get-SQLDiagSupportedRegions: functions/Get-SQLDiagSupportedRegions.md
-    - Invoke-SQLDiagDumpAnalysis: functions/Invoke-SQLDiagDumpAnalysis.md
+    - Clear-DbcPowerBiDataSource: functions/Clear-DbcPowerBiDataSource.md
+    - Export-DbcConfig: functions/Export-DbcConfig.md
+    - Get-DbcCheck: functions/Get-DbcCheck.md
+    - Get-DbcConfig: functions/Get-DbcConfig.md
+    - Get-DbcConfigValue: functions/Get-DbcConfigValue.md
+    - Get-DbcReleaseNote: functions/Get-DbcReleaseNote.md
+    - Get-DbcTagCollection: functions/Get-DbcTagCollection.md
+    - Import-DbcConfig: functions/Import-DbcConfig.md
+    - Invoke-DbcCheck: functions/Invoke-DbcCheck.md
+    - Invoke-DbcConfigFile: functions/Invoke-DbcConfigFile.md
+    - Reset-DbcConfig: functions/Reset-DbcConfig.md
+    - Save-DbcRequiredModules: functions/Save-DbcRequiredModules.md
+    - Set-DbcConfig: functions/Set-DbcConfig.md
+    - Start-DbcPowerBi: functions/Start-DbcPowerBi.md
+    - Update-DbcPowerBiDataSource: functions/Update-DbcPowerBiDataSource.md
+    - Update-DbcRequiredModules: functions/Update-DbcRequiredModules.md
 
