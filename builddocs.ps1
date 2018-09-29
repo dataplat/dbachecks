@@ -1,5 +1,14 @@
 Install-Module PlatyPs -Scope CurrentUser -Force
-Import-Module PlatyPs -Verbose
+Import-Module PlatyPs 
+try {
+    Write-Output "Installing dbachecks"
+    Import-Module .\dbachecks.psd1
+    Write-Output "Installed dbachecks"
+
+}
+catch {
+    Write-Error "Failed to Install dbachecks $($_)"
+}
 
 $ProjectRoot = Get-Location
 $ModuleName = 'dbachecks'
