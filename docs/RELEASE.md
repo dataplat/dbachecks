@@ -1,3 +1,16 @@
+## Date 29/09/2018
+auto deploy bugs to readthedocs
+Alter Get-DbcReleaseNote to use the markdown file
+
+##Latest
+
+## Date 24/09/2018
+Moved the Instance Connection Check to the Instance Tests
+Fixed bug with Set-DbcConfig not adding none-arrays!
+New Check for Expected Trace Flags
+New Check for Not Expected TraceFlags
+Stopped dbatools chatty messages polluting the test results
+
 ## Date 07/09/2018
 Updated dbatools required module to 0.9.410
 Renamed all dbatools commands to new naming convention
@@ -5,8 +18,6 @@ Fixed Bug with JSON file naming
 Improved Server Checks to remove Red and improve speed for none contactable servers
 Altered all server checks to use assertions and added pester Tests
 Removed left over ogv entry 
-
-##Latest
 
 ## Date 05/09/2018
 New Check for 2 digit cut off thanks @CláudioESSilva
