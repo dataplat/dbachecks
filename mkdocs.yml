@@ -1,0 +1,21 @@
+site_name: dbachecks
+repo_url: https://github.com/sqlcollaborative/dbachecks
+site_author: The Beard
+edit_uri: edit/master/docs/
+theme: readthedocs
+copyright: "dbachecks is licensed under the <a href='https://github.com/sqlcollaborative/dbachecks/raw/master/LICENSE'>MIT license"
+pages:
+  - Home: index.md
+  - Functions:
+    - Get-SQLDiagAnalysis: functions/Get-SQLDiagAnalysis.md
+    - Get-SQLDiagAnalysisHistory: functions/Get-SQLDiagAnalysisHistory.md
+    - Get-SQLDiagDumpFile: functions/Get-SQLDiagDumpFile.md
+    - Get-SQLDiagFeature: functions/Get-SQLDiagFeature.md
+    - Get-SQLDiagFix: functions/Get-SQLDiagFix.md
+    - Get-SQLDiagLatestAnalysis: functions/Get-SQLDiagLatestAnalysis.md
+    - Get-SQLDiagLatestCU: functions/Get-SQLDiagLatestCU.md
+    - Get-SQLDiagProduct: functions/Get-SQLDiagProduct.md
+    - Get-SQLDiagRecommendations: functions/Get-SQLDiagRecommendations.md
+    - Get-SQLDiagSupportedRegions: functions/Get-SQLDiagSupportedRegions.md
+    - Invoke-SQLDiagDumpAnalysis: functions/Invoke-SQLDiagDumpAnalysis.md
+
