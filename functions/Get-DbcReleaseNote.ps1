@@ -26,7 +26,7 @@ function Get-DbcReleaseNote {
         [switch]$Latest
     )
  
-    $releasenotes = Get-Content $ModuleRoot\internal\configurations\ReleaseNotes.txt -Raw
+    $releasenotes = Get-Content $ModuleRoot\RELEASE.md -Raw
  
     if($Latest){
         ($releasenotes -Split "##Latest")[0]
