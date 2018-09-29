@@ -13,7 +13,7 @@ catch {
 $ProjectRoot = Get-Location
 $ModuleName = 'dbachecks'
 $BuildDate = Get-Date -uFormat '%Y-%m-%d'
-$ReleaseNotes = "$ProjectRoot\RELEASE.md"
+$ReleaseNotes = ".\RELEASE.md"
 $ChangeLog = "$ProjectRoot\docs\ChangeLog.md"
 
 
