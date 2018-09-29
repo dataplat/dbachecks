@@ -1,32 +1,29 @@
-﻿<#
-    .SYNOPSIS
-        Lists all checks, tags and unique identifiers
+﻿function Get-DbcCheck {
+    <#
+        .SYNOPSIS
+            Lists all checks, tags and unique identifiers
+    
+        .DESCRIPTION
+            Lists all checks, tags and unique identifiers
+            
+        .PARAMETER Pattern
+            May be any string, supports wildcards.
 
-    .DESCRIPTION
-        Lists all checks, tags and unique identifiers
-        
-    .PARAMETER Pattern
-        May be any string, supports wildcards.
+        .PARAMETER EnableException
+            By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
+            This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
+            Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
+            
+        .EXAMPLE
+            Get-DbcCheck
+            
+            Retrieves all of the available checks
 
-    .PARAMETER EnableException
-        By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
-        This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
-        Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
-        
-    .EXAMPLE
-        Get-DbcCheck
-        
-        Retrieves all of the available checks
-
-    .EXAMPLE
-        Get-DbcCheck backups
-        
-        Retrieves all of the available tags that match backups
-        
-    .LINK
-    https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcCheck/
-#>
-function Get-DbcCheck {
+        .EXAMPLE
+            Get-DbcCheck backups
+            
+            Retrieves all of the available tags that match backups
+    #>
     [CmdletBinding()]
     param (
         [string]$Pattern,
@@ -54,7 +51,7 @@ function Get-DbcCheck {
                         $_.UniqueTag -like $Pattern -or $_.AllTags -like $Pattern -or $_.Type -like $Pattern
                     }
                     @($output).ForEach{
-                        Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags' , 'Config', 'Description'
+                        Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags' ,'Config', 'Description'
                     }
                 }
             }

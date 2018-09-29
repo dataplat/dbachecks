@@ -18,9 +18,6 @@ Get-DbcReleaseNote -Latest
 
 Returns just the latest release notes for the dbachecks module
 
-.LINK
-https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcReleaseNote/
-
 .NOTES
 30/05/2012 - RMS
 #>
