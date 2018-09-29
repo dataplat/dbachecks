@@ -26,7 +26,7 @@ Exports config to "$script:localapp\config.json"
 Export-DbcConfig -Path \\nfs\projects\config.json
 ```
 
-Exports config to \\\\nfs\projects\config.json
+Exports config to \\\\nfs\projects\config.jso
 
 ## PARAMETERS
 
@@ -73,3 +73,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+
+[https://dbachecks.readthedocs.io/en/latest/functions/Export-DbcConfig/](https://dbachecks.readthedocs.io/en/latest/functions/Export-DbcConfig/)
+

@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.1.153'
+    ModuleVersion          = '1.1.155'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -131,12 +131,9 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 24/09/2018
-Moved the Instance Connection Check to the Instance Tests
-Fixed bug with Set-DbcConfig not adding none-arrays!
-New Check for Expected Trace Flags
-New Check for Not Expected TraceFlags
-Stopped dbatools chatty messages polluting the test results
+## Date 29/09/2018
+auto deploy bugs to readthedocs
+Alter Get-DbcReleaseNote to use the markdown file
             
 Run Get-DbcReleaseNotes for all release notes
             "

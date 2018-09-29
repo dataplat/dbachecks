@@ -1,8 +1,10 @@
 # Update-DbcPowerBiDataSource
 
 ## SYNOPSIS
-Converts Pester results and exports file in required format for launching the Power BI command.
-**You will need refresh* the Power BI dashboard every time to see the new results.
+Converts Pester results and exports file in required format for launching the 
+Power BI command.
+**You will need refresh* the Power BI dashboard every time to 
+see the new results.
 
 ## SYNTAX
 
@@ -12,11 +14,13 @@ Update-DbcPowerBiDataSource [-InputObject] <PSObject> [[-Path] <String>] [[-File
 ```
 
 ## DESCRIPTION
-Converts Pester results and exports file in required format for launching the Power BI command.
-**You will need refresh* the Power BI dashboard every time to see the new results.
+Converts Pester results and exports file in required format for launching the 
+Power BI command.
+**You will need refresh* the Power BI dashboard every time to 
+see the new results.
 
-Basically does this:
-    $InputObject.TestResult | Select-Object -First 20 | ConvertTo-Json -Depth 3 | Out-File "$env:windir\temp\dbachecks.json"
+Basically, it does this:
+$InputObject.TestResult | Select-Object -First 20 | ConvertTo-Json -Depth 3 | Out-File "$env:windir\temp\dbachecks.json"
 
 ## EXAMPLES
 
@@ -69,7 +73,10 @@ Invoke-DbcCheck -SqlInstance sql2017 -Tag Backup -Show Summary -PassThru | Updat
 
 Start-DbcPowerBi -Path \\\\nas\projects\dbachecks.json
 
-Runs tests, saves to json to \\\\nas\projects\dbachecks.json but then you'll have to change your data source in Power BI because by default it points to C:\Windows\Temp (limitation of Power BI)
+Runs tests, saves to json to \\\\nas\projects\dbachecks.json
+Opens the PowerBi using that file
+then you'll have to change your data source in Power BI because by default it 
+points to C:\Windows\Temp (limitation of Power BI)
 
 ## PARAMETERS
 
@@ -77,8 +84,6 @@ Runs tests, saves to json to \\\\nas\projects\dbachecks.json but then you'll hav
 Required.
 Resultset from Invoke-DbcCheck.
 If InputObject is not provided, it will be generated using a very generic resultset:
-
-Invoke-DbcCheck -Show Summary -PassThru
 
 ```yaml
 Type: PSObject
@@ -109,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -FileName
-Name your Json File
+if you want to give the file a specific name
 
 ```yaml
 Type: String
@@ -124,7 +129,7 @@ Accept wildcard characters: False
 ```
 
 ### -Environment
-A Naem to give your suite of tests IE Prod - This will also alter the name
+A Name to give your suite of tests IE Prod - This will also alter the name of the file
 
 ```yaml
 Type: String
@@ -181,3 +186,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+
+[https://dbachecks.readthedocs.io/en/latest/functions/Update-DbcPowerBiDataSource/](https://dbachecks.readthedocs.io/en/latest/functions/Update-DbcPowerBiDataSource/)
+
