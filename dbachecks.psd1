@@ -131,12 +131,9 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 24/09/2018
-Moved the Instance Connection Check to the Instance Tests
-Fixed bug with Set-DbcConfig not adding none-arrays!
-New Check for Expected Trace Flags
-New Check for Not Expected TraceFlags
-Stopped dbatools chatty messages polluting the test results
+## Date 29/09/2018
+auto deploy bugs to readthedocs
+Alter Get-DbcReleaseNote to use the markdown file
             
 Run Get-DbcReleaseNotes for all release notes
             "
