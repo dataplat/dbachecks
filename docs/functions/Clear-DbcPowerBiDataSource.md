@@ -48,7 +48,7 @@ Accept wildcard characters: False
 ```
 
 ### -Environment
-Removes the JSON files for a specific environement
+Removes the JSON files for a specific environment
 
 ```yaml
 Type: String
@@ -90,3 +90,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+
+[https://dbachecks.readthedocs.io/en/latest/functions/Clear-DbcPowerBiDataSource/](https://dbachecks.readthedocs.io/en/latest/functions/Clear-DbcPowerBiDataSource/)
+

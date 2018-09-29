@@ -188,6 +188,29 @@ Extended description about Pester: Get-Help -Name Invoke-Pester
 
 ### EXAMPLE 1
 ```
+Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
+```
+
+Runs all of the checks tagged Backup against the sql2016 instance
+
+### EXAMPLE 2
+```
+Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster -SqlCredential (Get-Credential sqladmin)
+```
+
+Runs the Recovery model check against the SQL instances sql2017, sqlcluster 
+using the sqladmin SQL login with the password provided interactively
+
+### EXAMPLE 3
+```
+Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink
+```
+
+Runs all of the checks tagged Database except for the AutoShrink check against 
+the SQL Instances set in the config under app.sqlinstance
+
+### EXAMPLE 4
+```
 # Set the servers you'll be working with
 ```
 
@@ -200,42 +223,21 @@ Get-DbcConfig
 # Invoke a few tests
 Invoke-DbcCheck -Tags SuspectPage, LastBackup
 
-Does this and that
-
-### EXAMPLE 2
-```
-Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
-```
-
-Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster -SqlCredential (Get-Credential sqladmin)
-
-Does this
-
-### EXAMPLE 3
-```
-Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink
-```
-
-Does that
-
-### EXAMPLE 4
-```
-# Run checks and export its JSON
-```
-
-Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
-
-# Launch Power BI then hit refresh
-Start-DbcPowerBi
-
-Does that
+Runs the Suspect Pages and Last Backup checks against the SQL Instances sql2016,
+sql2017, sql2008, sql2008\express after setting them in the configuration
 
 ### EXAMPLE 5
 ```
-Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru |
+Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
 ```
 
-Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
+Start-DbcPowerBi
+
+Runs the Suspect Page and Last Backup checks against the SQL Instances set in 
+the config under app.sqlinstance only showing the summary of the results of the
+checks.
+It then updates the source json for the XML which is stored at
+C:\Windows\temp\dbachecks\ and then opens the PowerBi report in PowerBi Desktop
 
 ### EXAMPLE 6
 ```
@@ -244,6 +246,11 @@ Get-Help -Name Invoke-Pester -Examples
 
 Want to get super deep?
 You can look at Invoke-Pester's example's and run them against Invoke-DbcCheck since it's a wrapper.
+
+https://github.com/pester/Pester/wiki/Invoke-Pester
+
+Describe
+about_Pester
 
 ## PARAMETERS
 
@@ -3000,11 +3007,5 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## RELATED LINKS
 
-[https://github.com/pester/Pester/wiki/Invoke-Pester
-
-Describe
-about_Pester](https://github.com/pester/Pester/wiki/Invoke-Pester
-
-Describe
-about_Pester)
+[https://dbachecks.readthedocs.io/en/latest/functions/Invoke-DbcCheck/](https://dbachecks.readthedocs.io/en/latest/functions/Invoke-DbcCheck/)
 

@@ -21,7 +21,7 @@ This can be used to get the dbachecks back to default state of configuration, or
 Reset-DbcConfig
 ```
 
-Resets all the configuration values for dbccheck.
+Resets all the configuration values for dbachecks.
 
 ### EXAMPLE 2
 ```
@@ -58,3 +58,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+
+[https://dbachecks.readthedocs.io/en/latest/functions/Reset-DbcConfig/](https://dbachecks.readthedocs.io/en/latest/functions/Reset-DbcConfig/)
+
