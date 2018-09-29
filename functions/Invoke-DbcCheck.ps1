@@ -1,172 +1,180 @@
-﻿function Invoke-DbcCheck {
-    <#
-        .SYNOPSIS
-            Invoke-DbcCheck is a SQL-centric Invoke-Pester wrapper
+﻿<#
+.SYNOPSIS
+Invoke-DbcCheck is a SQL-centric Invoke-Pester wrapper
 
-        .DESCRIPTION
-            The Invoke-DbcCheck function runs Pester tests, including *.Tests.ps1 files and Pester tests in PowerShell scripts.
+.DESCRIPTION
+The Invoke-DbcCheck function runs Pester tests, including *.Tests.ps1 files and Pester tests in PowerShell scripts.
 
-            Extended description about Pester: Get-Help -Name Invoke-Pester
+Extended description about Pester: Get-Help -Name Invoke-Pester
 
-        .PARAMETER Check
-            Runs only tests in Describe blocks with the specified Tag parameter values. Wildcard characters and Tag values that include spaces or whitespace characters are not supported.
+.PARAMETER Check
+Runs only tests in Describe blocks with the specified Tag parameter values. Wildcard characters and Tag values that include spaces or whitespace characters are not supported.
 
-            When you specify multiple Tag values, Invoke-DbcCheck runs tests that have any of the listed tags (it ORs the tags). However, when you specify TestName and Tag values, Invoke-DbcCheck runs only describe blocks that have one of the specified TestName values and one of the specified Tag values.
+When you specify multiple Tag values, Invoke-DbcCheck runs tests that have any of the listed tags (it ORs the tags). However, when you specify TestName and Tag values, Invoke-DbcCheck runs only describe blocks that have one of the specified TestName values and one of the specified Tag values.
 
-            If you use both Tag and ExcludeTag, ExcludeTag takes precedence.
+If you use both Tag and ExcludeTag, ExcludeTag takes precedence.
 
-        .PARAMETER ExcludeCheck
-            Omits tests in Describe blocks with the specified Tag parameter values. Wildcard characters and Tag values that include spaces or whitespace characters are not supported.
+.PARAMETER ExcludeCheck
+Omits tests in Describe blocks with the specified Tag parameter values. Wildcard characters and Tag values that include spaces or whitespace characters are not supported.
 
-            When you specify multiple ExcludeTag values, Invoke-DbcCheck omits tests that have any of the listed tags (it ORs the tags). However, when you specify TestName and ExcludeTag values, Invoke-DbcCheck omits only describe blocks that have one of the specified TestName values and one of the specified Tag values.
+When you specify multiple ExcludeTag values, Invoke-DbcCheck omits tests that have any of the listed tags (it ORs the tags). However, when you specify TestName and ExcludeTag values, Invoke-DbcCheck omits only describe blocks that have one of the specified TestName values and one of the specified Tag values.
 
-            If you use both Tag and ExcludeTag, ExcludeTag takes precedence
+If you use both Tag and ExcludeTag, ExcludeTag takes precedence
 
-        .PARAMETER SqlInstance
-            A list of SQL Servers to run the tests against. If this is not provided, it will be gathered from:
-            Get-DbatoolsConfig -Name app.sqlinstance
+.PARAMETER SqlInstance
+A list of SQL Servers to run the tests against. If this is not provided, it will be gathered from:
+Get-DbatoolsConfig -Name app.sqlinstance
 
-        .PARAMETER ComputerName
-            A list of computers to run the tests against. If this is not provided, it will be gathered from:
-            Get-DbatoolsConfig -Name app.computername
+.PARAMETER ComputerName
+A list of computers to run the tests against. If this is not provided, it will be gathered from:
+Get-DbatoolsConfig -Name app.computername
 
-        .PARAMETER SqlCredential
-            Alternate SQL Server-based credential.
+.PARAMETER SqlCredential
+Alternate SQL Server-based credential.
 
-        .PARAMETER Credential
-            Alternate Windows credential.
+.PARAMETER Credential
+Alternate Windows credential.
 
-        .PARAMETER Database
-            A list of databases to include if your check is database centric.
+.PARAMETER Database
+A list of databases to include if your check is database centric.
 
-        .PARAMETER ExcludeDatabase
-            A list of databases to exclude if your check is database centric.
+.PARAMETER ExcludeDatabase
+A list of databases to exclude if your check is database centric.
 
-        .PARAMETER PassThru
-            Returns a custom object (PSCustomObject) that contains the test results.
+.PARAMETER PassThru
+Returns a custom object (PSCustomObject) that contains the test results.
 
-            By default, Invoke-DbcCheck writes to the host program, not to the output stream (stdout).
-            If you try to save the result in a variable, the variable is empty unless you
-            use the PassThru parameter.
+By default, Invoke-DbcCheck writes to the host program, not to the output stream (stdout).
+If you try to save the result in a variable, the variable is empty unless you
+use the PassThru parameter.
 
-            To suppress the host output, use the Quiet parameter.
+To suppress the host output, use the Quiet parameter.
 
-        .PARAMETER OutputFormat
-            The format of output. Currently, only NUnitXML is supported. 
+.PARAMETER OutputFormat
+The format of output. Currently, only NUnitXML is supported. 
 
-        .PARAMETER Strict
-            Makes Pending and Skipped tests to Failed tests. Useful for continuous integration where you need to make sure all tests passed.
+.PARAMETER Strict
+Makes Pending and Skipped tests to Failed tests. Useful for continuous integration where you need to make sure all tests passed.
 
-        .PARAMETER AllChecks
-            In the unlikely event that you'd like to run all checks, specify -AllChecks. These checks still confirm to the skip settings in Get-DbcConfig.
+.PARAMETER AllChecks
+In the unlikely event that you'd like to run all checks, specify -AllChecks. These checks still confirm to the skip settings in Get-DbcConfig.
 
-        .PARAMETER Quiet
-            The parameter Quiet is deprecated since Pester v. 4.0 and will be deleted in the next major version of Pester. Please use the parameter Show with value 'None' instead.
+.PARAMETER Quiet
+The parameter Quiet is deprecated since Pester v. 4.0 and will be deleted in the next major version of Pester. Please use the parameter Show with value 'None' instead.
 
-        .PARAMETER Show
-            Customizes the output Pester writes to the screen. 
+.PARAMETER Show
+Customizes the output Pester writes to the screen. 
 
-            Available options are 
-            None
-            Default
-            Passed
-            Failed
-            Pending
-            Skipped
-            Inconclusive
-            Describe
-            Context
-            Summary
-            Header
-            All
-            Fails
+Available options are 
+None
+Default
+Passed
+Failed
+Pending
+Skipped
+Inconclusive
+Describe
+Context
+Summary
+Header
+All
+Fails
 
-            The options can be combined to define presets.
+The options can be combined to define presets.
 
-            Common use cases are:
+Common use cases are:
 
-            None - to write no output to the screen.
-            All - to write all available information (this is default option).
-            Fails - to write everything except Passed (but including Describes etc.).
+None - to write no output to the screen.
+All - to write all available information (this is default option).
+Fails - to write everything except Passed (but including Describes etc.).
 
-            A common setting is also Failed, Summary, to write only failed tests and test summary.
+A common setting is also Failed, Summary, to write only failed tests and test summary.
 
-            This parameter does not affect the PassThru custom object or the XML output that is written when you use the Output parameters.
+This parameter does not affect the PassThru custom object or the XML output that is written when you use the Output parameters.
 
-        .PARAMETER Value
-            A value.. it's hard to explain
+.PARAMETER Value
+A value.. it's hard to explain
 
-        .PARAMETER Script
-            Get-Help -Name Invoke-Pester -Parameter Script
-    
-        .PARAMETER TestName
-            Get-Help -Name Invoke-Pester -Parameter TestName
+.PARAMETER Script
+Get-Help -Name Invoke-Pester -Parameter Script
 
-        .PARAMETER EnableExit
-            Get-Help -Name Invoke-Pester -Parameter EnableExit
+.PARAMETER TestName
+Get-Help -Name Invoke-Pester -Parameter TestName
 
-        .PARAMETER OutputFile
-            Get-Help -Name Invoke-Pester -Parameter OutputFile
+.PARAMETER EnableExit
+Get-Help -Name Invoke-Pester -Parameter EnableExit
 
-        .PARAMETER CodeCoverage
-            Get-Help -Name Invoke-Pester -Parameter CodeCoverage
-    
-        .PARAMETER PesterOption
-            Get-Help -Name Invoke-Pester -Parameter PesterOption
+.PARAMETER OutputFile
+Get-Help -Name Invoke-Pester -Parameter OutputFile
 
-        .PARAMETER CodeCoverageOutputFile
-            Get-Help -Name Invoke-Pester -Parameter CodeCoverageOutputFile
+.PARAMETER CodeCoverage
+Get-Help -Name Invoke-Pester -Parameter CodeCoverage
 
-        .PARAMETER CodeCoverageOutputFileFormat
-            Get-Help -Name Invoke-Pester -Parameter CodeCoverageOutputFileFormat
+.PARAMETER PesterOption
+Get-Help -Name Invoke-Pester -Parameter PesterOption
 
-        .LINK
-            https://github.com/pester/Pester/wiki/Invoke-Pester
+.PARAMETER CodeCoverageOutputFile
+Get-Help -Name Invoke-Pester -Parameter CodeCoverageOutputFile
 
-            Describe
-            about_Pester
+.PARAMETER CodeCoverageOutputFileFormat
+Get-Help -Name Invoke-Pester -Parameter CodeCoverageOutputFileFormat
 
-        .EXAMPLE
-            # Set the servers you'll be working with
-            Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sql2008, sql2008\express
-            Set-DbcConfig -Name app.computername -Value sql2016, sql2017, sql2008
+.LINK
+https://dbachecks.readthedocs.io/en/latest/functions/Invoke-DbcCheck/
 
-            # Look at the current configs
-            Get-DbcConfig
+.EXAMPLE
+Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
 
-            # Invoke a few tests
-            Invoke-DbcCheck -Tags SuspectPage, LastBackup
-    
-            Does this and that
-    
-        .EXAMPLE
-            Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
-            Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster -SqlCredential (Get-Credential sqladmin)
-    
-            Does this
+Runs all of the checks tagged Backup against the sql2016 instance
 
-        .EXAMPLE
-            Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink
-            Does that
+.EXAMPLE
+Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster -SqlCredential (Get-Credential sqladmin)
 
-        .EXAMPLE
-            # Run checks and export its JSON
-            Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
+Runs the Recovery model check against the SQL instances sql2017, sqlcluster 
+using the sqladmin SQL login with the password provided interactively
 
-            # Launch Power BI then hit refresh
-            Start-DbcPowerBi
-    
-            Does that
+.EXAMPLE
+Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink
 
-        .EXAMPLE
-            Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru |
-            Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
+Runs all of the checks tagged Database except for the AutoShrink check against 
+the SQL Instances set in the config under app.sqlinstance
 
-        .EXAMPLE
-            Get-Help -Name Invoke-Pester -Examples
+.EXAMPLE
+# Set the servers you'll be working with
+Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sql2008, sql2008\express
+Set-DbcConfig -Name app.computername -Value sql2016, sql2017, sql2008
 
-            Want to get super deep? You can look at Invoke-Pester's example's and run them against Invoke-DbcCheck since it's a wrapper.
-    #>
+# Look at the current configs
+Get-DbcConfig
+
+# Invoke a few tests
+Invoke-DbcCheck -Tags SuspectPage, LastBackup
+
+Runs the Suspect Pages and Last Backup checks against the SQL Instances sql2016,
+sql2017, sql2008, sql2008\express after setting them in the configuration
+
+.EXAMPLE
+Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
+
+Start-DbcPowerBi
+
+Runs the Suspect Page and Last Backup checks against the SQL Instances set in 
+the config under app.sqlinstance only showing the summary of the results of the
+checks. It then updates the source json for the XML which is stored at
+C:\Windows\temp\dbachecks\ and then opens the PowerBi report in PowerBi Desktop
+
+.EXAMPLE
+Get-Help -Name Invoke-Pester -Examples
+
+Want to get super deep? You can look at Invoke-Pester's example's and run them against Invoke-DbcCheck since it's a wrapper.
+
+https://github.com/pester/Pester/wiki/Invoke-Pester
+
+Describe
+about_Pester
+#>
+
+function Invoke-DbcCheck {
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
         [Alias('Path', 'relative_path')]
@@ -202,12 +210,12 @@
         [object]$PesterOption,
         [Pester.OutputTypes]$Show = 'All'
     )
-    
+
     dynamicparam {
         $config = Get-PSFConfig -Module dbachecks
-        
+
         $RuntimeParamDic = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-        
+
         foreach ($setting in $config) {
             $name = $setting.Name
             $name = "Config" + (($name.Split(".") | ForEach-Object { $_.SubString(0, 1).ToUpper() + $_.SubString(1) }) -join '')
@@ -215,14 +223,14 @@
             $ParamAttrib.ParameterSetName = '__AllParameterSets'
             $AttribColl = New-Object  System.Collections.ObjectModel.Collection[System.Attribute]
             $AttribColl.Add($ParamAttrib)
-            
+
             $RuntimeParam = New-Object System.Management.Automation.RuntimeDefinedParameter($name, [object], $AttribColl)
-            
+
             $RuntimeParamDic.Add($name, $RuntimeParam)
         }
         return $RuntimeParamDic
     }
-    
+
     begin {
         $config = Get-PSFConfig -Module dbachecks
         foreach ($key in $PSBoundParameters.Keys | Where-Object { $_ -like "Config*" }) {
@@ -230,7 +238,7 @@
                 Set-PSFConfig -Module dbachecks -Name $item.Name -Value $PSBoundParameters.$key
             }
         }
-        
+
         if ($SqlCredential) {
             if ($PSDefaultParameterValues) {
                 $PSDefaultParameterValues.Remove('*:SqlCredential')
@@ -246,7 +254,7 @@
                 $PSDefaultParameterValues.Remove('*:SqlCredential')
             }
         }
-        
+
         if ($Credential) {
             if ($PSDefaultParameterValues) {
                 $PSDefaultParameterValues.Remove('*Dba*:Credential')
@@ -263,27 +271,27 @@
             }
         }
     }
-    
+
     process {
-                #get the output config for dbatools and store it to set it back at the end
-                $dbatoolsoutputconfig =  Get-DbatoolsConfigValue -FullName message.consoleoutput.disable
-                if(!$dbatoolsoutputconfig){
-                    Set-DbatoolsConfig -FullName message.consoleoutput.disable -Value $true
-                }
-        
-        
+        #get the output config for dbatools and store it to set it back at the end
+        $dbatoolsoutputconfig = Get-DbatoolsConfigValue -FullName message.consoleoutput.disable
+        if (!$dbatoolsoutputconfig) {
+            Set-DbatoolsConfig -FullName message.consoleoutput.disable -Value $true
+        }
+
+
         if (-not $Script -and -not $TestName -and -not $Check -and -not $ExcludeCheck -and -not $AllChecks) {
             Stop-PSFFunction -Message "Please specify Check, ExcludeCheck, Script, TestName or AllChecks"
             return
         }
-        
+
         if (-not $SqlInstance.InputObject -and -not $ComputerName.InputObject -and -not (Get-PSFConfigValue -FullName dbachecks.app.sqlinstance) -and -not (Get-PSFConfigValue -FullName dbachecks.app.computername) -and -not (Get-PSFConfigValue -FullName dbachecks.app.cluster)) {
             Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
             return
         }
-        
+
         $customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
-        
+
         foreach ($param in $customparam) {
             if (Test-PSFParameterBinding -ParameterName $param) {
                 $value = Get-Variable -Name $param
@@ -298,26 +306,26 @@
             $null = $PSBoundParameters.Remove($param)
         }
 
-        
+
         # Lil bit of cleanup here, for a switcharoo
         $null = $PSBoundParameters.Remove('AllChecks')
         $null = $PSBoundParameters.Remove('Check')
         $null = $PSBoundParameters.Remove('ExcludeCheck')
         $null = $PSBoundParameters.Add('Tag', $Check)
         $null = $PSBoundParameters.Add('ExcludeTag', $ExcludeCheck)
-        
+
         $globalexcludedchecks = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludecheck
         $global:ChecksToExclude = $ExcludeCheck + $globalexcludedchecks
         [string[]]$Script:ExcludedDatabases = Get-PSFConfigValue -FullName dbachecks.command.invokedbccheck.excludedatabases
         $Script:ExcludedDatabases += $ExcludeDatabase
 
-        
+
         foreach ($singlecheck in $check) {
             if ($singlecheck -in $globalexcludedchecks) {
                 Write-PSFMessage -Level Warning -Message "$singlecheck is excluded in command.invokedbccheck.excludecheck and will be skipped "
             }
         }
-        
+
         if ($AllChecks -and $globalexcludedchecks) {
             Write-PSFMessage -Level Warning -Message "$globalexcludedchecks will be skipped"
         }
@@ -325,7 +333,7 @@
         if ($ExcludedDatabases) {
             Write-PSFMessage -Level Warning -Message "$ExcludedDatabases databases will be skipped for all checks"
         }
-        
+
         # Then we'll need a generic param passer that doesnt require global params 
         # cuz global params are hard
 
@@ -368,4 +376,3 @@
         }
     }
 }
-
