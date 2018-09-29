@@ -53,3 +53,6 @@ Accept wildcard characters: False
 30/05/2012 - RMS
 
 ## RELATED LINKS
+
+[https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcReleaseNote/](https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcReleaseNote/)
+

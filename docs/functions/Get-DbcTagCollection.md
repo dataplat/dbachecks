@@ -78,3 +78,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+
+[https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcTagCollection/](https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcTagCollection/)
+

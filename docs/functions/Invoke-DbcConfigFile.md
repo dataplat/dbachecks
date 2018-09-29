@@ -68,3 +68,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+
+[https://dbachecks.readthedocs.io/en/latest/functions/Invoke-DbcConfigFile/](https://dbachecks.readthedocs.io/en/latest/functions/Invoke-DbcConfigFile/)
+

@@ -1,7 +1,7 @@
 # Set-DbcConfig
 
 ## SYNOPSIS
-Sets configuration entries.
+Sets configuration values for specific checks.
 
 ## SYNTAX
 
@@ -11,25 +11,41 @@ Set-DbcConfig [[-Name] <String>] [[-Value] <Object>] [[-Handler] <ScriptBlock>] 
 ```
 
 ## DESCRIPTION
-This function creates or changes configuration values.
-
-These can be used to provide dynamic configuration information outside the PowerShell variable system.
+Changes configuration values which enable each check to have specific threshholds
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Set-DbcConfig -Name Lists.SqlServers -Value sql2016, sql2017, sqlcluster
+Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sqlcluster
 ```
 
-Resets the lists.sqlservers entry to sql2016, sql2017, sqlcluster
+Sets the SQL Instances which will be checked by default using Invoke-DbcCheck 
+to sql2016, sql2017, sqlcluster
 
 ### EXAMPLE 2
 ```
-Set-DbcConfig -Name Lists.SqlServers -Value sql2016, sql2017, sqlcluster -Append
+Set-DbcConfig -Name policy.validdbowner.name -Value 'TheBeard\sqldbowner'
 ```
 
-Addds on to the current lists.sqlservers entry with sql2016, sql2017, sqlcluster
+Sets the value of the configuration for the expected database owners to
+TheBeard\sqldbowner
+
+### EXAMPLE 3
+```
+Set-DbcConfig -Name policy.database.status.excludereadonly -Value 'TheBeard'
+```
+
+Sets the value of the configuration for databases that are expected to be readonly
+to TheBeard
+
+### EXAMPLE 4
+```
+Set-DbcConfig -Name agent.validjobowner.name -Value 'TheBeard\SQLJobOwner' -Append
+```
+
+Adds 'TheBeard\SQLJobOwner' to the value of the configuration for accounts that 
+are expected to be owners of SQL Agent Jobs
 
 ## PARAMETERS
 
@@ -49,7 +65,7 @@ Accept wildcard characters: False
 ```
 
 ### -Value
-The value to assign to the named configuration element.
+The value to assign.
 
 ```yaml
 Type: Object
@@ -139,3 +155,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+
+[https://dbachecks.readthedocs.io/en/latest/functions/Set-DbcConfig/](https://dbachecks.readthedocs.io/en/latest/functions/Set-DbcConfig/)
+
