@@ -1,5 +1,7 @@
+Install-Module PlatyPs -Scope CurrentUser
+
 $ProjectRoot = Get-Location
-$ModuleName = 'SQLDiagAPI'
+$ModuleName = 'dbachecks'
 $BuildDate = Get-Date -uFormat '%Y-%m-%d'
 $ReleaseNotes = "$ProjectRoot\RELEASE.md"
 $ChangeLog = "$ProjectRoot\docs\ChangeLog.md"
