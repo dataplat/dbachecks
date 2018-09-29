@@ -1,4 +1,5 @@
 Install-Module PlatyPs -Scope CurrentUser
+Import-Module PlatyPs -Verbose
 
 $ProjectRoot = Get-Location
 $ModuleName = 'dbachecks'
