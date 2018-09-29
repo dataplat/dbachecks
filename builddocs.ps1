@@ -1,4 +1,4 @@
-Install-Module PlatyPs -Scope CurrentUser
+Install-Module PlatyPs -Scope CurrentUser -Force
 Import-Module PlatyPs -Verbose
 
 $ProjectRoot = Get-Location
