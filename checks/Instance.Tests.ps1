@@ -515,10 +515,10 @@
 						$psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
 					}
 					if ($psitem.found -eq $true) {
-						It "Active Directory user $($psitem.login) should not have expired password in $($psitem.domain)" {
+						It "Active Directory user $($psitem.login) should not have an expired password in $($psitem.domain)" {
 							$psitem.PasswordExpired | Should -Be $false -Because "$($psitem.login) password should not be expired"
 						}
-						It "Active Directory user $($psitem.login) should not be lockedout in $($psitem.domain)" {
+						It "Active Directory user $($psitem.login) should not be locked out in $($psitem.domain)" {
 							$psitem.lockedout | Should -Be $false -Because "$($psitem.login) should not be locked out"
 						}
 						It "Active Directory user $($psitem.login) should be enabled on $($psitem.domain)" {
