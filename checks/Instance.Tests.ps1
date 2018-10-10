@@ -431,7 +431,7 @@
             Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
         }
     }
-    Describe "OLE Automation" -Tags OLEAutomation, $filename {
+    Describe "OLE Automation" -Tags OLEAutomation, security, $filename {
         $OLEAutomation = Get-DbcConfigValue policy.oleautomation
         if ($NotContactable -contains $psitem) {
             Context "Testing OLE Automation on $psitem" {
