@@ -23,7 +23,7 @@
     CompanyName            = 'SQL Community Collaborative'
 
     # Copyright statement for this module
-    Copyright              = '(c) 2017. All rights reserved.'
+    Copyright              = '(c) 2018. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description            = 'SQL Server Infrastructure validation Tests to ensure that your SQL Server estate is and continues to be compliant with your requirements'
@@ -131,9 +131,9 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 29/09/2018
-auto deploy bugs to readthedocs
-Alter Get-DbcReleaseNote to use the markdown file
+## Date 11/10/2018
+Added Check for CLR Enabled
+Demo CI/CD at Polar Conf
             
 Run Get-DbcReleaseNotes for all release notes
             "
