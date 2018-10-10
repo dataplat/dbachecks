@@ -135,6 +135,7 @@
 Added Check for CLR Enabled
 Added Check for Cross Database Ownership Chaining
 Added Check for Database Mail XPs
+Added Check for Ad Hoc Distributed Queries
 Added Tag for security
 Demo CI/CD at Polar Conf
             
