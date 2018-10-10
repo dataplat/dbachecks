@@ -115,7 +115,7 @@
         }
     }
 
-    Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, Security, $filename {
+    Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
                 It "Can't Connect to $Psitem" {
