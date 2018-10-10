@@ -1,6 +1,8 @@
 ## Date 11/10/2018
 Added Check for CLR Enabled
 Added Check for Cross Database Ownership Chaining
+Added Check for Database Mail XPs
+Added tag for security
 Demo CI/CD at Polar Conf
 
 ##Latest
