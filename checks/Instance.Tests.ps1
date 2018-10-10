@@ -660,6 +660,24 @@
         }
     }
 
+    Describe "Cross Database Ownership Chaining" -Tags CrossDBOwnershipChaining, security, $filename {
+        $CrossDBOwnershipChaining = Get-DbcConfigValue policy.security.crossdbownershipchaining
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Cross Database Ownership Chaining on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Cross Database Ownership Chaining on $psitem" {
+                It "Cross Database Ownership Chaining is set to $CLREnabled on $psitem" {
+                    Assert-CrossDBOwnershipChaining -SQLInstance $Psitem -CrossDBOwnershipChaining $CrossDBOwnershipChaining 
+                }
+            }
+        }
+    }
+
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
