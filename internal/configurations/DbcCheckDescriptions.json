@@ -386,5 +386,9 @@
     {
         "UniqueTag": "CrossDBOwnershipChaining",
         "Description": "Tests that the Cross Database Ownership Chaining configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "DatabaseMailEnabled",
+        "Description": "Tests that the Database Mail XPs configuration setting is set as specified (default false)"
     }
  ]
