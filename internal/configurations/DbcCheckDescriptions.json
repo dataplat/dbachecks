@@ -378,5 +378,9 @@
     {
         "UniqueTag": "TraceFlagsNotExpected",
         "Description": "Tests that the specified (default none) trace flags are not running on the instance"
+    },
+    {
+        "UniqueTag": "CLREnabled",
+        "Description": "Tests that the CLR Enabled configuration setting is set as specified (default false)"
     }
  ]
