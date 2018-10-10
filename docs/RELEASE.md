@@ -1,5 +1,6 @@
 ## Date 11/10/2018
 Added Check for CLR Enabled
+Added Check for Cross Database Ownership Chaining
 Demo CI/CD at Polar Conf
 
 ##Latest
