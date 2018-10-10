@@ -382,5 +382,9 @@
     {
         "UniqueTag": "CLREnabled",
         "Description": "Tests that the CLR Enabled configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "CrossDBOwnershipChaining",
+        "Description": "Tests that the Cross Database Ownership Chaining configuration setting is set as specified (default false)"
     }
  ]
