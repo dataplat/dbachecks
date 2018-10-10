@@ -677,6 +677,23 @@
             }
         }
     }
+    Describe "Ad Hoc Distributed Queries" -Tags AdHocDistributedQueriesEnabled, security, $filename {
+        $AdHocDistributedQueriesEnabled = Get-DbcConfigValue policy.security.AdHocDistributedQueriesEnabled
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Ad Hoc Distributed Queries on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Ad Hoc Distributed Queries on $psitem" {
+                It "Ad Hoc Distributed Queries is set to $AdHocDistributedQueriesEnabled on $psitem" {
+                    Assert-AdHocDistributedQueriesEnabled -SQLInstance $Psitem -AdHocDistributedQueriesEnabled $AdHocDistributedQueriesEnabled 
+                }
+            }
+        }
+    }
 
 }
 
