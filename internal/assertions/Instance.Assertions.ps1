@@ -104,3 +104,10 @@ function Assert-CLREnabled {
     
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name IsSqlClrEnabled).ConfiguredValue -eq 1 | Should -Be $CLREnabled -Because 'The CLR Enabled should be set correctly'
 }
+function Assert-CrossDBOwnershipChaining {
+    param (
+        $SQLInstance,
+        $CrossDBOwnershipChaining
+    )
+   (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name CrossDBOwnershipChaining).ConfiguredValue -eq 1 | Should -Be $CrossDBOwnershipChaining -Because 'The Cross Database Ownership Chaining setting should be set correctly'
+}
