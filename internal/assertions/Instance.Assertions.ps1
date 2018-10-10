@@ -95,3 +95,12 @@ function Assert-NotTraceFlag {
         }
     }
 }
+
+function Assert-CLREnabled {
+    param (
+        $SQLInstance,
+        $CLREnabled
+    )
+    
+    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name IsSqlClrEnabled).ConfiguredValue -eq 1 | Should -Be $CLREnabled -Because 'The CLR Enabled should be set correctly'
+}
