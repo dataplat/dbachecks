@@ -111,3 +111,10 @@ function Assert-CrossDBOwnershipChaining {
     )
    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name CrossDBOwnershipChaining).ConfiguredValue -eq 1 | Should -Be $CrossDBOwnershipChaining -Because 'The Cross Database Ownership Chaining setting should be set correctly'
 }
+function Assert-AdHocDistributedQueriesEnabled {
+    param (
+        $SQLInstance,
+        $AdHocDistributedQueriesEnabled
+    )
+   (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name AdHocDistributedQueriesEnabled).ConfiguredValue -eq 1 | Should -Be $AdHocDistributedQueriesEnabled -Because 'The AdHoc Distributed Queries Enabled setting should be set correctly'
+}
