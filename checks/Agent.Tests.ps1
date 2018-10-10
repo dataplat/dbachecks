@@ -16,6 +16,26 @@
     else {
 
     }
+
+    Describe "Database Mail XPs" -Tags DatabaseMailEnabled, security, $filename {
+        $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Database Mail XPs on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Testing Database Mail XPs  on $psitem" {
+                It "Testing Database Mail XPs is set to $DatabaseMailEnabled on $psitem" {
+                    Assert-DatabaseMailEnabled -SQLInstance $Psitem -DatabaseMailEnabled $DatabaseMailEnabled 
+                }
+            }
+        }
+    }
+
+
 }
 
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
