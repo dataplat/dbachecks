@@ -1,15 +1,5 @@
-## Date 11/10/2018
-Added Check for CLR Enabled
-Added Check for Cross Database Ownership Chaining
-Added Check for Database Mail XPs
-Added Check for Ad Hoc Distributed Queries
-Added tag for security
-Demo CI/CD at Polar Conf
-
-##Latest
-
 ## Date 29/09/2018
-auto deploy docs to readthedocs
+auto deploy bugs to readthedocs
 Alter Get-DbcReleaseNote to use the markdown file
 
 ##Latest
