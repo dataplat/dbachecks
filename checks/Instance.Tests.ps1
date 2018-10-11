@@ -694,8 +694,6 @@
             }
         }
     }
->>>>>>> b7c65f4b995bb581c991cb640c91bc87bbcab683
-
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
