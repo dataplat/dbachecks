@@ -75,6 +75,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyOlaUserlogretention <Object>] [-ConfigPolicyOlaUserlogscheduled <Object>]
  [-ConfigPolicyOleautomation <Object>] [-ConfigPolicyPageverify <Object>]
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
+ [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
+ [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
  [-ConfigPolicyServerCpuprioritisation <Object>] [-ConfigPolicyStorageBackuppath <Object>]
  [-ConfigPolicyTraceflagsExpected <Object>] [-ConfigPolicyTraceflagsNotexpected <Object>]
  [-ConfigPolicyTwodigityearcutoff <Object>] [-ConfigPolicyValiddbownerExcludedb <Object>]
@@ -162,6 +164,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyOlaUserlogretention <Object>] [-ConfigPolicyOlaUserlogscheduled <Object>]
  [-ConfigPolicyOleautomation <Object>] [-ConfigPolicyPageverify <Object>]
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
+ [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
+ [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
  [-ConfigPolicyServerCpuprioritisation <Object>] [-ConfigPolicyStorageBackuppath <Object>]
  [-ConfigPolicyTraceflagsExpected <Object>] [-ConfigPolicyTraceflagsNotexpected <Object>]
  [-ConfigPolicyTwodigityearcutoff <Object>] [-ConfigPolicyValiddbownerExcludedb <Object>]
@@ -2532,6 +2536,66 @@ Accept wildcard characters: False
 
 ### -ConfigPolicyRecoverymodelType
 {{Fill ConfigPolicyRecoverymodelType Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicySecurityAdhocdistributedqueriesenabled
+{{Fill ConfigPolicySecurityAdhocdistributedqueriesenabled Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicySecurityClrenabled
+{{Fill ConfigPolicySecurityClrenabled Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicySecurityCrossdbownershipchaining
+{{Fill ConfigPolicySecurityCrossdbownershipchaining Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicySecurityDatabasemailenabled
+{{Fill ConfigPolicySecurityDatabasemailenabled Description}}
 
 ```yaml
 Type: Object

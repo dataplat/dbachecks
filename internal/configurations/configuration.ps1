@@ -41,7 +41,11 @@ Set-PSFConfig -Module dbachecks -Name policy.backup.fullmaxdays -Value 1 -Initia
 Set-PSFConfig -Module dbachecks -Name policy.backup.diffmaxhours -Value 25 -Initialize -Description "Maximum number of hours before Diff Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backup.logmaxminutes -Value 15 -Initialize -Description "Maximum number of minutes before Log Backups are considered outdated"
 Set-PsFConfig -Module dbachecks -Name policy.backup.newdbgraceperiod -Value 0 -Initialize -Description "The number of hours a newly created database is allowed to not have backups"
-Set-PSFConfig -Module dbachecks -Name policy.backup.defaultbackupcompression -Validation bool -Value $true -Initialize -Description "Default Backup Compression check should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.backup.defaultbackupcompression -Validation bool -Value $true -Initialize -Description "Default Backup Compression should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.clrenabled -Validation bool -Value $false -Initialize -Description "CLR Enabled should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.crossdbownershipchaining -Validation bool -Value $false -Initialize -Description "Cross Database Ownership Chaining should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.databasemailenabled -Validation bool -Value $false -Initialize -Description "Database Mail XPs should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.adhocdistributedqueriesenabled -Validation bool -Value $false -Initialize -Description "Ad Hoc Distributed Queries should be enabled `$true or disabled `$false"
 
 #diskspce
 Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -Initialize -Description "Percent disk free"

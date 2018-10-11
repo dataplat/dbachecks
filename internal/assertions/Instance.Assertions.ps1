@@ -95,3 +95,26 @@ function Assert-NotTraceFlag {
         }
     }
 }
+
+function Assert-CLREnabled {
+    param (
+        $SQLInstance,
+        $CLREnabled
+    )
+    
+    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name IsSqlClrEnabled).ConfiguredValue -eq 1 | Should -Be $CLREnabled -Because 'The CLR Enabled should be set correctly'
+}
+function Assert-CrossDBOwnershipChaining {
+    param (
+        $SQLInstance,
+        $CrossDBOwnershipChaining
+    )
+   (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name CrossDBOwnershipChaining).ConfiguredValue -eq 1 | Should -Be $CrossDBOwnershipChaining -Because 'The Cross Database Ownership Chaining setting should be set correctly'
+}
+function Assert-AdHocDistributedQueriesEnabled {
+    param (
+        $SQLInstance,
+        $AdHocDistributedQueriesEnabled
+    )
+   (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name AdHocDistributedQueriesEnabled).ConfiguredValue -eq 1 | Should -Be $AdHocDistributedQueriesEnabled -Because 'The AdHoc Distributed Queries Enabled setting should be set correctly'
+}

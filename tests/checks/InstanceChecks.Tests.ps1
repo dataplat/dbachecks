@@ -509,4 +509,86 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
 			{Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag  117,3604, 3605} | Should -Throw -ExpectedMessage  "Expected 117 to not be found in collection @(117, 118), because We expect that Trace Flag 117 will not be set on Dummy, but it was found."
         }
 	}
+    Context "Checking CLR Enabled" {
+        # Mock the version check for running tests
+        Mock Connect-DbaInstance {}
+        # Define test cases for the results to fail test and fill expected message
+        # So the results of SPConfigure is 1, we expect $false but the result is true and the results of SPConfigure is 0, we expect $true but the result is false
+        $TestCases = @{spconfig = 1; expected = $false; actual = $true}, @{spconfig = 0; expected = $true; actual = $false}
+        It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
+            Param($spconfig, $actual, $expected)
+            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            {Assert-CLREnabled -SQLInstance 'Dummy' -CLREnabled $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The CLR Enabled should be set correctly, but got `$$actual"
+        }
+        $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
+        It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
+            Param($spconfig, $expected)
+            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            Assert-CLREnabled -SQLInstance 'Dummy' -CLREnabled $expected
+        }
+        # Validate we have called the mock the correct number of times
+        It "Should call the mocks" {
+            $assertMockParams = @{
+                'CommandName' = 'Get-DbaSpConfigure'
+                'Times'       = 4
+                'Exactly'     = $true
+            }
+            Assert-MockCalled @assertMockParams
+        }
+    }
+    Context "Checking Cross DB Ownership Chaining" {
+        # Mock the version check for running tests
+        Mock Connect-DbaInstance {}
+        # Define test cases for the results to fail test and fill expected message
+        # So the results of SPConfigure is 1, we expect $false but the result is true and the results of SPConfigure is 0, we expect $true but the result is false
+        $TestCases = @{spconfig = 1; expected = $false; actual = $true}, @{spconfig = 0; expected = $true; actual = $false}
+        It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
+            Param($spconfig, $actual, $expected)
+            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            {Assert-CrossDBOwnershipChaining -SQLInstance 'Dummy' -CrossDBOwnershipChaining $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The Cross Database Ownership Chaining setting should be set correctly, but got `$$actual"
+        }
+        $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
+        It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
+            Param($spconfig, $expected)
+            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            Assert-CrossDBOwnershipChaining -SQLInstance 'Dummy' -CrossDBOwnershipChaining $expected
+        }
+        # Validate we have called the mock the correct number of times
+        It "Should call the mocks" {
+            $assertMockParams = @{
+                'CommandName' = 'Get-DbaSpConfigure'
+                'Times'       = 4
+                'Exactly'     = $true
+            }
+            Assert-MockCalled @assertMockParams
+        }
+    }
+    Context "Checking AdHoc Distributed Queries Enabled" {
+        # Mock the version check for running tests
+        Mock Connect-DbaInstance {}
+        # Define test cases for the results to fail test and fill expected message
+        # So the results of SPConfigure is 1, we expect $false but the result is true and the results of SPConfigure is 0, we expect $true but the result is false
+        $TestCases = @{spconfig = 1; expected = $false; actual = $true}, @{spconfig = 0; expected = $true; actual = $false}
+        It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
+            Param($spconfig, $actual, $expected)
+            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            {Assert-AdHocDistributedQueriesEnabled -SQLInstance 'Dummy' -AdHocDistributedQueriesEnabled $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The AdHoc Distributed Queries Enabled setting should be set correctly, but got `$$actual"
+        }
+        $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
+        It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
+            Param($spconfig, $expected)
+            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            Assert-AdHocDistributedQueriesEnabled -SQLInstance 'Dummy' -AdHocDistributedQueriesEnabled $expected
+        }
+        # Validate we have called the mock the correct number of times
+        It "Should call the mocks" {
+            $assertMockParams = @{
+                'CommandName' = 'Get-DbaSpConfigure'
+                'Times'       = 4
+                'Exactly'     = $true
+            }
+            Assert-MockCalled @assertMockParams
+        }
+    }
+
 }
