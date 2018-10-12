@@ -67,3 +67,28 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
         }
     }
 }
+
+Describe "Local Security Policy Privileges" -Tags SecurityPolicy, $filename {
+    if ($NotContactable -contains $psitem) {
+        Context "Testing Local Security Policy Privileges on $psitem" {
+            It "Can't Connect to $Psitem" {
+                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            }
+        }
+    }
+    else {
+        
+        Context "Testing Local Security Policy Privileges on $psitem" {
+            $SQLServiceAccount= (Get-DbaService -ComputerName $Psitem -Type Engine).StartName
+            $IFI = (Get-DbaPrivilege -ComputerName $Psitem  | where {$_.user -eq $SQLServiceAccount}).InstantFileInitializationPrivilege 
+            $LPIM = (Get-DbaPrivilege -ComputerName $Psitem | where {$_.user -eq $SQLServiceAccount}).LockPagesInMemoryPrivilege
+            It "IFI Enabled Should True on $psitem" {
+                    $IFI | Should -EQ $True -Because 'This permission keeps SQL Server from "zeroing out" new space when you create or expand a data file'
+                
+            }
+            It "LPIM Enabled True on $psitem" {
+                    $LPIM | Should -EQ $True -Because 'Locking pages in memory may boost performance when paging memory to disk is expected.'
+            }
+        }
+    }
+}
