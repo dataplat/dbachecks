@@ -1,4 +1,4 @@
-﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Instance.assertions.ps1
 
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
@@ -671,7 +671,7 @@
         }
         else {
             Context "Testing Cross Database Ownership Chaining on $psitem" {
-                It "Cross Database Ownership Chaining is set to $CLREnabled on $psitem" {
+                It "Cross Database Ownership Chaining is set to $CrossDBOwnershipChaining on $psitem" {
                     Assert-CrossDBOwnershipChaining -SQLInstance $Psitem -CrossDBOwnershipChaining $CrossDBOwnershipChaining 
                 }
             }
