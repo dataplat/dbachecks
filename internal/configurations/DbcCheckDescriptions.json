@@ -394,5 +394,9 @@
     {
         "UniqueTag": "AdHocDistributedQueriesEnabled",
         "Description": "Tests that the AdHoc Distributed Queries configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "XpCmdShellDisabled",
+        "Description": "Tests that the XP CmdShell configuration setting is set as specified (default true - meaning it should be disabled)"
     }
  ]
