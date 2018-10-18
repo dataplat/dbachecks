@@ -1,4 +1,4 @@
-$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Instance.assertions.ps1
 
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
@@ -690,6 +690,23 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
             Context "Testing Ad Hoc Distributed Queries on $psitem" {
                 It "Ad Hoc Distributed Queries is set to $AdHocDistributedQueriesEnabled on $psitem" {
                     Assert-AdHocDistributedQueriesEnabled -SQLInstance $Psitem -AdHocDistributedQueriesEnabled $AdHocDistributedQueriesEnabled 
+                }
+            }
+        }
+    }
+    Describe "XP CmdShell" -Tags XpCmdShellDisabled, security, $filename {
+        $XpCmdShellDisabled = Get-DbcConfigValue policy.security.XpCmdShellDisabled
+        if ($NotContactable -contains $psitem) {
+            Context "Testing XP CmdShell on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing XP CmdShell on $psitem" {
+                It "XPCmdShell is set to $XpCmdShellDisabled on $psitem" {
+                    Assert-XpCmdShellDisabled -SQLInstance $Psitem -XpCmdShellDisabled $XpCmdShellDisabled 
                 }
             }
         }
