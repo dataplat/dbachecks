@@ -103,7 +103,7 @@
                     $TempDBTest[2].CurrentSetting | Should -Be $TempDBTest[2].Recommended -Because 'Auto growth type should not be percent'
                 }
                 It "should not have TempDB Files on the C Drive on $($TempDBTest[3].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFilesonC) {
-                    $TempDBTest[3].CurrentSetting | Should -Be $TempDBTest[3].Recommended -Because 'You dot want the tempdb files on the same drive as the operating system'
+                    $TempDBTest[3].CurrentSetting | Should -Be $TempDBTest[3].Recommended -Because 'You do not want the tempdb files on the same drive as the operating system'
                 }
                 It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFileSizeMax) {
                     $TempDBTest[4].CurrentSetting | Should -Be $TempDBTest[4].Recommended -Because 'Tempdb files should be able to grow'
@@ -127,7 +127,7 @@
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
                 It "$psitem Should Be Optimised for Ad Hoc workloads" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
                     @(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
-                        $psitem.CurrentOptimizeAdHoc | Should -Be $psitem.RecommendedOptimizeAdHoc
+                        $psitem.CurrentOptimizeAdHoc | Should -Be $psitem.RecommendedOptimizeAdHoc -Because "optimize for ad hoc workloads is a recommended setting"
                     }
                 }
             }
@@ -186,7 +186,7 @@
             Context "Testing Network Latency on $psitem" {
                 @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
                     It "network latency Should Be less than $max ms on $($psitem.SqlInstance)" {
-                        $psitem.Average.TotalMilliseconds | Should -BeLessThan $max -Because 'You dont want to be waiting on the network'
+                        $psitem.Average.TotalMilliseconds | Should -BeLessThan $max -Because 'You do not want to be waiting on the network'
                     }
                 }
             }
@@ -515,11 +515,11 @@
                         $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                     }
                     if ($psitem.found -eq $true) {
-                        It "Active Directory user $($psitem.login) should not have expired password in $($psitem.domain)" {
+                        It "Active Directory user $($psitem.login) should not have an expired password in $($psitem.domain)" {
                             $psitem.PasswordExpired | Should -Be $false -Because "$($psitem.login) password should not be expired"
                         }
-                        It "Active Directory user $($psitem.login) should not be lockedout in $($psitem.domain)" {
-                            $psitem.lockedout | Should -Be $false -Because "$($psitem.login) should mot be locked out"
+                        It "Active Directory user $($psitem.login) should not be locked out in $($psitem.domain)" {
+                            $psitem.lockedout | Should -Be $false -Because "$($psitem.login) should not be locked out"
                         }
                         It "Active Directory user $($psitem.login) should be enabled on $($psitem.domain)" {
                             $psitem.Enabled | Should -Be $true -Because "$($psitem.login) should be enabled"
@@ -694,7 +694,6 @@
             }
         }
     }
-
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
