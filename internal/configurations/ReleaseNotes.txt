@@ -1,11 +1,23 @@
+## Date 17/10/2018
+Spelling and Because added - Thank you @LowlyDBA
+New Check for XPCmdShell enabled added
+
+##Latest
+
+## Date 11/10/2018
+Added Check for CLR Enabled
+Added Check for Cross Database Ownership Chaining
+Added Check for Database Mail XPs
+Added Check for Ad Hoc Distributed Queries
+Added Tag for security
+Demo CI/CD at Polar Conf
+
 ## Date 24/09/2018
 Moved the Instance Connection Check to the Instance Tests
 Fixed bug with Set-DbcConfig not adding none-arrays!
 New Check for Expected Trace Flags
 New Check for Not Expected TraceFlags
 Stopped dbatools chatty messages polluting the test results
-
-##Latest
 
 ## Date 07/09/2018
 Updated dbatools required module to 0.9.410

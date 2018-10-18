@@ -131,13 +131,11 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 11/10/2018
-Added Check for CLR Enabled
-Added Check for Cross Database Ownership Chaining
-Added Check for Database Mail XPs
-Added Check for Ad Hoc Distributed Queries
-Added Tag for security
-Demo CI/CD at Polar Conf
+## Date 17/10/2018
+Spelling and Because added - Thank you @LowlyDBA
+New Check for XPCmdShell enabled added
+
+##Latest
             
 Run Get-DbcReleaseNotes for all release notes
             "

@@ -118,3 +118,11 @@ function Assert-AdHocDistributedQueriesEnabled {
     )
    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name AdHocDistributedQueriesEnabled).ConfiguredValue -eq 1 | Should -Be $AdHocDistributedQueriesEnabled -Because 'The AdHoc Distributed Queries Enabled setting should be set correctly'
 }
+function Assert-XpCmdShellDisabled {
+    param (
+        $SQLInstance,
+        $XpCmdShellDisabled
+    )
+   (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name XPCmdShellEnabled).ConfiguredValue -eq 0 | Should -Be $XpCmdShellDisabled -Because 'The XP CmdShell setting should be set correctly'
+}
+
