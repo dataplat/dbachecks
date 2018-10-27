@@ -69,7 +69,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing suspect pages on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$_.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}.ForEach{
+                $Instance.Databases.Where{if ($Database) {$_.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}.ForEach{
                     $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
                     It "$($psitem.Name) should return 0 suspect pages on $($psitem.Parent.Name)" {
                         @($results).Count | Should -Be 0 -Because "You do not want suspect pages"
@@ -312,7 +312,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Disabled indexes on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($_.IsAccessible -eq $true)}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($_.IsAccessible -eq $true)}.ForEach{
                     $results = Find-DbaDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
                     It "$($psitem.Name) on $($psitem.Parent.Name) should return 0 Disabled indexes" {
                         @($results).Count | Should -Be 0 -Because "Disabled indexes are wasting disk space"
@@ -333,7 +333,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing database growth event on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)})}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)})}.ForEach{
                     $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
                     It "$($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                         @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
@@ -397,7 +397,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Auto Close on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Close set to $autoclose" {
                         $psitem.AutoClose | Should -Be $autoclose -Because "Because!"
                     }
@@ -417,7 +417,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Auto Shrink on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Shrink set to $autoshrink" {
                         $psitem.AutoShrink | Should -Be $autoshrink -Because "Shrinking databases causes fragmentation and performance issues"
                     }
@@ -439,7 +439,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing last full backups on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                $Instance.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
                     It -Skip:$skip "$($psitem.Name) full backups on $($psitem.Parent.Name) Should Be less than $maxfull days" {
                         $psitem.LastBackupDate | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because "Taking regular backups is extraordinarily important"
@@ -556,7 +556,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Log File size for $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($Psitem.IsAccessible -eq $true)}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($Psitem.IsAccessible -eq $true)}.ForEach{
                     $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                     $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
                     $Splat = @{$LogFileSizeComparison = $true;
@@ -585,7 +585,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing for files likely to grow soon on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PsItem.Name -notin $exclude})}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PsItem.Name -notin $exclude})}.ForEach{
                     $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                     $Files | Add-Member ScriptProperty -Name PercentFree -Value {100 - [Math]::Round(([int64]$PSItem.UsedSpace.Byte / [int64]$PSItem.Size.Byte) * 100, 3)}
                     $Files | ForEach-Object {
@@ -664,7 +664,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Auto Create Statistics on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Create Statistics set to $autocreatestatistics" {
                         $psitem.AutoCreateStatisticsEnabled | Should -Be $autocreatestatistics -Because "This is value expeceted for autocreate statistics"
                     }
@@ -684,7 +684,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Auto Update Statistics on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics set to $autoupdatestatistics" {
                         $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because "This is value expeceted for autoupdate statistics"
                     }
@@ -704,7 +704,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Auto Update Statistics Asynchronously on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
                         $psitem.AutoUpdateStatisticsAsync | Should -Be $autoupdatestatisticsasynchronously  -Because "This is value expeceted for autoupdate statistics asynchronously"
                     }
