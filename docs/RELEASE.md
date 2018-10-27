@@ -1,8 +1,20 @@
-## Date 29/09/2018
-auto deploy bugs to readthedocs
-Alter Get-DbcReleaseNote to use the markdown file
+## Date 27/10/2018
+Fixed #435 Page verify on SQL 2000 and SQL2005
+Reduced number of calls to the instance for database checks improving performance
 
 ##Latest
+
+## Date 17/10/2018
+Spelling and Because added - Thank you @LowlyDBA
+New Check for XPCmdShell enabled added
+
+## Date 11/10/2018
+Added Check for CLR Enabled
+Added Check for Cross Database Ownership Chaining
+Added Check for Database Mail XPs
+Added Check for Ad Hoc Distributed Queries
+Added Tag for security
+Demo CI/CD at Polar Conf
 
 ## Date 24/09/2018
 Moved the Instance Connection Check to the Instance Tests

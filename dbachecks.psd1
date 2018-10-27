@@ -131,9 +131,9 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 17/10/2018
-Spelling and Because added - Thank you @LowlyDBA
-New Check for XPCmdShell enabled added
+## Date 27/10/2018
+Fixed #435 Page verify on SQL 2000 and SQL2005
+Reduced number of calls to the instance for database checks improving performance
 
 ##Latest
             
