@@ -77,13 +77,13 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
  [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
  [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
- [-ConfigPolicyServerCpuprioritisation <Object>] [-ConfigPolicyStorageBackuppath <Object>]
- [-ConfigPolicyTraceflagsExpected <Object>] [-ConfigPolicyTraceflagsNotexpected <Object>]
- [-ConfigPolicyTwodigityearcutoff <Object>] [-ConfigPolicyValiddbownerExcludedb <Object>]
- [-ConfigPolicyValiddbownerName <Object>] [-ConfigPolicyWhoisactiveDatabase <Object>]
- [-ConfigPolicyXeventRequiredrunningsession <Object>] [-ConfigPolicyXeventRequiredstoppedsession <Object>]
- [-ConfigPolicyXeventValidrunningsession <Object>] [-ConfigSkipBackupReadonly <Object>]
- [-ConfigSkipBackupTesting <Object>] [-ConfigSkipConnectionPing <Object>]
+ [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
+ [-ConfigPolicyStorageBackuppath <Object>] [-ConfigPolicyTraceflagsExpected <Object>]
+ [-ConfigPolicyTraceflagsNotexpected <Object>] [-ConfigPolicyTwodigityearcutoff <Object>]
+ [-ConfigPolicyValiddbownerExcludedb <Object>] [-ConfigPolicyValiddbownerName <Object>]
+ [-ConfigPolicyWhoisactiveDatabase <Object>] [-ConfigPolicyXeventRequiredrunningsession <Object>]
+ [-ConfigPolicyXeventRequiredstoppedsession <Object>] [-ConfigPolicyXeventValidrunningsession <Object>]
+ [-ConfigSkipBackupReadonly <Object>] [-ConfigSkipBackupTesting <Object>] [-ConfigSkipConnectionPing <Object>]
  [-ConfigSkipConnectionRemoting <Object>] [-ConfigSkipDatabaseFilegrowthdisabled <Object>]
  [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
  [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
@@ -166,13 +166,13 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
  [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
  [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
- [-ConfigPolicyServerCpuprioritisation <Object>] [-ConfigPolicyStorageBackuppath <Object>]
- [-ConfigPolicyTraceflagsExpected <Object>] [-ConfigPolicyTraceflagsNotexpected <Object>]
- [-ConfigPolicyTwodigityearcutoff <Object>] [-ConfigPolicyValiddbownerExcludedb <Object>]
- [-ConfigPolicyValiddbownerName <Object>] [-ConfigPolicyWhoisactiveDatabase <Object>]
- [-ConfigPolicyXeventRequiredrunningsession <Object>] [-ConfigPolicyXeventRequiredstoppedsession <Object>]
- [-ConfigPolicyXeventValidrunningsession <Object>] [-ConfigSkipBackupReadonly <Object>]
- [-ConfigSkipBackupTesting <Object>] [-ConfigSkipConnectionPing <Object>]
+ [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
+ [-ConfigPolicyStorageBackuppath <Object>] [-ConfigPolicyTraceflagsExpected <Object>]
+ [-ConfigPolicyTraceflagsNotexpected <Object>] [-ConfigPolicyTwodigityearcutoff <Object>]
+ [-ConfigPolicyValiddbownerExcludedb <Object>] [-ConfigPolicyValiddbownerName <Object>]
+ [-ConfigPolicyWhoisactiveDatabase <Object>] [-ConfigPolicyXeventRequiredrunningsession <Object>]
+ [-ConfigPolicyXeventRequiredstoppedsession <Object>] [-ConfigPolicyXeventValidrunningsession <Object>]
+ [-ConfigSkipBackupReadonly <Object>] [-ConfigSkipBackupTesting <Object>] [-ConfigSkipConnectionPing <Object>]
  [-ConfigSkipConnectionRemoting <Object>] [-ConfigSkipDatabaseFilegrowthdisabled <Object>]
  [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
  [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
@@ -2596,6 +2596,21 @@ Accept wildcard characters: False
 
 ### -ConfigPolicySecurityDatabasemailenabled
 {{Fill ConfigPolicySecurityDatabasemailenabled Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicySecurityXpcmdshelldisabled
+{{Fill ConfigPolicySecurityXpcmdshelldisabled Description}}
 
 ```yaml
 Type: Object
