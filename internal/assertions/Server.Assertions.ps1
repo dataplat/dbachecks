@@ -71,12 +71,12 @@ function Get-AllServerInfo {
                         }
                     }
                     else {
-                        $PowerPlan = 'An Error occured'
+                        $PowerPlan = 'An Error occurred'
                     }
                 }
             }
             else {
-                $PowerPlan = 'An Error occured'
+                $PowerPlan = 'An Error occurred'
             }
         }
         {$Tags -contains 'SPN'} {
@@ -96,7 +96,7 @@ function Get-AllServerInfo {
                             $SPNs = [PSCustomObject]@{
                                 RequiredSPN            = 'Dont know the SPN'
                                 InstanceServiceAccount = 'Dont know the Account'
-                                Error                  = 'An Error Occured'
+                                Error                  = 'An Error occurred'
                             }
                         }
                     }
@@ -105,7 +105,7 @@ function Get-AllServerInfo {
                     $SPNs = [PSCustomObject]@{
                         RequiredSPN            = 'Dont know the SPN'
                         InstanceServiceAccount = 'Dont know the Account'
-                        Error                  = 'An Error Occured'
+                        Error                  = 'An Error occurred'
                     }
                 }
             }
@@ -113,7 +113,7 @@ function Get-AllServerInfo {
                 $SPNs = [PSCustomObject]@{
                     RequiredSPN            = 'Dont know the SPN'
                     InstanceServiceAccount = 'Dont know the Account'
-                    Error                  = 'An Error Occured'
+                    Error                  = 'An Error occurred'
                 }
             }
         }
@@ -137,7 +137,7 @@ function Get-AllServerInfo {
                         $DiskSpace = [PSCustomObject]@{
                             Name         = 'Do not know the Name'
                             PercentFree  = -1
-                            ComputerName = 'An Error occured ' + $ComputerName
+                            ComputerName = 'An Error occurred ' + $ComputerName
                         } 
                     }
                 }
@@ -146,7 +146,7 @@ function Get-AllServerInfo {
                 $DiskSpace = [PSCustomObject]@{
                     Name         = 'Do not know the Name'
                     PercentFree  = -1
-                    ComputerName = 'An Error occured ' + $ComputerName
+                    ComputerName = 'An Error occurred ' + $ComputerName
                 } 
             }
         }

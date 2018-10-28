@@ -3,7 +3,7 @@
 Sets configuration values for specific checks.
 
 .DESCRIPTION
-Changes configuration values which enable each check to have specific threshholds
+Changes configuration values which enable each check to have specific thresholds
 
 .PARAMETER Name
 Name of the configuration entry.

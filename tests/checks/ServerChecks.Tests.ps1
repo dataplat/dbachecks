@@ -73,7 +73,7 @@ Describe "Checking ServerChecks.Tests" {
             }
         }
 
-        it "should fail when any SQLDisks is formatted with a block allocation unit size that isnt 65536b (64KB)" {
+        it "Should fail when any SQLDisks is formatted with a block allocation unit size that isn't 65536b (64KB)" {
             Mock Test-DbaDiskAllocation {
                 @(
                     [PSObject]@{
@@ -641,9 +641,9 @@ Describe "Checking ServerChecks.Tests" {
         
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should get the right results for PingComputer" {
-            $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the functionshould return for no server"
-            $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the functionshould return for no server"
-            $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the functionshould return for no server"
+            $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the function should return for no server"
+            $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the function should return for no server"
+            $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the function should return for no server"
         }
         It "Should get the right results for DiskAllocationUnit" {
             $serverInfo.DiskAllocation[0].Name | Should -Be '? '  # Yes there is a space for formatting the PowerBi
@@ -651,14 +651,14 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskAllocation[0].isSqlDisk| Should -BeTrue
         }
         It "Should get the right results for PowerPlan" {
-            $serverInfo.PowerPlan | Should -Be 'An Error occured'
+            $serverInfo.PowerPlan | Should -Be 'An Error occurred'
         }
         It "Should get the right results for SPN" {
-            $serverInfo.SPNs[0].Error | Should -Be 'An Error Occured'
+            $serverInfo.SPNs[0].Error | Should -Be 'An Error occurred'
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'Dont know the SPN'
         }
         It "Should get the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occured Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
         }
@@ -771,7 +771,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskAllocation | Should -BeNullOrEmpty
         }
         It "Should get the right results for PowerPlan" {
-            $serverInfo.PowerPlan | Should -Be 'An Error occured'
+            $serverInfo.PowerPlan | Should -Be 'An Error occurred'
         }
         It "Should have no results for SPN" {
             $serverInfo.SPNs | Should -BeNullOrEmpty
@@ -972,9 +972,9 @@ Describe "Checking ServerChecks.Tests" {
         
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should get the right results for PingComputer" {
-            $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the functionshould return for no server"
-            $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the functionshould return for no server"
-            $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the functionshould return for no server"
+            $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the function should return for no server"
+            $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the function should return for no server"
+            $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the function should return for no server"
       
         }
         It "Should have no results for DiskAllocationUnit" {
@@ -1271,7 +1271,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.PowerPlan | Should -BeNullOrEmpty
         }
         It "Should have the right results for SPN" {
-            $serverInfo.SPNs[0].Error | Should -Be 'An Error Occured'
+            $serverInfo.SPNs[0].Error | Should -Be 'An Error occurred'
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'Dont know the SPN'
         }
         It "Should have no results for DiskCapacity" {
@@ -1578,7 +1578,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.SPNs| Should -BeNullOrEmpty
         }
         It "Should have the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occured Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
         }
@@ -1974,11 +1974,11 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.PowerPlan | Should -BeNullOrEmpty
         }
         It "Should get the right results for SPN" {
-            $serverInfo.SPNs[0].Error | Should -Be 'An Error Occured'
+            $serverInfo.SPNs[0].Error | Should -Be 'An Error occurred'
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'Dont know the SPN'
         }
         It "Should have the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occured Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
         }

@@ -176,7 +176,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
                 Context "Testing failsafe operator exists on $psitem" {
                     $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
                     It "failsafe operator on $psitem exists" {
-                        (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should -Be $failsafeoperator -Because 'The failsafe operator will ensure that any job failures will be notifed to someone if not set explicitly'
+                        (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should -Be $failsafeoperator -Because 'The failsafe operator will ensure that any job failures will be notified to someone if not set explicitly'
                     }
                 }
             }

@@ -334,7 +334,7 @@ function Invoke-DbcCheck {
             Write-PSFMessage -Level Warning -Message "$ExcludedDatabases databases will be skipped for all checks"
         }
 
-        # Then we'll need a generic param passer that doesnt require global params 
+        # Then we'll need a generic param passer that doesn't require global params 
         # cuz global params are hard
 
         $finishedAllTheChecks = $false

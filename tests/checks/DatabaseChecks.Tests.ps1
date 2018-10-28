@@ -10,7 +10,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             (Get-Command Get-Database).Parameters['ExcludedDbs'] | Should -Not -BeNullOrEmpty -Because "We need to pass in the Excluded Databases - Don't forget that the ExcludedDatabases parameter is set by default so dont use that"
         }
         It "Should have a Requiredinfo parameter" {
-            (Get-Command Get-Database).Parameters['Requiredinfo'] | Should -Not -BeNullOrEmpty -Because "We want to be able to choose the infomration we return"
+            (Get-Command Get-Database).Parameters['Requiredinfo'] | Should -Not -BeNullOrEmpty -Because "We want to be able to choose the information we return"
         }
         It "Should have a Exclusions parameter" {
             (Get-Command Get-Database).Parameters['Exclusions'] | Should -Not -BeNullOrEmpty -Because "We need to be able to excluded databases for various reasons like readonly etc"
@@ -387,7 +387,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             }
         }
 
-        It "Should Fail when the database doesnot exist" {
+        It "Should Fail when the database does not exist" {
             {Assert-DatabaseExists -Instance Instance -ExpectedDb NotThere} | Should -Throw -ExpectedMessage "We expect NotThere to be on Instance"
         }
     }
