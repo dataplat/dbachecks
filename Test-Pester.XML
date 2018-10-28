@@ -283,7 +283,7 @@
               <test-suite type="TestFixture" name="Testing Assert-DiskAllocationUnit" executed="True" result="Success" success="True" time="0.0862" asserts="0" description="Testing Assert-DiskAllocationUnit">
                 <results>
                   <test-case description="Should pass when all SQLDisks are formatted with the 65536b (64kb) block allocation unit size" name="Checking ServerChecks.Tests.Testing Assert-DiskAllocationUnit.Should pass when all SQLDisks are formatted with the 65536b (64kb) block allocation unit size" time="0.067" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="should fail when any SQLDisks is formatted with a block allocation unit size that isnt 65536b (64KB)" name="Checking ServerChecks.Tests.Testing Assert-DiskAllocationUnit.should fail when any SQLDisks is formatted with a block allocation unit size that isnt 65536b (64KB)" time="0.0192" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should fail when any SQLDisks is formatted with a block allocation unit size that isn't 65536b (64KB)" name="Checking ServerChecks.Tests.Testing Assert-DiskAllocationUnit.should fail when any SQLDisks is formatted with a block allocation unit size that isn't 65536b (64KB)" time="0.0192" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
               <test-suite type="TestFixture" name="Testing Get-AllServerInfo for Tags Server with a server that exists" executed="True" result="Success" success="True" time="0.5203" asserts="0" description="Testing Get-AllServerInfo for Tags Server with a server that exists">

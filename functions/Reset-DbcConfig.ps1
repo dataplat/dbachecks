@@ -38,7 +38,7 @@ function Reset-DbcConfig {
             $resolvedName = (Get-DbcConfig).Name
         }
         elseif ($Name -match '\*') {
-            # whildcard is used, get only the matching settings
+            # wildcard is used, get only the matching settings
             $resolvedName = (Get-DbcConfig).Name | Where-Object { $psitem -like $Name }
         }
         else { 
@@ -60,7 +60,7 @@ function Reset-DbcConfig {
         # set up everything that is now missing back to the default values
         Invoke-ConfigurationScript
 
-        # desplay the new values
+        # display the new values
         @($resolvedName).ForEach{
             Get-DbcConfig -Name $psitem 
         }

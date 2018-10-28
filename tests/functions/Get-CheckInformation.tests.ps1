@@ -23,7 +23,7 @@ Describe "Testing Get-CheckInformation" -Tag Get-CheckInformation, Unittest {
             Get-CheckInformation -Group Server -Check Server | Should -Be 'PowerPlan', 'InstanceConnection', 'Connectivity', 'SPN', 'DiskCapacity', 'Storage', 'DISA', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit' -Because 'When the Check is specified and is a group it should return all of the tags for that group and not the groupname if nothing is exclueded'
         }
         It "Should Return All of the checks for a group When AllChecks is specified and nothing excluded" {
-            Get-CheckInformation -Group Server -AllChecks $true | Should -Be 'PowerPlan', 'InstanceConnection', 'Connectivity', 'SPN', 'DiskCapacity', 'Storage', 'DISA', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit' -Because 'When AllChecks is specified  it should return all of the tags for that group and not the groupname if nothing is exclueded'
+            Get-CheckInformation -Group Server -AllChecks $true | Should -Be 'PowerPlan', 'InstanceConnection', 'Connectivity', 'SPN', 'DiskCapacity', 'Storage', 'DISA', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit' -Because 'When AllChecks is specified  it should return all of the tags for that group and not the groupname if nothing is excluded'
         }
         It "Should Return one check for a group when one unique tag is specified and nothing excluded" {
             Get-CheckInformation -Group Server -Check SPN | Should -Be  'SPN' -Because 'When a Check is specified it should return just that check'

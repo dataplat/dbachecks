@@ -11,7 +11,7 @@ Set-DbcConfig [[-Name] <String>] [[-Value] <Object>] [[-Handler] <ScriptBlock>] 
 ```
 
 ## DESCRIPTION
-Changes configuration values which enable each check to have specific threshholds
+Changes configuration values which enable each check to have specific thresholds
 
 ## EXAMPLES
 

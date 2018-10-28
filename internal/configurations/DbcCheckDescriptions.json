@@ -329,7 +329,7 @@
     },
     {
         "UniqueTag": "InstanceConnection",
-        "Description": "Tests that a SQL query can be run, that the specified authentication scheme (default kerboros) is being used, that the host responds to one ping and that the host supports PS Remoting"
+        "Description": "Tests that a SQL query can be run, that the specified authentication scheme (default kerberos) is being used, that the host responds to one ping and that the host supports PS Remoting"
     },
     {
         "UniqueTag": "SPN",
@@ -369,7 +369,7 @@
     },
     {
         "UniqueTag": "DatabaseExists",
-        "Description": "Tests that the databases are specified are on the instance (Note - Does not check if they are avaiable - Use DatabaseStatus for that))"
+        "Description": "Tests that the databases are specified are on the instance (Note - Does not check if they are available - Use DatabaseStatus for that))"
     },
     {
         "UniqueTag": "TraceFlagsExpected",

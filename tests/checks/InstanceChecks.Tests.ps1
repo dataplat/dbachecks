@@ -417,7 +417,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         It "Should pass correctly when the trace flag exists and it is not the one expected to be running" {
             Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117
         }
-        It "Should pass correctly when no trace flag is runnign" {
+        It "Should pass correctly when no trace flag is running" {
 			Mock Get-DbaTraceFlag {}
             Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117
         }

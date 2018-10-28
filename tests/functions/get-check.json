@@ -392,7 +392,7 @@
         "UniqueTag":  "DatabaseExists",
         "AllTags":  "DatabaseExists, Database",
         "Config":  "app.sqlinstance database.exists ",
-        "Description":  "Tests that the databases are specified are on the instance (Note - Does not check if they are avaiable - Use DatabaseStatus for that))",
+        "Description":  "Tests that the databases are specified are on the instance (Note - Does not check if they are available - Use DatabaseStatus for that))",
         "Describe":  "Database Exists"
     },
     {
@@ -415,7 +415,7 @@
     },
     {
         "Group":  "HADR",
-        "Type":  "ClusteNode",
+        "Type":  "ClusterNode",
         "UniqueTag":  "ClusterHealth",
         "AllTags":  "ClusterHealth, HADR",
         "Config":  "app.cluster skip.hadr.listener.pingcheck domain.name policy.hadr.tcpport ",

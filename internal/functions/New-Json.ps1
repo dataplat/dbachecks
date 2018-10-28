@@ -49,7 +49,7 @@ function New-Json {
                 $type = "ComputerName"
             }
             elseif ($Describe.Parent -match "Get-ClusterObject") {
-                $Type = "ClusteNode"
+                $Type = "ClusterNode"
             }
             else {
                 #Choose the type from the new way from inside the foreach
