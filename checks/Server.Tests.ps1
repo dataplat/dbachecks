@@ -51,7 +51,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
     Describe "CPUPrioritisation" -Tags CPUPrioritisation, $filename {
         $exclude = Get-DbcConfigValue policy.server.cpuprioritisation
         Context "Testing CPU Prioritisation on $psitem" {
-            It "Should have the registry key set correctly for background CPU Prioritisation" -Skip:$exclude {
+            It "Should have the registry key set correctly for background CPU Prioritisation on $psitem" -Skip:$exclude {
                 Assert-CPUPrioritisation -ComputerName $psitem
             }
         }
@@ -59,8 +59,9 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
 
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, $filename {
         Context "Testing disk allocation unit on $psitem" {
+            $computerName = $psitem
             @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
-                It "$($Psitem.Name) Should be set to 64kb " -Skip:$exclude {
+                It "$($Psitem.Name) Should be set to 64kb on $computerName" -Skip:$exclude {
                     Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
                 }
             }
