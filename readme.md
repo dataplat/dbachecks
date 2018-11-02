@@ -4,7 +4,7 @@
 
 dbachecks is a framework created by and for SQL Server pros who need to validate their environments. Basically, we all share similar checklists and mostly just the server names and RPO/RTO/etc change.
 
-This open source module allows us to crowdsource our checklists using [Pester](https://github.com/Pester/Pester) tests. Such checks include:
+This open source module allows us to crowd-source our checklists using [Pester](https://github.com/Pester/Pester) tests. Such checks include:
 
 * Backups are being performed
 * Identity columns are not about to max out
@@ -67,7 +67,7 @@ You may need to do the same thing for the PSFramework or dbatools modules also
 
 ### SQL requirements
 
-dbachecks uses dbatools for most of it's data gathering so it supports SQL Versions from SQL 2000 to SQL vNext including SQL running on Linux. (dbachecks will not install on PowerShell Core yet so can not be run on a Linux client) Obviously some of the Services adn disk space checks will not work against instances running on Linux as they are usin gWindows API calls.
+dbachecks uses dbatools for most of it's data gathering so it supports SQL Versions from SQL 2000 to SQL vNext including SQL running on Linux. (dbachecks will not install on PowerShell Core yet so can not be run on a Linux client) Obviously some of the Services and disk space checks will not work against instances running on Linux as they are using gWindows API calls.
 
 ## Getting started
 
@@ -157,7 +157,7 @@ The above report uses `Update-DbcPowerBiDataSource`'s `-Environment` parameter.
 ```powershell
 # Run checks and export its JSON
 Invoke-DbcCheck -SqlInstance $prod -Checks LastBackup -Show Summary -PassThru | 
-Update-DbcPowerBiDataSource -Enviornment Prod
+Update-DbcPowerBiDataSource -Environment Prod
 ```
 
 😍😍😍
