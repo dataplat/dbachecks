@@ -1,4 +1,4 @@
-﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1 
 
 
@@ -535,8 +535,8 @@ $ExcludedDatabases += $ExcludeDatabase
                     @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}).ForEach{
                         $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
-                        It "$($psitem.Name) on $($psitem.Parent.Name) Should have less than $LogFileCount Log files" {
-                            $LogFiles.Count | Should -BeLessThan $LogFileCount -Because "You want the correct number of log files"
+                        It "$($psitem.Name) on $($psitem.Parent.Name) Should have $LogFileCount or less Log files" {
+                            $LogFiles.Count | Should -BeLessOrEqual $LogFileCount -Because "You want the correct number of log files"
                         }
                     }
                 }
