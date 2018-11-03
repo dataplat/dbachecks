@@ -889,8 +889,8 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Database status is correct on $psitem" {
                 $instance = $psitem
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
-                    It "Database $($psitem.Name) has the expected status" {
-                        Assert-DatabaseStatus -Instance $instance -Database $Database -ExcludeReadOnly $ExcludeReadOnly -ExcludeOffline $ExcludeOffline -ExcludeRestoring $ExcludeRestoring
+                    It "Database $($psitem.Name) on $instance has the expected status" {
+                        Assert-DatabaseStatus -Instance $instance -Database $($psitem.Name) -ExcludeReadOnly $ExcludeReadOnly -ExcludeOffline $ExcludeOffline -ExcludeRestoring $ExcludeRestoring
                     }
                 }
             }
