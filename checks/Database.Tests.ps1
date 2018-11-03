@@ -642,10 +642,10 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Checking that encryption certificates have not expired on $psitem" {
                 @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object {$_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude)}).ForEach{
-                    It "$($psitem.Name) in $($psitem.Database) has not expired" {
+                    It "$($psitem.Name) in $($psitem.Database) has not expired on $($psitem.SqlInstance)" {
                         $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date) -Because "this certificate should not be expired"
                     }
-                    It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months" {
+                    It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months on $($psitem.SqlInstance)" {
                         $psitem.ExpirationDate  | Should -BeGreaterThan (Get-Date).AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning"
                     }
                 }
@@ -759,7 +759,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing database trustworthy option on $psitem" {
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$psitem.Name -ne 'msdb' -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "Trustworthy is set to false on $($psitem.Name)" {
+                    It "$($psitem.Name) on $($psitem.Parent.Name) should have Trustworthy set to false" {
                         $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
                     }
                 }
@@ -779,7 +779,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing database orphaned user event on $psitem" {
                 $instance = $psitem
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "$($psitem.Name) should return 0 orphaned users" {
+                    It "$($psitem.Name) on $($psitem.Parent.Name) should return 0 orphaned users" {
                         @(Get-DbaOrphanUser -SqlInstance $instance -ExcludeDatabase $ExcludedDatabases -Database $psitem.Name).Count | Should -Be 0 -Because "We dont want orphaned users"
                     }
                 }
@@ -836,13 +836,13 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
                 @(Get-DbaDbForeignKey -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).Where{$_.NotForReplication -eq $false}.ForEach{
-                    It "$($psitem.Name) foreign key on table $($psitem.Parent) within database $($psitem.Database) should be trusted." {
+                    It "$($psitem.Name) foreign key on table $($psitem.Parent) within database $($psitem.Database) should be trusted on $($psitem.SqlInstance)." {
                         $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server wonâ€™t use untrusted constraints to build better execution plans. It will also avoid data violation"
                     }
                 }
 
                 @(Get-DbaDbCheckConstraint -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).Where{$_.NotForReplication -eq $false -and $_.IsEnabled -eq $true}.ForEach{
-                    It "$($psitem.Name) check constraint on table $($psitem.Parent) within database $($psitem.Database) should be trusted." {
+                    It "$($psitem.Name) check constraint on table $($psitem.Parent) within database $($psitem.Database) should be trusted on $($psitem.SqlInstance)." {
                         $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server wonâ€™t use untrusted constraints to build better execution plans. It will also avoid data violation"
                     }
                 }
@@ -865,7 +865,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Database MaxDop setting is correct on $psitem" {
                 @(Test-DbaMaxDop -SqlInstance $psitem).Where{$_.Database -ne 'N/A' -and $(if ($database) {$PsItem.Database -in $Database} else {$_.Database -notin $exclude})}.ForEach{
-                    It "Database $($psitem.Database) should have the correct MaxDop setting" {
+                    It "Database $($psitem.Database) should have the correct MaxDop setting on $($psitem.SqlInstance)" {
                         Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue $MaxDopValue
                     }
                 }
@@ -913,15 +913,15 @@ $ExcludedDatabases += $ExcludeDatabase
             $instance = $psitem
             Context "Database exists on $psitem" {
                 $expected.ForEach{
-                    It "Database $psitem should exist" {
-                        Assert-DatabaseExists -Instance $instance -Expecteddb $psitem 
+                    It "Database $psitem should exist on $($psitem.Parent.Name)" {
+                        Assert-DatabaseExists -Instance $instance -Expecteddb $psitem
                     }
                 }
             }
         }
     }
 }
-Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
+Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
 
 
