@@ -1,8 +1,12 @@
-## Date 27/10/2018
+## Date 29/10/2018
 Fixed #435 Page verify on SQL 2000 and SQL2005
 Reduced number of calls to the instance for database checks improving performance
 
 ##Latest
+
+## Date 27/10/2018
+Fixed #435 Page verify on SQL 2000 and SQL2005
+Reduced number of calls to the instance for database checks improving performance
 
 ## Date 17/10/2018
 Spelling and Because added - Thank you @LowlyDBA
@@ -39,13 +43,13 @@ Improved error handling for HADR checks
 
 ## Date 28/08/2018
 Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
-Ensured the Database paramter checks only the specified Databases - Thank you @jpomfret
+Ensured the Database parameter checks only the specified Databases - Thank you @jpomfret
 Updated Set-DbcConifg to allow Append to append arrays to arrays closes #535
 Altered json filename creation to avoid max characters error
 Altered PowerBi to display information correctly with filename changes
 
 ## Date 24/08/2017
-Fixed Error with using Credential and stopped changing path when runnign checks from custom repos - Thank you @sammyxx
+Fixed Error with using Credential and stopped changing path when running checks from custom repos - Thank you @sammyxx
 
 ## Date 23/08/2017
 Update to the help message for clusters by @LowlyDBA
@@ -87,7 +91,7 @@ Fixed offline install bug #484
 
 Updated Required Module versions - Thank you @cl
 Updated Agent Checks to fail a test on no connection rather than throw all the PowerShell errors - Thanks @sqldbawithbeard
-Updated HADR Checks for PS4 compatability Issue #513
+Updated HADR Checks for PS4 compatibility Issue #513
 
 ## Date 28/06/2018
 
