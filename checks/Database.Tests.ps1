@@ -837,13 +837,13 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
                 @(Get-DbaDbForeignKey -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).Where{$_.NotForReplication -eq $false}.ForEach{
                     It "$($psitem.Name) foreign key on table $($psitem.Parent) within database $($psitem.Database) should be trusted on $($psitem.SqlInstance)." {
-                        $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server wonâ€™t use untrusted constraints to build better execution plans. It will also avoid data violation"
+                        $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
                     }
                 }
 
                 @(Get-DbaDbCheckConstraint -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).Where{$_.NotForReplication -eq $false -and $_.IsEnabled -eq $true}.ForEach{
                     It "$($psitem.Name) check constraint on table $($psitem.Parent) within database $($psitem.Database) should be trusted on $($psitem.SqlInstance)." {
-                        $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server wonâ€™t use untrusted constraints to build better execution plans. It will also avoid data violation"
+                        $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
                     }
                 }
             }
