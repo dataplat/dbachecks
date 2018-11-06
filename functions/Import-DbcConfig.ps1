@@ -31,7 +31,7 @@ Imports config from \\nas\projects\config.json
 https://dbachecks.readthedocs.io/en/latest/functions/Import-DbcConfig/
 
 #>
-   
+
 function Import-DbcConfig {
     [CmdletBinding()]
     param (
@@ -47,7 +47,7 @@ function Import-DbcConfig {
         }
 
         try {
-            $results = Get-Content -Path $Path | ConvertFrom-Json
+            $results = Get-Content -Path $Path -Raw | ConvertFrom-Json
         }
         catch {
             Stop-PSFFunction -Message "Failure" -ErrorRecord $_
