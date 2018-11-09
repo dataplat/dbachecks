@@ -326,7 +326,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         }
         else {
             Context "Checking that sa login has been renamed on $psitem" {
-                $results = Get-DbaErrorLogin -SqlInstance $psitem -Login sa
+                $results = Get-DbaLogin -SqlInstance $psitem -Login sa
                 It "sa login does not exist on $psitem" {
                     $results | Should -Be $null -Because 'Renaming the sa account is a requirement'
                 }
