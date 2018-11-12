@@ -131,9 +131,10 @@
             
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 27/10/2018
-Fixed #435 Page verify on SQL 2000 and SQL2005
-Reduced number of calls to the instance for database checks improving performance
+## Date 12/11/2018
+Added more information to the output - thanks @ClaudioESSilva
+Spelling - Thanks ChrisTuckerNM 
+Fix for #564 - Error Importing DbcConfig in PowerShell 4 - Thanks @niphod
 
 ##Latest
             

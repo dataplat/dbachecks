@@ -1,4 +1,4 @@
-﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Instance.assertions.ps1
 
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
@@ -108,7 +108,7 @@
                 It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFileSizeMax) {
                     $TempDBTest[4].CurrentSetting | Should -Be $TempDBTest[4].Recommended -Because 'Tempdb files should be able to grow'
                 }
-                It "The data files should all be the same size" {
+                It "The data files should all be the same size on $($TempDBTest[0].SqlInstance)" {
                     Assert-TempDBSize -Instance $Psitem
                 }
             }
@@ -125,7 +125,7 @@
         }
         else {
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
-                It "$psitem Should Be Optimised for Ad Hoc workloads" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
+                It "$psitem Should be Optimize for Ad Hoc workloads" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
                     @(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
                         $psitem.CurrentOptimizeAdHoc | Should -Be $psitem.RecommendedOptimizeAdHoc -Because "optimize for ad hoc workloads is a recommended setting"
                     }
@@ -326,7 +326,7 @@
         }
         else {
             Context "Checking that sa login has been renamed on $psitem" {
-                $results = Get-DbaErrorLogin -SqlInstance $psitem -Login sa
+                $results = Get-DbaLogin -SqlInstance $psitem -Login sa
                 It "sa login does not exist on $psitem" {
                     $results | Should -Be $null -Because 'Renaming the sa account is a requirement'
                 }
@@ -367,7 +367,7 @@
                 Context "Checking sessions on $psitem" {
                     $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
                     @($xesession).ForEach{
-                        It "Session $psitem should not be running" {
+                        It "Session $psitem should not be running on $Instance" {
                             $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
                         }
                     }
@@ -394,7 +394,7 @@
                 Context "Checking running sessions on $psitem" {
                     $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
                     @($xesession).ForEach{
-                        It "session $psitem Should Be running" {
+                        It "session $psitem Should Be running on $Instance" {
                             $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
                         }
                     }
@@ -420,7 +420,7 @@
             else {
                 Context "Checking sessions on $psitem" {
                     @(Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.ForEach{
-                        It "Session $($Psitem.Name) is allowed to be running" {
+                        It "Session $($Psitem.Name) is allowed to be running on $Instance" {
                             $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
                         }
                     }
@@ -511,20 +511,20 @@
         else {
             Context "Testing active Directory users on $psitem" {
                 @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
-                    It "Active Directory user $($psitem.login) was found in $($psitem.domain)" {
+                    It "Active Directory user $($psitem.login) was found in $Instance on $($psitem.domain)" {
                         $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                     }
                     if ($psitem.found -eq $true) {
-                        It "Active Directory user $($psitem.login) should not have an expired password in $($psitem.domain)" {
+                        It "Active Directory user $($psitem.login) should not have an expired password in $Instance on $($psitem.domain)" {
                             $psitem.PasswordExpired | Should -Be $false -Because "$($psitem.login) password should not be expired"
                         }
-                        It "Active Directory user $($psitem.login) should not be locked out in $($psitem.domain)" {
+                        It "Active Directory user $($psitem.login) should not be locked out in $Instance on $($psitem.domain)" {
                             $psitem.lockedout | Should -Be $false -Because "$($psitem.login) should not be locked out"
                         }
-                        It "Active Directory user $($psitem.login) should be enabled on $($psitem.domain)" {
+                        It "Active Directory user $($psitem.login) should be enabled in $Instance on $($psitem.domain)" {
                             $psitem.Enabled | Should -Be $true -Because "$($psitem.login) should be enabled"
                         }
-                        It "Active Directory user $($psitem.login) should not be disabled in SQL Server on $($psitem.Server)" {
+                        It "Active Directory user $($psitem.login) should not be disabled in $Instance on $($psitem.Server)" {
                             $psitem.DisabledInSQLServer | Should -Be $false -Because "$($psitem.login) should be active on the SQL server"
                         }
                     }
@@ -534,11 +534,11 @@
 
             Context "Testing active Directory groups on $psitem" {
                 @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
-                    It "Active Directory group $($psitem.login) was found in $($psitem.domain)" {
+                    It "Active Directory group $($psitem.login) was found in $Instance on $($psitem.domain)" {
                         $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
                     }
                     if ($psitem.found -eq $true) {
-                        It "Active Directory group $($psitem.login) should not be disabled in SQL Server on $($psitem.Server)" {
+                        It "Active Directory group $($psitem.login) should not be disabled in $Instance on $($psitem.Server)" {
                             $psitem.DisabledInSQLServer | Should -Be $false -Because "$($psitem.login) should be active on the SQL server"
                         }
                     }
