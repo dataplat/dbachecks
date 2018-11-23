@@ -666,7 +666,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing Auto Create Statistics on $psitem" {
                 $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Create Statistics set to $autocreatestatistics" {
-                        $psitem.AutoCreateStatisticsEnabled | Should -Be $autocreatestatistics -Because "This is value expeceted for autocreate statistics"
+                        $psitem.AutoCreateStatisticsEnabled | Should -Be $autocreatestatistics -Because "This value is expected for autocreate statistics"
                     }
                 }
             }
@@ -686,7 +686,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing Auto Update Statistics on $psitem" {
                 $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics set to $autoupdatestatistics" {
-                        $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because "This is value expeceted for autoupdate statistics"
+                        $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because "This value is expected for autoupdate statistics"
                     }
                 }
             }
@@ -706,7 +706,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing Auto Update Statistics Asynchronously on $psitem" {
                 $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have Auto Update Statistics Asynchronously set to $autoupdatestatisticsasynchronously" {
-                        $psitem.AutoUpdateStatisticsAsync | Should -Be $autoupdatestatisticsasynchronously  -Because "This is value expeceted for autoupdate statistics asynchronously"
+                        $psitem.AutoUpdateStatisticsAsync | Should -Be $autoupdatestatisticsasynchronously  -Because "This value is expected for autoupdate statistics asynchronously"
                     }
                 }
             }
