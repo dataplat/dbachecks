@@ -1,9 +1,13 @@
+## Date 22/11/2018
+Spelling - Thanks RonaldHensbergen 
+Fix for #576 When calling just Invoke-DbcCheck without a Check it fails to run the Server Tests correctly
+
+##Latest
+
 ## Date 12/11/2018
 Added more information to the output - thanks @ClaudioESSilva
 Spelling - Thanks ChrisTuckerNM 
 Fix for #564 - Error Importing DbcConfig in PowerShell 4 - Thanks @niphod
-
-##Latest
 
 ## Date 29/10/2018
 Fixed #435 Page verify on SQL 2000 and SQL2005
