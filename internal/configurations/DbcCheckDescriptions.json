@@ -268,6 +268,10 @@
         "Description": "Tests that the SQL Server Error Log does not have any Severity 17-24 level entries within the specified (default 2) days"
     },
     {
+        "UniqueTag": "ErrorLogCount",
+        "Description": "Tests that the number of SQL Server Error Logs configured. Default is 30."
+    },
+    {
         "UniqueTag": "LogShippingPrimary",
         "Description": "Tests that the Log Shipping Primary status is ok"
     },
