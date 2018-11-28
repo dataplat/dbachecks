@@ -413,14 +413,15 @@ Describe "Job History Configuration" -Tags JobHistory, $filename {
             }
             else {
                 Context "Testing job history configuration on $psitem" {
+                    $skiphistory = Get-DbcConfigValue skip.agent.history
                     [int]$minimumJobHistoryRows = Get-DbcConfigValue agent.history.maximumjobhistoryrows
                     [int]$minimumJobHistoryRowsPerJob = Get-DbcConfigValue agent.history.maximumjobhistoryrowsperjob
 
                     $AgentServer = Get-DbaAgentServer -SqlInstance $psitem -EnableException:$false
-                    It "Agent Server $($AgentServer.Name) Maximum job history rows should be greater or equal to $minimumJobHistoryRows on $($psitem.SqlInstance)" {
+                    It -Skip:$skiphistory "Agent Server $($AgentServer.Name) Maximum job history rows should be greater or equal to $minimumJobHistoryRows on $($psitem.SqlInstance)" {
                         $AgentServer.MaximumHistoryRows | Should -BeGreaterOrEqual $minimumJobHistoryRows -Because "It should be enough to keep a certain amount of history entries."
                     }
-                    It "Agent Server $($AgentServer.Name) Maximum job history rows per job should be greater or equal to $minimumJobHistoryRowsPerJob on $($psitem.SqlInstance)" {
+                    It -Skip:$skiphistory "Agent Server $($AgentServer.Name) Maximum job history rows per job should be greater or equal to $minimumJobHistoryRowsPerJob on $($psitem.SqlInstance)" {
                         $AgentServer.MaximumHistoryRows | Should -BeGreaterOrEqual $minimumJobHistoryRowsPerJob -Because "It should be enough to keep a certain amount of history entries per job."
                     }
                 }
