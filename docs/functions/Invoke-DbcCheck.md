@@ -52,20 +52,20 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyDatabaseStatusExcludereadonly <Object>] [-ConfigPolicyDatabaseStatusExcluderestoring <Object>]
  [-ConfigPolicyDatabaseWrongcollation <Object>] [-ConfigPolicyDbccMaxdays <Object>]
  [-ConfigPolicyDiskspacePercentfree <Object>] [-ConfigPolicyDumpMaxcount <Object>]
- [-ConfigPolicyErrorlogWarningwindow <Object>] [-ConfigPolicyHadrTcpport <Object>]
- [-ConfigPolicyIdentityUsagepercent <Object>] [-ConfigPolicyInstancemaxdopExcludeinstance <Object>]
- [-ConfigPolicyInstancemaxdopMaxdop <Object>] [-ConfigPolicyInstancemaxdopUserecommended <Object>]
- [-ConfigPolicyInvaliddbownerExcludedb <Object>] [-ConfigPolicyInvaliddbownerName <Object>]
- [-ConfigPolicyNetworkLatencymaxms <Object>] [-ConfigPolicyOlaCommandlogcleanup <Object>]
- [-ConfigPolicyOlaCommandlogenabled <Object>] [-ConfigPolicyOlaCommandlogscheduled <Object>]
- [-ConfigPolicyOlaDatabase <Object>] [-ConfigPolicyOlaDeletebackuphistorycleanup <Object>]
- [-ConfigPolicyOlaDeletebackuphistoryenabled <Object>] [-ConfigPolicyOlaDeletebackuphistoryscheduled <Object>]
- [-ConfigPolicyOlaInstalled <Object>] [-ConfigPolicyOlaOutputfilecleanup <Object>]
- [-ConfigPolicyOlaOutputfilecleanupenabled <Object>] [-ConfigPolicyOlaOutputfilecleanupscheduled <Object>]
- [-ConfigPolicyOlaPurgejobhistorycleanup <Object>] [-ConfigPolicyOlaPurgejobhistoryenabled <Object>]
- [-ConfigPolicyOlaPurgejobhistoryscheduled <Object>] [-ConfigPolicyOlaSystemfullenabled <Object>]
- [-ConfigPolicyOlaSystemfullretention <Object>] [-ConfigPolicyOlaSystemfullscheduled <Object>]
- [-ConfigPolicyOlaSystemintegritycheckenabled <Object>]
+ [-ConfigPolicyErrorlogLogcount <Object>] [-ConfigPolicyErrorlogWarningwindow <Object>]
+ [-ConfigPolicyHadrTcpport <Object>] [-ConfigPolicyIdentityUsagepercent <Object>]
+ [-ConfigPolicyInstancemaxdopExcludeinstance <Object>] [-ConfigPolicyInstancemaxdopMaxdop <Object>]
+ [-ConfigPolicyInstancemaxdopUserecommended <Object>] [-ConfigPolicyInvaliddbownerExcludedb <Object>]
+ [-ConfigPolicyInvaliddbownerName <Object>] [-ConfigPolicyNetworkLatencymaxms <Object>]
+ [-ConfigPolicyOlaCommandlogcleanup <Object>] [-ConfigPolicyOlaCommandlogenabled <Object>]
+ [-ConfigPolicyOlaCommandlogscheduled <Object>] [-ConfigPolicyOlaDatabase <Object>]
+ [-ConfigPolicyOlaDeletebackuphistorycleanup <Object>] [-ConfigPolicyOlaDeletebackuphistoryenabled <Object>]
+ [-ConfigPolicyOlaDeletebackuphistoryscheduled <Object>] [-ConfigPolicyOlaInstalled <Object>]
+ [-ConfigPolicyOlaOutputfilecleanup <Object>] [-ConfigPolicyOlaOutputfilecleanupenabled <Object>]
+ [-ConfigPolicyOlaOutputfilecleanupscheduled <Object>] [-ConfigPolicyOlaPurgejobhistorycleanup <Object>]
+ [-ConfigPolicyOlaPurgejobhistoryenabled <Object>] [-ConfigPolicyOlaPurgejobhistoryscheduled <Object>]
+ [-ConfigPolicyOlaSystemfullenabled <Object>] [-ConfigPolicyOlaSystemfullretention <Object>]
+ [-ConfigPolicyOlaSystemfullscheduled <Object>] [-ConfigPolicyOlaSystemintegritycheckenabled <Object>]
  [-ConfigPolicyOlaSystemintegritycheckscheduled <Object>] [-ConfigPolicyOlaUserdiffenabled <Object>]
  [-ConfigPolicyOlaUserdiffretention <Object>] [-ConfigPolicyOlaUserdiffscheduled <Object>]
  [-ConfigPolicyOlaUserfullenabled <Object>] [-ConfigPolicyOlaUserfullretention <Object>]
@@ -141,20 +141,20 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyDatabaseStatusExcludereadonly <Object>] [-ConfigPolicyDatabaseStatusExcluderestoring <Object>]
  [-ConfigPolicyDatabaseWrongcollation <Object>] [-ConfigPolicyDbccMaxdays <Object>]
  [-ConfigPolicyDiskspacePercentfree <Object>] [-ConfigPolicyDumpMaxcount <Object>]
- [-ConfigPolicyErrorlogWarningwindow <Object>] [-ConfigPolicyHadrTcpport <Object>]
- [-ConfigPolicyIdentityUsagepercent <Object>] [-ConfigPolicyInstancemaxdopExcludeinstance <Object>]
- [-ConfigPolicyInstancemaxdopMaxdop <Object>] [-ConfigPolicyInstancemaxdopUserecommended <Object>]
- [-ConfigPolicyInvaliddbownerExcludedb <Object>] [-ConfigPolicyInvaliddbownerName <Object>]
- [-ConfigPolicyNetworkLatencymaxms <Object>] [-ConfigPolicyOlaCommandlogcleanup <Object>]
- [-ConfigPolicyOlaCommandlogenabled <Object>] [-ConfigPolicyOlaCommandlogscheduled <Object>]
- [-ConfigPolicyOlaDatabase <Object>] [-ConfigPolicyOlaDeletebackuphistorycleanup <Object>]
- [-ConfigPolicyOlaDeletebackuphistoryenabled <Object>] [-ConfigPolicyOlaDeletebackuphistoryscheduled <Object>]
- [-ConfigPolicyOlaInstalled <Object>] [-ConfigPolicyOlaOutputfilecleanup <Object>]
- [-ConfigPolicyOlaOutputfilecleanupenabled <Object>] [-ConfigPolicyOlaOutputfilecleanupscheduled <Object>]
- [-ConfigPolicyOlaPurgejobhistorycleanup <Object>] [-ConfigPolicyOlaPurgejobhistoryenabled <Object>]
- [-ConfigPolicyOlaPurgejobhistoryscheduled <Object>] [-ConfigPolicyOlaSystemfullenabled <Object>]
- [-ConfigPolicyOlaSystemfullretention <Object>] [-ConfigPolicyOlaSystemfullscheduled <Object>]
- [-ConfigPolicyOlaSystemintegritycheckenabled <Object>]
+ [-ConfigPolicyErrorlogLogcount <Object>] [-ConfigPolicyErrorlogWarningwindow <Object>]
+ [-ConfigPolicyHadrTcpport <Object>] [-ConfigPolicyIdentityUsagepercent <Object>]
+ [-ConfigPolicyInstancemaxdopExcludeinstance <Object>] [-ConfigPolicyInstancemaxdopMaxdop <Object>]
+ [-ConfigPolicyInstancemaxdopUserecommended <Object>] [-ConfigPolicyInvaliddbownerExcludedb <Object>]
+ [-ConfigPolicyInvaliddbownerName <Object>] [-ConfigPolicyNetworkLatencymaxms <Object>]
+ [-ConfigPolicyOlaCommandlogcleanup <Object>] [-ConfigPolicyOlaCommandlogenabled <Object>]
+ [-ConfigPolicyOlaCommandlogscheduled <Object>] [-ConfigPolicyOlaDatabase <Object>]
+ [-ConfigPolicyOlaDeletebackuphistorycleanup <Object>] [-ConfigPolicyOlaDeletebackuphistoryenabled <Object>]
+ [-ConfigPolicyOlaDeletebackuphistoryscheduled <Object>] [-ConfigPolicyOlaInstalled <Object>]
+ [-ConfigPolicyOlaOutputfilecleanup <Object>] [-ConfigPolicyOlaOutputfilecleanupenabled <Object>]
+ [-ConfigPolicyOlaOutputfilecleanupscheduled <Object>] [-ConfigPolicyOlaPurgejobhistorycleanup <Object>]
+ [-ConfigPolicyOlaPurgejobhistoryenabled <Object>] [-ConfigPolicyOlaPurgejobhistoryscheduled <Object>]
+ [-ConfigPolicyOlaSystemfullenabled <Object>] [-ConfigPolicyOlaSystemfullretention <Object>]
+ [-ConfigPolicyOlaSystemfullscheduled <Object>] [-ConfigPolicyOlaSystemintegritycheckenabled <Object>]
  [-ConfigPolicyOlaSystemintegritycheckscheduled <Object>] [-ConfigPolicyOlaUserdiffenabled <Object>]
  [-ConfigPolicyOlaUserdiffretention <Object>] [-ConfigPolicyOlaUserdiffscheduled <Object>]
  [-ConfigPolicyOlaUserfullenabled <Object>] [-ConfigPolicyOlaUserfullretention <Object>]
@@ -1861,6 +1861,21 @@ Accept wildcard characters: False
 
 ### -ConfigPolicyDumpMaxcount
 {{Fill ConfigPolicyDumpMaxcount Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyErrorlogLogcount
+{{Fill ConfigPolicyErrorlogLogcount Description}}
 
 ```yaml
 Type: Object
