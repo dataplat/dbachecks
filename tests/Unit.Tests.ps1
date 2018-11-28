@@ -55,7 +55,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                     It "You haven't used the Tags Parameter so we can't check the tags" {
                         $false | Should -BeTrue -Because 'We use the Tags parameter'
                     }
-                }  
+                }
             }
         }
         Context "$($PSItem.Name) - Checking Contexts" {
@@ -124,7 +124,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                             }
                         }
                         It "$CheckName should have the right number of Context blocks as the AST doesnt parse how I like and I cant be bothered to fix it right now"{
-                            $Contexts.Count | Should -Be 20 -Because "There should be 9 context blocks in the Agent checks file"
+                            $Contexts.Count | Should -Be 22 -Because "There should be 22 context blocks in the Agent checks file"
                         }
                     }
                 }
@@ -182,4 +182,4 @@ Describe "Database Tests Exclusions"{
 }
 # This should stop people making breaking changes to the tests without first altering the test
 Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
-Import-Module $ModuleBase\dbachecks.psd1 
+Import-Module $ModuleBase\dbachecks.psd1
