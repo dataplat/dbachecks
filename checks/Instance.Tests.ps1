@@ -51,7 +51,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
             }
         }
     }
-    
+
     Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database collation on $psitem" {
@@ -287,7 +287,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
     Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
         $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
         $BuildBehind = Get-DbcConfigValue policy.build.behind
-        $Date = Get-Date 
+        $Date = Get-Date
 
 
         if ($NotContactable -contains $psitem) {
@@ -567,6 +567,24 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         }
     }
 
+    Describe "Error Log Count" -Tags ErrorLogCount, $filename {
+        $errorLogCount = Get-DbcConfigValue policy.errorlog.logcount
+        if ($NotContactable -contains $psitem) {
+            Context "Checking error log count on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking error log count on $psitem" {
+                It "Error log count should be greater or equal to $errorLogCount on $psitem" {
+                    (Get-DbaErrorLogConfig -SqlInstance $psitem).LogCount | Should -BeGreaterOrEqual $errorLogCount -Because "prevents quicker rollovers."
+                }
+            }
+        }
+    }
+
     Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, $filename {
         $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
         $MaxDop = Get-DbcConfigValue policy.instancemaxdop.maxdop
@@ -654,7 +672,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         else {
             Context "Testing CLR Enabled on $psitem" {
                 It "CLR Enabled is set to $CLREnabled on $psitem" {
-                    Assert-CLREnabled -SQLInstance $psitem -CLREnabled $CLREnabled 
+                    Assert-CLREnabled -SQLInstance $psitem -CLREnabled $CLREnabled
                 }
             }
         }
@@ -672,7 +690,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         else {
             Context "Testing Cross Database Ownership Chaining on $psitem" {
                 It "Cross Database Ownership Chaining is set to $CrossDBOwnershipChaining on $psitem" {
-                    Assert-CrossDBOwnershipChaining -SQLInstance $Psitem -CrossDBOwnershipChaining $CrossDBOwnershipChaining 
+                    Assert-CrossDBOwnershipChaining -SQLInstance $Psitem -CrossDBOwnershipChaining $CrossDBOwnershipChaining
                 }
             }
         }
@@ -689,7 +707,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         else {
             Context "Testing Ad Hoc Distributed Queries on $psitem" {
                 It "Ad Hoc Distributed Queries is set to $AdHocDistributedQueriesEnabled on $psitem" {
-                    Assert-AdHocDistributedQueriesEnabled -SQLInstance $Psitem -AdHocDistributedQueriesEnabled $AdHocDistributedQueriesEnabled 
+                    Assert-AdHocDistributedQueriesEnabled -SQLInstance $Psitem -AdHocDistributedQueriesEnabled $AdHocDistributedQueriesEnabled
                 }
             }
         }
@@ -706,7 +724,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         else {
             Context "Testing XP CmdShell on $psitem" {
                 It "XPCmdShell is set to $XpCmdShellDisabled on $psitem" {
-                    Assert-XpCmdShellDisabled -SQLInstance $Psitem -XpCmdShellDisabled $XpCmdShellDisabled 
+                    Assert-XpCmdShellDisabled -SQLInstance $Psitem -XpCmdShellDisabled $XpCmdShellDisabled
                 }
             }
         }
