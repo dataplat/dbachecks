@@ -30,7 +30,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         else {
             Context "Testing Testing Database Mail XPs  on $psitem" {
                 It "Testing Database Mail XPs is set to $DatabaseMailEnabled on $psitem" {
-                    Assert-DatabaseMailEnabled -SQLInstance $Psitem -DatabaseMailEnabled $DatabaseMailEnabled 
+                    Assert-DatabaseMailEnabled -SQLInstance $Psitem -DatabaseMailEnabled $DatabaseMailEnabled
                 }
             }
         }
@@ -39,7 +39,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 }
 
-Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
+Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
 Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
@@ -386,7 +386,7 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
     }
 }
 
-Describe "Job History Configuration" -Tags ValidJobOwner, $filename {
+Describe "Job History Configuration" -Tags JobHistory, $filename {
     @(Get-Instance).ForEach{
         if ($NotContactable -contains $psitem) {
             Context "Testing job history configuration on $psitem" {
