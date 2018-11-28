@@ -212,6 +212,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (expecially useful for Azure and AWS)"
+Set-PSFConfig -Module dbachecks -Name skip.agent.history -Validation bool -Value $false -Initialize -Description "Skip the Agent Job History test (useful when you don't have the job history configured - MaximumJobHistoryLogSize = -1)"
 
 
 #agent
@@ -224,6 +225,8 @@ Set-PSFConfig -Module dbachecks -Name agent.alert.messageid -Value @('823', '824
 Set-PSFConfig -Module dbachecks -Name agent.alert.Severity -Value @('16', '17', '18', '19', '20', '21', '22', '23', '24', '25') -Initialize -Description "Agent alert severity to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
 Set-PSFConfig -Module dbachecks -Name agent.alert.Job -Value $false -Initialize -Description "Agent alert job notification. Ex job to write to eventlog for SCOM monitoring"
 Set-PSFConfig -Module dbachecks -Name agent.alert.Notification -Value $true -Initialize -Description "Agent alert notification"
+Set-PSFConfig -Module dbachecks -Name agent.history.maximumjobhistorylogsize -Value 1000 -Initialize -Description "Maximum job history log size (in rows). The value -1 means disabled"
+Set-PSFConfig -Module dbachecks -Name agent.history.maximumjobhistoryrowsperjob -Value 100 -Initialize -Description "Maximum job history row per job. When the property is disabled the value is 0."
 
 # domain
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"
