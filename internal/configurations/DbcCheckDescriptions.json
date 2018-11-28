@@ -398,5 +398,9 @@
     {
         "UniqueTag": "XpCmdShellDisabled",
         "Description": "Tests that the XP CmdShell configuration setting is set as specified (default true - meaning it should be disabled)"
+    },
+    {
+        "UniqueTag": "JobHistory",
+        "Description": "Test the job history configuration for max number of rows (whole log) and the max number of rows per job."
     }
  ]
