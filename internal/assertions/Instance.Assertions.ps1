@@ -131,7 +131,7 @@ function Assert-ErrorLogCount {
         $SQLInstance,
         $errorLogCount
     )
-    (Get-DbaErrorLogConfig -SqlInstance $SQLInstance).LogCount | Should -BeGreaterOrEqual $errorLogCount -Because "prevents quicker rollovers."
+    (Get-DbaErrorLogConfig -SqlInstance $SQLInstance).LogCount | Should -BeGreaterOrEqual $errorLogCount -Because "We expect to have at least $errorLogCount number of error log files"
 }
 
 
