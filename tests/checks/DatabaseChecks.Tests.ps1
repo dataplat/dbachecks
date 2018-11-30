@@ -1,5 +1,5 @@
 # load all of the assertion functions
-(Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
+. /../internal/assertions/Database.Assertions.ps1
 
 Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions {
     Context "Testing Get-Database" {
