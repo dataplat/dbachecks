@@ -40,7 +40,7 @@ function Assert-InstanceSupportedBuild {
         $Build = $results.build
         $Compliant | Should -Be $true -Because "this build $Build should not be behind the required build"
         #If no $BuildBehind only check against support dates
-    }	
+    }
     else {
         $Results = Test-DbaSQLBuild -SqlInstance $Instance -Latest
         [DateTime]$SupportedUntil = Get-Date $results.SupportedUntil -Format O
@@ -101,7 +101,7 @@ function Assert-CLREnabled {
         $SQLInstance,
         $CLREnabled
     )
-    
+
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name IsSqlClrEnabled).ConfiguredValue -eq 1 | Should -Be $CLREnabled -Because 'The CLR Enabled should be set correctly'
 }
 function Assert-CrossDBOwnershipChaining {
@@ -125,4 +125,13 @@ function Assert-XpCmdShellDisabled {
     )
    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name XPCmdShellEnabled).ConfiguredValue -eq 0 | Should -Be $XpCmdShellDisabled -Because 'The XP CmdShell setting should be set correctly'
 }
+
+function Assert-ErrorLogCount {
+    param (
+        $SQLInstance,
+        $errorLogCount
+    )
+    (Get-DbaErrorLogConfig -SqlInstance $SQLInstance).LogCount | Should -BeGreaterOrEqual $errorLogCount -Because "prevents quicker rollovers."
+}
+
 
