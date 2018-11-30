@@ -49,7 +49,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
         @{ ModuleName = 'Pester'; ModuleVersion = '4.3.1' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.410' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.534' }
         @{ ModuleName = 'PSFramework'; ModuleVersion = '0.9.23.82' }
     )
 
@@ -91,23 +91,23 @@
         'Save-DbcRequiredModules',
         'Update-DbcRequiredModules'
     )
-    
+
     # Cmdlets to export from this module
     CmdletsToExport        = '*'
-    
+
     # Variables to export from this module
     VariablesToExport      = '*'
-    
+
     # Aliases to export from this module
     # Aliases are stored in dbachecks.psm1
     AliasesToExport        = 'Update-Dbchecks'
-    
+
     # List of all modules packaged with this module
     ModuleList             = @()
-    
+
     # List of all files packaged with this module
     FileList               = ''
-    
+
     PrivateData            = @{
         # PSData is module packaging and gallery metadata embedded in PrivateData
         # It's for rebuilding PowerShellGet (and PoshCode) NuGet-style packages
@@ -116,33 +116,33 @@
         PSData = @{
             # The primary categorization of this module (from the TechNet Gallery tech tree).
             Category     = "Databases"
-            
+
             # Keyword tags to help users find this module via navigations and search.
             Tags         = @('sqlserver', 'sql', 'dba', 'databases', 'audits', 'checklists', 'Pester', 'PowerBi' , 'validation')
-            
+
             # The web address of an icon which can be used in galleries to represent this module
             IconUri      = "https://dbachecks.io/logo.png"
-            
+
             # The web address of this module's project or support homepage.
             ProjectUri   = "https://dbachecks.io"
-            
+
             # The web address of this module's license. Points to a page that's embeddable and linkable.
             LicenseUri   = "https://opensource.org/licenses/MIT"
-            
+
             # Release notes for this particular version of the module
             ReleaseNotes = "
 ## Date 22/11/2018
-Spelling - Thanks RonaldHensbergen 
+Spelling - Thanks RonaldHensbergen
 Fix for #576 When calling just Invoke-DbcCheck without a Check it fails to run the Server Tests correctly
 
-##Latest    
-            
+##Latest
+
 Run Get-DbcReleaseNotes for all release notes
             "
-            
+
             # If true, the LicenseUrl points to an end-user license (not just a source license) which requires the user agreement before use.
             # RequireLicenseAcceptance = ""
-            
+
             # Indicates this is a pre-release/testing version of the module.
             IsPrerelease = 'False'
         }
