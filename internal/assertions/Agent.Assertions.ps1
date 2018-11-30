@@ -11,7 +11,7 @@ function Assert-JobHistoryRowsDisabled {
         $AgentServer,
         $minimumJobHistoryRows
     )
-    $AgentServer.MaximumHistoryRows | Should -Be $minimumJobHistoryRows -Because "you choose to have it disabled."
+    $AgentServer.MaximumHistoryRows | Should -Be $minimumJobHistoryRows -Because "Maximum job history configuration should be disabled"
 }
 
 function Assert-JobHistoryRows {
@@ -19,7 +19,7 @@ function Assert-JobHistoryRows {
         $AgentServer,
         $minimumJobHistoryRows
     )
-    $AgentServer.MaximumHistoryRows | Should -BeGreaterOrEqual $minimumJobHistoryRows -Because "It should be enough to keep a certain amount of history entries."
+    $AgentServer.MaximumHistoryRows | Should -BeGreaterOrEqual $minimumJobHistoryRows -Because "We expect the maximum job history row configuration to be greater than the configured setting $minimumJobHistoryRows"
 }
 
 function Assert-JobHistoryRowsPerJob {
@@ -27,5 +27,5 @@ function Assert-JobHistoryRowsPerJob {
         $AgentServer,
         $minimumJobHistoryRowsPerJob
     )
-    $AgentServer.MaximumJobHistoryRows | Should -BeGreaterOrEqual $minimumJobHistoryRowsPerJob -Because "It should be enough to keep a certain amount of history entries per job."
+    $AgentServer.MaximumJobHistoryRows | Should -BeGreaterOrEqual $minimumJobHistoryRowsPerJob -Because "We expect the maximum job history row configuration per agent job to be greater than the configured setting $minimumJobHistoryRowsPerJob"
 }
