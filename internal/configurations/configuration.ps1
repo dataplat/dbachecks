@@ -80,7 +80,7 @@ Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.excludedb -Value @('
 
 #Error Log
 Set-PSFConfig -Module dbachecks -Name policy.errorlog.warningwindow -Value 2 -Initialize -Description "The number of days prior to check for error log issues"
-Set-PSFConfig -Module dbachecks -Name policy.errorlog.logcount -Value 30 -Initialize -Description "The minimum number of error log files that should be configured. -1 means off/default"
+Set-PSFConfig -Module dbachecks -Name policy.errorlog.logcount -Value -1 -Initialize -Description "The minimum number of error log files that should be configured. -1 means off/default"
 
 #DAC
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "DAC should be allowed `$true or disallowed `$false"
