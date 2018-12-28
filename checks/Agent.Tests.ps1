@@ -418,7 +418,7 @@ Describe "Job History Configuration" -Tags JobHistory, $filename {
 
                     $AgentServer = Get-DbaAgentServer -SqlInstance $psitem -EnableException:$false
 
-                    if ($minimumJobHistoryRows = -1) {
+                    if ($minimumJobHistoryRows -eq -1) {
                         It "The maximum job history configuration should be set to disabled on $psitem" {
                             Assert-JobHistoryRowsDisabled -AgentServer $AgentServer -minimumJobHistoryRows $minimumJobHistoryRows
                         }
