@@ -1,0 +1,2 @@
+$coverageFiles = Get-ChildItem -path GIT:\dbachecks\*.ps1 -Recurse -Exclude *.Tests.ps1 | Select-Object -ExpandProperty FullName
+Invoke-Pester  GIT:\dbachecks\tests -Show Fails -ExcludeTag Integration -CodeCoverage $coverageFiles  -CodeCoverageOutputFile GIT:\dbachecks\cov.xml

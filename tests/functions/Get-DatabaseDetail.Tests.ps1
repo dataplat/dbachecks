@@ -1,4 +1,7 @@
 $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+Remove-Module dbachecks -ErrorAction SilentlyContinue
+Remove-Module dbatools  -ErrorAction SilentlyContinue
+Import-Module "$PSScriptRoot\..\..\dbachecks.psd1"
 Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 . "$PSScriptRoot/../../internal/functions/Get-DatabaseDetail.ps1"
 

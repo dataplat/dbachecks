@@ -1,5 +1,6 @@
 $ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
-
+Remove-Module dbachecks -ErrorAction SilentlyContinue
+Import-Module "$PSScriptRoot\..\..\dbachecks.psd1"
 . $ModuleBase\..\..\internal\functions\Get-CheckInformation.ps1
 Describe "Testing Get-CheckInformation" -Tag Get-CheckInformation, Unittest {
     Context "Input" {
