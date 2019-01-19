@@ -1,5 +1,5 @@
 # load all of the assertion functions
-. /../internal/assertions/Database.Assertions.ps1 
+. /../internal/assertions/Database.Assertions.ps1
 
 Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions {
     Context "Testing Get-Database" {
@@ -125,7 +125,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected 'True' to not be found in collection @(`$false, `$true), because We expect that there will be no Read-Only databases except for those specified, but it was found."
         }
         It "It Should Not Fail for a database that is readonly when it is excluded" {
-            Assert-DatabaseStatus -Instance Dummy -ExcludeReadOnly 'Dummy2' 
+            Assert-DatabaseStatus -Instance Dummy -ExcludeReadOnly 'Dummy2'
         }
         # Mock for offline failing
         Mock Connect-DbaInstance {
@@ -233,7 +233,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "It Should Fail for a database that is AutoClosed" {
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'AutoClosed' to not match 'AutoClosed', because We expect that there will be no databases that have been auto closed, but it did match."
         }
-        
+
         # Mock for EmergencyMode failing
         Mock Connect-DbaInstance {
             [PSCustomObject]@{
@@ -254,7 +254,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "It Should Fail for a database that is EmergencyMode" {
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'Emergency' to not match 'EmergencyMode', because We expect that there will be no databases in EmergencyMode, but it did match."
         }
-        
+
         # Mock for Suspect failing
         Mock Connect-DbaInstance {
             [PSCustomObject]@{
@@ -275,7 +275,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "It Should Fail for a database that is Suspect" {
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'Suspect' to not match 'Suspect', because We expect that there will be no databases in a Suspect state, but it did match."
         }
-        
+
         # Mock for Standby failing
         Mock Connect-DbaInstance {
             [PSCustomObject]@{
@@ -296,7 +296,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "It Should Fail for a database that is Standby" {
             { Assert-DatabaseStatus Dummy} | Should -Throw -ExpectedMessage "Expected regular expression 'Standby' to not match 'Standby', because We expect that there will be no databases in Standby, but it did match."
         }
-    
+
         It "Should Not Fail for databases that are excluded" {
             Assert-DatabaseStatus Dummy -Excludedbs 'Dummy1'
         }

@@ -1,15 +1,15 @@
-﻿$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Agent.assertions.ps1
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 @(Get-Instance).ForEach{
     $Instance = $psitem
-    try {  
+    try {
         $connectioncheck = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
     }
     catch {
         $NotContactable += $Instance
     }
-                
+
     if (($connectioncheck).Edition -like "Express Edition*") {Return}
     elseif ($null -eq $connectioncheck.version) {
         $NotContactable += $Instance
@@ -30,7 +30,7 @@
         else {
             Context "Testing Testing Database Mail XPs  on $psitem" {
                 It "Testing Database Mail XPs is set to $DatabaseMailEnabled on $psitem" {
-                    Assert-DatabaseMailEnabled -SQLInstance $Psitem -DatabaseMailEnabled $DatabaseMailEnabled 
+                    Assert-DatabaseMailEnabled -SQLInstance $Psitem -DatabaseMailEnabled $DatabaseMailEnabled
                 }
             }
         }
@@ -39,7 +39,7 @@
 
 }
 
-Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
+Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
 Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
@@ -66,7 +66,7 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
                     Edition = "Express Edition"
                 }
             }
-                    
+
             if (($connectioncheck).Edition -like "Express Edition*") {}
             elseif ($null -eq $connectioncheck.version) {
                 Context "Testing SQL Agent is running on $psitem" {
@@ -117,7 +117,7 @@ Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
                     $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-                    
+
             if (($connectioncheck).Edition -like "Express Edition*") {}
             elseif ($null -eq $connectioncheck.version) {
                 It "Can't Connect to $Psitem" {
@@ -165,7 +165,7 @@ Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
                     $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-                    
+
             if (($connectioncheck).Edition -like "Express Edition*") {}
             elseif ($null -eq $connectioncheck.version) {
                 It "Can't Connect to $Psitem" {
@@ -202,7 +202,7 @@ Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
                     $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-                    
+
             if (($connectioncheck).Edition -like "Express Edition*") {}
             elseif ($null -eq $connectioncheck.version) {
                 It "Can't Connect to $Psitem" {
@@ -239,7 +239,7 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
                     $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-                    
+
             if (($connectioncheck).Edition -like "Express Edition*") {}
             elseif ($null -eq $connectioncheck.version) {
                 It "Can't Connect to $Psitem" {
@@ -285,7 +285,7 @@ Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
                     $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-                    
+
             if (($connectioncheck).Edition -like "Express Edition*") {}
             elseif ($null -eq $connectioncheck.version) {
                 It "Can't Connect to $Psitem" {
@@ -332,7 +332,7 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
                     $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-                    
+
             if (($connectioncheck).Edition -like "Express Edition*") {}
             elseif ($null -eq $connectioncheck.version) {
                 It "Can't Connect to $Psitem" {
@@ -378,6 +378,57 @@ Describe "Agent Alerts" -Tags AgentAlert, $filename {
                             It "$psitem should have notification for Message_ID $mid Alert" {
                                 ($alerts.Where{$psitem.messageid -eq $mid}).HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -be $true -Because "Should notify by Agent notifications"
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+Describe "Job History Configuration" -Tags JobHistory, $filename {
+    @(Get-Instance).ForEach{
+        if ($NotContactable -contains $psitem) {
+            Context "Testing job history configuration on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            try {
+                $connectioncheck = Connect-DbaInstance  -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
+            }
+            catch {
+                It "Can't Connect to $Psitem" {
+                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+
+            if (($connectioncheck).Edition -like "Express Edition*") {}
+            elseif ($null -eq $connectioncheck.version) {
+                It "Can't Connect to $Psitem" {
+                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+            else {
+                Context "Testing job history configuration on $psitem" {
+                    [int]$minimumJobHistoryRows = Get-DbcConfigValue agent.history.maximumhistoryrows
+                    [int]$minimumJobHistoryRowsPerJob = Get-DbcConfigValue agent.history.maximumjobhistoryrows
+
+                    $AgentServer = Get-DbaAgentServer -SqlInstance $psitem -EnableException:$false
+
+                    if ($minimumJobHistoryRows -eq -1) {
+                        It "The maximum job history configuration should be set to disabled on $psitem" {
+                            Assert-JobHistoryRowsDisabled -AgentServer $AgentServer -minimumJobHistoryRows $minimumJobHistoryRows
+                        }
+                    }
+                    else {
+                        It "The maximum job history number of rows configuration should be greater or equal to $minimumJobHistoryRows on $psitem" {
+                            Assert-JobHistoryRows -AgentServer $AgentServer -minimumJobHistoryRows $minimumJobHistoryRows
+                        }
+                        It "The maximum job history rows per job configuration should be greater or equal to $minimumJobHistoryRowsPerJob on $psitem" {
+                            Assert-JobHistoryRowsPerJob -AgentServer $AgentServer -minimumJobHistoryRowsPerJob $minimumJobHistoryRowsPerJob
                         }
                     }
                 }
