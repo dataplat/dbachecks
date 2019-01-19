@@ -269,7 +269,7 @@
     },
     {
         "UniqueTag": "ErrorLogCount",
-        "Description": "Tests that the number of SQL Server Error Logs configured. Default is 30."
+        "Description": "Tests that the number of SQL Server Error Logs configured. Default value is -1 which means off (will use 6 files)."
     },
     {
         "UniqueTag": "LogShippingPrimary",

@@ -153,7 +153,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
     Context "Checking Supported Build" {
         [DateTime]$Date = Get-Date -Format O
 
-        $TestCases = @{"Date" = $Date; "BuildBehind" = "1SP"; }, 
+        $TestCases = @{"Date" = $Date; "BuildBehind" = "1SP"; },
         @{"Date" = $Date; "BuildBehind" = "1CU"; }
         #if BuildBehind it should pass if build is >= SP/CU specified & Support Dates are valid
         It "Passed check correctly when the current build is not behind the BuildBehind value of <BuildBehind>" -TestCases $TestCases {
@@ -212,7 +212,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
     Context "Checking Trace Flags" {
         ## Mock for one trace flag
         Mock Get-DbaTraceFlag {
-			
+
             [PSObject]@{
                 'ComputerName' = 'ComputerName'
                 'Global'       = 1
@@ -231,7 +231,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         }
         It "Should fail correctly when the trace flag does not exist and there is no trace flag" {
             Mock Get-DbaTraceFlag {
-			
+
                 [PSObject]@{
                     'ComputerName' = 'ComputerName'
                     'Global'       = 1
@@ -403,7 +403,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
     }
     Context "Checking Trace Flags Not Expected" {
         ## Mock for one trace flag
-        Mock Get-DbaTraceFlag {			
+        Mock Get-DbaTraceFlag {
             [PSObject]@{
                 'ComputerName' = 'ComputerName'
                 'Global'       = 1
@@ -422,7 +422,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117
         }
         It "Should fail correctly when the trace flag is running and is the only one" {
-			Mock Get-DbaTraceFlag {			
+			Mock Get-DbaTraceFlag {
 				[PSObject]@{
 					'ComputerName' = 'ComputerName'
 					'Global'       = 1
@@ -436,7 +436,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             {Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 118} | Should -Throw -ExpectedMessage "Expected 118 to not be found in collection 118, because We expect that Trace Flag 118 will not be set on Dummy, but it was found."
         }
         It "Should fail correctly for one trace flag when the trace flag is running but there is another one running as well" {
-            Mock Get-DbaTraceFlag {	
+            Mock Get-DbaTraceFlag {
                 [PSObject]@{
                     'ComputerName' = 'ComputerName'
                     'Global'       = 1
@@ -619,5 +619,36 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Assert-MockCalled @assertMockParams
         }
     }
+    Context "Checking ErrorLog Count" {
+        # if configured value is 30 and test value 30 it will pass
+        It "Passes Check Correctly with the number of error log files set to 30" {
+            # Mock to pass
+            Mock Get-DbaErrorLogConfig {@{"LogCount" = 30}}
+            Assert-ErrorLogCount -SQLInstance 'Dummy' -errorLogCount 30
+        }
 
+        # if configured value is less than the current value it fails
+        It "Fails Check Correctly with the number of error log files being 10 instead of 30 or higher" {
+            # Mock to fail
+            Mock Get-DbaErrorLogConfig {@{"LogCount" = 10}}
+            {Assert-ErrorLogCount -SQLInstance 'Dummy' -errorLogCount 30}  | Should -Throw -ExpectedMessage "Expected the actual value to be greater than or equal to 30, because We expect to have at least 30 number of error log files, but got 10."
+        }
+
+        # if configured value is higher than the current value it fails
+        It "Passes Check Correctly with the number of error log files being 40 and test of 30 or higher" {
+            # Mock to Pass
+            Mock Get-DbaErrorLogConfig {@{"LogCount" = 40}}
+            Assert-ErrorLogCount -SQLInstance 'Dummy' -errorLogCount 30
+        }
+
+        # Validate we have called the mock the correct number of times
+        It "Should call the mocks" {
+            $assertMockParams = @{
+                'CommandName' = 'Get-DbaErrorLogConfig'
+                'Times'       = 3
+                'Exactly'     = $true
+            }
+            Assert-MockCalled @assertMockParams
+        }
+    }
 }
