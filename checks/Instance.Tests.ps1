@@ -579,7 +579,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         else {
             Context "Checking error log count on $psitem" {
                 It "Error log count should be greater or equal to $errorLogCount on $psitem" {
-                    (Get-DbaErrorLogConfig -SqlInstance $psitem).LogCount | Should -BeGreaterOrEqual $errorLogCount -Because "prevents quicker rollovers."
+                    Assert-ErrorLogCount -SqlInstance $psitem -errorLogCount $errorLogCount
                 }
             }
         }
