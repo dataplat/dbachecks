@@ -16,7 +16,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigAgentAlertMessageid <Object>] [-ConfigAgentAlertNotification <Object>]
  [-ConfigAgentAlertSeverity <Object>] [-ConfigAgentDatabasemailprofile <Object>]
  [-ConfigAgentDbaoperatoremail <Object>] [-ConfigAgentDbaoperatorname <Object>]
- [-ConfigAgentFailsafeoperator <Object>] [-ConfigAgentValidjobownerName <Object>]
+ [-ConfigAgentFailsafeoperator <Object>] [-ConfigAgentHistoryMaximumhistoryrows <Object>]
+ [-ConfigAgentHistoryMaximumjobhistoryrows <Object>] [-ConfigAgentValidjobownerName <Object>]
  [-ConfigAppCheckrepos <Object>] [-ConfigAppCluster <Object>] [-ConfigAppComputername <Object>]
  [-ConfigAppLocalapp <Object>] [-ConfigAppMaildirectory <Object>] [-ConfigAppSqlcredential <Object>]
  [-ConfigAppSqlinstance <Object>] [-ConfigAppWincredential <Object>]
@@ -105,7 +106,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigAgentAlertJob <Object>] [-ConfigAgentAlertMessageid <Object>] [-ConfigAgentAlertNotification <Object>]
  [-ConfigAgentAlertSeverity <Object>] [-ConfigAgentDatabasemailprofile <Object>]
  [-ConfigAgentDbaoperatoremail <Object>] [-ConfigAgentDbaoperatorname <Object>]
- [-ConfigAgentFailsafeoperator <Object>] [-ConfigAgentValidjobownerName <Object>]
+ [-ConfigAgentFailsafeoperator <Object>] [-ConfigAgentHistoryMaximumhistoryrows <Object>]
+ [-ConfigAgentHistoryMaximumjobhistoryrows <Object>] [-ConfigAgentValidjobownerName <Object>]
  [-ConfigAppCheckrepos <Object>] [-ConfigAppCluster <Object>] [-ConfigAppComputername <Object>]
  [-ConfigAppLocalapp <Object>] [-ConfigAppMaildirectory <Object>] [-ConfigAppSqlcredential <Object>]
  [-ConfigAppSqlinstance <Object>] [-ConfigAppWincredential <Object>]
@@ -766,6 +768,36 @@ Accept wildcard characters: False
 
 ### -ConfigAgentFailsafeoperator
 {{Fill ConfigAgentFailsafeoperator Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigAgentHistoryMaximumhistoryrows
+{{Fill ConfigAgentHistoryMaximumhistoryrows Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigAgentHistoryMaximumjobhistoryrows
+{{Fill ConfigAgentHistoryMaximumjobhistoryrows Description}}
 
 ```yaml
 Type: Object
