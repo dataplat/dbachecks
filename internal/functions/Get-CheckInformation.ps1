@@ -27,7 +27,7 @@ function Get-CheckInformation {
 
     # So Lets fix that!
 
-    if($Check -eq $null){
+    if($null -eq $Check){
         $Check = $GroupChecks
     }
 
