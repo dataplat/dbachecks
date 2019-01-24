@@ -71,12 +71,21 @@ Opens the PowerBi using that file
 then you'll have to change your data source in Power BI because by default it 
 points to C:\Windows\Temp (limitation of Power BI)
 
+.EXAMPLE
+Invoke-DbcCheck -SqlInstance sql2017 -Check SuspectPage -Show None -PassThru | Update-DbcPowerBiDataSource -Environment Test -Whatif
+
+What if: Performing the operation "Removing .json files named *Default*" on target "C:\Windows\temp\dbachecks".
+What if: Performing the operation "Passing results" on target "C:\Windows\temp\dbachecks\dbachecks_1_Test__SuspectPage.json".
+
+Will not actually create or update the data sources but will output what happens with the command and what the file name will be
+called.
+
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Update-DbcPowerBiDataSource/
 
 #>
 function Update-DbcPowerBiDataSource {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
     param (
         [parameter(ValueFromPipeline, Mandatory)]
         [pscustomobject]$InputObject,
@@ -88,17 +97,23 @@ function Update-DbcPowerBiDataSource {
     )
     begin {
         if ($FileName -ne "Default") {
-            $null = Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
+            if ($PSCmdlet.ShouldProcess($Path, 'Removing .json files named -like *Default*')) {
+                $null = Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
+            }
         }
         if ($Force) {
-            $null = Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
+            if ($PSCmdlet.ShouldProcess($Path, 'Removing all .json files')) {
+                $null = Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
+            }
         }
     }
     process {
         ++$i
         try {
             if (-not (Test-Path -Path $Path)) {
-                $null = New-Item -ItemType Directory -Path $Path -ErrorAction Stop
+                if ($PSCmdlet.ShoudProcess($Path, 'Creating new directory')) {
+                    $null = New-Item -ItemType Directory -Path $Path -ErrorAction Stop
+                }
             }
         }
         catch {
@@ -128,8 +143,10 @@ function Update-DbcPowerBiDataSource {
 
         if ($InputObject.TotalCount -gt 0) {
             try {
-                $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
-                Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
+                if ($PSCmdlet.ShouldProcess($FilePath, 'Passing results')) {
+                    $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
+                    Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
+                }
             }
             catch {
                 Stop-PSFFunction -Message "Failure" -ErrorRecord $_
