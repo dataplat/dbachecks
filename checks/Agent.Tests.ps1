@@ -1,43 +1,6 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Agent.assertions.ps1
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
-@(Get-Instance).ForEach{
-    $Instance = $psitem
-    try {
-        $connectioncheck = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
-    }
-    catch {
-        $NotContactable += $Instance
-    }
-
-    if (($connectioncheck).Edition -like "Express Edition*") {Return}
-    elseif ($null -eq $connectioncheck.version) {
-        $NotContactable += $Instance
-    }
-    else {
-
-    }
-
-    Describe "Database Mail XPs" -Tags DatabaseMailEnabled, security, $filename {
-        $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
-        if ($NotContactable -contains $psitem) {
-            Context "Testing Database Mail XPs on $psitem" {
-                It "Can't Connect to $Psitem" {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
-                }
-            }
-        }
-        else {
-            Context "Testing Testing Database Mail XPs  on $psitem" {
-                It "Testing Database Mail XPs is set to $DatabaseMailEnabled on $psitem" {
-                    Assert-DatabaseMailEnabled -SQLInstance $Psitem -DatabaseMailEnabled $DatabaseMailEnabled
-                }
-            }
-        }
-    }
-
-
-}
 
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
