@@ -5,56 +5,153 @@
 $CredentailPath = 'C:\MSSQL\BACKUP\KEEP\sacred.xml'
 $dbacheckslocalpath = 'GIT:\dbachecks\'
 
-
-Remove-Module dbatools, dbachecks -ErrorAction SilentlyContinue
+#region setup
+Write-PSFMessage "Removing Modules" -Level Significant
+Remove-Module dbatools, dbachecks,PSFramework -ErrorAction SilentlyContinue
+Write-PSFMessage "Importing from source control" -Level Significant
 Import-Module $dbacheckslocalpath\dbachecks.psd1
+Write-PSFMessage "Resetting dbachecks config"  -Level Significant
 $null = Reset-DbcConfig
+
+ $PSDefaultParameterValues += @{ 'Write-PSFMessage:Level' = 'Output'} # setting for messages to screen
 Set-Location $dbacheckslocalpath\tests\Integration
 
+Write-PSFMessage "resetting docker-compose to save Rob from troubleshooting for hours because the containers already existed"
+docker-compose down
+Write-PSFMessage "Starting containers" 
 docker-compose up -d
 
 $containers = 'localhost,15589', 'localhost,15588', 'localhost,15587', 'localhost,15586'
 $cred = Import-Clixml $CredentailPath 
 
+Write-PSFMessage "Setting default configs" 
 $null = Set-DbcConfig -Name app.sqlinstance $containers
 $null = Set-DbcConfig -Name policy.connection.authscheme -Value SQL
-$null = Set-DbcConfig -Name policy.network.latencymaxms -Value 100 # because the containers run a bit slow!
+$null = Set-DbcConfig -Name policy.network.latencymaxms -Value 150 # because the containers run a bit slow!
 
-$ConnectivityTests = Invoke-DbcCheck -SqlCredential $cred -Check Connectivity -Show None -PassThru
+## Ensure that SQLAgent is started - SQL2014 agent wont start in container
+Write-PSFMessage "Starting SQL Agent on all containers except SQL2014" 
+docker exec -ti integration_sql2012_1 powershell start-service SQLSERVERAGENT
+docker exec -ti integration_sql2016_1 powershell start-service SQLSERVERAGENT
+docker exec -ti integration_sql2017_1 powershell start-service SQLSERVERAGENT
 
-#region error Log Count - PR 583
-# default test
-$errorlogscountdefault = Invoke-DbcCheck -SqlCredential $cred -Check ErrorLogCount -Show None  -PassThru
-# set a value and then it will fail
-$null = Set-DbcConfig -Name policy.errorlog.logcount -Value 10
-$errorlogscountconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check ErrorLogCount -Show None  -PassThru
-
-# set the value and then it will pass
-Set-DbaErrorLogConfig -SqlInstance $containers -SqlCredential $cred -LogCount 10
-$errorlogscountvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check ErrorLogCount -Show None  -PassThru
 #endregion
 
 #region Pester Functions
-function DefaultCheck {
+function Invoke-DefaultCheck {
     It "All Checks should pass with default for $Check" {
         $Tests = get-variable "$($Check)default"  -ValueOnly
         $Tests.FailedCount | Should -Be 0 -Because "We expect all of the checks to run and pass with default setting (Yes we may set some values before but you get my drift)"
     }
 }
-function ConfigCheck {
+function Invoke-ConfigCheck {
     It "All Checks should fail when config changed for $Check" {
         $Tests = get-variable "$($Check)configchanged"  -ValueOnly
         $Tests.PassedCount | Should -Be 0 -Because "We expect all of the checks to run and fail when we have changed the config values"
     }
 }
-function ValueCheck {
+function Invoke-ValueCheck {
     It "All Checks should pass when setting changed for $Check" {
         $Tests = get-variable "$($Check)valuechanged"  -ValueOnly
-        $Tests.FailedCount | Should -Be 0 -Because "We expect all of the checks to run and pass when we have changed the settingns to match the config values"
+        $Tests.FailedCount | Should -Be 0 -Because "We expect all of the checks to run and pass when we have changed the settings to match the config values"
     }
 }
 #endregion
 
+# make sure the containers are up and running
+Write-PSFMessage "Default connectivity check" 
+$ConnectivityTests = Invoke-DbcCheck -SqlCredential $cred -Check Connectivity -Show None -PassThru
+
+#region error Log Count - PR 583
+# default test
+Write-PSFMessage "Checking ErrorLogCount default"
+$errorlogscountdefault = Invoke-DbcCheck -SqlCredential $cred -Check ErrorLogCount -Show None  -PassThru
+# set a value and then it will fail
+Write-PSFMessage "Checking ErrorLogCount config changed"
+$null = Set-DbcConfig -Name policy.errorlog.logcount -Value 10
+$errorlogscountconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check ErrorLogCount -Show None  -PassThru
+
+# set the value and then it will pass
+Write-PSFMessage "Checking ErrorLogCount value changed"
+$null = Set-DbaErrorLogConfig -SqlInstance $containers -SqlCredential $cred -LogCount 10
+$errorlogscountvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check ErrorLogCount -Show None  -PassThru
+#endregion
+
+#region Job History Count PR 582
+
+# run the checks against these instances (SQL2014 agent wont start :-( ))
+Write-PSFMessage "Checking JobHistory default"
+$null = Set-DbcConfig -Name app.sqlinstance $containers.Where{$_ -ne 'localhost,15588'}
+# by default all tests should pass on default instance settings
+$jobhistorydefault = Invoke-DbcCheck -SqlCredential $cred -Check JobHistory -Show None  -PassThru
+
+#Change the configuration to test that the checks fail
+Write-PSFMessage "Checking JobHistory config changed"
+$null = Set-DbcConfig -Name agent.history.maximumjobhistoryrows -value 1000
+$null = Set-DbcConfig -Name agent.history.maximumhistoryrows -value 10000
+$jobhistoryconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check JobHistory -Show None  -PassThru
+Write-PSFMessage "Checking JobHistory value changed"
+$setDbaAgentServerSplat = @{
+    MaximumJobHistoryRows = 1000
+    MaximumHistoryRows = 10000
+    SqlInstance = $containers.Where{$_ -ne 'localhost,15588'}
+    SqlCredential = $cred
+}
+$null = Set-DbaAgentServer @setDbaAgentServerSplat
+$jobhistoryvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check JobHistory -Show None  -PassThru
+
+#endregion
+
+#region BackupPathAccess
+
+# run the checks against these instances 
+Write-PSFMessage "Checking BackupPathAccess default"
+$null = Set-DbcConfig -Name app.sqlinstance $containers
+# by default all tests should pass on default instance settings
+$BackupPathAccessdefault = Invoke-DbcCheck -SqlCredential $cred -Check BackupPathAccess -Show None  -PassThru
+
+#Change the configuration to test that the checks fail
+Write-PSFMessage "Checking BackupPathAccess config changed"
+$null = Set-DbcConfig -Name policy.storage.backuppath -value 'C:\Windows\temp\a' ## Setting to an invalid unaccessible folder
+$BackupPathAccessconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check BackupPathAccess -Show None  -PassThru
+Write-PSFMessage "Checking BackupPathAccess value changed"
+
+foreach($container in $containers){
+    $Instance = Connect-DbaInstance -SqlInstance $container -SqlCredential $cred 
+    $Instance.BackupDirectory = 'C:\Windows\temp\'
+    $Instance.Alter()
+}
+
+$null = Set-DbcConfig -Name policy.storage.backuppath -value 'C:\Windows\temp\' 
+
+$BackupPathAccessvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check BackupPathAccess -Show None  -PassThru
+
+
+#endregion
+
+#region DAC
+
+# run the checks against these instances 
+Write-PSFMessage "Checking DAC default"
+$null = Set-DbcConfig -Name app.sqlinstance $containers
+$null = Set-DbaSpConfigure -SqlInstance $containers -SqlCredential $cred -Name RemoteDACConnectionsEnabled -Value $true ## because it is set to false by default but dbachecks uses true as default
+
+# by default all tests should pass on default instance settings
+$DACdefault = Invoke-DbcCheck -SqlCredential $cred -Check DAC -Show None  -PassThru
+
+#Change the configuration to test that the checks fail
+Write-PSFMessage "Checking DAC config changed"
+$null = Set-DbcConfig -Name policy.dacallowed -value $false
+$DACconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check DAC -Show None  -PassThru
+Write-PSFMessage "Checking DAC value changed"
+
+$null = Set-DbaSpConfigure -SqlInstance $containers -SqlCredential $cred -Name RemoteDACConnectionsEnabled -Value $false
+$DACvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check DAC -Show None  -PassThru
+
+
+#endregion
+
+Write-PSFMessage "Running Pester Tests ........."
 Describe "Testing the checks are running as expected" -Tag Integration {
     Context "Connectivity Checks" {
         It "All Tests should pass" {
@@ -62,16 +159,17 @@ Describe "Testing the checks are running as expected" -Tag Integration {
         }
     }
 
-    $TestingTheChecks = @('errorlogscount')
+    $TestingTheChecks = @('errorlogscount', 'jobhistory', 'BackupPathAccess', 'DAC')
     Foreach ($Check in $TestingTheChecks) {
         Context "$Check Checks" {
-            write-host "$Check"
-            DefaultCheck
-            ConfigCheck
-            ValueCheck
+            Invoke-DefaultCheck
+            Invoke-ConfigCheck
+            INvoke-ValueCheck
         }
     }
 }
+
+Write-PSFMessage "Finished running Pester Tests"
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
