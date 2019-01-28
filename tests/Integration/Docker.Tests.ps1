@@ -7,19 +7,27 @@ $dbacheckslocalpath = 'GIT:\dbachecks\'
 
 #region setup
 Write-PSFMessage "Removing Modules" -Level Significant
-Remove-Module dbatools, dbachecks,PSFramework -ErrorAction SilentlyContinue
+Remove-Module dbatools, dbachecks, PSFramework -ErrorAction SilentlyContinue
 Write-PSFMessage "Importing from source control" -Level Significant
 Import-Module $dbacheckslocalpath\dbachecks.psd1
 Write-PSFMessage "Resetting dbachecks config"  -Level Significant
 $null = Reset-DbcConfig
 
- $PSDefaultParameterValues += @{ 'Write-PSFMessage:Level' = 'Output'} # setting for messages to screen
+$PSDefaultParameterValues += @{ 'Write-PSFMessage:Level' = 'Output'} # setting for messages to screen
 Set-Location $dbacheckslocalpath\tests\Integration
 
 Write-PSFMessage "resetting docker-compose to save Rob from troubleshooting for hours because the containers already existed"
 docker-compose down
 Write-PSFMessage "Starting containers" 
-docker-compose up -d
+try {
+    $ErrorActionPreference = 'Stop'
+    docker-compose up -d
+    $ErrorActionPreference = 'Continue'
+}
+catch {
+    $ErrorActionPreference = 'Continue'
+    Return
+}
 
 $containers = 'localhost,15589', 'localhost,15588', 'localhost,15587', 'localhost,15586'
 $cred = Import-Clixml $CredentailPath 
@@ -93,9 +101,9 @@ $jobhistoryconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check JobHistor
 Write-PSFMessage "Checking JobHistory value changed"
 $setDbaAgentServerSplat = @{
     MaximumJobHistoryRows = 1000
-    MaximumHistoryRows = 10000
-    SqlInstance = $containers.Where{$_ -ne 'localhost,15588'}
-    SqlCredential = $cred
+    MaximumHistoryRows    = 10000
+    SqlInstance           = $containers.Where{$_ -ne 'localhost,15588'}
+    SqlCredential         = $cred
 }
 $null = Set-DbaAgentServer @setDbaAgentServerSplat
 $jobhistoryvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check JobHistory -Show None  -PassThru
@@ -116,7 +124,7 @@ $null = Set-DbcConfig -Name policy.storage.backuppath -value 'C:\Windows\temp\a'
 $BackupPathAccessconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check BackupPathAccess -Show None  -PassThru
 Write-PSFMessage "Checking BackupPathAccess value changed"
 
-foreach($container in $containers){
+foreach ($container in $containers) {
     $Instance = Connect-DbaInstance -SqlInstance $container -SqlCredential $cred 
     $Instance.BackupDirectory = 'C:\Windows\temp\'
     $Instance.Alter()
@@ -134,8 +142,9 @@ $BackupPathAccessvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check Back
 # run the checks against these instances 
 Write-PSFMessage "Checking DAC default"
 $null = Set-DbcConfig -Name app.sqlinstance $containers
-$null = Set-DbaSpConfigure -SqlInstance $containers -SqlCredential $cred -Name RemoteDACConnectionsEnabled -Value $true ## because it is set to false by default but dbachecks uses true as default
-
+foreach($container in $containers){
+    $null = Set-DbaSpConfigure -SqlInstance $container -SqlCredential $cred -Name RemoteDACConnectionsEnabled -Value 1 ## because it is set to false by default but dbachecks uses true as default
+    }
 # by default all tests should pass on default instance settings
 $DACdefault = Invoke-DbcCheck -SqlCredential $cred -Check DAC -Show None  -PassThru
 
@@ -145,7 +154,10 @@ $null = Set-DbcConfig -Name policy.dacallowed -value $false
 $DACconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check DAC -Show None  -PassThru
 Write-PSFMessage "Checking DAC value changed"
 
-$null = Set-DbaSpConfigure -SqlInstance $containers -SqlCredential $cred -Name RemoteDACConnectionsEnabled -Value $false
+foreach($container in $containers){
+    $null = Set-DbaSpConfigure -SqlInstance $container -SqlCredential $cred -Name RemoteDACConnectionsEnabled -Value 0
+    }
+
 $DACvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check DAC -Show None  -PassThru
 
 
