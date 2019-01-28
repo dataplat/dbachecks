@@ -1,4 +1,11 @@
-## Date 19/01/2018 
+## Date 29/01/2019 
+Added skip for authentication scheme #257
+Added WhatIf to Update-DbcPowerBiDataSource Thank you @shaneis #590
+$null to the left Thank you @jwmoss #588
+
+##Latest
+
+## Date 19/01/2019 
 Thank you Claudio
 Added extra check for Job History Settings #582
 Added extra check for Error Log Count #583

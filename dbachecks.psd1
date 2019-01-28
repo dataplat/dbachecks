@@ -131,9 +131,10 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 22/11/2018
-Spelling - Thanks RonaldHensbergen
-Fix for #576 When calling just Invoke-DbcCheck without a Check it fails to run the Server Tests correctly
+## Date 29/01/2019 
+Added skip for authentication scheme #257
+Added WhatIf to Update-DbcPowerBiDataSource Thank you @shaneis #590
+$null to the left Thank you @jwmoss #588
 
 ##Latest
 
