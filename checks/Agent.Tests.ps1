@@ -4,6 +4,26 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
+Describe "Database Mail XPs" -Tags DatabaseMailEnabled, security, $filename {
+    $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
+    @(Get-Instance).ForEach{
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Database Mail XPs on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Testing Database Mail XPs  on $psitem" {
+                It "Testing Database Mail XPs is set to $DatabaseMailEnabled on $psitem" {
+                    Assert-DatabaseMailEnabled -SQLInstance $Psitem -DatabaseMailEnabled $DatabaseMailEnabled
+                }
+            }
+        }
+    }
+}
+
 Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
     @(Get-Instance).ForEach{
         if ($NotContactable -contains $psitem) {
