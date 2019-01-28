@@ -111,7 +111,7 @@ function Update-DbcPowerBiDataSource {
         ++$i
         try {
             if (-not (Test-Path -Path $Path)) {
-                if ($PSCmdlet.ShoudProcess($Path, 'Creating new directory')) {
+                if ($PSCmdlet.ShouldProcess($Path, 'Creating new directory')) {
                     $null = New-Item -ItemType Directory -Path $Path -ErrorAction Stop
                 }
             }
