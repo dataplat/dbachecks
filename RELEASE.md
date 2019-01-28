@@ -1,5 +1,5 @@
 ## Date 29/01/2019 
-Added skip for authentication scheme #257
+Added skip for authentication scheme #587
 Added WhatIf to Update-DbcPowerBiDataSource Thank you @shaneis #590
 $null to the left Thank you @jwmoss #588
 
