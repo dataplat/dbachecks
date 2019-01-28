@@ -25,6 +25,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
     Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
         $skipremote = Get-DbcConfigValue skip.connection.remoting
         $skipping = Get-DbcConfigValue skip.connection.ping
+        $skipauth = Get-DbcConfigValue skip.connection.auth
         $authscheme = Get-DbcConfigValue policy.connection.authscheme
         if ($NotContactable -contains $psitem) {
             Context "Testing Instance Connection on $psitem" {
@@ -39,7 +40,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
                 It "connects successfully to $psitem" {
                     $connection.connectsuccess | Should -BeTrue
                 }
-                It "auth scheme Should Be $authscheme on $psitem" {
+                It -Skip:$skipauth "auth scheme Should Be $authscheme on $psitem" {
                     $connection.AuthScheme | Should -Be $authscheme
                 }
                 It -Skip:$skipping "$psitem is pingable" {
