@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.1.167'
+    ModuleVersion          = '1.1.166'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -134,7 +134,7 @@
 ## Date 29/01/2019 
 Added skip for authentication scheme #257
 Added WhatIf to Update-DbcPowerBiDataSource Thank you @shaneis #590
-$null to the left Thank you @jwmoss #588
+null to the left Thank you @jwmoss #588
 
 ##Latest
 
