@@ -10,7 +10,7 @@ see the new results.
 
 ```
 Update-DbcPowerBiDataSource [-InputObject] <PSObject> [[-Path] <String>] [[-FileName] <String>]
- [[-Environment] <String>] [-Force] [-EnableException] [<CommonParameters>]
+ [[-Environment] <String>] [-Force] [-EnableException] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -77,6 +77,17 @@ Runs tests, saves to json to \\\\nas\projects\dbachecks.json
 Opens the PowerBi using that file
 then you'll have to change your data source in Power BI because by default it 
 points to C:\Windows\Temp (limitation of Power BI)
+
+### EXAMPLE 8
+```
+Invoke-DbcCheck -SqlInstance sql2017 -Check SuspectPage -Show None -PassThru | Update-DbcPowerBiDataSource -Environment Test -Whatif
+```
+
+What if: Performing the operation "Removing .json files named *Default*" on target "C:\Windows\temp\dbachecks".
+What if: Performing the operation "Passing results" on target "C:\Windows\temp\dbachecks\dbachecks_1_Test__SuspectPage.json".
+
+Will not actually create or update the data sources but will output what happens with the command and what the file name will be
+called.
 
 ## PARAMETERS
 
@@ -171,6 +182,37 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
