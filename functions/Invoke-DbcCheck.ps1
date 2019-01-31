@@ -243,7 +243,7 @@ function Invoke-DbcCheck {
                 Stop-PSFFunction -Message "$ConfigFile does not exist"
                 return
             }
-            $null = Import-DbcConfig -Path $ConfigFile -WarningAction SilentlyContinue
+            $null = Import-DbcConfig -Path $ConfigFile -WarningAction SilentlyContinue -Temporary
         }
         
         $config = Get-PSFConfig -Module dbachecks
@@ -380,7 +380,7 @@ function Invoke-DbcCheck {
             $finishedAllTheChecks = $true
         }
         catch {
-            Stop-PSFFunction -Message "There was a problem with parsing the check repository" -ErrorRecord $psitem
+            Stop-PSFFunction -Message "There was a problem executing Invoke-Pester" -ErrorRecord $psitem
         }
         finally {
             # reset the config to original value
