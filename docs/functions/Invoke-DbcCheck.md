@@ -10,10 +10,10 @@ Invoke-DbcCheck is a SQL-centric Invoke-Pester wrapper
 Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Check] <String[]>]
  [-ExcludeCheck <String[]>] [-PassThru] [-SqlInstance <DbaInstanceParameter[]>]
  [-ComputerName <DbaInstanceParameter[]>] [-SqlCredential <PSCredential>] [-Credential <PSCredential>]
- [-Database <Object[]>] [-ExcludeDatabase <Object[]>] [-Value <String[]>] [-CodeCoverage <Object[]>]
- [-CodeCoverageOutputFile <String>] [-CodeCoverageOutputFileFormat <String>] [-Strict] [-OutputFormat <String>]
- [-AllChecks] [-Quiet] [-PesterOption <Object>] [-Show <OutputTypes>] [-ConfigAgentAlertJob <Object>]
- [-ConfigAgentAlertMessageid <Object>] [-ConfigAgentAlertNotification <Object>]
+ [-Database <Object[]>] [-ExcludeDatabase <Object[]>] [-Value <String[]>] [-ConfigFile <String>]
+ [-CodeCoverage <Object[]>] [-CodeCoverageOutputFile <String>] [-CodeCoverageOutputFileFormat <String>]
+ [-Strict] [-OutputFormat <String>] [-AllChecks] [-Quiet] [-PesterOption <Object>] [-Show <OutputTypes>]
+ [-ConfigAgentAlertJob <Object>] [-ConfigAgentAlertMessageid <Object>] [-ConfigAgentAlertNotification <Object>]
  [-ConfigAgentAlertSeverity <Object>] [-ConfigAgentDatabasemailprofile <Object>]
  [-ConfigAgentDbaoperatoremail <Object>] [-ConfigAgentDbaoperatorname <Object>]
  [-ConfigAgentFailsafeoperator <Object>] [-ConfigAgentHistoryMaximumhistoryrows <Object>]
@@ -100,17 +100,17 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
 Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Check] <String[]>]
  [-ExcludeCheck <String[]>] [-PassThru] [-SqlInstance <DbaInstanceParameter[]>]
  [-ComputerName <DbaInstanceParameter[]>] [-SqlCredential <PSCredential>] [-Credential <PSCredential>]
- [-Database <Object[]>] [-ExcludeDatabase <Object[]>] [-Value <String[]>] [-CodeCoverage <Object[]>]
- [-CodeCoverageOutputFile <String>] [-CodeCoverageOutputFileFormat <String>] [-Strict] -OutputFile <String>
- [-OutputFormat <String>] [-AllChecks] [-Quiet] [-PesterOption <Object>] [-Show <OutputTypes>]
- [-ConfigAgentAlertJob <Object>] [-ConfigAgentAlertMessageid <Object>] [-ConfigAgentAlertNotification <Object>]
- [-ConfigAgentAlertSeverity <Object>] [-ConfigAgentDatabasemailprofile <Object>]
- [-ConfigAgentDbaoperatoremail <Object>] [-ConfigAgentDbaoperatorname <Object>]
- [-ConfigAgentFailsafeoperator <Object>] [-ConfigAgentHistoryMaximumhistoryrows <Object>]
- [-ConfigAgentHistoryMaximumjobhistoryrows <Object>] [-ConfigAgentValidjobownerName <Object>]
- [-ConfigAppCheckrepos <Object>] [-ConfigAppCluster <Object>] [-ConfigAppComputername <Object>]
- [-ConfigAppLocalapp <Object>] [-ConfigAppMaildirectory <Object>] [-ConfigAppSqlcredential <Object>]
- [-ConfigAppSqlinstance <Object>] [-ConfigAppWincredential <Object>]
+ [-Database <Object[]>] [-ExcludeDatabase <Object[]>] [-Value <String[]>] [-ConfigFile <String>]
+ [-CodeCoverage <Object[]>] [-CodeCoverageOutputFile <String>] [-CodeCoverageOutputFileFormat <String>]
+ [-Strict] -OutputFile <String> [-OutputFormat <String>] [-AllChecks] [-Quiet] [-PesterOption <Object>]
+ [-Show <OutputTypes>] [-ConfigAgentAlertJob <Object>] [-ConfigAgentAlertMessageid <Object>]
+ [-ConfigAgentAlertNotification <Object>] [-ConfigAgentAlertSeverity <Object>]
+ [-ConfigAgentDatabasemailprofile <Object>] [-ConfigAgentDbaoperatoremail <Object>]
+ [-ConfigAgentDbaoperatorname <Object>] [-ConfigAgentFailsafeoperator <Object>]
+ [-ConfigAgentHistoryMaximumhistoryrows <Object>] [-ConfigAgentHistoryMaximumjobhistoryrows <Object>]
+ [-ConfigAgentValidjobownerName <Object>] [-ConfigAppCheckrepos <Object>] [-ConfigAppCluster <Object>]
+ [-ConfigAppComputername <Object>] [-ConfigAppLocalapp <Object>] [-ConfigAppMaildirectory <Object>]
+ [-ConfigAppSqlcredential <Object>] [-ConfigAppSqlinstance <Object>] [-ConfigAppWincredential <Object>]
  [-ConfigCommandInvokedbccheckExcludecheck <Object>] [-ConfigCommandInvokedbccheckExcludedatabases <Object>]
  [-ConfigDatabaseExists <Object>] [-ConfigDomainDomaincontroller <Object>] [-ConfigDomainName <Object>]
  [-ConfigDomainOrganizationalunit <Object>] [-ConfigGlobalNotcontactable <Object>]
@@ -209,11 +209,13 @@ using the sqladmin SQL login with the password provided interactively
 
 ### EXAMPLE 3
 ```
-Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink
+Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink -ConfigFile \\share\repo\prod.json
 ```
 
 Runs all of the checks tagged Database except for the AutoShrink check against 
 the SQL Instances set in the config under app.sqlinstance
+
+Imports configuration file, \\\\share\repo\prod.json, prior to executing checks.
 
 ### EXAMPLE 4
 ```
@@ -468,6 +470,21 @@ it's hard to explain
 
 ```yaml
 Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigFile
+The path to the exported dbachecks config file.
+
+```yaml
+Type: String
 Parameter Sets: (All)
 Aliases:
 
