@@ -243,7 +243,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         else {
             Context "Checking for orphaned database files on $psitem" {
                 It "$psitem doesn't have orphan files" {
-                    (Find-DbaOrphanedFile -SqlInstance $psitem).Count | Should -Be 0 -Because 'You dont want any orphaned files - Use Find-DbaOrphanedFile to locate them'
+                    @(Find-DbaOrphanedFile -SqlInstance $psitem).Count | Should -Be 0 -Because 'You dont want any orphaned files - Use Find-DbaOrphanedFile to locate them'
                 }
             }
         }
