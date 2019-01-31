@@ -50,6 +50,9 @@ use the PassThru parameter.
 
 To suppress the host output, use the Quiet parameter.
 
+.PARAMETER ConfigFile
+The path to the exported dbachecks config file.
+
 .PARAMETER OutputFormat
 The format of output. Currently, only NUnitXML is supported. 
 
@@ -134,10 +137,12 @@ Runs the Recovery model check against the SQL instances sql2017, sqlcluster
 using the sqladmin SQL login with the password provided interactively
 
 .EXAMPLE
-Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink
+Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink -ConfigFile \\share\repo\prod.json
 
 Runs all of the checks tagged Database except for the AutoShrink check against 
 the SQL Instances set in the config under app.sqlinstance
+
+Imports configuration file, \\share\repo\prod.json, prior to executing checks.
 
 .EXAMPLE
 # Set the servers you'll be working with
@@ -196,6 +201,7 @@ function Invoke-DbcCheck {
         [object[]]$Database,
         [object[]]$ExcludeDatabase = (Get-PSFConfigValue -FullName 'dbachecks.command.invokedbccheck.excludedatabase' -Fallback @()),
         [string[]]$Value,
+        [string]$ConfigFile,
         [object[]]$CodeCoverage = @(),
         [string]$CodeCoverageOutputFile,
         [ValidateSet('JaCoCo')]
@@ -232,6 +238,14 @@ function Invoke-DbcCheck {
     }
 
     begin {
+        if (Test-PSFParameterBinding -ParameterName ConfigFile) {
+            if (-not (Test-Path -Path $ConfigFile)) {
+                Stop-PSFFunction -Message "$ConfigFile does not exist"
+                return
+            }
+            $null = Import-DbcConfig -Path $ConfigFile -WarningAction SilentlyContinue -Temporary
+        }
+        
         $config = Get-PSFConfig -Module dbachecks
         foreach ($key in $PSBoundParameters.Keys | Where-Object { $_ -like "Config*" }) {
             if ($item = $config | Where-Object { "Config$($_.Name.Replace('.', ''))" -eq $key }) {
@@ -273,6 +287,8 @@ function Invoke-DbcCheck {
     }
 
     process {
+        if (Test-PSFFunctionInterrupt) { return }
+
         #get the output config for dbatools and store it to set it back at the end
         $dbatoolsoutputconfig = Get-DbatoolsConfigValue -FullName message.consoleoutput.disable
         if (!$dbatoolsoutputconfig) {
@@ -311,6 +327,7 @@ function Invoke-DbcCheck {
         $null = $PSBoundParameters.Remove('AllChecks')
         $null = $PSBoundParameters.Remove('Check')
         $null = $PSBoundParameters.Remove('ExcludeCheck')
+        $null = $PSBoundParameters.Remove('ConfigFile')
         $null = $PSBoundParameters.Add('Tag', $Check)
         $null = $PSBoundParameters.Add('ExcludeTag', $ExcludeCheck)
 
@@ -363,7 +380,7 @@ function Invoke-DbcCheck {
             $finishedAllTheChecks = $true
         }
         catch {
-            Stop-PSFFunction -Message "There was a problem with execution of checks repos!" -ErrorRecord $psitem
+            Stop-PSFFunction -Message "There was a problem executing Invoke-Pester" -ErrorRecord $psitem
         }
         finally {
             # reset the config to original value

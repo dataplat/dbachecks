@@ -131,10 +131,9 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 29/01/2019 
-Added skip for authentication scheme #257
-Added WhatIf to Update-DbcPowerBiDataSource Thank you @shaneis #590
-null to the left Thank you @jwmoss #588
+## Date 31/01/2019 
+Thank you Chrissy!
+add support for inline config file, fixes #501 #594
 
 ##Latest
 
