@@ -91,7 +91,7 @@ function Update-DbcPowerBiDataSource {
         [pscustomobject]$InputObject,
         [string]$Path = "$env:windir\temp\dbachecks",
         [string]$FileName,
-        [string]$Environment,
+        [string]$Environment = "Default",
         [switch]$Force,
         [switch]$EnableException
     )
