@@ -1,7 +1,7 @@
 # load all of the assertion functions
 . /../internal/assertions/Database.Assertions.ps1
 
-Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions {
+Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions, DatabaseAssertions {
     Context "Testing Get-Database" {
         It "Should have a Instance parameter" {
             (Get-Command Get-Database).Parameters['Instance'] | Should -Not -BeNullOrEmpty -Because "We Need to pass the instance in"
@@ -112,11 +112,13 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
                         Name     = 'Dummy1';
                         ReadOnly = $False;
                         Status   = 'Normal';
+                        IsDatabaseSnapshot = $false;
                     },
                     [PSCustomObject]@{
                         Name     = 'Dummy2';
                         ReadOnly = $True;
                         Status   = 'Normal';
+                        IsDatabaseSnapshot = $false;
                     }
                 );
             }
@@ -126,6 +128,28 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
         It "It Should Not Fail for a database that is readonly when it is excluded" {
             Assert-DatabaseStatus -Instance Dummy -ExcludeReadOnly 'Dummy2'
+        }
+        It "It Should Not Fail for a snapshots" {
+
+            Mock Connect-DbaInstance {
+                [PSCustomObject]@{
+                    Databases = @(
+                        [PSCustomObject]@{
+                            Name     = 'Dummy1';
+                            ReadOnly = $False;
+                            Status   = 'Normal';
+                            IsDatabaseSnapshot = $false;
+                        },
+                        [PSCustomObject]@{
+                            Name     = 'Dummy2';
+                            ReadOnly = $True;
+                            Status   = 'Normal';
+                            IsDatabaseSnapshot = $true;
+                        }
+                    );
+                }
+            }
+            Assert-DatabaseStatus -Instance Dummy
         }
         # Mock for offline failing
         Mock Connect-DbaInstance {
@@ -303,7 +327,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         It "Should call the Mocks successfully" {
             $assertMockParams = @{
                 'CommandName' = 'Connect-DbaInstance'
-                'Times'       = 14
+                'Times'       = 15
                 'Exactly'     = $true
             }
             Assert-MockCalled @assertMockParams
