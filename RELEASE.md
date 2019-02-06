@@ -1,8 +1,14 @@
+## Date 05/02/2019
+Thank you Chrissy! @cl
+added default environment #596
+altered configuration validation for mail to stop errors
+Ensured database status check doesnt fail as readonly for snapshots
+
+##Latest
+
 ## Date 31/01/2019 
 Thank you Chrissy!
 add support for inline config file, fixes #501 #594
-
-##Latest
 
 ## Date 29/01/2019 
 Added skip for authentication scheme #587
