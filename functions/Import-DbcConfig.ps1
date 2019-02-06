@@ -55,7 +55,6 @@ function Import-DbcConfig {
         }
 
         foreach ($result in $results) {
-            if ($result.Name -match 'mail' -and (-not $result.Value)) { continue }
             Set-DbcConfig -Name $result.Name -Value $result.Value -Temporary:$Temporary
         }
     }
