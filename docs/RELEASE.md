@@ -1,9 +1,13 @@
+## Date 31/01/2019 
+Thank you Chrissy!
+add support for inline config file, fixes #501 #594
+
+##Latest
+
 ## Date 29/01/2019 
 Added skip for authentication scheme #587
 Added WhatIf to Update-DbcPowerBiDataSource Thank you @shaneis #590
 $null to the left Thank you @jwmoss #588 
-
-##Latest
 
 ## Date 19/01/2019 
 Thank you Claudio
