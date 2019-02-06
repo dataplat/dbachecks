@@ -149,7 +149,7 @@ Aliases:
 
 Required: False
 Position: 4
-Default value: None
+Default value: Default
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
