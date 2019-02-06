@@ -38,10 +38,10 @@ function Assert-DatabaseStatus {
         [string[]]$ExcludeRestoring
     )
     if($Database){
-        $results = @((Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$psitem.Name -in $Database -and $psitem.Name -notin $Excludedbs} | Select-Object Name, Status, Readonly)
+        $results = @((Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$psitem.Name -in $Database -and $psitem.Name -notin $Excludedbs} | Select-Object Name, Status, Readonly, IsDatabaseSnapshot)
     }
     else{
-    $results = @((Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$psitem.Name -notin $Excludedbs} | Select-Object Name, Status, Readonly)
+    $results = @((Connect-DbaInstance -SqlInstance $Instance).Databases.Where{$psitem.Name -notin $Excludedbs} | Select-Object Name, Status, Readonly, IsDatabaseSnapshot)
     }
     $results.Where{$_.Name -notin $ExcludeReadOnly -and $_.IsDatabaseSnapshot -eq $false}.Readonly | Should -Not -Contain True -Because "We expect that there will be no Read-Only databases except for those specified"
     $results.Where{$_.Name -notin $ExcludeOffline}.Status | Should -Not -Match 'Offline' -Because "We expect that there will be no offline databases except for those specified"
