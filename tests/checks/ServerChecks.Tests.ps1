@@ -73,7 +73,7 @@ Describe "Checking ServerChecks.Tests" {
             }
         }
 
-        it "should fail when any SQLDisks is formatted with a block allocation unit size that isnt 65536b (64KB)" {
+        it "Should fail when any SQLDisks is formatted with a block allocation unit size that isn't 65536b (64KB)" {
             Mock Test-DbaDiskAllocation {
                 @(
                     [PSObject]@{
@@ -122,7 +122,68 @@ Describe "Checking ServerChecks.Tests" {
             {Assert-DiskAllocationUnit -DiskAllocationObject $DiskAllocationObjects[4] } | should -Throw -ExpectedMessage "Expected `$true, because SQL Server performance will be better when accessing data from a disk that is formatted with 64Kb block allocation unit, but got `$false."
         }
     }
+    Context "Testing Assert-Privilege for success" {
+        #$ifi = $true
+        #$lpim = $true
+        #Mock for passing
+        Mock Get-DbaService{
+            [PSCustomObject]@{
+                StartName = 'DummyService'
+            }
+        }
+    
+        Mock Get-DbaPrivilege{
+            [PSCustomObject]@{
+                User = 'DummyService'
+                InstantFileInitialization = $true
+                LockPagesInMemory = $true
+            }
+        }
+
+        $AllServerInfo = Get-AllServerInfo -ComputerName $Psitem -Tags LocalSecurityPolicy
+        It "Should Pass IFI When value set correctly" {
+            Assert-Privilege -LocalSecurityPolicy $psitem -Type IFI -IFI $ifi
+        }
+
+        It "Should Pass LPIM When value set correctly" {
+            Assert-Privilege -LocalSecurityPolicy $psitem -Type LPIM -LPIM $lpim
+        }
+    }
+    Context "Testing Assert-Privilege for failure" {
+        #$ifi = $true
+        #$lpim = $true
+        #Mock for failing
+        Mock Get-DbaService{
+            [PSCustomObject]@{
+                StartName = 'DummyService'
+            }
+        }
+    
+        Mock Get-DbaPrivilege{
+            [PSCustomObject]@{
+                User = 'DummyService'
+                InstantFileInitialization = $false
+                LockPagesInMemory = $false
+            }
+        }
+
+        $AllServerInfo = Get-AllServerInfo -ComputerName $Psitem -Tags LocalSecurityPolicy
+        It "Should fail IFI When value set incorrectly" {
+            {Assert-Privilege -LocalSecurityPolicy $psitem -Type IFI -IFI $ifi} | Should -Throw -ExpectedMessage "Expected `$true, because This permission keeps SQL Server from zeroing-out new space when you create or expand a data file, but got `$false."
+        }
+
+        It "Should fail LPIM When value set incorrectly" {
+            {Assert-Privilege -LocalSecurityPolicy $psitem -Type LPIM -LPIM $lpim} | Should -Throw -ExpectedMessage  "Expected `$true, because Locking pages in memory may boost performance when paging memory to disk is expected., but got `$false."
+        }
+
+    }
+
+    
+
+
+
     Context "Testing Get-AllServerInfo for Tags Server with a server that exists" {
+        # mocking each command inside Get-AllServerInfo, so that we are only testing the code and not running it against the instance
         Mock Test-Connection {
             @(
                 [PSObject]@{
@@ -596,7 +657,28 @@ Describe "Checking ServerChecks.Tests" {
 
         }
 
-        $tags = 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'InstanceConnection'
+        Mock Get-DbaService{
+            @([PSCustomObject]@{
+                StartName = 'DummyService'
+            },
+            [PSCustomObject]@{
+                StartName = 'DummyService1'
+            })
+        }
+
+        Mock Get-DbaPrivilege{
+            @([PSCustomObject]@{
+                User = 'DummyService'
+                InstantFileInitialization = $True
+                LockPagesInMemory = $True
+            },
+            [PSCustomObject]@{
+                User = 'DummyService1'
+                InstantFileInitialization = $True
+                LockPagesInMemory = $True
+            })
+        }
+        $tags = 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'InstanceConnection', 'LocalSecurityPolicy'
         
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should get the right results for PingComputer" {
@@ -624,6 +706,11 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskSpace[0].Name | Should -Be 'C:\'
             $serverInfo.DiskSpace[0].PercentFree | Should -Be 46.78
         }
+        It "Should get the right results for LocalSecurityPolicy" {
+            $ServerInfo.LocalSecurityPolicy[0].SQLServiceAccount | Should -Be 'DummyService'
+            $ServerInfo.LocalSecurityPolicy[0].IFI | Should -BeTrue 
+            $ServerInfo.LocalSecurityPolicy[0].LPIM | Should -BeTrue
+        }
     }
 
     Context "Testing Get-AllServerInfo for Tags Server with a server that doesn't exist" {
@@ -637,13 +724,17 @@ Describe "Checking ServerChecks.Tests" {
 
         Mock Get-DbaDiskSpace {Throw}
 
-        $tags = 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'InstanceConnection'
+        Mock Get-DbaService {Throw}
+
+        Mock Get-DbaPrivilege {Throw}
+
+        $tags = 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'InstanceConnection', 'LocalSecurityPolicy' 
         
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should get the right results for PingComputer" {
-            $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the functionshould return for no server"
-            $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the functionshould return for no server"
-            $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the functionshould return for no server"
+            $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the function should return for no server"
+            $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the function should return for no server"
+            $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the function should return for no server"
         }
         It "Should get the right results for DiskAllocationUnit" {
             $serverInfo.DiskAllocation[0].Name | Should -Be '? '  # Yes there is a space for formatting the PowerBi
@@ -651,16 +742,21 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskAllocation[0].isSqlDisk| Should -BeTrue
         }
         It "Should get the right results for PowerPlan" {
-            $serverInfo.PowerPlan | Should -Be 'An Error occured'
+            $serverInfo.PowerPlan | Should -Be 'An Error occurred'
         }
         It "Should get the right results for SPN" {
-            $serverInfo.SPNs[0].Error | Should -Be 'An Error Occured'
+            $serverInfo.SPNs[0].Error | Should -Be 'An Error occurred'
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'Dont know the SPN'
         }
         It "Should get the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occured Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
+        }
+        It "Should get the right results for LocalSecurityPolicy" {
+            $ServerInfo.LocalSecurityPolicy[0].SQLServiceAccount | Should -Be 'Do not know the service name'
+            $ServerInfo.LocalSecurityPolicy[0].IFI | Should -Be 'An error occured'
+            $ServerInfo.LocalSecurityPolicy[0].LPIM | Should -Be 'An error occured'
         }
     }
 
@@ -771,7 +867,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskAllocation | Should -BeNullOrEmpty
         }
         It "Should get the right results for PowerPlan" {
-            $serverInfo.PowerPlan | Should -Be 'An Error occured'
+            $serverInfo.PowerPlan | Should -Be 'An Error occurred'
         }
         It "Should have no results for SPN" {
             $serverInfo.SPNs | Should -BeNullOrEmpty
@@ -972,9 +1068,9 @@ Describe "Checking ServerChecks.Tests" {
         
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should get the right results for PingComputer" {
-            $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the functionshould return for no server"
-            $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the functionshould return for no server"
-            $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the functionshould return for no server"
+            $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the function should return for no server"
+            $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the function should return for no server"
+            $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the function should return for no server"
       
         }
         It "Should have no results for DiskAllocationUnit" {
@@ -1066,6 +1162,7 @@ Describe "Checking ServerChecks.Tests" {
                 'CommandName' = 'Test-DbaDiskAllocation'
                 'Times'       = 1
                 'Exactly'     = $true
+                'scope'       = 'context'
             }
             Assert-MockCalled @assertMockParams
         }
@@ -1271,7 +1368,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.PowerPlan | Should -BeNullOrEmpty
         }
         It "Should have the right results for SPN" {
-            $serverInfo.SPNs[0].Error | Should -Be 'An Error Occured'
+            $serverInfo.SPNs[0].Error | Should -Be 'An Error occurred'
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'Dont know the SPN'
         }
         It "Should have no results for DiskCapacity" {
@@ -1578,7 +1675,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.SPNs| Should -BeNullOrEmpty
         }
         It "Should have the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occured Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
         }
@@ -1974,11 +2071,11 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.PowerPlan | Should -BeNullOrEmpty
         }
         It "Should get the right results for SPN" {
-            $serverInfo.SPNs[0].Error | Should -Be 'An Error Occured'
+            $serverInfo.SPNs[0].Error | Should -Be 'An Error occurred'
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'Dont know the SPN'
         }
         It "Should have the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occured Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
         }

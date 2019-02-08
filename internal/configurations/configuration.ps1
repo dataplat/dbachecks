@@ -41,7 +41,12 @@ Set-PSFConfig -Module dbachecks -Name policy.backup.fullmaxdays -Value 1 -Initia
 Set-PSFConfig -Module dbachecks -Name policy.backup.diffmaxhours -Value 25 -Initialize -Description "Maximum number of hours before Diff Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backup.logmaxminutes -Value 15 -Initialize -Description "Maximum number of minutes before Log Backups are considered outdated"
 Set-PsFConfig -Module dbachecks -Name policy.backup.newdbgraceperiod -Value 0 -Initialize -Description "The number of hours a newly created database is allowed to not have backups"
-Set-PSFConfig -Module dbachecks -Name policy.backup.defaultbackupcompression -Validation bool -Value $true -Initialize -Description "Default Backup Compression check should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.backup.defaultbackupcompression -Validation bool -Value $true -Initialize -Description "Default Backup Compression should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.clrenabled -Validation bool -Value $false -Initialize -Description "CLR Enabled should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.crossdbownershipchaining -Validation bool -Value $false -Initialize -Description "Cross Database Ownership Chaining should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.databasemailenabled -Validation bool -Value $false -Initialize -Description "Database Mail XPs should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.adhocdistributedqueriesenabled -Validation bool -Value $false -Initialize -Description "Ad Hoc Distributed Queries should be enabled `$true or disabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.xpcmdshelldisabled -Validation bool -Value $true -Initialize -Description "XP CmdShell should be disabled `$true or enabled `$false"
 
 #diskspce
 Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -Initialize -Description "Percent disk free"
@@ -75,6 +80,7 @@ Set-PSFConfig -Module dbachecks -Name policy.invaliddbowner.excludedb -Value @('
 
 #Error Log
 Set-PSFConfig -Module dbachecks -Name policy.errorlog.warningwindow -Value 2 -Initialize -Description "The number of days prior to check for error log issues"
+Set-PSFConfig -Module dbachecks -Name policy.errorlog.logcount -Value -1 -Initialize -Description "The minimum number of error log files that should be configured. -1 means off/default"
 
 #DAC
 Set-PSFConfig -Module dbachecks -Name policy.dacallowed -Validation bool -Value $true -Initialize -Description "DAC should be allowed `$true or disallowed `$false"
@@ -199,6 +205,7 @@ Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesonc -Validation bool -Valu
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilesizemax -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database Files Max Size"
 Set-PSFConfig -Module dbachecks -Name skip.connection.remoting -Validation bool -Value $false -Initialize -Description "Skip PowerShell remoting check for connectivity"
 Set-PSFConfig -Module dbachecks -Name skip.connection.ping -Validation bool -Value $false -Initialize -Description "Skip the ping check for connectivity"
+Set-PSFConfig -Module dbachecks -Name skip.connection.auth -Validation bool -Value $false -Initialize -Description "Skip the authenticaton scheme check for connectivity"
 Set-PSFConfig -Module dbachecks -Name skip.datafilegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
 Set-PSFConfig -Module dbachecks -Name skip.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.diffbackuptest -Validation bool -Value $false -Initialize -Description "Skip the Differential backup test"
@@ -207,7 +214,6 @@ Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (expecially useful for Azure and AWS)"
-
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
@@ -219,6 +225,8 @@ Set-PSFConfig -Module dbachecks -Name agent.alert.messageid -Value @('823', '824
 Set-PSFConfig -Module dbachecks -Name agent.alert.Severity -Value @('16', '17', '18', '19', '20', '21', '22', '23', '24', '25') -Initialize -Description "Agent alert severity to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
 Set-PSFConfig -Module dbachecks -Name agent.alert.Job -Value $false -Initialize -Description "Agent alert job notification. Ex job to write to eventlog for SCOM monitoring"
 Set-PSFConfig -Module dbachecks -Name agent.alert.Notification -Value $true -Initialize -Description "Agent alert notification"
+Set-PSFConfig -Module dbachecks -Name agent.history.maximumhistoryrows -Value 1000 -Initialize -Description "Maximum job history log size (in rows). The value -1 means disabled"
+Set-PSFConfig -Module dbachecks -Name agent.history.maximumjobhistoryrows -Value 100 -Initialize -Description "Maximum job history row per job. When the property is disabled the value is 0."
 
 # domain
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"
@@ -247,3 +255,9 @@ Set-PSFConfig -Module dbachecks -Name database.exists -Value @("master","msdb","
 
 # Not Contactable
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @() -Initialize -Description "This is used within the checks to avoid trying to contact none-responsive instances many times - do not set manually"
+Set-PSFConfig -Module dbachecks -Name policy.traceflags.expected -Value @() -Initialize -Description "The trace flags we expect to be running"
+Set-PSFConfig -Module dbachecks -Name policy.traceflags.notexpected -Value @() -Initialize -Description "The trace flags we expect not to be running"
+
+# Security Policy
+Set-PSFConfig -Module dbachecks -Name policy.security.ifi -Value $true -Initialize -Description "Instant File Initialization"
+Set-PSFConfig -Module dbachecks -Name policy.security.lpim -Value $true -Initialize -Description "Lock Pages In Memory"

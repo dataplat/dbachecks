@@ -71,12 +71,12 @@ function Get-AllServerInfo {
                         }
                     }
                     else {
-                        $PowerPlan = 'An Error occured'
+                        $PowerPlan = 'An Error occurred'
                     }
                 }
             }
             else {
-                $PowerPlan = 'An Error occured'
+                $PowerPlan = 'An Error occurred'
             }
         }
         {$Tags -contains 'SPN'} {
@@ -96,7 +96,7 @@ function Get-AllServerInfo {
                             $SPNs = [PSCustomObject]@{
                                 RequiredSPN            = 'Dont know the SPN'
                                 InstanceServiceAccount = 'Dont know the Account'
-                                Error                  = 'An Error Occured'
+                                Error                  = 'An Error occurred'
                             }
                         }
                     }
@@ -105,7 +105,7 @@ function Get-AllServerInfo {
                     $SPNs = [PSCustomObject]@{
                         RequiredSPN            = 'Dont know the SPN'
                         InstanceServiceAccount = 'Dont know the Account'
-                        Error                  = 'An Error Occured'
+                        Error                  = 'An Error occurred'
                     }
                 }
             }
@@ -113,7 +113,7 @@ function Get-AllServerInfo {
                 $SPNs = [PSCustomObject]@{
                     RequiredSPN            = 'Dont know the SPN'
                     InstanceServiceAccount = 'Dont know the Account'
-                    Error                  = 'An Error Occured'
+                    Error                  = 'An Error occurred'
                 }
             }
         }
@@ -137,7 +137,7 @@ function Get-AllServerInfo {
                         $DiskSpace = [PSCustomObject]@{
                             Name         = 'Do not know the Name'
                             PercentFree  = -1
-                            ComputerName = 'An Error occured ' + $ComputerName
+                            ComputerName = 'An Error occurred ' + $ComputerName
                         } 
                     }
                 }
@@ -146,18 +146,56 @@ function Get-AllServerInfo {
                 $DiskSpace = [PSCustomObject]@{
                     Name         = 'Do not know the Name'
                     PercentFree  = -1
-                    ComputerName = 'An Error occured ' + $ComputerName
+                    ComputerName = 'An Error occurred ' + $ComputerName
+                } 
+            }
+        }
+        {$tags -contains 'LocalSecurityPolicy'} { 
+            if ($There) {
+                try {
+                    $SQLServiceAccounts= (Get-DbaService -ComputerName $computername -Type Engine).StartName.ToUpper() | Select-Object -Unique
+                    $privileges = Get-DbaPrivilege -ComputerName $ComputerName  
+                         
+                    $LocalSecurityPolicy = $SQLServiceAccounts.foreach{
+                        $SQLServiceAccount = $PSItem
+                        [PSCustomObject]@{
+                            SQLServiceAccount = $SQLServiceAccount
+                            IFI = @($privileges).where{$_.user -eq $SQLServiceAccount}.InstantFileInitialization
+                            LPIM = @($privileges).where{$_.user -eq $SQLServiceAccount}.LockPagesInMemory
+                        } 
+                    } 
+
+                }
+                catch {
+                    
+                    $There = $false
+                    $LocalSecurityPolicy = [PSCustomObject]@{
+                        SQLServiceAccount = 'Do not know the service name'
+                        IFI = 'An error occured'
+                        LPIM= 'An error occured'
+                    } 
+                }
+            }
+            else {
+                $LocalSecurityPolicy = [PSCustomObject]@{
+                    SQLServiceAccount = 'Do not know the service name'
+                        IFI = 'An error occured'
+                        LPIM= 'An error occured'
                 } 
             }
         }
         Default {}
     }
+
+    # this is the object which is returned to the assertions below; you need to add a new property when you add a new tag above
+
     [PSCustomObject]@{
         PowerPlan      = $PowerPlan
         SPNs           = $SPNs
         DiskSpace      = $DiskSpace
         PingComputer   = $PingComputer
         DiskAllocation = $DiskAllocation 
+        LocalSecurityPolicy = $LocalSecurityPolicy
     }
 }
 
@@ -208,6 +246,25 @@ function Assert-Ping {
         }
         Average {
             ($AllServerInfo.PingComputer | Measure-Object -Property ResponseTime -Average).Average / $pingcount | Should -BeLessThan $pingmsmax -Because "We expect the server to respond within $pingmsmax"
+        }
+        Default {}
+    }
+}
+
+function Assert-Privilege {
+    Param(
+        $LocalSecurityPolicy,
+        $type,
+        $ifi,
+        $lpim
+    )
+    
+    switch ($type) {
+        IFI { 
+            $LocalSecurityPolicy.IFI | Should -Be $ifi -Because "This permission keeps SQL Server from zeroing-out new space when you create or expand a data file"
+        }
+        LPIM {
+            $LocalSecurityPolicy.LPIM | Should -Be $lpim -Because "Locking pages in memory may boost performance when paging memory to disk is expected."
         }
         Default {}
     }

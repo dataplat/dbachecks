@@ -1,6 +1,7 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Server.Assertions.ps1
 
+# getting the tags that we are using for this file
 $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
 
 @(Get-ComputerName).ForEach{
@@ -51,7 +52,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
     Describe "CPUPrioritisation" -Tags CPUPrioritisation, $filename {
         $exclude = Get-DbcConfigValue policy.server.cpuprioritisation
         Context "Testing CPU Prioritisation on $psitem" {
-            It "Should have the registry key set correctly for background CPU Prioritisation" -Skip:$exclude {
+            It "Should have the registry key set correctly for background CPU Prioritisation on $psitem" -Skip:$exclude {
                 Assert-CPUPrioritisation -ComputerName $psitem
             }
         }
@@ -59,36 +60,29 @@ $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -
 
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, $filename {
         Context "Testing disk allocation unit on $psitem" {
+            $computerName = $psitem
             @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
-                It "$($Psitem.Name) Should be set to 64kb " -Skip:$exclude {
+                It "$($Psitem.Name) Should be set to 64kb on $computerName" -Skip:$exclude {
                     Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
                 }
             }
         }
     }
-}
 
     Describe "Local Security Policy Privileges" -Tags LocalSecurityPolicy, $filename {
-        if ($NotContactable -contains $psitem) {
-            Context "Testing Local Security Policy Privileges on $psitem" {
-                It "Can't Connect to $psitem" {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+
+        $ifi = Get-DbcConfigValue policy.security.ifi
+        $lpim = Get-DbcConfigValue policy.security.lpim
+        Context "Testing Local Security Policy to $psitem" {
+            $lspcomp = $psitem
+            @($AllServerInfo.LocalSecurityPolicy).ForEach{
+                It "For SQL Service account $($psitem.SQLServiceAccount) IFI Enabled Should be $ifi on $lspcomp" {
+                    Assert-Privilege -LocalSecurityPolicy $psitem -Type IFI -IFI $ifi
                 }
-            }
-        }
-        else {
-            
-            Context "Testing Local Security Policy Privileges on $psitem" {
-                $SQLServiceAccount= (Get-DbaService -ComputerName $psitem -Type Engine).StartName
-                $IFI = (Get-DbaPrivilege -ComputerName $psitem  | where {$_.user -eq $SQLServiceAccount}).InstantFileInitializationPrivilege 
-                $LPIM = (Get-DbaPrivilege -ComputerName $psitem | where {$_.user -eq $SQLServiceAccount}).LockPagesInMemoryPrivilege
-                It "IFI Enabled Should True on $psitem" {
-                        $IFI | Should -EQ $True -Because 'This permission keeps SQL Server from "zeroing out" new space when you create or expand a data file'
-                    
-                }
-                It "LPIM Enabled True on $psitem" {
-                        $LPIM | Should -EQ $True -Because 'Locking pages in memory may boost performance when paging memory to disk is expected.'
+                It "For SQL Service account $($psitem.SQLServiceAccount) LPIM Enabled Should be $lpim on $lspcomp" {
+                    Assert-Privilege -LocalSecurityPolicy $psitem -Type LPIM -LPIM $lpim
                 }
             }
         }
     }
+}
