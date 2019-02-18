@@ -106,7 +106,8 @@ function Update-DbcPowerBiDataSource {
         [string]$FileName,
         [string]$Environment = "Default",
         [switch]$Force,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Append
     )
     begin {
         if ($FileName -ne "Default") {
