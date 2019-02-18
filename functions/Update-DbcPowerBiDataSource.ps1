@@ -161,14 +161,15 @@ function Update-DbcPowerBiDataSource {
         if ($InputObject.TotalCount -gt 0) {
             try {
                 if ($PSCmdlet.ShouldProcess($FilePath, 'Passing results')) {
-                    if($Append){
-                    $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath -Append
-                    Write-PSFMessage -Level Output -Message "Appended results to $FilePath"
+                    if ($Append) {
+                        $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath -Append
+                        Write-PSFMessage -Level Output -Message "Appended results to $FilePath"
                     }
-                    else{
-                    $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
-                    Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
+                    else {
+                        $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
+                        Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
                     }
+                }
             }
             catch {
                 Stop-PSFFunction -Message "Failure" -ErrorRecord $_
