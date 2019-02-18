@@ -3,25 +3,33 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 
+# Get all the tags in use in this run 
+$Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
+
 @(Get-Instance).ForEach{
     if ($NotContactable -notcontains $psitem) {
         $Instance = $psitem
         try {
-            $connectioncheck = Connect-DbaInstance	-SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+            $InstanceSMO = Connect-DbaInstance	-SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
         }
         catch {
             $NotContactable += $Instance
+            $There = $false
         }
         if ($NotContactable -notcontains $psitem) {
-            if ($null -eq $connectioncheck.version) {
+            if ($null -eq $InstanceSMO.version) {
                 $NotContactable += $Instance
+            $There = $false
             }
             else {
-
+                $There = $True
             }
         }
+    } else {
+        $There = $false
     }
-
+    # Get the relevant information for the checks in one go to save repeated trips to the instance
+    $AllInstanceInfo = Get-AllInstanceInfo -Instance $InstanceSMO -Tags $Tags -There $There
     Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
         $skipremote = Get-DbcConfigValue skip.connection.remoting
         $skipping = Get-DbcConfigValue skip.connection.ping
@@ -568,8 +576,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
         else {
             Context "Checking error log on $psitem" {
                 It "Error log should be free of error severities 17-24 on $psitem" {
-                    Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 1[7-9]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
-                    Get-DbaErrorLog -SqlInstance $psitem -After (Get-Date).AddDays( - $logWindow) -Text "Severity: 2[0-4]" | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
+                    Assert-ErrorLogEntry -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
