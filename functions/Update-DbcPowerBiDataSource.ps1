@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Converts Pester results and exports file in required format for launching the 
 Power BI command. **You will need refresh* the Power BI dashboard every time to 
@@ -26,6 +26,9 @@ A Name to give your suite of tests IE Prod - This will also alter the name of th
 
 .PARAMETER Force
 Delete all json files in the data source folder.
+
+.PARAMETER Append
+Appends results to existing file. Use this if you have custom check repos
 
 .PARAMETER EnableException
 By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
@@ -158,9 +161,14 @@ function Update-DbcPowerBiDataSource {
         if ($InputObject.TotalCount -gt 0) {
             try {
                 if ($PSCmdlet.ShouldProcess($FilePath, 'Passing results')) {
+                    if($Append){
+                    $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath -Append
+                    Write-PSFMessage -Level Output -Message "Appended results to $FilePath"
+                    }
+                    else{
                     $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
                     Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
-                }
+                    }
             }
             catch {
                 Stop-PSFFunction -Message "Failure" -ErrorRecord $_
