@@ -40,8 +40,15 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
                 It "connects successfully to $psitem" {
                     $connection.connectsuccess | Should -BeTrue
                 }
-                It -Skip:$skipauth "auth scheme Should Be $authscheme on $psitem" {
-                    $connection.AuthScheme | Should -Be $authscheme
+                #local is always NTLM
+                if($Connection.NetBiosName -eq $ENV:COMPUTERNAME){
+                    It -Skip:$skipauth "auth scheme Should Be NTLM on the local machine on $psitem" {
+                        $connection.AuthScheme | Should -Be NTLM
+                    }
+                }else{
+                    It -Skip:$skipauth "auth scheme Should Be $authscheme on $psitem" {
+                        $connection.AuthScheme | Should -Be $authscheme
+                    }
                 }
                 It -Skip:$skipping "$psitem is pingable" {
                     $connection.IsPingable | Should -BeTrue
