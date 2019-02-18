@@ -1,4 +1,69 @@
-﻿function Assert-InstanceMaxDop {
+﻿<#
+This file is used to hold the Assertions for the Instance.Tests
+
+It starts with the Get-AllInstanceInfo which uses all of the unique
+ tags that have been passed and gathers the required information
+ which can then be used for the assertions.
+
+ The long term aim is to make Get-AllInstanceInfo as performant as 
+ possible and to cover all of the tests
+#>
+
+function Get-AllInstanceInfo {
+    # Using the unique tags gather the information required
+    Param($Instance, $Tags, $There)
+    # Using there so that if the instance is not contactable, no point carrying on with gathering more information
+    switch ($tags) {
+        {$tags -contains 'ErrorLog'} { 
+            if ($There) {
+                try {
+                    $logWindow = Get-DbcConfigValue -Name policy.errorlog.warningwindow
+                    # so that it can be mocked
+                    function Get-ErrorLogEntry {
+                        # get the number of the first error log that was created after the logwindow config
+                        $OldestErrorLogNumber = ($InstanceSMO.EnumErrorLogs() | Where-Object {$psitem.CreateDate -gt (Get-Date).AddDays( - $LogWindow)} |Sort-Object ArchiveNo -Descending | Select-Object -First 1).ArchiveNo + 1
+                    
+                        # Get the Error Log entries for each one
+                        (0..$OldestErrorLogNumber).ForEach{
+                            $InstanceSMO.ReadErrorLog($psitem).Where{$_.Text -match "Severity: 1[7-9]|Severity: 2[0-4]"}
+                        }
+                    }
+                    $ErrorLog = @(Get-ErrorLogEntry).ForEach{
+                        [PSCustomObject]@{
+                        LogDate       = $psitem.LogDate
+                        ProcessInfo   = $Psitem.ProcessInfo
+                        Text          = $Psitem.Text
+                        }
+                    }
+                }
+                catch {
+                    $There = $false        
+                    $ErrorLog = [PSCustomObject]@{
+                        LogDate       = 'Do not know the Date'
+                        ProcessInfo   = 'Do not know the Process'
+                        Text          = 'Do not know the Test'
+                        $InstanceName = 'An Error occurred ' + $Instance
+                    } 
+                }
+            }
+            else {
+                $There = $false
+                $ErrorLog = [PSCustomObject]@{
+                    LogDate       = 'Do not know the Date'
+                    ProcessInfo   = 'Do not know the Process'
+                    Text          = 'Do not know the Test'
+                    $InstanceName = 'An Error occurred ' + $Instance
+                } 
+            }
+        }
+        Default {}
+    }
+    [PSCustomObject]@{
+        ErrorLog = $ErrorLog 
+    }
+}
+
+function Assert-InstanceMaxDop {
     Param(
         [string]$Instance,
         [switch]$UseRecommended,
@@ -70,7 +135,7 @@ function Assert-TraceFlag {
         [string]$SQLInstance,
         [int[]]$ExpectedTraceFlag
     )
-    if($null -eq $ExpectedTraceFlag){
+    if ($null -eq $ExpectedTraceFlag) {
         $a = (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag
         (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
@@ -86,7 +151,7 @@ function Assert-NotTraceFlag {
         [int[]]$NotExpectedTraceFlag
     )
 
-    if($null -eq $NotExpectedTraceFlag){
+    if ($null -eq $NotExpectedTraceFlag) {
         (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
     else {
@@ -109,21 +174,21 @@ function Assert-CrossDBOwnershipChaining {
         $SQLInstance,
         $CrossDBOwnershipChaining
     )
-   (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name CrossDBOwnershipChaining).ConfiguredValue -eq 1 | Should -Be $CrossDBOwnershipChaining -Because 'The Cross Database Ownership Chaining setting should be set correctly'
+    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name CrossDBOwnershipChaining).ConfiguredValue -eq 1 | Should -Be $CrossDBOwnershipChaining -Because 'The Cross Database Ownership Chaining setting should be set correctly'
 }
 function Assert-AdHocDistributedQueriesEnabled {
     param (
         $SQLInstance,
         $AdHocDistributedQueriesEnabled
     )
-   (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name AdHocDistributedQueriesEnabled).ConfiguredValue -eq 1 | Should -Be $AdHocDistributedQueriesEnabled -Because 'The AdHoc Distributed Queries Enabled setting should be set correctly'
+    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name AdHocDistributedQueriesEnabled).ConfiguredValue -eq 1 | Should -Be $AdHocDistributedQueriesEnabled -Because 'The AdHoc Distributed Queries Enabled setting should be set correctly'
 }
 function Assert-XpCmdShellDisabled {
     param (
         $SQLInstance,
         $XpCmdShellDisabled
     )
-   (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name XPCmdShellEnabled).ConfiguredValue -eq 0 | Should -Be $XpCmdShellDisabled -Because 'The XP CmdShell setting should be set correctly'
+    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name XPCmdShellEnabled).ConfiguredValue -eq 0 | Should -Be $XpCmdShellDisabled -Because 'The XP CmdShell setting should be set correctly'
 }
 
 function Assert-ErrorLogCount {
@@ -134,6 +199,10 @@ function Assert-ErrorLogCount {
     (Get-DbaErrorLogConfig -SqlInstance $SQLInstance).LogCount | Should -BeGreaterOrEqual $errorLogCount -Because "We expect to have at least $errorLogCount number of error log files"
 }
 
+function Assert-ErrorLogEntry {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.ErrorLog | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
+}
 
 
 # SIG # Begin signature block
