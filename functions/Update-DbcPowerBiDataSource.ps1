@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 Converts Pester results and exports file in required format for launching the 
 Power BI command. **You will need refresh* the Power BI dashboard every time to 
@@ -70,6 +70,19 @@ Runs tests, saves to json to \\nas\projects\dbachecks.json
 Opens the PowerBi using that file
 then you'll have to change your data source in Power BI because by default it 
 points to C:\Windows\Temp (limitation of Power BI)
+
+.EXAMPLE
+
+Set-DbcConfig -Name app.checkrepos -Value \\NetworkShare\CustomPesterChecks
+Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus, CustomCheckTag -PassThru | Update-DbcPowerBiDataSource -Path \\NetworkShare\CheckResults -Name CustomCheckResults -Append
+
+Because we are using a custom check repository you MUSTR use the Append parameter for Update-DbcPowerBiDataSource
+otherwise the json file will be overwritten
+
+Sets the custom check repository to \\NetworkShare\CustomPesterChecks
+Runs the DatabaseStatus checks and custom checks with the CustomCheckTag against $Instance then saves all the results
+to json to \\NetworkShare\CheckResults.json -Name CustomCheckResults 
+
 
 .EXAMPLE
 Invoke-DbcCheck -SqlInstance sql2017 -Check SuspectPage -Show None -PassThru | Update-DbcPowerBiDataSource -Environment Test -Whatif
