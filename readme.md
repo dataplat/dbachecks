@@ -172,7 +172,7 @@ $filename = $outputDirectory + '\file.xml'
 Invoke-Dbccheck -OutputFile $fileName -OutputFormat NunitXML
 
 $outputpath = $ouputDirectory + "\index.html"
-$reportunit = "ModulePAth\bin\ReportUnit.exe"
+$reportunit = "ModulePath\bin\ReportUnit.exe"
 & $reportunit $ouputDirectory
 
 $htmlbody = Get-Content -Path $outputpath -ErrorAction SilentlyContinue | Out-String
