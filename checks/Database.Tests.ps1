@@ -287,7 +287,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Unused indexes on $psitem" {
                 try {
-                    @($results = Find-DbaUnusedIndex -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases -EnableException).ForEach{
+                    @($results = Find-DbaDbUnusedIndex -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases -EnableException).ForEach{
                         It "$psitem on $($psitem.SQLInstance) should return 0 Unused indexes" {
                             @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                         }
