@@ -282,8 +282,8 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'Status'       = 1
                     'TraceFlag'    = 3605
                 }
-			}
-			Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605
+            }
+            Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605
         }
         It "Should Pass Correctly for more than one trace flag when they exist but there are extra trace flags" {
             Mock Get-DbaTraceFlag {
@@ -323,8 +323,8 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'Status'       = 1
                     'TraceFlag'    = 3605
                 }
-			}
-			Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604
+            }
+            Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604
         }
         It "Should Fail Correctly when checking more than one trace flag when 1 is missing" {
             Mock Get-DbaTraceFlag {
@@ -355,8 +355,8 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'Status'       = 1
                     'TraceFlag'    = 3604
                 }
-			}
-			{Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605} | Should -Throw -ExpectedMessage "Expected 3605 to be found in collection @(117, 118, 3604), because We expect that Trace Flag 3605 will be set on Dummy, but it was not found."
+            }
+            {Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605} | Should -Throw -ExpectedMessage "Expected 3605 to be found in collection @(117, 118, 3604), because We expect that Trace Flag 3605 will be set on Dummy, but it was not found."
         }
         It "Should Fail Correctly when checking more than one trace flag when 2 are missing" {
             Mock Get-DbaTraceFlag {
@@ -378,16 +378,16 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'Status'       = 1
                     'TraceFlag'    = 118
                 }
-			}
-			{Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605} | Should -Throw -ExpectedMessage "Expected 3604 to be found in collection @(117, 118), because We expect that Trace Flag 3604 will be set on Dummy, but it was not found"
-		}
-		It "Should pass correctly when no trace flag exists and none expected" {
-			Mock Get-DbaTraceFlag {
-			}
+            }
+            {Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605} | Should -Throw -ExpectedMessage "Expected 3604 to be found in collection @(117, 118), because We expect that Trace Flag 3604 will be set on Dummy, but it was not found"
+        }
+        It "Should pass correctly when no trace flag exists and none expected" {
+            Mock Get-DbaTraceFlag {
+            }
             Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag $null
         }
-		It "Should fail correctly when a trace flag exists and none expected" {
-			Mock Get-DbaTraceFlag {
+        It "Should fail correctly when a trace flag exists and none expected" {
+            Mock Get-DbaTraceFlag {
                 [PSObject]@{
                     'ComputerName' = 'ComputerName'
                     'Global'       = 1
@@ -397,7 +397,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'Status'       = 1
                     'TraceFlag'    = 117
                 }
-			}
+            }
             {Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag $null} | Should -Throw -ExpectedMessage "Expected `$null or empty, because We expect that there will be no Trace Flags set on Dummy, but got 117"
         }
     }
@@ -418,21 +418,21 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117
         }
         It "Should pass correctly when no trace flag is running" {
-			Mock Get-DbaTraceFlag {}
+            Mock Get-DbaTraceFlag {}
             Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117
         }
         It "Should fail correctly when the trace flag is running and is the only one" {
-			Mock Get-DbaTraceFlag {
-				[PSObject]@{
-					'ComputerName' = 'ComputerName'
-					'Global'       = 1
-					'InstanceName' = 'MSSQLSERVER'
-					'Session'      = 0
-					'SqlInstance'  = 'SQLInstance'
-					'Status'       = 1
-					'TraceFlag'    = 118
-				}
-			}
+            Mock Get-DbaTraceFlag {
+                [PSObject]@{
+                    'ComputerName' = 'ComputerName'
+                    'Global'       = 1
+                    'InstanceName' = 'MSSQLSERVER'
+                    'Session'      = 0
+                    'SqlInstance'  = 'SQLInstance'
+                    'Status'       = 1
+                    'TraceFlag'    = 118
+                }
+            }
             {Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 118} | Should -Throw -ExpectedMessage "Expected 118 to not be found in collection 118, because We expect that Trace Flag 118 will not be set on Dummy, but it was found."
         }
         It "Should fail correctly for one trace flag when the trace flag is running but there is another one running as well" {
@@ -460,55 +460,55 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         }
         It "Should Pass Correctly for more than one trace flag when no trace flag is set" {
             Mock Get-DbaTraceFlag {}
-			Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 118, 117, 3604, 3605
+            Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 118, 117, 3604, 3605
         }
         It "Should Pass Correctly for more than one trace flag when a different one is running" {
             Mock Get-DbaTraceFlag {
-				[PSObject]@{
-					'ComputerName' = 'ComputerName'
-					'Global'       = 1
-					'InstanceName' = 'MSSQLSERVER'
-					'Session'      = 0
-					'SqlInstance'  = 'SQLInstance'
-					'Status'       = 1
-					'TraceFlag'    = 117
-				},
-				[PSObject]@{
-					'ComputerName' = 'ComputerName'
-					'Global'       = 1
-					'InstanceName' = 'MSSQLSERVER'
-					'Session'      = 0
-					'SqlInstance'  = 'SQLInstance'
-					'Status'       = 1
-					'TraceFlag'    = 118
-				}
-			}
-			Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag  3604, 3605
+                [PSObject]@{
+                    'ComputerName' = 'ComputerName'
+                    'Global'       = 1
+                    'InstanceName' = 'MSSQLSERVER'
+                    'Session'      = 0
+                    'SqlInstance'  = 'SQLInstance'
+                    'Status'       = 1
+                    'TraceFlag'    = 117
+                },
+                [PSObject]@{
+                    'ComputerName' = 'ComputerName'
+                    'Global'       = 1
+                    'InstanceName' = 'MSSQLSERVER'
+                    'Session'      = 0
+                    'SqlInstance'  = 'SQLInstance'
+                    'Status'       = 1
+                    'TraceFlag'    = 118
+                }
+            }
+            Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag  3604, 3605
         }
         It "Should Fail Correctly for more than one trace flag when one is running" {
             Mock Get-DbaTraceFlag {
-				[PSObject]@{
-					'ComputerName' = 'ComputerName'
-					'Global'       = 1
-					'InstanceName' = 'MSSQLSERVER'
-					'Session'      = 0
-					'SqlInstance'  = 'SQLInstance'
-					'Status'       = 1
-					'TraceFlag'    = 117
-				},
-				[PSObject]@{
-					'ComputerName' = 'ComputerName'
-					'Global'       = 1
-					'InstanceName' = 'MSSQLSERVER'
-					'Session'      = 0
-					'SqlInstance'  = 'SQLInstance'
-					'Status'       = 1
-					'TraceFlag'    = 118
-				}
-			}
-			{Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag  117,3604, 3605} | Should -Throw -ExpectedMessage  "Expected 117 to not be found in collection @(117, 118), because We expect that Trace Flag 117 will not be set on Dummy, but it was found."
+                [PSObject]@{
+                    'ComputerName' = 'ComputerName'
+                    'Global'       = 1
+                    'InstanceName' = 'MSSQLSERVER'
+                    'Session'      = 0
+                    'SqlInstance'  = 'SQLInstance'
+                    'Status'       = 1
+                    'TraceFlag'    = 117
+                },
+                [PSObject]@{
+                    'ComputerName' = 'ComputerName'
+                    'Global'       = 1
+                    'InstanceName' = 'MSSQLSERVER'
+                    'Session'      = 0
+                    'SqlInstance'  = 'SQLInstance'
+                    'Status'       = 1
+                    'TraceFlag'    = 118
+                }
+            }
+            {Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag  117, 3604, 3605} | Should -Throw -ExpectedMessage  "Expected 117 to not be found in collection @(117, 118), because We expect that Trace Flag 117 will not be set on Dummy, but it was found."
         }
-	}
+    }
     Context "Checking CLR Enabled" {
         # Mock the version check for running tests
         Mock Connect-DbaInstance {}
@@ -649,6 +649,52 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                 'Exactly'     = $true
             }
             Assert-MockCalled @assertMockParams
+        }
+    }
+}
+
+InModuleScope dbachecks {
+    (Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
+    Describe "Testing AllInstanceInfo and Relevant Assertions" -Tag AllInstanceInfo {
+        function Get-ErrorLogEntry {}
+        Mock Get-DbcConfigValue {} -ParameterFilter {$Name -and $Name -eq 'policy.errorlog.warningwindow'}
+        Context "Checking Get-AllInstanceInfo" {
+            Mock Get-ErrorLogEntry {}
+    
+            It "Should return the correct results for ErrorLog Entries when there are no severities" {
+           
+                (Get-AllInstanceInfo -Instance Dummy -Tags ErrorLog -There $true).ErrorLog | Should -BeNullOrEmpty -Because "We need no entries when we have no sev 17 to 24 errors"
+            }
+
+            It "Should return the correct results for ErrorLog Entries when there are severities" {
+                Mock Get-ErrorLogEntry {[PSCustomObject]@{
+                    LogDate     = '2019-02-14 23:00'
+                    ProcessInfo = 'spid55'
+                    Text        = 'Error: 50000, Severity: 18, State: 1.'
+                }
+            }
+                (Get-AllInstanceInfo -Instance Dummy -Tags ErrorLog -There $true).ErrorLog | Should -BeOfType PSCustomObject -Because "We need entries when we have sev 17 to 24 errors"
+            }
+        }
+        Context "Checking ErrorLog Entries" {
+           
+            It "Should pass the test successfully when there are no Severity Errors" {
+                 # Mock for success
+            Mock Get-AllInstanceInfo {}
+                Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when there are Severity Errors" {
+                # MOck for failing test
+            Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                ErrorLog = [PSCustomObject]@{
+                    LogDate     = '2019-02-14 23:00'
+                    ProcessInfo = 'spid55'
+                    Text        = 'Error: 50000, Severity: 18, State: 1.'
+                }
+            }}
+                {Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$null or empty, because these severities indicate serious problems, but got @(@{LogDate=2019-02-14 23:00; ProcessInfo=spid55; Text=Error: 50000, Severity: 18, State: 1.})."
+            }
         }
     }
 }

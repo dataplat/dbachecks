@@ -27,6 +27,9 @@ A Name to give your suite of tests IE Prod - This will also alter the name of th
 .PARAMETER Force
 Delete all json files in the data source folder.
 
+.PARAMETER Append
+Appends results to existing file. Use this if you have custom check repos
+
 .PARAMETER EnableException
 By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
 This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -72,6 +75,19 @@ then you'll have to change your data source in Power BI because by default it
 points to C:\Windows\Temp (limitation of Power BI)
 
 .EXAMPLE
+
+Set-DbcConfig -Name app.checkrepos -Value \\NetworkShare\CustomPesterChecks
+Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus, CustomCheckTag -PassThru | Update-DbcPowerBiDataSource -Path \\NetworkShare\CheckResults -Name CustomCheckResults -Append
+
+Because we are using a custom check repository you MUSTR use the Append parameter for Update-DbcPowerBiDataSource
+otherwise the json file will be overwritten
+
+Sets the custom check repository to \\NetworkShare\CustomPesterChecks
+Runs the DatabaseStatus checks and custom checks with the CustomCheckTag against $Instance then saves all the results
+to json to \\NetworkShare\CheckResults.json -Name CustomCheckResults 
+
+
+.EXAMPLE
 Invoke-DbcCheck -SqlInstance sql2017 -Check SuspectPage -Show None -PassThru | Update-DbcPowerBiDataSource -Environment Test -Whatif
 
 What if: Performing the operation "Removing .json files named *Default*" on target "C:\Windows\temp\dbachecks".
@@ -93,7 +109,8 @@ function Update-DbcPowerBiDataSource {
         [string]$FileName,
         [string]$Environment = "Default",
         [switch]$Force,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Append
     )
     begin {
         if ($FileName -ne "Default") {
@@ -144,8 +161,14 @@ function Update-DbcPowerBiDataSource {
         if ($InputObject.TotalCount -gt 0) {
             try {
                 if ($PSCmdlet.ShouldProcess($FilePath, 'Passing results')) {
-                    $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
-                    Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
+                    if ($Append) {
+                        $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath -Append
+                        Write-PSFMessage -Level Output -Message "Appended results to $FilePath"
+                    }
+                    else {
+                        $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
+                        Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
+                    }
                 }
             }
             catch {
