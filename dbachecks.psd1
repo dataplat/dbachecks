@@ -131,11 +131,12 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 05/02/2019
-Thank you Chrissy! @cl
-added default environment #596
-altered configuration validation for mail to stop errors
-Ensured database status check doesnt fail as readonly for snapshots
+Add to psd1 and readme.
+## Date 22nd May 2019 at Techorama in Room 12
+Thank You @SOZDBA, @djfcc, @wsmelton
+Improved validation for IP addresses in clusters
+Ignored Off-line databases for Pseudo Recovery Checks
+Some internal testing changes
 
 ##Latest
 
