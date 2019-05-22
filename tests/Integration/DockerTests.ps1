@@ -36,6 +36,7 @@ Write-PSFMessage "Setting default configs"
 $null = Set-DbcConfig -Name app.sqlinstance $containers
 $null = Set-DbcConfig -Name policy.connection.authscheme -Value SQL
 $null = Set-DbcConfig -Name policy.network.latencymaxms -Value 150 # because the containers run a bit slow!
+$null = Set-DbcConfig -Name skip.connection.auth -Value $false
 
 ## Ensure that SQLAgent is started - SQL2014 agent wont start in container
 Write-PSFMessage "Starting SQL Agent on all containers except SQL2014" 
