@@ -509,23 +509,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
+        if(-not $IsLinux){
         $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
         $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
 
         if ($NotContactable -contains $psitem) {
-            Context "Testing active Directory users on $psitem" {
+            Context "Testing Active Directory users on $psitem" {
                 It "Can't Connect to $Psitem" {
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-            Context "Testing active Directory groups on $psitem" {
+            Context "Testing Active Directory groups on $psitem" {
                 It "Can't Connect to $Psitem" {
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            Context "Testing active Directory users on $psitem" {
+            Context "Testing Active Directory users on $psitem" {
                 @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
                     It "Active Directory user $($psitem.login) was found in $Instance on $($psitem.domain)" {
                         $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
@@ -548,7 +549,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 }
             }
 
-            Context "Testing active Directory groups on $psitem" {
+            Context "Testing Active Directory groups on $psitem" {
                 @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
                     It "Active Directory group $($psitem.login) was found in $Instance on $($psitem.domain)" {
                         $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
@@ -562,6 +563,19 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 }
             }
         }
+    }
+    else {
+        Context "Testing Active Directory users on $psitem" {
+            It "Running on Linux so can't check AD on $Psitem" -skip {
+                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            }
+        }
+        Context "Testing Active Directory groups on $psitem" {
+            It "Running on Linux so can't check AD on $Psitem" -skip {
+                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            }
+        }
+    }
     }
 
     Describe "Error Log Entries" -Tags ErrorLog, $filename {
