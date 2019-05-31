@@ -79,6 +79,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             $IsClustered = $Psitem.$IsClustered
             Context "Testing SQL Engine Service on $psitem" {
+                if( -not $IsLInux){
                 @(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
                     It "SQL Engine service account should Be running on $($psitem.InstanceName)" {
                         $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
@@ -95,6 +96,11 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     }
                 }
             }
+            else{
+                It "Running on Linux so can't check Services on $Psitem" -skip {
+                }
+            }
+        }
         }
     }
 
