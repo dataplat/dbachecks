@@ -238,14 +238,23 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Max Memory on $psitem" {
-                It "Max Memory setting Should Be correct on $psitem" {
-                    @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
-                        $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
+                    if (-not $IsLInux){
+                        It "Max Memory setting Should Be correct on $psitem" {
+                        @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
+                            $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
+                        }
                     }
+                    }else {
+                        It "Max Memory setting Should Be correct (running on Linux so only checking Max Memory is less than Total Memory) on $psitem" {
+                        # simply check that the max memory is less than total memory
+                        $MemoryValues = Get-DbaMaxMemory -SqlInstance $psitem
+                        $MemoryValues.Total | Should -BeGreaterThan $MemoryValues.MaxValue -Because 'You do not want to exhaust server memory'
+                    }
+                }
                 }
             }
         }
-    }
+
 
     Describe "Orphaned Files" -Tags OrphanedFile, $filename {
         if ($NotContactable -contains $psitem) {
