@@ -44,25 +44,37 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Instance Connection on $psitem" {
-                $connection = Test-DbaConnection -SqlInstance $psitem
                 It "connects successfully to $psitem" {
-                    $connection.connectsuccess | Should -BeTrue
+                    #Because Test-DbaInstance only shows connectsuccess false if the Connect-SQlInstance throws an error and we use Connect-DbaInstance
+                    $true| Should -BeTrue
                 }
-                #local is always NTLM
-                if($Connection.NetBiosName -eq $ENV:COMPUTERNAME){
+                #local is always NTLM except when its a container ;-)
+                if($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -notlike '*,*')){
                     It -Skip:$skipauth "auth scheme Should Be NTLM on the local machine on $psitem" {
-                        $connection.AuthScheme | Should -Be NTLM
+                        (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme| Should -Be NTLM
                     }
                 }else{
                     It -Skip:$skipauth "auth scheme Should Be $authscheme on $psitem" {
-                        $connection.AuthScheme | Should -Be $authscheme
+                        (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme | Should -Be $authscheme
                     }
                 }
                 It -Skip:$skipping "$psitem is pingable" {
-                    $connection.IsPingable | Should -BeTrue
+                    $ping = New-Object System.Net.NetworkInformation.Ping
+                    $timeout = 1000 #milliseconds
+                    $reply = $ping.Send($InstanceSMO.ComputerName, $timeout)
+                    $pingable = $reply.Status -eq 'Success'
+                    $pingable | Should -BeTrue
+
                 }
                 It -Skip:$skipremote "$psitem Is PSRemoteable" {
-                    $Connection.PSRemotingAccessible | Should -BeTrue
+                    #simple remoting check
+                    try {
+                        $null = Invoke-Command -ComputerName $InstanceSMO.ComputerName -ScriptBlock { Get-ChildItem } -ErrorAction Stop
+                        $remoting = $true
+                    } catch {
+                        $remoting = $false
+                    }
+                    $remoting | Should -BeTrue
                 }
             }
         }
