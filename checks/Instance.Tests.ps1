@@ -271,14 +271,19 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-        }
-        else {
+        }else {
             Context "Testing instance name matches Windows name for $psitem" {
-                It "$psitem doesn't require rename" {
-                    (Test-DbaServerName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
+                if($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -like '*,*')){
+                It "$psitem doesn't require rename as it appears to be a local container" -Skip{
                 }
             }
+        else{
+            It "$psitem doesn't require rename" {
+                (Test-DbaServerName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
+            }
         }
+        }
+    }
     }
 
     Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
