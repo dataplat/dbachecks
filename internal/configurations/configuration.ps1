@@ -25,8 +25,15 @@ Set-PSFConfig -Module dbachecks -Name app.sqlinstance -Value $null -Initialize -
 Set-PSFConfig -Module dbachecks -Name app.computername -Value $null -Initialize -Description "List of Windows Servers that Windows-based tests will run against"
 Set-PSFConfig -Module dbachecks -Name app.sqlcredential -Value $null -Initialize -Description "The universal SQL credential if Trusted/Windows Authentication is not used"
 Set-PSFConfig -Module dbachecks -Name app.wincredential -Value $null -Initialize -Description "The universal Windows if default Windows Authentication is not used"
-Set-PSFConfig -Module dbachecks -Name app.localapp -Value "$env:localappdata\dbachecks" -Initialize -Description "Persisted files live here"
-Set-PSFConfig -Module dbachecks -Name app.maildirectory -Value "$env:localappdata\dbachecks\dbachecks.mail" -Initialize -Description "Files for mail are stored here"
+if($IsLinux){
+    Set-PSFConfig -Module dbachecks -Name app.localapp -Value "$home\dbachecks" -Initialize -Description "Persisted files live here"
+    Set-PSFConfig -Module dbachecks -Name app.maildirectory -Value "$home\dbachecks\dbachecks.mail" -Initialize -Description "Files for mail are stored here"
+    
+}else{
+    Set-PSFConfig -Module dbachecks -Name app.localapp -Value "$env:localappdata\dbachecks" -Initialize -Description "Persisted files live here"
+    Set-PSFConfig -Module dbachecks -Name app.maildirectory -Value "$env:localappdata\dbachecks\dbachecks.mail" -Initialize -Description "Files for mail are stored here"
+    
+}
 Set-PSFConfig -Module dbachecks -Name app.cluster -Value $null -Initialize -Description "One host name for each cluster for the HADR checks"
 
 # Policy Configs
