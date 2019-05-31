@@ -34,6 +34,7 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
             }
         }
         else {
+            if(-not $IsLinux){
             try {
                 $Instance = $psitem
                 $connectioncheck = Connect-DbaInstance  -SqlInstance $Psitem -ErrorAction SilentlyContinue -ErrorVariable errorvar
@@ -78,6 +79,11 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
                     }
                 }
             }
+        }
+        else {
+            It "Running on Linux so can't check Services on $Psitem" -skip {
+            }
+        }
         }
     }
 }
