@@ -25,7 +25,7 @@ function Assert-DatabaseMaxDop {
         [pscustomobject]$MaxDop,
         [int]$MaxDopValue
     )   
-    $MaxDop.DatabaseMaxDop | Should -Be $MaxDopValue -Because "We expect the Database MaxDop Value $($MaxDop.DatabaseMaxDop) to be the specified value $MaxDopValue"
+    $MaxDop.DatabaseMaxDop | Should -Be $MaxDopValue -Because "We expect the Database MaxDop Value to be the specified value $MaxDopValue"
 }
 
 function Assert-DatabaseStatus {
