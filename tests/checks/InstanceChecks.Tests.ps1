@@ -75,7 +75,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Param($MaxDopValue)
             # Mock to fail
             Mock Test-DbaMaxDop {@{"CurrentInstanceMaxDop" = 4; "RecommendedMaxDop" = 73}}
-            {Assert-InstanceMaxDop -Instance 'Dummy' -MaxDopValue $MaxDopValue} | Should -Throw -ExpectedMessage "Expected $MaxDopValue, because We expect the MaxDop Setting 4 to be $MaxDopValue"
+            {Assert-InstanceMaxDop -Instance 'Dummy' -MaxDopValue $MaxDopValue} | Should -Throw -ExpectedMessage "Expected $MaxDopValue, because We expect the MaxDop Setting to be $MaxDopValue"
         }
         # Validate we have called the mock the correct number of times
         It "Should call the mocks" {
