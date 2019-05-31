@@ -123,6 +123,9 @@ function Update-DbcPowerBiDataSource {
                 $null = Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
             }
         }
+        if($IsLinux -and $Path -eq '\temp\dbachecks'){
+            $Path = Get-DbcConfigValue -Name app.localapp
+        }
     }
     process {
         ++$i
