@@ -2,7 +2,10 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Server.Assertions.ps1
 
 $Tags = Get-CheckInformation -Check $Check -Group Server -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
-
+if($IsLinux){
+Write-PSFMessage "We cannot run any of the Server tests from linux at the moment" -Level Warning
+Return
+}
 @(Get-ComputerName).ForEach{
     $AllServerInfo = Get-AllServerInfo -ComputerName $Psitem -Tags $Tags
     Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
