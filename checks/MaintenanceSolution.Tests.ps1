@@ -109,7 +109,7 @@ Describe "Ola - $UserFullJobName" -Tags UserFull, OlaJobs, $filename {
 
                 It "Is the backup retention set to at least $Retention hours on $psitem" {
                     if ($results) {
-                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1]
+                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1].replace('NULL','')
                     }
                     $hours | Should -BeGreaterOrEqual $Retention -Because "The backup retention for $UserFullJobName needs to be correct"
                 }
@@ -153,7 +153,7 @@ Describe "Ola - $UserDiffJobName" -Tags UserDiff, OlaJobs, $filename {
 
                 It "Is the backup retention set to at least $Retention hours on $psitem" {
                     if ($results) {
-                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1]
+                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1].replace('NULL','')
                     }
                     $hours | Should -BeGreaterOrEqual $Retention -Because "The backup retention for $UserDiffJobName needs to be correct"
                 }
@@ -197,7 +197,7 @@ Describe "Ola - $UserLogJobName" -Tags UserLog, OlaJobs, $filename {
 
                 It "Is the backup retention set to at least $Retention hours on $psitem" {
                     if ($results) {
-                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1]
+                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1].replace('NULL','')
                     }
                     $hours | Should -BeGreaterOrEqual $Retention -Because "The backup retention for $UserLogJobName needs to be correct"
                 }
