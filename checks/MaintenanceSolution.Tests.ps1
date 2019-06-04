@@ -337,7 +337,13 @@ Describe "Ola - $OutputFileJobName" -Tags OutputFileCleanup, OlaJobs, $filename 
 
         Context "Checking the Output File Job Cleanup Time on $psitem" {
             $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
-            $days = [regex]::matches($jobsteps.Command, "\/d\s-(\d\d)").groups[1].value
+            $jobsteps.Command -match "\/d\s-(\d\d)"
+            If($Matches.Count -gt 0){
+                $days = $Matches[1].value
+            }
+            else{
+                $days = 0
+            }
 
             It "Is the Clean up time set to at least $CleanUp Days on $psitem" {
                 $days | Should -BeGreaterOrEqual $CleanUp -Because "The Clean up time for $OutputFileJobName needs to be correct"
