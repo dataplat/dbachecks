@@ -38,14 +38,14 @@ begin {
 
 #>
 
-$DiskFreeSpace = Get-DbaDbFile -SqlInstance REITSE-PC\VANTAGE | SELECT @{label='DriveLetter';Expression={$_.PhysicalName.substring(0,3)}}, VolumeFreeSpace |Sort-Object -Property Driveletter -Unique
+$DiskFreeSpace = Get-DbaDbFile -SqlInstance $SqlInstance | Select-Object @{label='DriveLetter';Expression={$_.PhysicalName.substring(0,3)}}, VolumeFreeSpace |Sort-Object -Property Driveletter -Unique
 
 <#
     Step two. Determine per drive letter how much growth can be expected.
     Same concept as the first step, but now we're looking at the file growth.
 #>
 
-$FileGrowth = Get-DbaDbFile -SqlInstance REITSE-PC\VANTAGE | SELECT @{label='DriveLetter';Expression={$_.PhysicalName.substring(0,3)}}, NextGrowthEventSize
+$FileGrowth = Get-DbaDbFile -SqlInstance $SqlInstance | Select-Object @{label='DriveLetter';Expression={$_.PhysicalName.substring(0,3)}}, NextGrowthEventSize
 
 <#
     Step three, summation of the disk growth
@@ -53,7 +53,7 @@ $FileGrowth = Get-DbaDbFile -SqlInstance REITSE-PC\VANTAGE | SELECT @{label='Dri
 
 
 $calc = $FileGrowth | Group-Object -Property Driveletter | ForEach-Object -Process {
-    $Sum = $_.group | measure -Sum -Property NextGrowthEventSize
+    $Sum = $_.group | Measure-Object -Sum -Property NextGrowthEventSize
     [pscustomobject]@{DriveLetter=$_.Name ; value = $Sum.Sum}
 }
 
@@ -62,7 +62,7 @@ $calc = $FileGrowth | Group-Object -Property Driveletter | ForEach-Object -Proce
 #>
 
 
-$CalcInGB = $calc | select DriveLetter, @{name="GrowthInGB" ; Expression={[math]::Round($_.value/1GB, 2)}}
+$CalcInGB = $calc | Select-Object DriveLetter, @{name="GrowthInGB" ; Expression={[math]::Round($_.value/1GB, 2)}}
 
 <#
     Now for the interesting part. Time to compare the results!
