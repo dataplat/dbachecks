@@ -43,10 +43,10 @@ try {
 catch {
     Stop-PSFFunction -Message "There was a problem getting the free diskspace" -ErrorRecord $psitem
 }
-finally {
-        Write-PSFMessage -Level Warning -Message "Execution was cancelled!"
-        Pop-Location
-}
+#finally {
+#        Write-PSFMessage -Level Warning -Message "Execution was cancelled!"
+#        Pop-Location
+#}
 <#
     Step two. Determine per drive letter how much growth can be expected.
     Same concept as the first step, but now we're looking at the file growth.
@@ -58,10 +58,10 @@ try {
 catch {
     Stop-PSFFunction -Message "There was a problem getting the disk growth data" -ErrorRecord $psitem
 }
-finally {
-        Write-PSFMessage -Level Warning -Message "Execution was cancelled!"
-        Pop-Location
-}
+#finally {
+#        Write-PSFMessage -Level Warning -Message "Execution was cancelled!"
+#        Pop-Location
+#}
 <#
     Step three, summation of the disk growth
 #>
@@ -98,12 +98,12 @@ $DiskFreeSpace | ForEach-Object -Process {
                 if($_.GrowthInGB -ge  $localFileSize )
                 {
                     Write-Host $localDisk 'Don't panic, don't Panic. Time to grow the this disk mr Mainwairing'
-                    [PSCustomObject]@{Computer = $computerName ; SQLInstance = $SqlInstance ; DiskFreeSpace = $localFileSize ; Growth = $_.GrowthInGB ; GrowthAchievable = 'false'} 
+                    [PSCustomObject]@{Computer = $computerName ; SQLInstance = $SqlInstance ; DiskFreeSpace = $localFileSize ; Growth = $_.Value ; GrowthAchievable = 'false'} 
                 }
                 else
                 {
                     Write-Host $localDisk 'Fall in chaps, if you please... yes yes yes you look very smart'
-                    [PSCustomObject]@{Computer = $computerName ; SQLInstance = $SqlInstance ; DiskFreeSpace = $localFileSize ; Growth = $_.GrowthInGB ; GrowthAchievable = 'true'}
+                    [PSCustomObject]@{Computer = $computerName ; SQLInstance = $SqlInstance ; DiskFreeSpace = $localFileSize ; Growth = $_.Value ; GrowthAchievable = 'true'}
                 }
             
             }
