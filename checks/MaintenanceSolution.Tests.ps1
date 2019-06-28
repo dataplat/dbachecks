@@ -65,7 +65,7 @@ Describe "Ola - $SysFullJobName" -Tags SystemFull, OlaJobs, $filename {
 
                 It "Is the backup retention set to at least $Retention hours on $psitem" {
                     if ($results) {
-                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1]
+                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1].replace('NULL','')
                     }
                     $hours | Should -BeGreaterOrEqual $Retention -Because "The backup retention for $SysFullJobName needs to be correct"
                 }
@@ -109,7 +109,7 @@ Describe "Ola - $UserFullJobName" -Tags UserFull, OlaJobs, $filename {
 
                 It "Is the backup retention set to at least $Retention hours on $psitem" {
                     if ($results) {
-                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1]
+                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1].replace('NULL','')
                     }
                     $hours | Should -BeGreaterOrEqual $Retention -Because "The backup retention for $UserFullJobName needs to be correct"
                 }
@@ -153,7 +153,7 @@ Describe "Ola - $UserDiffJobName" -Tags UserDiff, OlaJobs, $filename {
 
                 It "Is the backup retention set to at least $Retention hours on $psitem" {
                     if ($results) {
-                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1]
+                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1].replace('NULL','')
                     }
                     $hours | Should -BeGreaterOrEqual $Retention -Because "The backup retention for $UserDiffJobName needs to be correct"
                 }
@@ -197,7 +197,7 @@ Describe "Ola - $UserLogJobName" -Tags UserLog, OlaJobs, $filename {
 
                 It "Is the backup retention set to at least $Retention hours on $psitem" {
                     if ($results) {
-                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1]
+                        [int]$hours = $results.split("=")[1].split(",").split(" ")[1].replace('NULL','')
                     }
                     $hours | Should -BeGreaterOrEqual $Retention -Because "The backup retention for $UserLogJobName needs to be correct"
                 }
@@ -337,7 +337,13 @@ Describe "Ola - $OutputFileJobName" -Tags OutputFileCleanup, OlaJobs, $filename 
 
         Context "Checking the Output File Job Cleanup Time on $psitem" {
             $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
-            $days = [regex]::matches($jobsteps.Command, "\/d\s-(\d\d)").groups[1].value
+            $jobsteps.Command -match "\/d\s-(\d\d)"
+            If($Matches.Count -gt 0){
+                $days = $Matches[1].value
+            }
+            else{
+                $days = 0
+            }
 
             It "Is the Clean up time set to at least $CleanUp Days on $psitem" {
                 $days | Should -BeGreaterOrEqual $CleanUp -Because "The Clean up time for $OutputFileJobName needs to be correct"

@@ -287,7 +287,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Unused indexes on $psitem" {
                 try {
-                    @($results = Find-DbaUnusedIndex -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases -EnableException).ForEach{
+                    @($results = Find-DbaDbUnusedIndex -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases -EnableException).ForEach{
                         It "$psitem on $($psitem.SQLInstance) should return 0 Unused indexes" {
                             @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                         }
@@ -797,7 +797,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing database is not in PseudoSimple recovery model on $psitem" {
-                @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$psitem.Name -ne 'tempdb' -and $psitem.Name -ne 'model' -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$psitem.Name -ne 'tempdb' -and $psitem.Name -ne 'model' -and $psitem.Status -ne 'Offline' -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     if (-not($psitem.RecoveryModel -eq "Simple")) {
                         It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
                     }

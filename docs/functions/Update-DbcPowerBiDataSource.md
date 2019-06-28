@@ -10,7 +10,7 @@ see the new results.
 
 ```
 Update-DbcPowerBiDataSource [-InputObject] <PSObject> [[-Path] <String>] [[-FileName] <String>]
- [[-Environment] <String>] [-Force] [-EnableException] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [[-Environment] <String>] [-Force] [-EnableException] [-Append] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -79,6 +79,20 @@ then you'll have to change your data source in Power BI because by default it
 points to C:\Windows\Temp (limitation of Power BI)
 
 ### EXAMPLE 8
+```
+Set-DbcConfig -Name app.checkrepos -Value \\NetworkShare\CustomPesterChecks
+```
+
+Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus, CustomCheckTag -PassThru | Update-DbcPowerBiDataSource -Path \\\\NetworkShare\CheckResults -Name CustomCheckResults -Append
+
+Because we are using a custom check repository you MUSTR use the Append parameter for Update-DbcPowerBiDataSource
+otherwise the json file will be overwritten
+
+Sets the custom check repository to \\\\NetworkShare\CustomPesterChecks
+Runs the DatabaseStatus checks and custom checks with the CustomCheckTag against $Instance then saves all the results
+to json to \\\\NetworkShare\CheckResults.json -Name CustomCheckResults
+
+### EXAMPLE 9
 ```
 Invoke-DbcCheck -SqlInstance sql2017 -Check SuspectPage -Show None -PassThru | Update-DbcPowerBiDataSource -Environment Test -Whatif
 ```
@@ -186,6 +200,22 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Append
+Appends results to existing file.
+Use this if you have custom check repos
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -WhatIf
 Shows what would happen if the cmdlet runs.
 The cmdlet is not run.
@@ -218,8 +248,7 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
-For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

@@ -59,7 +59,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         It "Fails Check Correctly with the use recommended parameter set to true" {
             # Mock to fail
             Mock Test-DbaMaxDop {@{"CurrentInstanceMaxDop" = 0; "RecommendedMaxDop" = 5}}
-            {Assert-InstanceMaxDop -Instance 'Dummy' -UseRecommended} | Should -Throw -ExpectedMessage "Expected 5, because We expect the MaxDop Setting 0 to be the recommended value 5"
+            {Assert-InstanceMaxDop -Instance 'Dummy' -UseRecommended} | Should -Throw -ExpectedMessage "Expected 5, because We expect the MaxDop Setting to be the recommended value 5"
         }
         $TestCases = @{"MaxDopValue" = 5}
         # if not UseRecommended - it should pass if the CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the MaxDopValue parameter
@@ -75,7 +75,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Param($MaxDopValue)
             # Mock to fail
             Mock Test-DbaMaxDop {@{"CurrentInstanceMaxDop" = 4; "RecommendedMaxDop" = 73}}
-            {Assert-InstanceMaxDop -Instance 'Dummy' -MaxDopValue $MaxDopValue} | Should -Throw -ExpectedMessage "Expected $MaxDopValue, because We expect the MaxDop Setting 4 to be $MaxDopValue"
+            {Assert-InstanceMaxDop -Instance 'Dummy' -MaxDopValue $MaxDopValue} | Should -Throw -ExpectedMessage "Expected $MaxDopValue, because We expect the MaxDop Setting to be $MaxDopValue"
         }
         # Validate we have called the mock the correct number of times
         It "Should call the mocks" {

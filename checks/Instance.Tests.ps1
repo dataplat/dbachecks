@@ -44,25 +44,37 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Instance Connection on $psitem" {
-                $connection = Test-DbaConnection -SqlInstance $psitem
                 It "connects successfully to $psitem" {
-                    $connection.connectsuccess | Should -BeTrue
+                    #Because Test-DbaInstance only shows connectsuccess false if the Connect-SQlInstance throws an error and we use Connect-DbaInstance
+                    $true| Should -BeTrue
                 }
-                #local is always NTLM
-                if($Connection.NetBiosName -eq $ENV:COMPUTERNAME){
+                #local is always NTLM except when its a container ;-)
+                if($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -notlike '*,*')){
                     It -Skip:$skipauth "auth scheme Should Be NTLM on the local machine on $psitem" {
-                        $connection.AuthScheme | Should -Be NTLM
+                        (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme| Should -Be NTLM
                     }
                 }else{
                     It -Skip:$skipauth "auth scheme Should Be $authscheme on $psitem" {
-                        $connection.AuthScheme | Should -Be $authscheme
+                        (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme | Should -Be $authscheme
                     }
                 }
                 It -Skip:$skipping "$psitem is pingable" {
-                    $connection.IsPingable | Should -BeTrue
+                    $ping = New-Object System.Net.NetworkInformation.Ping
+                    $timeout = 1000 #milliseconds
+                    $reply = $ping.Send($InstanceSMO.ComputerName, $timeout)
+                    $pingable = $reply.Status -eq 'Success'
+                    $pingable | Should -BeTrue
+
                 }
                 It -Skip:$skipremote "$psitem Is PSRemoteable" {
-                    $Connection.PSRemotingAccessible | Should -BeTrue
+                    #simple remoting check
+                    try {
+                        $null = Invoke-Command -ComputerName $InstanceSMO.ComputerName -ScriptBlock { Get-ChildItem } -ErrorAction Stop
+                        $remoting = $true
+                    } catch {
+                        $remoting = $false
+                    }
+                    $remoting | Should -BeTrue
                 }
             }
         }
@@ -79,6 +91,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             $IsClustered = $Psitem.$IsClustered
             Context "Testing SQL Engine Service on $psitem" {
+                if( -not $IsLInux){
                 @(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
                     It "SQL Engine service account should Be running on $($psitem.InstanceName)" {
                         $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
@@ -95,6 +108,11 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     }
                 }
             }
+            else{
+                It "Running on Linux so can't check Services on $Psitem" -skip {
+                }
+            }
+        }
         }
     }
 
@@ -238,14 +256,23 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Max Memory on $psitem" {
-                It "Max Memory setting Should Be correct on $psitem" {
-                    @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
-                        $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
+                    if (-not $IsLInux){
+                        It "Max Memory setting Should Be correct on $psitem" {
+                        @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
+                            $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
+                        }
                     }
+                    }else {
+                        It "Max Memory setting Should Be correct (running on Linux so only checking Max Memory is less than Total Memory) on $psitem" {
+                        # simply check that the max memory is less than total memory
+                        $MemoryValues = Get-DbaMaxMemory -SqlInstance $psitem
+                        $MemoryValues.Total | Should -BeGreaterThan $MemoryValues.MaxValue -Because 'You do not want to exhaust server memory'
+                    }
+                }
                 }
             }
         }
-    }
+
 
     Describe "Orphaned Files" -Tags OrphanedFile, $filename {
         if ($NotContactable -contains $psitem) {
@@ -271,14 +298,19 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-        }
-        else {
+        }else {
             Context "Testing instance name matches Windows name for $psitem" {
-                It "$psitem doesn't require rename" {
-                    (Test-DbaServerName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
+                if($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -like '*,*')){
+                It "$psitem doesn't require rename as it appears to be a local container" -Skip{
                 }
             }
+        else{
+            It "$psitem doesn't require rename" {
+                (Test-DbaServerName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
+            }
         }
+        }
+    }
     }
 
     Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
@@ -509,23 +541,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
+        if(-not $IsLinux){
         $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
         $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
 
         if ($NotContactable -contains $psitem) {
-            Context "Testing active Directory users on $psitem" {
+            Context "Testing Active Directory users on $psitem" {
                 It "Can't Connect to $Psitem" {
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-            Context "Testing active Directory groups on $psitem" {
+            Context "Testing Active Directory groups on $psitem" {
                 It "Can't Connect to $Psitem" {
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            Context "Testing active Directory users on $psitem" {
+            Context "Testing Active Directory users on $psitem" {
                 @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
                     It "Active Directory user $($psitem.login) was found in $Instance on $($psitem.domain)" {
                         $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
@@ -548,7 +581,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 }
             }
 
-            Context "Testing active Directory groups on $psitem" {
+            Context "Testing Active Directory groups on $psitem" {
                 @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
                     It "Active Directory group $($psitem.login) was found in $Instance on $($psitem.domain)" {
                         $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
@@ -562,6 +595,19 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 }
             }
         }
+    }
+    else {
+        Context "Testing Active Directory users on $psitem" {
+            It "Running on Linux so can't check AD on $Psitem" -skip {
+                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            }
+        }
+        Context "Testing Active Directory groups on $psitem" {
+            It "Running on Linux so can't check AD on $Psitem" -skip {
+                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            }
+        }
+    }
     }
 
     Describe "Error Log Entries" -Tags ErrorLog, $filename {
@@ -758,26 +804,32 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $
         }
         else {
             Context "Testing SQL Browser Service on $psitem" {
-                $Services = Get-DbaService -ComputerName $psitem
-                if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
-                    It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" {
-                        $Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
+                if(-not $IsLinux){
+                    $Services = Get-DbaService -ComputerName $psitem
+                    if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
+                        It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" {
+                            $Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
+                        }
+                    }
+                    else {
+                        It "SQL browser service on $psitem Should Be Running as multiple instances are installed" {
+                            $Services.Where{$_.ServiceType -eq 'Browser'}.State| Should -Be "Running" -Because 'You need the browser service with multiple instances' }
+                    }
+                    if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
+                        It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" {
+                            $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' }
+                    }
+                    else {
+                        It "SQL browser service startmode Should Be Automatic on $psitem as multiple instances are installed" {
+                            $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Automatic"
+                        }
                     }
                 }
-                else {
-                    It "SQL browser service on $psitem Should Be Running as multiple instances are installed" {
-                        $Services.Where{$_.ServiceType -eq 'Browser'}.State| Should -Be "Running" -Because 'You need the browser service with multiple instances' }
                 }
-                if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
-                    It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" {
-                        $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' }
-                }
-                else {
-                    It "SQL browser service startmode Should Be Automatic on $psitem as multiple instances are installed" {
-                        $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Automatic"
+                else{
+                    It "Running on Linux so can't check Services on $Psitem" -skip {
                     }
                 }
-            }
         }
     }
 }
