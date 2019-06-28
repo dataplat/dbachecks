@@ -1,4 +1,4 @@
-﻿<#
+<#
 This file is used to hold the Assertions for the Instance.Tests
 
 It starts with the Get-AllInstanceInfo which uses all of the unique
@@ -100,14 +100,14 @@ function Assert-InstanceSupportedBuild {
     )
     #If $BuildBehind check against SP/CU parameter to determine validity of the build
     if ($BuildBehind) {
-        $results = Test-DbaSQLBuild -SqlInstance $Instance -MaxBehind $BuildBehind
+        $results = Test-DbaBuild -SqlInstance $Instance -MaxBehind $BuildBehind
         $Compliant = $results.Compliant
         $Build = $results.build
         $Compliant | Should -Be $true -Because "this build $Build should not be behind the required build"
         #If no $BuildBehind only check against support dates
     }
     else {
-        $Results = Test-DbaSQLBuild -SqlInstance $Instance -Latest
+        $Results = Test-DbaBuild -SqlInstance $Instance -Latest
         [DateTime]$SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $Build = $results.build
         #If $BuildWarning, check for support date within the warning window

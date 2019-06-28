@@ -80,17 +80,17 @@ points to C:\Windows\Temp (limitation of Power BI)
 
 ### EXAMPLE 8
 ```
-Set-DbcConfig -Name app.checkrepos -Value \\NetworkShare\CustomPesterChecks
+Set-DbcConfig -Name app.checkrepos -Value \\SharedPath\CustomPesterChecks
 ```
 
-Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus, CustomCheckTag -PassThru | Update-DbcPowerBiDataSource -Path \\\\NetworkShare\CheckResults -Name CustomCheckResults -Append
+Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus, CustomCheckTag -PassThru | Update-DbcPowerBiDataSource -Path \\\\SharedPath\CheckResults -Name CustomCheckResults -Append
 
 Because we are using a custom check repository you MUSTR use the Append parameter for Update-DbcPowerBiDataSource
 otherwise the json file will be overwritten
 
-Sets the custom check repository to \\\\NetworkShare\CustomPesterChecks
+Sets the custom check repository to \\\\SharedPath\CustomPesterChecks
 Runs the DatabaseStatus checks and custom checks with the CustomCheckTag against $Instance then saves all the results
-to json to \\\\NetworkShare\CheckResults.json -Name CustomCheckResults
+to json to \\\\SharedPath\CheckResults.json -Name CustomCheckResults
 
 ### EXAMPLE 9
 ```
@@ -259,4 +259,3 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## RELATED LINKS
 
 [https://dbachecks.readthedocs.io/en/latest/functions/Update-DbcPowerBiDataSource/](https://dbachecks.readthedocs.io/en/latest/functions/Update-DbcPowerBiDataSource/)
-

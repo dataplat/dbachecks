@@ -1,4 +1,4 @@
-﻿# load all of the assertion functions
+# load all of the assertion functions
 (Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
 
 Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
@@ -168,7 +168,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         It "Failed check correctly when the current build is behind the BuildBehind value of <BuildBehind>" -TestCases $TestCases {
             Param($BuildBehind, $Date, $expected, $actual)
             #Mock to fail
-            Mock Test-DbaSqlBuild {@{"SPLevel" = "{SP2}"; "CULevel" = "CU2"; "SPTarget" = "SP4"; "CUTarget" = "CU4"; "Compliant" = $false; "SupportedUntil" = $Date.AddMonths(1); "Build" = 42}}
+            Mock Test-DbaBuild {@{"SPLevel" = "{SP2}"; "CULevel" = "CU2"; "SPTarget" = "SP4"; "CUTarget" = "CU4"; "Compliant" = $false; "SupportedUntil" = $Date.AddMonths(1); "Build" = 42}}
             { Assert-InstanceSupportedBuild -Instance 'Dummy' -BuildBehind $BuildBehind -Date $Date} | Should -Throw -ExpectedMessage "Expected `$$expected, because this build 42 should not be behind the required build, but got `$$actual"
         }
         $TestCases = @{"Date" = $Date}
@@ -176,7 +176,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         It "Passed check correctly with a SupportedUntil date > today" -TestCases $TestCases {
             Param($Date)
             #Mock to pass
-            Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(1)}}
+            Mock Test-DbaBuild {@{"SupportedUntil" = $Date.AddMonths(1)}}
             Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date
         }
         $TestCases = @{"Date" = $Date}
@@ -194,7 +194,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         It "Passed check correctly with the BuildWarning window > today" -TestCases $TestCases {
             Param($Date, $BuildWarning)
             #Mock to pass
-            Mock Test-DbaSqlBuild {@{"SupportedUntil" = $Date.AddMonths(9); "Build" = 42}}
+            Mock Test-DbaBuild {@{"SupportedUntil" = $Date.AddMonths(9); "Build" = 42}}
             { Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date -BuildWarning $BuildWarning }
         }
         $TestCases = @{"Date" = $Date; "BuildWarning" = 6}
