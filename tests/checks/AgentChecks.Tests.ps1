@@ -1,4 +1,4 @@
-﻿# load all of the assertion functions
+# load all of the assertion functions
 (Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
 
 Describe "Checking Agent.Tests.ps1 checks" -Tag UnitTest {
