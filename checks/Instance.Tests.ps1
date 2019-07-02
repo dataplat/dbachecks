@@ -19,7 +19,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -notcontains $psitem) {
             if ($null -eq $InstanceSMO.version) {
                 $NotContactable += $Instance
-            $There = $false
+                $There = $false
             }
             else {
                 $There = $True
@@ -50,11 +50,12 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     $true| Should -BeTrue
                 }
                 #local is always NTLM except when its a container ;-)
-                if($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -notlike '*,*')){
+                if ($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -notlike '*,*')) {
                     It -Skip:$skipauth "auth scheme should be NTLM on the local machine on $psitem" {
                         (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme| Should -Be NTLM
                     }
-                }else{
+                }
+                else {
                     It -Skip:$skipauth "auth scheme should be $authscheme on $psitem" {
                         (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme | Should -Be $authscheme
                     }
@@ -72,7 +73,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     try {
                         $null = Invoke-Command -ComputerName $InstanceSMO.ComputerName -ScriptBlock { Get-ChildItem } -ErrorAction Stop
                         $remoting = $true
-                    } catch {
+                    }
+                    catch {
                         $remoting = $false
                     }
                     $remoting | Should -BeTrue
@@ -92,28 +94,28 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             $IsClustered = $Psitem.$IsClustered
             Context "Testing SQL Engine Service on $psitem" {
-                if( -not $IsLInux){
-                @(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
-                    It "SQL Engine service account should Be running on $($psitem.InstanceName)" {
-                        $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
-                    }
-                    if ($IsClustered) {
-                        It "SQL Engine service account should have a start mode of Manual on FailOver Clustered Instance $($psitem.InstanceName)" {
-                            $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the SQL engine service is set to manual'
+                if ( -not $IsLInux) {
+                    @(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
+                        It "SQL Engine service account should Be running on $($psitem.InstanceName)" {
+                            $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
                         }
-                    }
-                    else {
-                        It "SQL Engine service account should have a start mode of Automatic on standalone instance $($psitem.InstanceName)" {
-                            $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessible'
+                        if ($IsClustered) {
+                            It "SQL Engine service account should have a start mode of Manual on FailOver Clustered Instance $($psitem.InstanceName)" {
+                                $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the SQL engine service is set to manual'
+                            }
+                        }
+                        else {
+                            It "SQL Engine service account should have a start mode of Automatic on standalone instance $($psitem.InstanceName)" {
+                                $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessible'
+                            }
                         }
                     }
                 }
-            }
-            else{
-                It "Running on Linux so can't check Services on $Psitem" -skip {
+                else {
+                    It "Running on Linux so can't check Services on $Psitem" -skip {
+                    }
                 }
             }
-        }
         }
     }
 
@@ -257,22 +259,23 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Max Memory on $psitem" {
-                    if (-not $IsLInux){
-                        It "Max Memory setting should be correct on $psitem" {
+                if (-not $IsLInux) {
+                    It "Max Memory setting should be correct on $psitem" {
                         @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
                             $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
                         }
                     }
-                    }else {
-                        It "Max Memory setting should be correct (running on Linux so only checking Max Memory is less than Total Memory) on $psitem" {
+                }
+                else {
+                    It "Max Memory setting should be correct (running on Linux so only checking Max Memory is less than Total Memory) on $psitem" {
                         # simply check that the max memory is less than total memory
                         $MemoryValues = Get-DbaMaxMemory -SqlInstance $psitem
                         $MemoryValues.Total | Should -BeGreaterThan $MemoryValues.MaxValue -Because 'You do not want to exhaust server memory'
                     }
                 }
-                }
             }
         }
+    }
 
 
     Describe "Orphaned Files" -Tags OrphanedFile, Low, $filename {
@@ -299,19 +302,20 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-        }else {
+        }
+        else {
             Context "Testing instance name matches Windows name for $psitem" {
-                if($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -like '*,*')){
-                It "$psitem doesn't require rename as it appears to be a local container" -Skip{
+                if ($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -like '*,*')) {
+                    It "$psitem doesn't require rename as it appears to be a local container" -Skip {
+                    }
+                }
+                else {
+                    It "$psitem doesn't require rename" {
+                        (Test-DbaInstanceName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
+                    }
                 }
             }
-        else{
-            It "$psitem doesn't require rename" {
-                (Repair-DbaInstanceName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
-            }
         }
-        }
-    }
     }
 
     Describe "SQL Memory Dumps" -Tags MemoryDump, Medium, $filename {
@@ -542,73 +546,73 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "Ad Users and Groups " -Tags ADUser, Domain, High, $filename {
-        if(-not $IsLinux){
-        $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
-        $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
+        if (-not $IsLinux) {
+            $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
+            $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
 
-        if ($NotContactable -contains $psitem) {
-            Context "Testing Active Directory users on $psitem" {
-                It "Can't Connect to $Psitem" {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            if ($NotContactable -contains $psitem) {
+                Context "Testing Active Directory users on $psitem" {
+                    It "Can't Connect to $Psitem" {
+                        $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
+                }
+                Context "Testing Active Directory groups on $psitem" {
+                    It "Can't Connect to $Psitem" {
+                        $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    }
                 }
             }
-            Context "Testing Active Directory groups on $psitem" {
-                It "Can't Connect to $Psitem" {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            else {
+                Context "Testing Active Directory users on $psitem" {
+                    @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
+                        It "Active Directory user $($psitem.login) was found in $Instance on $($psitem.domain)" {
+                            $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
+                        }
+                        if ($psitem.found -eq $true) {
+                            It "Active Directory user $($psitem.login) should not have an expired password in $Instance on $($psitem.domain)" {
+                                $psitem.PasswordExpired | Should -Be $false -Because "$($psitem.login) password should not be expired"
+                            }
+                            It "Active Directory user $($psitem.login) should not be locked out in $Instance on $($psitem.domain)" {
+                                $psitem.lockedout | Should -Be $false -Because "$($psitem.login) should not be locked out"
+                            }
+                            It "Active Directory user $($psitem.login) should be enabled in $Instance on $($psitem.domain)" {
+                                $psitem.Enabled | Should -Be $true -Because "$($psitem.login) should be enabled"
+                            }
+                            It "Active Directory user $($psitem.login) should not be disabled in $Instance on $($psitem.Server)" {
+                                $psitem.DisabledInSQLServer | Should -Be $false -Because "$($psitem.login) should be active on the SQL server"
+                            }
+                        }
+
+                    }
+                }
+
+                Context "Testing Active Directory groups on $psitem" {
+                    @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
+                        It "Active Directory group $($psitem.login) was found in $Instance on $($psitem.domain)" {
+                            $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
+                        }
+                        if ($psitem.found -eq $true) {
+                            It "Active Directory group $($psitem.login) should not be disabled in $Instance on $($psitem.Server)" {
+                                $psitem.DisabledInSQLServer | Should -Be $false -Because "$($psitem.login) should be active on the SQL server"
+                            }
+                        }
+
+                    }
                 }
             }
         }
         else {
             Context "Testing Active Directory users on $psitem" {
-                @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy LoginsOnly -ExcludeLogin $userexclude).ForEach{
-                    It "Active Directory user $($psitem.login) was found in $Instance on $($psitem.domain)" {
-                        $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
-                    }
-                    if ($psitem.found -eq $true) {
-                        It "Active Directory user $($psitem.login) should not have an expired password in $Instance on $($psitem.domain)" {
-                            $psitem.PasswordExpired | Should -Be $false -Because "$($psitem.login) password should not be expired"
-                        }
-                        It "Active Directory user $($psitem.login) should not be locked out in $Instance on $($psitem.domain)" {
-                            $psitem.lockedout | Should -Be $false -Because "$($psitem.login) should not be locked out"
-                        }
-                        It "Active Directory user $($psitem.login) should be enabled in $Instance on $($psitem.domain)" {
-                            $psitem.Enabled | Should -Be $true -Because "$($psitem.login) should be enabled"
-                        }
-                        It "Active Directory user $($psitem.login) should not be disabled in $Instance on $($psitem.Server)" {
-                            $psitem.DisabledInSQLServer | Should -Be $false -Because "$($psitem.login) should be active on the SQL server"
-                        }
-                    }
-
+                It "Running on Linux so can't check AD on $Psitem" -skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
-
             Context "Testing Active Directory groups on $psitem" {
-                @(Test-DbaWindowsLogin -SqlInstance $psitem -FilterBy GroupsOnly -ExcludeLogin $groupexclude).ForEach{
-                    It "Active Directory group $($psitem.login) was found in $Instance on $($psitem.domain)" {
-                        $psitem.found | Should -Be $true -Because "$($psitem.login) should be in Active Directory"
-                    }
-                    if ($psitem.found -eq $true) {
-                        It "Active Directory group $($psitem.login) should not be disabled in $Instance on $($psitem.Server)" {
-                            $psitem.DisabledInSQLServer | Should -Be $false -Because "$($psitem.login) should be active on the SQL server"
-                        }
-                    }
-
+                It "Running on Linux so can't check AD on $Psitem" -skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
-    }
-    else {
-        Context "Testing Active Directory users on $psitem" {
-            It "Running on Linux so can't check AD on $Psitem" -skip {
-                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
-            }
-        }
-        Context "Testing Active Directory groups on $psitem" {
-            It "Running on Linux so can't check AD on $Psitem" -skip {
-                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
-            }
-        }
-    }
     }
 
     Describe "Error Log Entries" -Tags ErrorLog, Medium, $filename {
@@ -805,7 +809,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
         }
         else {
             Context "Testing SQL Browser Service on $psitem" {
-                if(-not $IsLinux){
+                if (-not $IsLinux) {
                     $Services = Get-DbaService -ComputerName $psitem
                     if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
                         It "SQL browser service on $psitem should be Stopped as only one instance is installed" {
@@ -826,11 +830,11 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
                         }
                     }
                 }
-                }
-                else{
+                else {
                     It "Running on Linux so can't check Services on $Psitem" -skip {
                     }
                 }
+            }
         }
     }
 }
