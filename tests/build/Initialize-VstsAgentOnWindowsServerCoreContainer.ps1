@@ -167,7 +167,7 @@ param(
     [Parameter(Mandatory = $false,
         HelpMessage = "Name of the script file to invoke by this wrapper.")]
     [ValidateNotNullOrEmpty()]
-    [string]$ScriptFileName = "Install-VstsAgentOnWindowsServerCoreContainer.ps1",
+    [string]$ScriptFileName = "tests\build\Install-VstsAgentOnWindowsServerCoreContainer.ps1",
 
     [Parameter(Mandatory = $true,
         HelpMessage = "Name of the Visual Studio Team Services Account (VSTS), e.g. https://<VSTSAccountName>.visualstudio.com")]
@@ -270,7 +270,7 @@ function Copy-ScriptToStorageAccount
         [Parameter(Mandatory = $true)][string]$StorageAccountName,
         [Parameter(Mandatory = $true)][string]$StorageAccountResourceGroupName,
         [Parameter(Mandatory = $false)][string]$StorageContainerName = "publicvstsscript",
-        [Parameter(Mandatory = $false)][string]$ScriptFileName = "Install-VstsAgentOnWindowsServerCoreContainer.ps1"
+        [Parameter(Mandatory = $false)][string]$ScriptFileName = "tests\build\Install-VstsAgentOnWindowsServerCoreContainer.ps1"
 
     )
 
