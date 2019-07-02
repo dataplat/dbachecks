@@ -236,9 +236,11 @@ Describe "Failed Jobs" -Tags FailedJob, $filename {
                 }
             }
             else {
-                Context "Checking for failed enabled jobs on $psitem" {
+                $maxdays = Get-DbcConfigValue agent.failedjob.since
+                $startdate =(Get-Date).AddDays(-$maxdays)
+                Context "Checking for failed enabled jobs since $startdate on $psitem" {
                     $excludecancelled = Get-DbcConfigValue agent.failedjob.excludecancelled
-                    @(Get-DbaAgentJob -SqlInstance $psitem | Where-Object IsEnabled).ForEach{
+                    @(Get-DbaAgentJob -SqlInstance $psitem | Where-Object {$Psitem.IsEnabled -and ($psitem.LastRunDate -gt $startdate)}).ForEach{
                         if ($psitem.LastRunOutcome -eq "Unknown") {
                             It -Skip "$psitem's last run outcome on $($psitem.SqlInstance) is unknown" {
                                 $psitem.LastRunOutcome | Should -Be "Succeeded" -Because 'All Agent Jobs should have succeed this one is unknown - you need to investigate the failed jobs'

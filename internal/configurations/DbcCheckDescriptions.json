@@ -17,7 +17,7 @@
     },
     {
         "UniqueTag": "FailedJob",
-        "Description": "Tests that enabled Agent Jobs last outcome was succeeded"
+        "Description": "Tests that enabled Agent Jobs last outcome was succeeded since specified start date (default 30 days ago) and can exclude cancelled jobs (default false)"
     },
     {
         "UniqueTag": "ValidJobOwner",
