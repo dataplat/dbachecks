@@ -258,6 +258,10 @@ function Set-AzureContext
     }
 }
 
+if(-not $StorageAccountResourceGroupName){
+    $StorageAccountResourceGroupName = $ResourceGroupName
+}
+
 function Copy-ScriptToStorageAccount
 {
 
@@ -279,12 +283,6 @@ function Copy-ScriptToStorageAccount
 
     if(-not (Get-AzureRmStorageAccount-ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName )){
         New-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -Location "West Europe" -SkuName "Standard_GRS"
-    }
-
-    if (-not $StorageAccountResourceGroupName)
-    {
-        Write-Error "The selected Storage Account does not exist. Exiting..."
-        break
     }
 
     # Getting Storage Account Key
@@ -659,9 +657,6 @@ Set-AzureContext -SubscriptionName $SubscriptionName
 
 if ($StorageAccountName)
 {
-    if(-not $StorageAccountResourceGroupName){
-        $StorageAccountResourceGroupName = $ResourceGroupName
-    }
     # Upload the configuration script to a Storage Account
     Copy-ScriptToStorageAccount -StorageAccountResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageContainerName $StorageContainerName -ScriptFileName $ScriptFileName
 }
