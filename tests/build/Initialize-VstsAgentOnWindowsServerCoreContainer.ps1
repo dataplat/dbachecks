@@ -669,13 +669,15 @@ if ($StorageAccountName)
 
 Write-Output "Ready For creating Resource Group for containers"
 
+<#
 # Create Resource Group for containers
 if (-not (Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue))
 {
     Write-Output "Resource Group ""$ResourceGroupName"" does not exist for ACI containers. Creating..."
     New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Null
 }
-
+#>
+Write-Output "Ready For creating containers"
 # Create containers
 if (-not $ContainerImage)
 {
