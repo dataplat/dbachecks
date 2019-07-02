@@ -137,6 +137,8 @@ dbachecks works with dbatools v1 #624
 Minimum PowerShell Now 5.0 #568
 Fixes for none-readable secondaries causing tests to fail #611
 Added ability to exclude disks from disk allocation check #561
+Added ability to exclude cancelled jobs from failed job check #552
+Added max job history for failed jobs #552
 Some extra tags added
 
 ##Latest
