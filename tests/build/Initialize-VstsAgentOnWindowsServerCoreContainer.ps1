@@ -281,7 +281,7 @@ function Copy-ScriptToStorageAccount
         break
     }
 
-    if(-not (Get-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName )){
+    if(-not (Get-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -ErrorAction SilentlyContinue)){
         New-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -Location "West Europe" -SkuName "Standard_GRS"
     }
 
