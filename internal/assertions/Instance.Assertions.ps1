@@ -42,7 +42,7 @@ function Get-AllInstanceInfo {
                         LogDate       = 'Do not know the Date'
                         ProcessInfo   = 'Do not know the Process'
                         Text          = 'Do not know the Test'
-                        $InstanceName = 'An Error occurred ' + $Instance
+                        InstanceName = 'An Error occurred ' + $Instance
                     } 
                 }
             }
@@ -52,7 +52,7 @@ function Get-AllInstanceInfo {
                     LogDate       = 'Do not know the Date'
                     ProcessInfo   = 'Do not know the Process'
                     Text          = 'Do not know the Test'
-                    $InstanceName = 'An Error occurred ' + $Instance
+                    InstanceName = 'An Error occurred ' + $Instance
                 } 
             }
         }
