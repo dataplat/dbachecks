@@ -1,10 +1,31 @@
+Add to psd1 and readme.md
+
+## Date 2nd July 2019 at Techorama in Room 12
+dbachecks works with PowerShell Core #620
+dbachecks works with dbatools v1 #624
+Minimum PowerShell Now 5.0 #568
+Prettier output in test names for @cl because she is ace #495
+Fixes for none-readable secondaries causing tests to fail #611
+Added ability to exclude disks from disk allocation check #561
+Added ability to exclude cancelled jobs from failed job check #552
+Added max job history for failed jobs #552
+Some extra tags added
+
+
+##Latest
+
+## Date 22nd May 2019 at Techorama in Room 12
+Thank You @SOZDBA, @djfcc, @wsmelton
+Improved validation for IP addresses in clusters
+Ignored Off-line databases for Pseudo Recovery Checks
+Some internal testing changes
+
+
 ## Date 05/02/2019
 Thank you Chrissy! @cl
 added default environment #596
 altered configuration validation for mail to stop errors
 Ensured database status check doesnt fail as readonly for snapshots
-
-##Latest
 
 ## Date 31/01/2019 
 Thank you Chrissy!
