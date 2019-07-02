@@ -277,8 +277,7 @@ function Copy-ScriptToStorageAccount
 
     if (-not $StorageAccountResourceGroupName)
     {
-        Write-Error "The selected Storage Account does not exist. Exiting..."
-        break
+        New-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -Location "West Europe" -SkuName "Standard_GRS"
     }
 
     # Getting Storage Account Key
