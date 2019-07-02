@@ -667,6 +667,8 @@ if ($StorageAccountName)
     Copy-ScriptToStorageAccount -StorageAccountResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageContainerName $StorageContainerName -ScriptFileName $ScriptFileName
 }
 
+Write-Output "Ready For creating Resource Group for containers"
+
 # Create Resource Group for containers
 if (-not (Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue))
 {
