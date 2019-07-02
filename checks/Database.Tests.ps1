@@ -510,7 +510,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Database VLFs on $psitem" {
-                @(Test-DbaDbVirtualLogFile -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).ForEach{
+                @(Measure-DbaDbVirtualLogFile -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).ForEach{
                     It "$($psitem.Database) VLF count on $($psitem.SqlInstance) should be less than $vlfmax" {
                         $psitem.Total | Should -BeLessThan $vlfmax -Because "Too many VLFs can impact performance and slow down backup/restore"
                     }
