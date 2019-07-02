@@ -136,6 +136,7 @@ dbachecks works with PowerShell Core #620
 dbachecks works with dbatools v1 #624
 Minimum PowerShell Now 5.0 #568
 Fixes for none-readable secondaries causing tests to fail #611
+Added ability to exclude disks from disk allocation check #561
 Some extra tags added
 
 ##Latest
