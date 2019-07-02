@@ -256,6 +256,7 @@ Set-PSFConfig -Module dbachecks -Name testing.integration.instance -Value @("loc
 
 # Server
 Set-PSFConfig -Module dbachecks -Name policy.server.cpuprioritisation -Value $true -Initialize -Description "Shall we skip the CPU Prioritisation check"
+Set-PSFConfig -Module dbachecks -Name policy.server.excludeDiskAllocationUnit -Value @() -Initialize -Description "The disks to skip from the Disk Allocation Unit check - Must be 'DISKLETTER:\'"
 
 # Devops
 Set-PSFConfig -Module dbachecks -Name database.exists -Value @("master","msdb","tempdb","model") -Initialize -Description "The databases we expect to be on the instances"

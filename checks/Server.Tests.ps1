@@ -63,7 +63,11 @@ Return
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, Medium, $filename {
         Context "Testing disk allocation unit on $psitem" {
             $computerName = $psitem
+            $excludedisks = Get-DbcConfigValue policy.server.excludeDiskAllocationUnit
             @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
+                if($Psitem.Name -in $excludedisks){
+                    $exclude = $true
+                }
                 It "$($Psitem.Name) Should be set to 64kb on $computerName" -Skip:$exclude {
                     Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
                 }
