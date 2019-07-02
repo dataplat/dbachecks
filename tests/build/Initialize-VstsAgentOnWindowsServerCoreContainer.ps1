@@ -682,6 +682,7 @@ Write-Output "Ready For creating containers"
 if (-not $ContainerImage)
 {
     $ContainerImage = Get-LatestCachedImageVersion
+    Write-Output "Container Image = $ContainerImage"
 }
 New-Container -ContainerImage $ContainerImage
 
