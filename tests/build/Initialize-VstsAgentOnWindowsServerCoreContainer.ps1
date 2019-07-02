@@ -167,7 +167,12 @@ param(
     [Parameter(Mandatory = $false,
         HelpMessage = "Name of the script file to invoke by this wrapper.")]
     [ValidateNotNullOrEmpty()]
-    [string]$ScriptFileName = "tests\build\Install-VstsAgentOnWindowsServerCoreContainer.ps1",
+    [string]$ScriptFileName = "Install-VstsAgentOnWindowsServerCoreContainer.ps1",
+    
+    [Parameter(Mandatory = $false,
+        HelpMessage = "Path to the file - if script not running in same directory")]
+    [ValidateNotNullOrEmpty()]
+    [string]$ScriptFilePath = ".\",
 
     [Parameter(Mandatory = $true,
         HelpMessage = "Name of the Visual Studio Team Services Account (VSTS), e.g. https://<VSTSAccountName>.visualstudio.com")]
@@ -270,14 +275,14 @@ function Copy-ScriptToStorageAccount
         [Parameter(Mandatory = $true)][string]$StorageAccountName,
         [Parameter(Mandatory = $true)][string]$StorageAccountResourceGroupName,
         [Parameter(Mandatory = $false)][string]$StorageContainerName = "publicvstsscript",
-        [Parameter(Mandatory = $false)][string]$ScriptFileName = "tests\build\Install-VstsAgentOnWindowsServerCoreContainer.ps1"
+        [Parameter(Mandatory = $false)][string]$ScriptFileName = "Install-VstsAgentOnWindowsServerCoreContainer.ps1"
 
     )
 
     # Check if the Install-VstsAgentOnWindowsServerCoreContainer.ps1 script exists within the same folder
-    if (-not (Get-Item -Path $ScriptFileName -ErrorAction SilentlyContinue))
+    if (-not (Get-Item -Path "$ScriptFilePath\$ScriptFileName" -ErrorAction SilentlyContinue))
     {
-        Write-Error "The script to be uploaded to the Storage Account ($ScriptFileName) does not exist in the same folder. Make sure that it is copied to the same folder along with the Initialize-VstsAgentOnWindowsServerCoreContainer.ps1 script. Exiting..."
+        Write-Error "The script to be uploaded to the Storage Account ($ScriptFilePath\$ScriptFileName) does not exist in the same folder. Make sure that it is copied to the same folder along with the Initialize-VstsAgentOnWindowsServerCoreContainer.ps1 script. Exiting..."
         
         break
     }
@@ -326,7 +331,7 @@ function Copy-ScriptToStorageAccount
 
     # Uploading CSV file
     Write-Output "Uploading the Install-VstsAgentOnWindowsServerCoreContainer.ps1 script to the Storage Account..."
-    Set-AzureStorageBlobContent -Container $StorageContainerName -File $ScriptFileName -Blob $ScriptFileName -context $ctx -Force | Out-Null
+    Set-AzureStorageBlobContent -Container $StorageContainerName -File "$ScriptFilePath\$ScriptFileName" -Blob $ScriptFileName -context $ctx -Force | Out-Null
 
     # Checking success
     $Blob = Get-AzureStorageBlob -Context $ctx -Container $StorageContainerName -Blob $ScriptFileName -ErrorAction SilentlyContinue
