@@ -275,9 +275,10 @@ function Copy-ScriptToStorageAccount
     )
 
     # Check if the Install-VstsAgentOnWindowsServerCoreContainer.ps1 script exists within the same folder
-    if (-not (Get-Item -Path ".\$ScriptFileName" -ErrorAction SilentlyContinue))
+    if (-not (Get-Item -Path $ScriptFileName -ErrorAction SilentlyContinue))
     {
         Write-Error "The script to be uploaded to the Storage Account ($ScriptFileName) does not exist in the same folder. Make sure that it is copied to the same folder along with the Initialize-VstsAgentOnWindowsServerCoreContainer.ps1 script. Exiting..."
+        
         break
     }
 
