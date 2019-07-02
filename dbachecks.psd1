@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.1.173'
+    ModuleVersion          = '1.2.0'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -29,7 +29,7 @@
     Description            = 'SQL Server Infrastructure validation Tests to ensure that your SQL Server estate is and continues to be compliant with your requirements'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion      = '4.0'
+    PowerShellVersion      = '5.0'
 
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName     = ''
@@ -49,7 +49,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
         @{ ModuleName = 'Pester'; ModuleVersion = '4.7.1' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '0.9.779' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.12' }
         @{ ModuleName = 'PSFramework'; ModuleVersion = '1.0.0' }
     )
 
@@ -131,11 +131,16 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 05/02/2019
-Thank you Chrissy! @cl
-added default environment #596
-altered configuration validation for mail to stop errors
-Ensured database status check doesnt fail as readonly for snapshots
+## Date 2nd July 2019
+dbachecks works with PowerShell Core #620
+dbachecks works with dbatools v1 #624
+Minimum PowerShell Now 5.0 #568
+Prettier output in test names for @cl because she is ace #495
+Fixes for none-readable secondaries causing tests to fail #611
+Added ability to exclude disks from disk allocation check #561
+Added ability to exclude cancelled jobs from failed job check #552
+Added max job history for failed jobs #552
+Some extra tags added
 
 ##Latest
 

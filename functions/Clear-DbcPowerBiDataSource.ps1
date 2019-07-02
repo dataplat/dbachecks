@@ -28,6 +28,10 @@ function Clear-DbcPowerBiDataSource {
         [string]$Environment,
         [switch]$EnableException
     )
+    if($IsLinux){
+        Write-PSFMessage "We cannot run this command from linux at the moment" -Level Warning
+        Return
+        }
     $null = Remove-Item "$Path\*$Environment*.json" -ErrorAction SilentlyContinue
 }
 # SIG # Begin signature block

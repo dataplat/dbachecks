@@ -70,7 +70,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
         @(Test-DbaMaxDop -SqlInstance Dummy).Where{$_.Database -ne 'N/A'}.ForEach{
             It "Fails the test successfully" {
-                {Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue 4} | Should -Throw -ExpectedMessage "Expected 4, because We expect the Database MaxDop Value 5 to be the specified value 4, but got '5'."
+                {Assert-DatabaseMaxDop -MaxDop $PsItem -MaxDopValue 4} | Should -Throw -ExpectedMessage "Expected 4, because We expect the Database MaxDop Value to be the specified value 4, but got '5'."
             }
         }
 
@@ -335,12 +335,12 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
     }
     Context "Testing Assert-DatabaseDuplicateIndex" {
         #Mock for passing
-        Mock Find-DbaDuplicateIndex {}
+        Mock Find-DbaDbDuplicateIndex {}
         It "Should pass when there are no Duplicate Indexes" {
             Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1
         }
         # Mock for failing for 1 index
-        Mock Find-DbaDuplicateIndex {
+        Mock Find-DbaDbDuplicateIndex {
             [PSCustomObject]@{
                 DatabaseName           = "msdb"
                 TableName              = "dbo.log_shipping_primary_databases"
@@ -359,7 +359,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory, but got 1.'
         }
         #Mock for failing for 2 indexes
-        Mock Find-DbaDuplicateIndex {
+        Mock Find-DbaDbDuplicateIndex {
             @([PSCustomObject]@{
                     DatabaseName           = "msdb"
                     TableName              = "dbo.log_shipping_primary_databases"

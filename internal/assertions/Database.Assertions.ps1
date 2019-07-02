@@ -25,7 +25,7 @@ function Assert-DatabaseMaxDop {
         [pscustomobject]$MaxDop,
         [int]$MaxDopValue
     )   
-    $MaxDop.DatabaseMaxDop | Should -Be $MaxDopValue -Because "We expect the Database MaxDop Value $($MaxDop.DatabaseMaxDop) to be the specified value $MaxDopValue"
+    $MaxDop.DatabaseMaxDop | Should -Be $MaxDopValue -Because "We expect the Database MaxDop Value to be the specified value $MaxDopValue"
 }
 
 function Assert-DatabaseStatus {
@@ -58,7 +58,7 @@ function Assert-DatabaseDuplicateIndex {
         [string]$instance,
         [string]$Database
     )
-    @(Find-DbaDuplicateIndex -SqlInstance $Instance -Database $Database).Count | Should -Be 0 -Because "Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory"
+    @(Find-DbaDbDuplicateIndex -SqlInstance $Instance -Database $Database).Count | Should -Be 0 -Because "Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory"
 }
 
 function Assert-DatabaseExists {

@@ -1,4 +1,4 @@
-﻿<#
+<#
 This file is used to hold the Assertions for the Instance.Tests
 
 It starts with the Get-AllInstanceInfo which uses all of the unique
@@ -72,11 +72,11 @@ function Assert-InstanceMaxDop {
     $MaxDop = @(Test-DbaMaxDop -SqlInstance $Instance)[0]
     if ($UseRecommended) {
         #if UseRecommended - check that the CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the the RecommendedMaxDop property
-        $MaxDop.CurrentInstanceMaxDop | Should -Be $MaxDop.RecommendedMaxDop -Because "We expect the MaxDop Setting $($MaxDop.CurrentInstanceMaxDop) to be the recommended value $($MaxDop.RecommendedMaxDop)"
+        $MaxDop.CurrentInstanceMaxDop | Should -Be $MaxDop.RecommendedMaxDop -Because "We expect the MaxDop Setting to be the recommended value $($MaxDop.RecommendedMaxDop)"
     }
     else {
         #if not UseRecommended - check that the CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the MaxDopValue parameter
-        $MaxDop.CurrentInstanceMaxDop | Should -Be $MaxDopValue -Because "We expect the MaxDop Setting $($MaxDop.CurrentInstanceMaxDop) to be $MaxDopValue"
+        $MaxDop.CurrentInstanceMaxDop | Should -Be $MaxDopValue -Because "We expect the MaxDop Setting to be $MaxDopValue"
     }
 }
 
@@ -100,14 +100,14 @@ function Assert-InstanceSupportedBuild {
     )
     #If $BuildBehind check against SP/CU parameter to determine validity of the build
     if ($BuildBehind) {
-        $results = Test-DbaSQLBuild -SqlInstance $Instance -MaxBehind $BuildBehind
+        $results = Test-DbaBuild -SqlInstance $Instance -MaxBehind $BuildBehind
         $Compliant = $results.Compliant
         $Build = $results.build
         $Compliant | Should -Be $true -Because "this build $Build should not be behind the required build"
         #If no $BuildBehind only check against support dates
     }
     else {
-        $Results = Test-DbaSQLBuild -SqlInstance $Instance -Latest
+        $Results = Test-DbaBuild -SqlInstance $Instance -Latest
         [DateTime]$SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $Build = $results.build
         #If $BuildWarning, check for support date within the warning window

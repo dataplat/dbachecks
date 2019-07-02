@@ -141,7 +141,7 @@ foreach ($clustervm in $clusters) {
 
                 @($AG.AvailabilityReplicas).ForEach{
                     $results = Test-DbaConnection -sqlinstance $PsItem.Name
-                    It "Replica $($results.SqlInstance) Should Be Pingable" {
+                    It "Replica $($results.SqlInstance) should be Pingable" {
                         $results.IsPingable | Should -BeTrue -Because 'Each replica should be pingable'
                     }
                     It "Replica $($results.SqlInstance) should be able to connect with SQL" {

@@ -564,7 +564,7 @@
         "AllTags":  "XESessionStopped, ExtendedEvent, Instance",
         "Config":  "app.sqlinstance policy.xevent.requiredstoppedsession ",
         "Description":  "Tests that the specified (default blank) XE Sessions are stopped",
-        "Describe":  "XE Sessions That Should Be Stopped"
+        "Describe":  "XE Sessions That should be Stopped"
     },
     {
         "Group":  "Instance",
@@ -573,7 +573,7 @@
         "AllTags":  "XESessionRunning, ExtendedEvent, Instance",
         "Config":  "app.sqlinstance policy.xevent.requiredrunningsession ",
         "Description":  "Tests that the specified (default blank) XE Sessions that are expected to be running are running",
-        "Describe":  "XE Sessions That Should Be Running"
+        "Describe":  "XE Sessions That should be Running"
     },
     {
         "Group":  "Instance",

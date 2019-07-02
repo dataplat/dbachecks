@@ -27,7 +27,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
 
-    Describe "Database Collation" -Tags DatabaseCollation, $filename {
+    Describe "Database Collation" -Tags DatabaseCollation, High, $filename {
         $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
         $exclude = "ReportingServer", "ReportingServerTempDB"
         $exclude += $Wrongcollation
@@ -59,7 +59,7 @@ $ExcludedDatabases += $ExcludeDatabase
     
     }
 
-    Describe "Suspect Page" -Tags SuspectPage, $filename {
+    Describe "Suspect Page" -Tags SuspectPage, High, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing suspect pages on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -101,10 +101,10 @@ $ExcludedDatabases += $ExcludeDatabase
                     if (-not ($destdata)) {$destdata -eq $srv.DefaultFile}
                     if (-not ($destlog)) {$destlog -eq $srv.DefaultLog}
                     @(Test-DbaLastBackup -SqlInstance $psitem -Database $dbs -Destination $destserver -DataDirectory $destdata -LogDirectory $destlog -VerifyOnly).ForEach{                    if ($psitem.DBCCResult -notmatch "skipped for restored master") {
-                            It "DBCC for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
+                            It "DBCC for $($psitem.Database) on $($psitem.SourceServer) should be success" {
                                 $psitem.DBCCResult | Should -Be "Success" -Because "You need to run DBCC CHECKDB to ensure your database is consistent"
                             }
-                            It "restore for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
+                            It "restore for $($psitem.Database) on $($psitem.SourceServer) should be success" {
                                 $psitem.RestoreResult | Should -Be "Success" -Because "The backup file has not successfully restored - you have no backup"
                             }
                         }
@@ -137,7 +137,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
         
-    Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
+    Describe "Valid Database Owner" -Tags ValidDatabaseOwner, Medium, $filename {
         [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
         [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
         $exclude += $ExcludedDatabases 
@@ -159,7 +159,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
+    Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, Medium, $filename {
         [string[]]$targetowner = Get-DbcConfigValue policy.invaliddbowner.name
         [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
         $exclude += $ExcludedDatabases 
@@ -181,7 +181,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
+    Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, Varied, $filename {
         $maxdays = Get-DbcConfigValue policy.dbcc.maxdays
         $datapurity = Get-DbcConfigValue skip.dbcc.datapuritycheck
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
@@ -196,7 +196,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing Last Good DBCC CHECKDB on $psitem" {
                 @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($_.IsAccessible -eq $true) -and $(if ($database) {$psitem.name -in $Database}else {$ExcludedDatabases -notcontains $_.Name})}).Name ).ForEach{
                     if ($psitem.Database -ne "tempdb") {
-                        It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should Be less than $maxdays days old" {
+                        It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) should be less than $maxdays days old" {
                             $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).AddDays( - ($maxdays)) -Because "You should have run a DBCC CheckDB inside that time"
                         }
                         It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
@@ -208,7 +208,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
+    Describe "Column Identity Usage" -Tags IdentityUsage, Medium, $filename {
         $maxpercentage = Get-DbcConfigValue policy.identity.usagepercent
         if ($NotContactable -contains $psitem) {
             Context "Testing Column Identity Usage on $psitem" {
@@ -224,7 +224,7 @@ $ExcludedDatabases += $ExcludeDatabase
                 @(Test-DbaIdentityUsage -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
                     if ($psitem.Database -ne "tempdb") {
                         $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
-                        It "usage for $columnfqdn on $($psitem.SqlInstance) Should Be less than $maxpercentage percent" {
+                        It "usage for $columnfqdn on $($psitem.SqlInstance) should be less than $maxpercentage percent" {
                             $psitem.PercentUsed -lt $maxpercentage | Should -BeTrue -Because "You do not want your Identity columns to hit the max value and stop inserts"
                         }
                     }
@@ -233,7 +233,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
+    Describe "Recovery Model" -Tags RecoveryModel, DISA, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Recovery Model on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -276,7 +276,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Unused Index" -Tags UnusedIndex, $filename {
+    Describe "Unused Index" -Tags UnusedIndex, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Unused indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -302,7 +302,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Disabled Index" -Tags DisabledIndex, $filename {
+    Describe "Disabled Index" -Tags DisabledIndex, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Disabled indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -313,7 +313,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Disabled indexes on $psitem" {
                 $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($_.IsAccessible -eq $true)}.ForEach{
-                    $results = Find-DbaDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
+                    $results = Find-DbaDbDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
                     It "$($psitem.Name) on $($psitem.Parent.Name) should return 0 Disabled indexes" {
                         @($results).Count | Should -Be 0 -Because "Disabled indexes are wasting disk space"
                     }
@@ -322,7 +322,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
+    Describe "Database Growth Event" -Tags DatabaseGrowthEvent, Low, $filename {
         $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
         if ($NotContactable -contains $psitem) {
             Context "Testing database growth event on $psitem" {
@@ -343,7 +343,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Page Verify" -Tags PageVerify, $filename {
+    Describe "Page Verify" -Tags PageVerify, Medium, $filename {
         $pageverify = Get-DbcConfigValue policy.pageverify
         if ($NotContactable -contains $psitem) {
             Context "Testing page verify on $psitem" {
@@ -386,7 +386,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Close" -Tags AutoClose, $filename {
+    Describe "Auto Close" -Tags AutoClose, High, $filename {
         $autoclose = Get-DbcConfigValue policy.database.autoclose
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Close on $psitem" {
@@ -406,7 +406,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Shrink" -Tags AutoShrink, $filename {
+    Describe "Auto Shrink" -Tags AutoShrink, High, $filename {
         $autoshrink = Get-DbcConfigValue policy.database.autoshrink
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Shrink on $psitem" {
@@ -426,7 +426,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA, $filename {
+    Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA, Varied, $filename {
         $maxfull = Get-DbcConfigValue policy.backup.fullmaxdays
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
@@ -441,7 +441,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing last full backups on $psitem" {
                 $Instance.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
-                    It -Skip:$skip "$($psitem.Name) full backups on $($psitem.Parent.Name) Should Be less than $maxfull days" {
+                    It -Skip:$skip "$($psitem.Name) full backups on $($psitem.Parent.Name) should be less than $maxfull days" {
                         $psitem.LastBackupDate | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because "Taking regular backups is extraordinarily important"
                     }
                 }
@@ -449,7 +449,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA, $filename {
+    Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA, Varied, $filename {
         if (-not (Get-DbcConfigValue skip.diffbackuptest)) {
             $maxdiff = Get-DbcConfigValue policy.backup.diffmaxhours
             $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
@@ -465,7 +465,7 @@ $ExcludedDatabases += $ExcludeDatabase
                 Context "Testing last diff backups on $psitem" {
                     @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).ForEach{
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
-                        It -Skip:$skip "$($psitem.Name) diff backups on $($psitem.Parent.Name) Should Be less than $maxdiff hours" {
+                        It -Skip:$skip "$($psitem.Name) diff backups on $($psitem.Parent.Name) should be less than $maxdiff hours" {
                             $psitem.LastDifferentialBackupDate | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
                         }
                     }
@@ -474,7 +474,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, $filename {
+    Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, Varied, $filename {
         $maxlog = Get-DbcConfigValue policy.backup.logmaxminutes
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
@@ -490,7 +490,7 @@ $ExcludedDatabases += $ExcludeDatabase
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).ForEach{
                     if ($psitem.RecoveryModel -ne "Simple") {
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
-                        It -Skip:$skip  "$($psitem.Name) log backups on $($psitem.Parent.Name) Should Be less than $maxlog minutes" {
+                        It -Skip:$skip  "$($psitem.Name) log backups on $($psitem.Parent.Name) should be less than $maxlog minutes" {
                             $psitem.LastLogBackupDate | Should -BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
                         }
                     }
@@ -499,7 +499,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
+    Describe "Virtual Log Files" -Tags VirtualLogFile, Medium, $filename {
         $vlfmax = Get-DbcConfigValue policy.database.maxvlf
         if ($NotContactable -contains $psitem) {
             Context "Testing Database VLFs on $psitem" {
@@ -510,8 +510,8 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Database VLFs on $psitem" {
-                @(Test-DbaDbVirtualLogFile -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).ForEach{
-                    It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should Be less than $vlfmax" {
+                @(Measure-DbaDbVirtualLogFile -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).ForEach{
+                    It "$($psitem.Database) VLF count on $($psitem.SqlInstance) should be less than $vlfmax" {
                         $psitem.Total | Should -BeLessThan $vlfmax -Because "Too many VLFs can impact performance and slow down backup/restore"
                     }
                 }
@@ -519,7 +519,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Log File Count Checks" -Tags LogfileCount, $filename {
+    Describe "Log File Count Checks" -Tags LogfileCount, Medium, $filename {
         $LogFileCountTest = Get-DbcConfigValue skip.database.logfilecounttest
         $LogFileCount = Get-DbcConfigValue policy.database.logfilecount
         If (-not $LogFileCountTest) {   
@@ -532,7 +532,7 @@ $ExcludedDatabases += $ExcludeDatabase
             }
             else {
                 Context "Testing Log File count for $psitem" {
-                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}).ForEach{
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name -and ($Psitem.IsAccessible -eq $true)}}).ForEach{
                         $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
                         It "$($psitem.Name) on $($psitem.Parent.Name) Should have $LogFileCount or less Log files" {
@@ -544,7 +544,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Log File Size Checks" -Tags LogfileSize, $filename {
+    Describe "Log File Size Checks" -Tags LogfileSize, Medium, $filename {
         $LogFileSizePercentage = Get-DbcConfigValue policy.database.logfilesizepercentage
         $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
         if ($NotContactable -contains $psitem) {
@@ -572,7 +572,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
+    Describe "Future File Growth" -Tags FutureFileGrowth, Low, $filename {
         $threshold = Get-DbcConfigValue policy.database.filegrowthfreespacethreshold
         [string[]]$exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
         $exclude += $ExcludedDatabases 
@@ -600,7 +600,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
+    Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, Medium, $filename {
         $Tolerance = Get-DbcConfigValue policy.database.filebalancetolerance
         if ($NotContactable -contains $psitem) {
             Context "Testing for balanced FileGroups on $psitem" {
@@ -611,7 +611,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing for balanced FileGroups on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $_).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                @(Connect-DbaInstance -SqlInstance $_).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name -and ($Psitem.IsAccessible -eq $true)})}.ForEach{
                     $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                     $FileGroups = $Files | Where-Object {$_.TypeDescription -eq "ROWS"} | Group-Object -Property FileGroupName
                     @($FileGroups).ForEach{
@@ -628,7 +628,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
+    Describe "Certificate Expiration" -Tags CertificateExpiration, High, $filename {
         $CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
         [string[]]$exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
         $exclude += $ExcludedDatabases 
@@ -653,7 +653,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
+    Describe "Auto Create Statistics" -Tags AutoCreateStatistics, Low, $filename {
         $autocreatestatistics = Get-DbcConfigValue policy.database.autocreatestatistics
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Create Statistics on $psitem" {
@@ -673,7 +673,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
+    Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, Low, $filename {
         $autoupdatestatistics = Get-DbcConfigValue policy.database.autoupdatestatistics
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Update Statistics on $psitem" {
@@ -693,7 +693,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, $filename {
+    Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, Low, $filename {
         $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Update Statistics Asynchronously on $psitem" {
@@ -713,7 +713,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $filename {
+    Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, Low, $filename {
         $datafilegrowthtype = Get-DbcConfigValue policy.database.filegrowthtype
         $datafilegrowthvalue = Get-DbcConfigValue policy.database.filegrowthvalue
         $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
@@ -748,7 +748,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
+    Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database trustworthy option on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -767,7 +767,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
+    Describe "Database Orphaned User" -Tags OrphanedUser, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database orphaned user event on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -780,14 +780,14 @@ $ExcludedDatabases += $ExcludeDatabase
                 $instance = $psitem
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) should return 0 orphaned users" {
-                        @(Get-DbaOrphanUser -SqlInstance $instance -ExcludeDatabase $ExcludedDatabases -Database $psitem.Name).Count | Should -Be 0 -Because "We dont want orphaned users"
+                        @(Get-DbaDbOrphanUser -SqlInstance $instance -ExcludeDatabase $ExcludedDatabases -Database $psitem.Name).Count | Should -Be 0 -Because "We dont want orphaned users"
                     }
                 }
             }
         }
     }
 
-    Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
+    Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database is not in PseudoSimple recovery model on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -799,14 +799,14 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing database is not in PseudoSimple recovery model on $psitem" {
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$psitem.Name -ne 'tempdb' -and $psitem.Name -ne 'model' -and $psitem.Status -ne 'Offline' -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     if (-not($psitem.RecoveryModel -eq "Simple")) {
-                        It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
+                        It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaDbRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
                     }
                 }
             }
         }
     }
 
-    Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
+    Describe "Compatibility Level" -Tags CompatibilityLevel, High, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database compatibility level matches server compatibility level on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -825,7 +825,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, $filename {
+    Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, Low, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -850,7 +850,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
+    Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, Low, $filename {
         $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
         [string[]]$exclude = Get-DbcConfigValue policy.database.maxdopexcludedb
         $exclude += $ExcludedDatabases 
@@ -873,7 +873,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database Status" -Tags DatabaseStatus, $filename {
+    Describe "Database Status" -Tags DatabaseStatus, High, $filename {
         $ExcludeReadOnly = Get-DbcConfigValue policy.database.status.excludereadonly
         $ExcludeOffline = Get-DbcConfigValue policy.database.status.excludeoffline
         $ExcludeRestoring = Get-DbcConfigValue policy.database.status.excluderestoring
