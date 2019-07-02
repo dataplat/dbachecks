@@ -532,7 +532,7 @@ $ExcludedDatabases += $ExcludeDatabase
             }
             else {
                 Context "Testing Log File count for $psitem" {
-                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}).ForEach{
+                    @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name -and ($Psitem.IsAccessible -eq $true)}}).ForEach{
                         $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                         $LogFiles = $Files | Where-Object {$_.TypeDescription -eq "LOG"}
                         It "$($psitem.Name) on $($psitem.Parent.Name) Should have $LogFileCount or less Log files" {
@@ -611,7 +611,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing for balanced FileGroups on $psitem" {
-                @(Connect-DbaInstance -SqlInstance $_).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
+                @(Connect-DbaInstance -SqlInstance $_).Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name -and ($Psitem.IsAccessible -eq $true)})}.ForEach{
                     $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                     $FileGroups = $Files | Where-Object {$_.TypeDescription -eq "ROWS"} | Group-Object -Property FileGroupName
                     @($FileGroups).ForEach{
