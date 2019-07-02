@@ -126,7 +126,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing TempDB Configuration on $psitem" {
-                $TempDBTest = Test-DbaTempdbConfig -SqlServer $psitem
+                $TempDBTest = Test-DbaTempdbConfig -SqlInstance $psitem
                 It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDb1118) {
                     $TempDBTest[0].CurrentSetting | Should -Be $TempDBTest[0].Recommended -Because 'TF 1118 should be enabled'
                 }
