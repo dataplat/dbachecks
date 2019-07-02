@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-. $PSScriptRoot/../internal/assertions/Instance.assertions.ps1
+. $PSScriptRoot/../internal/assertions/Instance.Assertions.ps1
 
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 
