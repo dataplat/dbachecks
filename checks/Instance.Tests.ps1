@@ -25,7 +25,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 $There = $True
             }
         }
-    } else {
+    }
+    else {
         $There = $false
     }
     # Get the relevant information for the checks in one go to save repeated trips to the instance
