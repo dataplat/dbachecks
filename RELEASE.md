@@ -1,12 +1,19 @@
 Add to psd1 and readme.md
 
+## Date 2nd July 2019 at Techorama in Room 12
+dbachecks works with PowerShell Core
+dbachecks works with dbatools v1
+Some extra tags added
+
+
+##Latest
+
 ## Date 22nd May 2019 at Techorama in Room 12
 Thank You @SOZDBA, @djfcc, @wsmelton
 Improved validation for IP addresses in clusters
 Ignored Off-line databases for Pseudo Recovery Checks
 Some internal testing changes
 
-##Latest
 
 ## Date 05/02/2019
 Thank you Chrissy! @cl
