@@ -5,12 +5,12 @@ Describe "Active Directory Domain Name" -Tags DomainName, $filename {
     @(Get-ComputerName).ForEach{
         Context "Testing Active Directory Domain Name on $psitem" {
             if ($IsLinux) {
-                It "$psitem Should Be on the Domain $domain - running on Linux so cant check AD for now" -Skip {
+                It "$psitem should be on the Domain $domain - running on Linux so cant check AD for now" -Skip {
                     (Get-DbaCmObject -Class Win32_ComputerSystem -ComputerName $psitem -Credential $credential).Domain | Should -Be $domain -Because 'The machine needs to be on the domain'
                 }
             }
             else {
-                It "$psitem Should Be on the Domain $domain" {
+                It "$psitem should be on the Domain $domain" {
                     (Get-DbaCmObject -Class Win32_ComputerSystem -ComputerName $psitem -Credential $credential).Domain | Should -Be $domain -Because 'The machine needs to be on the domain'
                 }
             }
@@ -24,7 +24,7 @@ Describe "Active Directory OU" -Tags OrganizationalUnit, $filename {
     @(Get-ComputerName).ForEach{
         if ($IsLinux) {
             Context "Testing Active Directory OU on $psitem" {
-                It "$psitem Should Be on the Domain $domain - running on Linux so cant check AD for now" -Skip {
+                It "$psitem should be on the Domain $domain - running on Linux so cant check AD for now" -Skip {
                     (Get-DbaCmObject -Class Win32_ComputerSystem -ComputerName $psitem -Credential $credential).Domain | Should -Be $domain -Because 'The machine needs to be on the domain'
                 }
             }
@@ -35,7 +35,7 @@ Describe "Active Directory OU" -Tags OrganizationalUnit, $filename {
                     # Can be passed by Invoke-DbcCheck -Value
                     $value = Get-DbcConfigValue domain.organizationalunit
                 }
-                It -Skip "$psitem Should Be in the right OU ($value)" {
+                It -Skip "$psitem should be in the right OU ($value)" {
                     (Get-ADComputer $psitem -Properties CanonicalName -Server $dc).CanonicalName | Should -Be $value -Because 'The SQL Server should be in the correct OU'
                 }
             }

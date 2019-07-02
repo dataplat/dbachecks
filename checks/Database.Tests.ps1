@@ -101,10 +101,10 @@ $ExcludedDatabases += $ExcludeDatabase
                     if (-not ($destdata)) {$destdata -eq $srv.DefaultFile}
                     if (-not ($destlog)) {$destlog -eq $srv.DefaultLog}
                     @(Test-DbaLastBackup -SqlInstance $psitem -Database $dbs -Destination $destserver -DataDirectory $destdata -LogDirectory $destlog -VerifyOnly).ForEach{                    if ($psitem.DBCCResult -notmatch "skipped for restored master") {
-                            It "DBCC for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
+                            It "DBCC for $($psitem.Database) on $($psitem.SourceServer) should be success" {
                                 $psitem.DBCCResult | Should -Be "Success" -Because "You need to run DBCC CHECKDB to ensure your database is consistent"
                             }
-                            It "restore for $($psitem.Database) on $($psitem.SourceServer) Should Be success" {
+                            It "restore for $($psitem.Database) on $($psitem.SourceServer) should be success" {
                                 $psitem.RestoreResult | Should -Be "Success" -Because "The backup file has not successfully restored - you have no backup"
                             }
                         }
@@ -196,7 +196,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing Last Good DBCC CHECKDB on $psitem" {
                 @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database ((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and ($_.IsAccessible -eq $true) -and $(if ($database) {$psitem.name -in $Database}else {$ExcludedDatabases -notcontains $_.Name})}).Name ).ForEach{
                     if ($psitem.Database -ne "tempdb") {
-                        It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) Should Be less than $maxdays days old" {
+                        It "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) should be less than $maxdays days old" {
                             $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).AddDays( - ($maxdays)) -Because "You should have run a DBCC CheckDB inside that time"
                         }
                         It -Skip:$datapurity "last good integrity check for $($psitem.Database) on $($psitem.SqlInstance) has Data Purity Enabled" {
@@ -224,7 +224,7 @@ $ExcludedDatabases += $ExcludeDatabase
                 @(Test-DbaIdentityUsage -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
                     if ($psitem.Database -ne "tempdb") {
                         $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
-                        It "usage for $columnfqdn on $($psitem.SqlInstance) Should Be less than $maxpercentage percent" {
+                        It "usage for $columnfqdn on $($psitem.SqlInstance) should be less than $maxpercentage percent" {
                             $psitem.PercentUsed -lt $maxpercentage | Should -BeTrue -Because "You do not want your Identity columns to hit the max value and stop inserts"
                         }
                     }
@@ -441,7 +441,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing last full backups on $psitem" {
                 $Instance.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
                     $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
-                    It -Skip:$skip "$($psitem.Name) full backups on $($psitem.Parent.Name) Should Be less than $maxfull days" {
+                    It -Skip:$skip "$($psitem.Name) full backups on $($psitem.Parent.Name) should be less than $maxfull days" {
                         $psitem.LastBackupDate | Should -BeGreaterThan (Get-Date).AddDays( - ($maxfull)) -Because "Taking regular backups is extraordinarily important"
                     }
                 }
@@ -465,7 +465,7 @@ $ExcludedDatabases += $ExcludeDatabase
                 Context "Testing last diff backups on $psitem" {
                     @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).ForEach{
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
-                        It -Skip:$skip "$($psitem.Name) diff backups on $($psitem.Parent.Name) Should Be less than $maxdiff hours" {
+                        It -Skip:$skip "$($psitem.Name) diff backups on $($psitem.Parent.Name) should be less than $maxdiff hours" {
                             $psitem.LastDifferentialBackupDate | Should -BeGreaterThan (Get-Date).AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
                         }
                     }
@@ -490,7 +490,7 @@ $ExcludedDatabases += $ExcludeDatabase
                 @((Connect-DbaInstance -SqlInstance $psitem).Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate -lt (Get-Date).AddHours( - $graceperiod) -and $(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).ForEach{
                     if ($psitem.RecoveryModel -ne "Simple") {
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
-                        It -Skip:$skip  "$($psitem.Name) log backups on $($psitem.Parent.Name) Should Be less than $maxlog minutes" {
+                        It -Skip:$skip  "$($psitem.Name) log backups on $($psitem.Parent.Name) should be less than $maxlog minutes" {
                             $psitem.LastLogBackupDate | Should -BeGreaterThan (Get-Date).AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
                         }
                     }
@@ -511,7 +511,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Database VLFs on $psitem" {
                 @(Test-DbaDbVirtualLogFile -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).ForEach{
-                    It "$($psitem.Database) VLF count on $($psitem.SqlInstance) Should Be less than $vlfmax" {
+                    It "$($psitem.Database) VLF count on $($psitem.SqlInstance) should be less than $vlfmax" {
                         $psitem.Total | Should -BeLessThan $vlfmax -Because "Too many VLFs can impact performance and slow down backup/restore"
                     }
                 }

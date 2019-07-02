@@ -43,11 +43,11 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
                     $PSItem.Tags.Text.Split(',').Trim().Where{($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') -and ($PSItem -notlike '*status*')  -and ($PSItem -notlike '*exists')  -and ($PSItem -notlike '*Ops')}.ForEach{
-                        It "$PSItem Should Be Singular" {
+                        It "$PSItem should be Singular" {
                             $PSItem.ToString().Endswith('s') | Should -BeFalse -Because 'Our coding standards say tags should be singular'
                         }
                     }
-                    It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) Should Be in the unique Tags returned from Get-DbcCheck" {
+                    It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) should be in the unique Tags returned from Get-DbcCheck" {
                         $UniqueTags | Should -Contain $PSItem.Tags.Text.Split(',')[0].ToString() -Because 'We need a unique tag for each test - Format should be -Tags space UniqueTag comma - Also if you are running this on a machine where dbachecks has already been imported previously try running reset-dbcconfig, which will create a new checks.json for Get-DbcCheck'
                     }
                 }

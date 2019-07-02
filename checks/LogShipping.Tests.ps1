@@ -3,7 +3,7 @@ Describe "Log Shipping Status Primary" -Tags LogShippingPrimary, $filename {
     @(Get-Instance).ForEach{
         Context "Testing the primary databases on $psitem" {
             @(Test-DbaDbLogShipStatus -SqlInstance $psitem -Primary).ForEach{
-                It "Status Should Be OK for $($psitem.Database) on $($psitem.SqlInstance)" {
+                It "Status should be OK for $($psitem.Database) on $($psitem.SqlInstance)" {
                     $psitem.Status | Should -Be "All OK" -Because 'The Log shipping should be ok'
                 }
             }
@@ -14,7 +14,7 @@ Describe "Log Shipping Status Secondary" -Tags LogShippingSecondary, $filename {
     @(Get-Instance).ForEach{
         Context "Testing the secondary databases on $psitem" {
             @(Test-DbaDbLogShipStatus -SqlInstance $psitem -Secondary).ForEach{
-                It "Status Should Be OK for $($psitem.Database) on $($psitem.SqlInstance)" {
+                It "Status should be OK for $($psitem.Database) on $($psitem.SqlInstance)" {
                     $psitem.Status | Should -Be "All OK"  -Because 'The Log shipping should be ok'
                 }
             }

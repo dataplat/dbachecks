@@ -39,15 +39,15 @@ Describe "Ola - $SysFullJobName" -Tags SystemFull, OlaJobs, $filename {
     @(Get-Instance).ForEach{
         $job = Get-DbaAgentJob -SqlInstance $psitem -Job $SysFullJobName
         Context  "Is job enabled on $psitem" {
-            It "$SysFullJobName Should Be enabled - $Enabled on $psitem" {
+            It "$SysFullJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $SysFullJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$SysFullJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$SysFullJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $SysFullJobName job is not scheduled it will not run"
             }
-            It "$SysFullJobName schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$SysFullJobName schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $SysFullJobName jobs will not run"
             }
@@ -83,15 +83,15 @@ Describe "Ola - $UserFullJobName" -Tags UserFull, OlaJobs, $filename {
         $Retention = Get-DbcConfigValue policy.ola.UserFullretention
 
         Context  "Is job enabled on $psitem" {
-            It "$UserFullJobName Should Be enabled - $Enabled on $psitem" {
+            It "$UserFullJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $UserFullJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$UserFullJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$UserFullJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $UserFullJobName job is not scheduled it will not run"
             }
-            It "$($UserFullJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($UserFullJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $UserFullJobName job will not run"
             }
@@ -127,15 +127,15 @@ Describe "Ola - $UserDiffJobName" -Tags UserDiff, OlaJobs, $filename {
         $Retention = Get-DbcConfigValue policy.ola.UserDiffretention
 
         Context  "Is job enabled on $psitem" {
-            It "$UserDiffJobName Should Be enabled - $Enabled on $psitem " {
+            It "$UserDiffJobName should be enabled - $Enabled on $psitem " {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $UserDiffJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$UserDiffJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$UserDiffJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $UserDiffJobName job is not scheduled it will not run"
             }
-            It "$($UserDiffJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($UserDiffJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $UserDiffJobName job will not run"
             }
@@ -171,15 +171,15 @@ Describe "Ola - $UserLogJobName" -Tags UserLog, OlaJobs, $filename {
         $Retention = Get-DbcConfigValue policy.ola.UserLogretention
 
         Context  "Is job enabled on $psitem" {
-            It "$UserLogJobName Should Be enabled - $Enabled on $psitem" {
+            It "$UserLogJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $UserLogJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$UserLogJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$UserLogJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $UserLogJobName job is not scheduled it will not run"
             }
-            It "$($UserLogJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($UserLogJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $UserLogJobName job will not run"
             }
@@ -215,15 +215,15 @@ Describe "Ola - $CommandLogJobName" -Tags CommandLog, OlaJobs, $filename {
         $CleanUp = Get-DbcConfigValue policy.ola.CommandLogCleanUp
 
         Context  "Is job enabled on $psitem" {
-            It "$CommandLogJobName Should Be enabled - $Enabled on $psitem" {
+            It "$CommandLogJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $CommandLogJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$CommandLogJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$CommandLogJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $CommandLogJobName job is not scheduled it will not run"
             }
-            It "$($CommandLogJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($CommandLogJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $CommandLogJobName job will not run"
             }
@@ -248,15 +248,15 @@ Describe "Ola - $SysIntegrityJobName" -Tags SystemIntegrityCheck, OlaJobs, $file
         $Scheduled = Get-DbcConfigValue policy.ola.SystemIntegrityCheckscheduled
 
         Context  "Is job enabled on $psitem" {
-            It "$SysIntegrityJobName Should Be enabled - $Enabled on $psitem" {
+            It "$SysIntegrityJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $SysIntegrityJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$SysIntegrityJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$SysIntegrityJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $SysIntegrityJobName job is not scheduled it will not run"
             }
-            It "$($SysIntegrityJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($SysIntegrityJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $SysIntegrityJobName job will not run"
             }
@@ -272,15 +272,15 @@ Describe "Ola - $UserIntegrityJobName" -Tags UserIntegrityCheck, OlaJobs, $filen
         $Scheduled = Get-DbcConfigValue policy.ola.UserIntegrityCheckscheduled
 
         Context  "Is job enabled on $psitem" {
-            It "$UserIntegrityJobName Should Be enabled - $Enabled on $psitem" {
+            It "$UserIntegrityJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $UserIntegrityJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$UserIntegrityJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$UserIntegrityJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $UserIntegrityJobName job is not scheduled it will not run"
             }
-            It "$($UserIntegrityJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($UserIntegrityJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $UserIntegrityJobName job will not run"
             }
@@ -296,15 +296,15 @@ Describe "Ola - $UserIndexJobName" -Tags UserIndexOptimize, OlaJobs, $filename {
         $Scheduled = Get-DbcConfigValue policy.ola.UserIndexOptimizescheduled
 
         Context  "Is job enabled on $psitem" {
-            It "$UserIndexJobName Should Be enabled - $Enabled on $psitem" {
+            It "$UserIndexJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $UserIndexJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$UserIndexJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$UserIndexJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $UserIndexJobName job is not scheduled it will not run"
             }
-            It "$($UserIndexJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($UserIndexJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $UserIndexJobName job will not run"
             }
@@ -321,15 +321,15 @@ Describe "Ola - $OutputFileJobName" -Tags OutputFileCleanup, OlaJobs, $filename 
         $CleanUp = Get-DbcConfigValue policy.ola.OutputFileCleanUp
 
         Context  "Is job enabled on $psitem" {
-            It "$OutputFileJobName Should Be enabled - $Enabled on $psitem" {
+            It "$OutputFileJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $OutputFileJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$OutputFileJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$OutputFileJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $OutputFileJobName job is not scheduled it will not run"
             }
-            It "$($OutputFileJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($OutputFileJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $OutputFileJobName job will not run"
             }
@@ -361,15 +361,15 @@ Describe "Ola - $DeleteBackupJobName" -Tags DeleteBackupHistory, OlaJobs, $filen
         $CleanUp = Get-DbcConfigValue policy.ola.DeleteBackupHistoryCleanUp
 
         Context  "Is job enabled on $psitem" {
-            It "$DeleteBackupJobName Should Be enabled - $Enabled on $psitem" {
+            It "$DeleteBackupJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $DeleteBackupJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$DeleteBackupJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$DeleteBackupJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $DeleteBackupJobName job is not scheduled it will not run"
             }
-            It "$($DeleteBackupJobName) schedules Should Be enabled - $Scheduled on $psitem" {
+            It "$($DeleteBackupJobName) schedules should be enabled - $Scheduled on $psitem" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $DeleteBackupJobName job will not run"
             }
@@ -395,15 +395,15 @@ Describe "Ola - $PurgeBackupJobName" -Tags PurgeJobHistory, OlaJobs, $filename {
         $CleanUp = Get-DbcConfigValue policy.ola.PurgeJobHistoryCleanUp
 
         Context  "Is job enabled on $psitem" {
-            It "$PurgeBackupJobName Should Be enabled - $Enabled on $psitem" {
+            It "$PurgeBackupJobName should be enabled - $Enabled on $psitem" {
                 $job.IsEnabled | Should -Be $Enabled -Because "If the $PurgeBackupJobName job is not enabled it will not run"
             }
         }
         Context "Is job scheduled on $psitem" {
-            It "$PurgeBackupJobName Should Be scheduled - $Scheduled on $psitem" {
+            It "$PurgeBackupJobName should be scheduled - $Scheduled on $psitem" {
                 $job.HasSchedule | Should -Be $Scheduled -Because "If the $PurgeBackupJobName job is not scheduled it will not run"
             }
-            It "$($PurgeBackupJobName) schedules Should Be enabled - $Scheduled" {
+            It "$($PurgeBackupJobName) schedules should be enabled - $Scheduled" {
                 $results = ($job.JobSchedules | Where-Object IsEnabled | Measure-Object).Count -gt 0
                 $results | Should -BeGreaterThan 0 -Because "If the schedule is not enabled the $PurgeBackupJobName job will not run"
             }

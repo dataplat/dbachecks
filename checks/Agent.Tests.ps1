@@ -62,7 +62,7 @@ Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filenam
             else {
                 Context "Testing SQL Agent is running on $psitem" {
                     @(Get-DbaService -ComputerName $psitem -Type Agent).ForEach{
-                        It "SQL Agent Should Be running on $($psitem.ComputerName)" {
+                        It "SQL Agent should be running on $($psitem.ComputerName)" {
                             $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
                         }
                         if ($connectioncheck.IsClustered) {

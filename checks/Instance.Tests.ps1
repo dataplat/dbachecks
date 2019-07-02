@@ -50,11 +50,11 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 }
                 #local is always NTLM except when its a container ;-)
                 if($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -notlike '*,*')){
-                    It -Skip:$skipauth "auth scheme Should Be NTLM on the local machine on $psitem" {
+                    It -Skip:$skipauth "auth scheme should be NTLM on the local machine on $psitem" {
                         (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme| Should -Be NTLM
                     }
                 }else{
-                    It -Skip:$skipauth "auth scheme Should Be $authscheme on $psitem" {
+                    It -Skip:$skipauth "auth scheme should be $authscheme on $psitem" {
                         (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme | Should -Be $authscheme
                     }
                 }
@@ -219,7 +219,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Network Latency on $psitem" {
                 @(Test-DbaNetworkLatency -SqlInstance $psitem).ForEach{
-                    It "network latency Should Be less than $max ms on $($psitem.SqlInstance)" {
+                    It "network latency should be less than $max ms on $($psitem.SqlInstance)" {
                         $psitem.Average.TotalMilliseconds | Should -BeLessThan $max -Because 'You do not want to be waiting on the network'
                     }
                 }
@@ -257,13 +257,13 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Max Memory on $psitem" {
                     if (-not $IsLInux){
-                        It "Max Memory setting Should Be correct on $psitem" {
+                        It "Max Memory setting should be correct on $psitem" {
                         @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
                             $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
                         }
                     }
                     }else {
-                        It "Max Memory setting Should Be correct (running on Linux so only checking Max Memory is less than Total Memory) on $psitem" {
+                        It "Max Memory setting should be correct (running on Linux so only checking Max Memory is less than Total Memory) on $psitem" {
                         # simply check that the max memory is less than total memory
                         $MemoryValues = Get-DbaMaxMemory -SqlInstance $psitem
                         $MemoryValues.Total | Should -BeGreaterThan $MemoryValues.MaxValue -Because 'You do not want to exhaust server memory'
@@ -400,7 +400,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEvent, Medium, $filename {
+    Describe "XE Sessions That should be Stopped" -Tags XESessionStopped, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
         # no point running if we dont have something to check
         if ($xesession) {
@@ -427,7 +427,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEvent, Medium, $filename {
+    Describe "XE Sessions That should be Running" -Tags XESessionRunning, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
         # no point running if we dont have something to check
         if ($xesession) {
@@ -442,7 +442,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 Context "Checking running sessions on $psitem" {
                     $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
                     @($xesession).ForEach{
-                        It "session $psitem Should Be running on $Instance" {
+                        It "session $psitem should be running on $Instance" {
                             $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
                         }
                     }
@@ -807,20 +807,20 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
                 if(-not $IsLinux){
                     $Services = Get-DbaService -ComputerName $psitem
                     if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
-                        It "SQL browser service on $psitem Should Be Stopped as only one instance is installed" {
+                        It "SQL browser service on $psitem should be Stopped as only one instance is installed" {
                             $Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
                         }
                     }
                     else {
-                        It "SQL browser service on $psitem Should Be Running as multiple instances are installed" {
+                        It "SQL browser service on $psitem should be Running as multiple instances are installed" {
                             $Services.Where{$_.ServiceType -eq 'Browser'}.State| Should -Be "Running" -Because 'You need the browser service with multiple instances' }
                     }
                     if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
-                        It "SQL browser service startmode Should Be Disabled on $psitem as only one instance is installed" {
+                        It "SQL browser service startmode should be Disabled on $psitem as only one instance is installed" {
                             $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' }
                     }
                     else {
-                        It "SQL browser service startmode Should Be Automatic on $psitem as multiple instances are installed" {
+                        It "SQL browser service startmode should be Automatic on $psitem as multiple instances are installed" {
                             $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Automatic"
                         }
                     }
