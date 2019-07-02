@@ -369,7 +369,7 @@
     },
     {
         "UniqueTag": "DiskAllocationUnit",
-        "Description": "Tests that the disks available to the server are formatted for optimum performance (64KB allocation unit)"
+        "Description": "Tests that the disks available to the server are formatted for optimum performance (64KB allocation unit) unless a specified disk name (default none)"
     },
     {
         "UniqueTag": "DatabaseExists",

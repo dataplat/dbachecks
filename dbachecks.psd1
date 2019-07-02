@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.1.173'
+    ModuleVersion          = '1.2.0'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -131,7 +131,7 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 2nd July 2019 at Techorama in Room 12
+## Date 2nd July 2019
 dbachecks works with PowerShell Core #620
 dbachecks works with dbatools v1 #624
 Minimum PowerShell Now 5.0 #568
