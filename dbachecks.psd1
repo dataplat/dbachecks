@@ -132,8 +132,10 @@
             # Release notes for this particular version of the module
             ReleaseNotes = "
 ## Date 2nd July 2019 at Techorama in Room 12
-dbachecks works with PowerShell Core
-dbachecks works with dbatools v1
+dbachecks works with PowerShell Core #620
+dbachecks works with dbatools v1 #624
+Minimum PowerShell Now 5.0 #568
+Fixes for none-readable secondaries causing tests to fail #611
 Some extra tags added
 
 ##Latest
