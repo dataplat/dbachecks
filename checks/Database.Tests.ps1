@@ -27,7 +27,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
 
-    Describe "Database Collation" -Tags DatabaseCollation, $filename {
+    Describe "Database Collation" -Tags DatabaseCollation, High, $filename {
         $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
         $exclude = "ReportingServer", "ReportingServerTempDB"
         $exclude += $Wrongcollation
@@ -59,7 +59,7 @@ $ExcludedDatabases += $ExcludeDatabase
     
     }
 
-    Describe "Suspect Page" -Tags SuspectPage, $filename {
+    Describe "Suspect Page" -Tags SuspectPage, High, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing suspect pages on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -137,7 +137,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
         
-    Describe "Valid Database Owner" -Tags ValidDatabaseOwner, $filename {
+    Describe "Valid Database Owner" -Tags ValidDatabaseOwner, Medium, $filename {
         [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
         [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
         $exclude += $ExcludedDatabases 
@@ -159,7 +159,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, $filename {
+    Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, Medium, $filename {
         [string[]]$targetowner = Get-DbcConfigValue policy.invaliddbowner.name
         [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
         $exclude += $ExcludedDatabases 
@@ -181,7 +181,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, $filename {
+    Describe "Last Good DBCC CHECKDB" -Tags LastGoodCheckDb, Varied, $filename {
         $maxdays = Get-DbcConfigValue policy.dbcc.maxdays
         $datapurity = Get-DbcConfigValue skip.dbcc.datapuritycheck
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
@@ -208,7 +208,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Column Identity Usage" -Tags IdentityUsage, $filename {
+    Describe "Column Identity Usage" -Tags IdentityUsage, Medium, $filename {
         $maxpercentage = Get-DbcConfigValue policy.identity.usagepercent
         if ($NotContactable -contains $psitem) {
             Context "Testing Column Identity Usage on $psitem" {
@@ -233,7 +233,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Recovery Model" -Tags RecoveryModel, DISA, $filename {
+    Describe "Recovery Model" -Tags RecoveryModel, DISA, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Recovery Model on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -276,7 +276,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Unused Index" -Tags UnusedIndex, $filename {
+    Describe "Unused Index" -Tags UnusedIndex, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Unused indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -302,7 +302,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Disabled Index" -Tags DisabledIndex, $filename {
+    Describe "Disabled Index" -Tags DisabledIndex, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Disabled indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -322,7 +322,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database Growth Event" -Tags DatabaseGrowthEvent, $filename {
+    Describe "Database Growth Event" -Tags DatabaseGrowthEvent, Low, $filename {
         $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
         if ($NotContactable -contains $psitem) {
             Context "Testing database growth event on $psitem" {
@@ -343,7 +343,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Page Verify" -Tags PageVerify, $filename {
+    Describe "Page Verify" -Tags PageVerify, Medium, $filename {
         $pageverify = Get-DbcConfigValue policy.pageverify
         if ($NotContactable -contains $psitem) {
             Context "Testing page verify on $psitem" {
@@ -386,7 +386,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Close" -Tags AutoClose, $filename {
+    Describe "Auto Close" -Tags AutoClose, High, $filename {
         $autoclose = Get-DbcConfigValue policy.database.autoclose
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Close on $psitem" {
@@ -406,7 +406,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Shrink" -Tags AutoShrink, $filename {
+    Describe "Auto Shrink" -Tags AutoShrink, High, $filename {
         $autoshrink = Get-DbcConfigValue policy.database.autoshrink
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Shrink on $psitem" {
@@ -426,7 +426,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA, $filename {
+    Describe "Last Full Backup Times" -Tags LastFullBackup, LastBackup, Backup, DISA, Varied, $filename {
         $maxfull = Get-DbcConfigValue policy.backup.fullmaxdays
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
@@ -449,7 +449,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA, $filename {
+    Describe "Last Diff Backup Times" -Tags LastDiffBackup, LastBackup, Backup, DISA, Varied, $filename {
         if (-not (Get-DbcConfigValue skip.diffbackuptest)) {
             $maxdiff = Get-DbcConfigValue policy.backup.diffmaxhours
             $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
@@ -474,7 +474,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, $filename {
+    Describe "Last Log Backup Times" -Tags LastLogBackup, LastBackup, Backup, DISA, Varied, $filename {
         $maxlog = Get-DbcConfigValue policy.backup.logmaxminutes
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
@@ -499,7 +499,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Virtual Log Files" -Tags VirtualLogFile, $filename {
+    Describe "Virtual Log Files" -Tags VirtualLogFile, Medium, $filename {
         $vlfmax = Get-DbcConfigValue policy.database.maxvlf
         if ($NotContactable -contains $psitem) {
             Context "Testing Database VLFs on $psitem" {
@@ -519,7 +519,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Log File Count Checks" -Tags LogfileCount, $filename {
+    Describe "Log File Count Checks" -Tags LogfileCount, Medium, $filename {
         $LogFileCountTest = Get-DbcConfigValue skip.database.logfilecounttest
         $LogFileCount = Get-DbcConfigValue policy.database.logfilecount
         If (-not $LogFileCountTest) {   
@@ -544,7 +544,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Log File Size Checks" -Tags LogfileSize, $filename {
+    Describe "Log File Size Checks" -Tags LogfileSize, Medium, $filename {
         $LogFileSizePercentage = Get-DbcConfigValue policy.database.logfilesizepercentage
         $LogFileSizeComparison = Get-DbcConfigValue policy.database.logfilesizecomparison
         if ($NotContactable -contains $psitem) {
@@ -572,7 +572,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Future File Growth" -Tags FutureFileGrowth, $filename {
+    Describe "Future File Growth" -Tags FutureFileGrowth, Low, $filename {
         $threshold = Get-DbcConfigValue policy.database.filegrowthfreespacethreshold
         [string[]]$exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
         $exclude += $ExcludedDatabases 
@@ -600,7 +600,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, $filename {
+    Describe "Correctly sized Filegroup members" -Tags FileGroupBalanced, Medium, $filename {
         $Tolerance = Get-DbcConfigValue policy.database.filebalancetolerance
         if ($NotContactable -contains $psitem) {
             Context "Testing for balanced FileGroups on $psitem" {
@@ -628,7 +628,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Certificate Expiration" -Tags CertificateExpiration, $filename {
+    Describe "Certificate Expiration" -Tags CertificateExpiration, High, $filename {
         $CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
         [string[]]$exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
         $exclude += $ExcludedDatabases 
@@ -653,7 +653,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Create Statistics" -Tags AutoCreateStatistics, $filename {
+    Describe "Auto Create Statistics" -Tags AutoCreateStatistics, Low, $filename {
         $autocreatestatistics = Get-DbcConfigValue policy.database.autocreatestatistics
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Create Statistics on $psitem" {
@@ -673,7 +673,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, $filename {
+    Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, Low, $filename {
         $autoupdatestatistics = Get-DbcConfigValue policy.database.autoupdatestatistics
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Update Statistics on $psitem" {
@@ -693,7 +693,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, $filename {
+    Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, Low, $filename {
         $autoupdatestatisticsasynchronously = Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Update Statistics Asynchronously on $psitem" {
@@ -713,7 +713,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, $filename {
+    Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, Low, $filename {
         $datafilegrowthtype = Get-DbcConfigValue policy.database.filegrowthtype
         $datafilegrowthvalue = Get-DbcConfigValue policy.database.filegrowthvalue
         $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
@@ -748,7 +748,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Trustworthy Option" -Tags Trustworthy, DISA, $filename {
+    Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database trustworthy option on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -767,7 +767,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database Orphaned User" -Tags OrphanedUser, $filename {
+    Describe "Database Orphaned User" -Tags OrphanedUser, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database orphaned user event on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -787,7 +787,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, $filename {
+    Describe "PseudoSimple Recovery Model" -Tags PseudoSimple, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database is not in PseudoSimple recovery model on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -806,7 +806,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Compatibility Level" -Tags CompatibilityLevel, $filename {
+    Describe "Compatibility Level" -Tags CompatibilityLevel, High, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database compatibility level matches server compatibility level on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -825,7 +825,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, $filename {
+    Describe "Foreign keys and check constraints not trusted" -Tags FKCKTrusted, Low, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -850,7 +850,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, $filename {
+    Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, Low, $filename {
         $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
         [string[]]$exclude = Get-DbcConfigValue policy.database.maxdopexcludedb
         $exclude += $ExcludedDatabases 
@@ -873,7 +873,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database Status" -Tags DatabaseStatus, $filename {
+    Describe "Database Status" -Tags DatabaseStatus, High, $filename {
         $ExcludeReadOnly = Get-DbcConfigValue policy.database.status.excludereadonly
         $ExcludeOffline = Get-DbcConfigValue policy.database.status.excludeoffline
         $ExcludeRestoring = Get-DbcConfigValue policy.database.status.excluderestoring

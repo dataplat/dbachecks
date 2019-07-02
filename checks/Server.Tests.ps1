@@ -8,7 +8,7 @@ Return
 }
 @(Get-ComputerName).ForEach{
     $AllServerInfo = Get-AllServerInfo -ComputerName $Psitem -Tags $Tags
-    Describe "Server Power Plan Configuration" -Tags PowerPlan, $filename {
+    Describe "Server Power Plan Configuration" -Tags PowerPlan, Medium, $filename {
         Context "Testing Server Power Plan Configuration on $psitem" {
             It "PowerPlan is High Performance on $psitem" {
                 Assert-PowerPlan -AllServerInfo $AllServerInfo
@@ -26,7 +26,7 @@ Return
         }
     }
 
-    Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, $filename {
+    Describe "Disk Space" -Tags DiskCapacity, Storage, DISA, Varied, $filename {
         $free = Get-DbcConfigValue policy.diskspace.percentfree
         Context "Testing Disk Space on $psitem" {
             @($AllServerInfo.DiskSpace).ForEach{
@@ -37,7 +37,7 @@ Return
         }
     }
 
-    Describe "Ping Computer" -Tags PingComputer, $filename {
+    Describe "Ping Computer" -Tags PingComputer, Varied, $filename {
         $pingmsmax = Get-DbcConfigValue policy.connection.pingmaxms
         $pingcount = Get-DbcConfigValue policy.connection.pingcount
         $skipping = Get-DbcConfigValue skip.connection.ping
@@ -51,7 +51,7 @@ Return
         }
     }
 
-    Describe "CPUPrioritisation" -Tags CPUPrioritisation, $filename {
+    Describe "CPUPrioritisation" -Tags CPUPrioritisation, Medium, $filename {
         $exclude = Get-DbcConfigValue policy.server.cpuprioritisation
         Context "Testing CPU Prioritisation on $psitem" {
             It "Should have the registry key set correctly for background CPU Prioritisation on $psitem" -Skip:$exclude {
@@ -60,7 +60,7 @@ Return
         }
     }
 
-    Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, $filename {
+    Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, Medium, $filename {
         Context "Testing disk allocation unit on $psitem" {
             $computerName = $psitem
             @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{

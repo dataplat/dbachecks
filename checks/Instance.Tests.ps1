@@ -30,7 +30,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
     # Get the relevant information for the checks in one go to save repeated trips to the instance
     $AllInstanceInfo = Get-AllInstanceInfo -Instance $InstanceSMO -Tags $Tags -There $There
-    Describe "Instance Connection" -Tags InstanceConnection, Connectivity, $filename {
+    Describe "Instance Connection" -Tags InstanceConnection, Connectivity, High, $filename {
         $skipremote = Get-DbcConfigValue skip.connection.remoting
         $skipping = Get-DbcConfigValue skip.connection.ping
         $skipauth = Get-DbcConfigValue skip.connection.auth
@@ -80,7 +80,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $filename {
+    Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database collation on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -116,7 +116,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
+    Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing TempDB Configuration on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -149,7 +149,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, $filename {
+    Describe "Ad Hoc Workload Optimization" -Tags AdHocWorkload, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -168,7 +168,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, $filename {
+    Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Backup Path Access on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -189,7 +189,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Dedicated Administrator Connection" -Tags DAC, $filename {
+    Describe "Dedicated Administrator Connection" -Tags DAC, Low, $filename {
         $dac = Get-DbcConfigValue policy.dacallowed
         if ($NotContactable -contains $psitem) {
             Context "Testing Dedicated Administrator Connection on $psitem" {
@@ -207,7 +207,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Network Latency" -Tags NetworkLatency, Connectivity, $filename {
+    Describe "Network Latency" -Tags NetworkLatency, Connectivity, Medium, $filename {
         $max = Get-DbcConfigValue policy.network.latencymaxms
         if ($NotContactable -contains $psitem) {
             Context "Testing Network Latency on $psitem" {
@@ -227,7 +227,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, $filename {
+    Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Linked Servers on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -246,7 +246,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Max Memory" -Tags MaxMemory, $filename {
+    Describe "Max Memory" -Tags MaxMemory, High, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Max Memory on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -274,7 +274,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
 
 
-    Describe "Orphaned Files" -Tags OrphanedFile, $filename {
+    Describe "Orphaned Files" -Tags OrphanedFile, Low, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Checking for orphaned database files on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -291,7 +291,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "SQL and Windows names match" -Tags ServerNameMatch, $filename {
+    Describe "SQL and Windows names match" -Tags ServerNameMatch, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing instance name matches Windows name for $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -313,7 +313,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
     }
 
-    Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
+    Describe "SQL Memory Dumps" -Tags MemoryDump, Medium, $filename {
         $maxdumps = Get-DbcConfigValue	policy.dump.maxcount
         if ($NotContactable -contains $psitem) {
             Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
@@ -332,7 +332,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
+    Describe "Supported Build" -Tags SupportedBuild, DISA, High, $filename {
         $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
         $BuildBehind = Get-DbcConfigValue policy.build.behind
         $Date = Get-Date
@@ -364,7 +364,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "SA Login Renamed" -Tags SaRenamed, DISA, $filename {
+    Describe "SA Login Renamed" -Tags SaRenamed, DISA, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Checking that sa login has been renamed on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -382,7 +382,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Default Backup Compression" -Tags DefaultBackupCompression, $filename {
+    Describe "Default Backup Compression" -Tags DefaultBackupCompression, Low, $filename {
         $defaultbackupcompression = Get-DbcConfigValue policy.backup.defaultbackupcompression
         if ($NotContactable -contains $psitem) {
             Context "Testing Default Backup Compression on $psitem" {
@@ -400,7 +400,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEvent, $filename {
+    Describe "XE Sessions That Should Be Stopped" -Tags XESessionStopped, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
         # no point running if we dont have something to check
         if ($xesession) {
@@ -427,7 +427,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEvent, $filename {
+    Describe "XE Sessions That Should Be Running" -Tags XESessionRunning, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
         # no point running if we dont have something to check
         if ($xesession) {
@@ -454,7 +454,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, $filename {
+    Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
         # no point running if we dont have something to check
         if ($xesession) {
@@ -479,7 +479,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
         }
     }
-    Describe "OLE Automation" -Tags OLEAutomation, security, $filename {
+    Describe "OLE Automation" -Tags OLEAutomation, security, Medium, $filename {
         $OLEAutomation = Get-DbcConfigValue policy.oleautomation
         if ($NotContactable -contains $psitem) {
             Context "Testing OLE Automation on $psitem" {
@@ -497,7 +497,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, $filename {
+    Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, Low, $filename {
         $db = Get-DbcConfigValue policy.whoisactive.database
         if ($NotContactable -contains $psitem) {
             Context "Testing WhoIsActive exists on $psitem" {
@@ -515,7 +515,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Model Database Growth" -Tags ModelDbGrowth, $filename {
+    Describe "Model Database Growth" -Tags ModelDbGrowth, Low, $filename {
         $modeldbgrowthtest = Get-DbcConfigValue skip.instance.modeldbgrowth
         if (-not $modeldbgrowthtest) {
             if ($NotContactable -contains $psitem) {
@@ -540,7 +540,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Ad Users and Groups " -Tags ADUser, Domain, $filename {
+    Describe "Ad Users and Groups " -Tags ADUser, Domain, High, $filename {
         if(-not $IsLinux){
         $userexclude = Get-DbcConfigValue policy.adloginuser.excludecheck
         $groupexclude = Get-DbcConfigValue policy.adlogingroup.excludecheck
@@ -610,7 +610,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
     }
 
-    Describe "Error Log Entries" -Tags ErrorLog, $filename {
+    Describe "Error Log Entries" -Tags ErrorLog, Medium, $filename {
         $logWindow = Get-DbcConfigValue policy.errorlog.warningwindow
         if ($NotContactable -contains $psitem) {
             Context "Checking error log on $psitem" {
@@ -628,7 +628,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Error Log Count" -Tags ErrorLogCount, $filename {
+    Describe "Error Log Count" -Tags ErrorLogCount, Low, $filename {
         $errorLogCount = Get-DbcConfigValue policy.errorlog.logcount
         if ($NotContactable -contains $psitem) {
             Context "Checking error log count on $psitem" {
@@ -646,7 +646,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, $filename {
+    Describe "Instance MaxDop" -Tags MaxDopInstance, MaxDop, Medium, $filename {
         $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
         $MaxDop = Get-DbcConfigValue policy.instancemaxdop.maxdop
         $ExcludeInstance = Get-DbcConfigValue policy.instancemaxdop.excludeinstance
@@ -668,7 +668,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Two Digit Year Cutoff" -Tags TwoDigitYearCutoff, $filename {
+    Describe "Two Digit Year Cutoff" -Tags TwoDigitYearCutoff, Low, $filename {
         $twodigityearcutoff = Get-DbcConfigValue policy.twodigityearcutoff
         if ($NotContactable -contains $psitem) {
             Context "Testing Two Digit Year Cutoff on $psitem" {
@@ -686,7 +686,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Trace Flags Expected" -Tags TraceFlagsExpected, TraceFlag, $filename {
+    Describe "Trace Flags Expected" -Tags TraceFlagsExpected, TraceFlag, High, $filename {
         $ExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.expected
         if ($NotContactable -contains $psitem) {
             Context "Testing Expected Trace Flags on $psitem" {
@@ -703,7 +703,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-    Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag, $filename {
+    Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag, Medium, $filename {
         $NotExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.notexpected
         if ($NotContactable -contains $psitem) {
             Context "Testing Not Expected Trace Flags on $psitem" {
@@ -721,7 +721,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "CLR Enabled" -Tags CLREnabled, security, $filename {
+    Describe "CLR Enabled" -Tags CLREnabled, security, High, $filename {
         $CLREnabled = Get-DbcConfigValue policy.security.clrenabled
         if ($NotContactable -contains $psitem) {
             Context "Testing CLR Enabled on $psitem" {
@@ -739,7 +739,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Cross Database Ownership Chaining" -Tags CrossDBOwnershipChaining, security, $filename {
+    Describe "Cross Database Ownership Chaining" -Tags CrossDBOwnershipChaining, security, Medium, $filename {
         $CrossDBOwnershipChaining = Get-DbcConfigValue policy.security.crossdbownershipchaining
         if ($NotContactable -contains $psitem) {
             Context "Testing Cross Database Ownership Chaining on $psitem" {
@@ -756,7 +756,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-    Describe "Ad Hoc Distributed Queries" -Tags AdHocDistributedQueriesEnabled, security, $filename {
+    Describe "Ad Hoc Distributed Queries" -Tags AdHocDistributedQueriesEnabled, security, Medium, $filename {
         $AdHocDistributedQueriesEnabled = Get-DbcConfigValue policy.security.AdHocDistributedQueriesEnabled
         if ($NotContactable -contains $psitem) {
             Context "Testing Ad Hoc Distributed Queries on $psitem" {
@@ -773,7 +773,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-    Describe "XP CmdShell" -Tags XpCmdShellDisabled, security, $filename {
+    Describe "XP CmdShell" -Tags XpCmdShellDisabled, security, Medium, $filename {
         $XpCmdShellDisabled = Get-DbcConfigValue policy.security.XpCmdShellDisabled
         if ($NotContactable -contains $psitem) {
             Context "Testing XP CmdShell on $psitem" {
@@ -793,7 +793,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
 }
 
-Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
+Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
     @(Get-ComputerName).ForEach{
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Browser Service on $psitem" {
