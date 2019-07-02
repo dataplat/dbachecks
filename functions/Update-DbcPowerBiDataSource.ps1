@@ -112,65 +112,32 @@ function Update-DbcPowerBiDataSource {
         [switch]$EnableException,
         [switch]$Append
     )
-    begin {
-        if ($FileName -ne "Default") {
-            if ($PSCmdlet.ShouldProcess($Path, 'Removing .json files named -like *Default*')) {
-                $null = Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
-            }
-        }
-        if ($Force) {
-            if ($PSCmdlet.ShouldProcess($Path, 'Removing all .json files')) {
-                $null = Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
-            }
-        }
-        if($IsLinux -and $Path -eq '\temp\dbachecks'){
-            $Path = Get-DbcConfigValue -Name app.localapp
-        }
+    if ($IsLinux) {
+        Write-PSFMessage "We cannot run this command from linux at the moment" -Level Warning
+        Return
     }
-    process {
-        ++$i
-        try {
-            if (-not (Test-Path -Path $Path)) {
-                if ($PSCmdlet.ShouldProcess($Path, 'Creating new directory')) {
-                    $null = New-Item -ItemType Directory -Path $Path -ErrorAction Stop
+    else {
+        begin {
+            if ($FileName -ne "Default") {
+                if ($PSCmdlet.ShouldProcess($Path, 'Removing .json files named -like *Default*')) {
+                    $null = Remove-Item "$Path\*Default*.json" -ErrorAction SilentlyContinue
                 }
             }
-        }
-        catch {
-            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
-            return
-        }
-        $basename = "dbachecks_$i"
-        if ($Environment) {
-            $basename = "dbachecks_$i" + "_$Environment`_"
-        }
-        if ($FileName) {
-            $basename = $FileName
-        }
-        else {
-            if ($InputObject.TagFilter) {
-                $tagnames = $InputObject.TagFilter[0..3] -join "_"
-                $basename = "$basename`_" + $tagnames + ".json"
+            if ($Force) {
+                if ($PSCmdlet.ShouldProcess($Path, 'Removing all .json files')) {
+                    $null = Remove-Item "$Path\*.json" -ErrorAction SilentlyContinue
+                }
             }
-        }  
-
-        if ($basename.EndsWith('.json')) {}
-        else {
-            $basename = $basename + ".json"
+            if ($IsLinux -and $Path -eq '\temp\dbachecks') {
+                $Path = Get-DbcConfigValue -Name app.localapp
+            }
         }
-
-        $FilePath = "$Path\$basename"
-
-        if ($InputObject.TotalCount -gt 0) {
+        process {
+            ++$i
             try {
-                if ($PSCmdlet.ShouldProcess($FilePath, 'Passing results')) {
-                    if ($Append) {
-                        $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath -Append
-                        Write-PSFMessage -Level Output -Message "Appended results to $FilePath"
-                    }
-                    else {
-                        $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
-                        Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
+                if (-not (Test-Path -Path $Path)) {
+                    if ($PSCmdlet.ShouldProcess($Path, 'Creating new directory')) {
+                        $null = New-Item -ItemType Directory -Path $Path -ErrorAction Stop
                     }
                 }
             }
@@ -178,12 +145,51 @@ function Update-DbcPowerBiDataSource {
                 Stop-PSFFunction -Message "Failure" -ErrorRecord $_
                 return
             }
+            $basename = "dbachecks_$i"
+            if ($Environment) {
+                $basename = "dbachecks_$i" + "_$Environment`_"
+            }
+            if ($FileName) {
+                $basename = $FileName
+            }
+            else {
+                if ($InputObject.TagFilter) {
+                    $tagnames = $InputObject.TagFilter[0..3] -join "_"
+                    $basename = "$basename`_" + $tagnames + ".json"
+                }
+            }  
+
+            if ($basename.EndsWith('.json')) {}
+            else {
+                $basename = $basename + ".json"
+            }
+
+            $FilePath = "$Path\$basename"
+
+            if ($InputObject.TotalCount -gt 0) {
+                try {
+                    if ($PSCmdlet.ShouldProcess($FilePath, 'Passing results')) {
+                        if ($Append) {
+                            $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath -Append
+                            Write-PSFMessage -Level Output -Message "Appended results to $FilePath"
+                        }
+                        else {
+                            $InputObject.TestResult | ConvertTo-Json -Depth 3 | Out-File -FilePath $FilePath
+                            Write-PSFMessage -Level Output -Message "Wrote results to $FilePath"
+                        }
+                    }
+                }
+                catch {
+                    Stop-PSFFunction -Message "Failure" -ErrorRecord $_
+                    return
+                }
+            }
         }
-    }
-    end {
-        if ($InputObject.TotalCount -isnot [int]) {
-            Stop-PSFFunction -Message "Invalid TestResult. Did you forget to use -Passthru with Invoke-DbcCheck?"
-            return
+        end {
+            if ($InputObject.TotalCount -isnot [int]) {
+                Stop-PSFFunction -Message "Invalid TestResult. Did you forget to use -Passthru with Invoke-DbcCheck?"
+                return
+            }
         }
     }
 }
