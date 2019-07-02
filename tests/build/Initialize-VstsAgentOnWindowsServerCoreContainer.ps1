@@ -150,6 +150,11 @@ param(
     [string]$StorageAccountName,
 
     [Parameter(Mandatory = $false,
+        HelpMessage = "Name of the Storage Account Resource Group")]
+    [ValidateNotNullOrEmpty()]
+    [string]$StorageAccountResourceGroupName,
+
+    [Parameter(Mandatory = $false,
         HelpMessage = "Name of the storage container to upload the scriptfile to be invoked by this wrapper.")]
     [ValidateNotNullOrEmpty()]
     [string]$StorageContainerName = "publicvstsscript",
@@ -259,6 +264,7 @@ function Copy-ScriptToStorageAccount
     param (
 
         [Parameter(Mandatory = $true)][string]$StorageAccountName,
+        [Parameter(Mandatory = $true)][string]$StorageAccountResourceGroupName,
         [Parameter(Mandatory = $false)][string]$StorageContainerName = "publicvstsscript",
         [Parameter(Mandatory = $false)][string]$ScriptFileName = "Install-VstsAgentOnWindowsServerCoreContainer.ps1"
 
@@ -271,13 +277,14 @@ function Copy-ScriptToStorageAccount
         break
     }
 
-    # Getting the Resource Group Name of the Storage Account
-    Write-Output "Getting the Resource Group Name of the Storage Account ($StorageAccountName)..."
-    $StorageAccountResourceGroupName = (Get-AzureRmStorageAccount | Where-Object { $_.StorageAccountName -eq $StorageAccountName }).ResourceGroupName
+    if(-not (Get-AzureRmStorageAccount-ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName )){
+        New-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -Location "West Europe" -SkuName "Standard_GRS"
+    }
 
     if (-not $StorageAccountResourceGroupName)
     {
-        New-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -Location "West Europe" -SkuName "Standard_GRS"
+        Write-Error "The selected Storage Account does not exist. Exiting..."
+        break
     }
 
     # Getting Storage Account Key
@@ -652,8 +659,11 @@ Set-AzureContext -SubscriptionName $SubscriptionName
 
 if ($StorageAccountName)
 {
+    if(-not $StorageAccountResourceGroupName){
+        $StorageAccountResourceGroupName = $ResourceGroupName
+    }
     # Upload the configuration script to a Storage Account
-    Copy-ScriptToStorageAccount -StorageAccountName $StorageAccountName -StorageContainerName $StorageContainerName -ScriptFileName $ScriptFileName
+    Copy-ScriptToStorageAccount -StorageAccountResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageContainerName $StorageContainerName -ScriptFileName $ScriptFileName
 }
 
 # Create Resource Group for containers
