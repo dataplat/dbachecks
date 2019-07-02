@@ -62,14 +62,23 @@ catch {
     Write-Error "Failed to add $pwd to PSModulePAth - $_"
 }
 try {
-    Write-Output "Installing dbachecks"
-    Import-Module .\dbachecks.psd1
-    Write-Output "Installed dbachecks"
+    Write-Output "Importing dbachecks"
+    Import-Module .\dbachecks.psd1 -verbose
+    Write-Output "Imported dbachecks"
 
 }
 catch {
-    Write-Error "Failed to Install dbachecks $($_)"
+    try {
+        Write-Output "Importing dbachecks again to get around the stupid failure for dbatools"
+        Import-Module .\dbachecks.psd1 -verbose
+        Write-Output "Imported dbachecks - again to get around the stupid failure for dbatools"
+    }
+    catch {
+        Write-Error "Failed to Install dbachecks $($_)"
+    }
+  
 }
+
 
 $ProjectRoot = Get-Location
 $ModuleName = 'dbachecks'
@@ -83,7 +92,7 @@ $YMLtext = (Get-Content "$ProjectRoot\header-mkdocs.yml") -join "`n"
 $YMLtext = "$YMLtext`n"
 
 $parameters = @{
-    Path = $ReleaseNotes
+    Path        = $ReleaseNotes
     ErrorAction = 'SilentlyContinue'
 }
 $ReleaseText = (Get-Content @parameters) -join "`n"
