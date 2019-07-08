@@ -131,16 +131,9 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 2nd July 2019
-dbachecks works with PowerShell Core #620
-dbachecks works with dbatools v1 #624
-Minimum PowerShell Now 5.0 #568
-Prettier output in test names for @cl because she is ace #495
-Fixes for none-readable secondaries causing tests to fail #611
-Added ability to exclude disks from disk allocation check #561
-Added ability to exclude cancelled jobs from failed job check #552
-Added max job history for failed jobs #552
-Some extra tags added
+## Date 8th July 2019
+Thanks to Chuck for notifying of error
+Fixed Update-DbcPowerBiDataSource
 
 ##Latest
 
