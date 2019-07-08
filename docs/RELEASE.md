@@ -1,6 +1,12 @@
 Add to psd1 and readme.md
 
-## Date 2nd July 2019 at Techorama in Room 12
+## Date 8th July 2019
+Thanks to Chuck for notifying of error
+Fixed Update-DbcPowerBiDataSource
+
+##Latest
+
+## Date 2nd July 2019
 dbachecks works with PowerShell Core #620
 dbachecks works with dbatools v1 #624
 Minimum PowerShell Now 5.0 #568
@@ -10,9 +16,6 @@ Added ability to exclude disks from disk allocation check #561
 Added ability to exclude cancelled jobs from failed job check #552
 Added max job history for failed jobs #552
 Some extra tags added
-
-
-##Latest
 
 ## Date 22nd May 2019 at Techorama in Room 12
 Thank You @SOZDBA, @djfcc, @wsmelton
