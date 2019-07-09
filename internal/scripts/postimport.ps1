@@ -18,7 +18,14 @@ if (-not (Test-Path -Path $script:maildirectory)) {
 }
 
 # Parse repo for tags and descriptions then write json
-New-Json
+try{
+    New-Json
+}
+catch{
+    Write-Warning "Failed creating JSON"
+    $errmessage = $_ | Select-Object * | Out-String
+    Write-Warning "Error message is $errmessage"
+}
 
 # Load Tab Expansion
 foreach ($file in (Get-ChildItem "$ModuleRoot\internal\tepp\*.ps1")) {
