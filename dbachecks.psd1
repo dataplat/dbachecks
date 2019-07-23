@@ -49,7 +49,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
         @{ ModuleName = 'Pester'; ModuleVersion = '4.7.1' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.12' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.23' }
         @{ ModuleName = 'PSFramework'; ModuleVersion = '1.0.0' }
     )
 
@@ -131,11 +131,13 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 8th July 2019
-Thanks to Chuck for notifying of error
-Fixed Update-DbcPowerBiDataSource
-
-##Latest
+## Date 23rd July 2019
+Thank you @dstrait, @Sozdba
+Fix tests that use time to work if client and instance are in different time zones #610
+Fixed Maintenance Solution clean up time test #633
+Improved Run time #635
+Improved Error Log warning window honouring #637
+Ignore SQL 2005 for some tests #630,629,#628
 
 Run Get-DbcReleaseNotes for all release notes
             "
