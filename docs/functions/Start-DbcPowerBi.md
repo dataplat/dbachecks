@@ -7,7 +7,7 @@ Launches the included dbachecks Power BI dashboard.
 ## SYNTAX
 
 ```
-Start-DbcPowerBi [[-Path] <String>] [[-DataSource] <String>] [-EnableException] [<CommonParameters>]
+Start-DbcPowerBi [[-Path] <String>] [-EnableException] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -51,21 +51,6 @@ Aliases:
 Required: False
 Position: 1
 Default value: "$script:ModuleRoot\bin\dbachecks.pbix"
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DataSource
-The location of the json file "C:\windows\Temp\dbachecks\*.json" by default
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 2
-Default value: C:\windows\Temp\dbachecks\*.json
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
