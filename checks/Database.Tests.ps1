@@ -219,13 +219,20 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Column Identity Usage on $psitem" {
-                $exclude = $ExcludedDatabases
-                $exclude += (Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.IsAccessible -eq $false}.Name
-                @(Test-DbaIdentityUsage -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
-                    if ($psitem.Database -ne "tempdb") {
-                        $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
-                        It "usage for $columnfqdn on $($psitem.SqlInstance) should be less than $maxpercentage percent" {
-                            $psitem.PercentUsed -lt $maxpercentage | Should -BeTrue -Because "You do not want your Identity columns to hit the max value and stop inserts"
+                if ($version -lt 10) {
+                    It "Databases on $Instance should return 0 duplicate indexes" -Skip {
+                        Assert-DatabaseDuplicateIndex -Instance $instance -Database $psitem
+                    }
+                }
+                else {
+                    $exclude = $ExcludedDatabases
+                    $exclude += (Connect-DbaInstance -SqlInstance $psitem).Databases.Where{$_.IsAccessible -eq $false}.Name
+                    @(Test-DbaIdentityUsage -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
+                        if ($psitem.Database -ne "tempdb") {
+                            $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
+                            It "usage for $columnfqdn on $($psitem.SqlInstance) should be less than $maxpercentage percent" {
+                                $psitem.PercentUsed -lt $maxpercentage | Should -BeTrue -Because "You do not want your Identity columns to hit the max value and stop inserts"
+                            }
                         }
                     }
                 }
@@ -267,7 +274,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing duplicate indexes on $psitem" {
                 if ($version -lt 10) {
-                    It "Databases on $Instance should return 0 duplicate indexes" -Skip{
+                    It "Databases on $Instance should return 0 duplicate indexes" -Skip {
                         Assert-DatabaseDuplicateIndex -Instance $instance -Database $psitem
                     }
                 }
