@@ -138,6 +138,7 @@ Fixed Maintenance Solution clean up time test #633
 Improved Run time #635
 Improved Error Log warning window honouring #637
 Ignore SQL 2005 for some tests #630,629,#628
+Skip TF1118 test if SQL2016 or above
 
 Run Get-DbcReleaseNotes for all release notes
             "
