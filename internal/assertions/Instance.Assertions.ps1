@@ -14,7 +14,7 @@ function Get-AllInstanceInfo {
     Param($Instance, $Tags, $There)
     # Using there so that if the instance is not contactable, no point carrying on with gathering more information
     switch ($tags) {
-        {$tags -contains 'ErrorLog'} { 
+        'ErrorLog' { 
             if ($There) {
                 try {
                     $logWindow = Get-DbcConfigValue -Name policy.errorlog.warningwindow
