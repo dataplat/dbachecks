@@ -10,17 +10,17 @@ $ExcludedDatabases += $ExcludeDatabase
     if ($NotContactable -notcontains $psitem) {
         $Instance = $psitem
         try {  
-            $Instance = $connectioncheck = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+            $InstanceSMO = $connectioncheck = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
         }
         catch {
             $NotContactable += $Instance
         }
         if ($NotContactable -notcontains $psitem) {
-            if ($null -eq $connectioncheck.version) {
+            if ($null -eq $InstanceSMO.version) {
                 $NotContactable += $Instance
             }
             else {
-                $Version = $connectioncheck.VersionMajor 
+                $Version = $InstanceSMO.VersionMajor 
             }
         }
     }
@@ -266,10 +266,17 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing duplicate indexes on $psitem" {
-                $instance = $Psitem
-                @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $Excludeddbs).ForEach{
-                    It "$psitem on $Instance should return 0 duplicate indexes" {
+                if ($version -lt 10) {
+                    It "Databases on $Instance should return 0 duplicate indexes" -Skip{
                         Assert-DatabaseDuplicateIndex -Instance $instance -Database $psitem
+                    }
+                }
+                else {
+                    $instance = $Psitem
+                    @(Get-Database -Instance $instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $Excludeddbs).ForEach{
+                        It "$psitem on $Instance should return 0 duplicate indexes" {
+                            Assert-DatabaseDuplicateIndex -Instance $instance -Database $psitem
+                        }
                     }
                 }
             }
@@ -362,12 +369,12 @@ $ExcludedDatabases += $ExcludeDatabase
                     }
                     9 {
                         $Instance.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
-                            if($Psitem.Name -ne 'tempdb'){
+                            if ($Psitem.Name -ne 'tempdb') {
                                 It "$($psitem.Name) on $($psitem.Parent.Name) should have page verify set to $pageverify" {
                                     $psitem.PageVerify | Should -Be $pageverify -Because "Page verify helps SQL Server to detect corruption"
                                 }
                             }
-                            else{
+                            else {
                                 It "Page verify is not available on tempdb on SQL 2005" {
                                     $true | Should -BeTrue
                                 } 
