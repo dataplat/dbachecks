@@ -39,7 +39,6 @@ function Start-DbcPowerBi {
     [CmdletBinding()]
     param (
         [string]$Path = "$script:ModuleRoot\bin\dbachecks.pbix",
-        [string]$DataSource = "C:\windows\Temp\dbachecks\*.json",
         [switch]$EnableException
     )
 
