@@ -16,8 +16,8 @@ function New-Json {
         $Check = $null
         $filename = $file.Name.Replace(".Tests.ps1", "")
 
-        Write-Verbose "Processing $FileName"
-        Write-Verbose "Getting Content of File"
+      #  Write-Verbose "Processing $FileName"
+      #  Write-Verbose "Getting Content of File"
         $Check = Get-Content $file -Raw
 
         # because custom checks if they are not coded correctly will break this json creation
@@ -51,7 +51,7 @@ function New-Json {
             $Statements = $CheckFileAST.EndBlock.statements.Extent
             ## Ignore the filename line
             @($Statements.Where{$PSItem.StartLineNumber -ne 1}).ForEach{
-                Write-Verbose "Checking the Describe Tag $($PSItem.Text.SubString(0,50) )"
+              #  Write-Verbose "Checking the Describe Tag $($PSItem.Text.SubString(0,50) )"
                 if ($PSItem.Text -notmatch 'Describe ".*" -Tags .*,.*\$filename \{') {
                     $RogueDescribe = $PSItem.Text.SubString(0, $PSitem.Text.IndexOf('{'))
                     Write-Warning "The Describe Tag $RogueDescribe in $($File.Name) is not set up correctly - we will try to fix it for you"
@@ -62,7 +62,7 @@ function New-Json {
                         Set-Content $file -Value $Check
                         $Check = $null
                     }
-                    Write-Verbose "Getting Content of File again"                    
+                  #  Write-Verbose "Getting Content of File again"                    
                     $Check = Get-Content $file -Raw
 
                 }
@@ -211,7 +211,7 @@ function New-Json {
         }
     }
     catch {
-        Write-PSFMessage "Failed to create the json, something weird might happen now with tags and things"
+        Write-PSFMessage "Failed to create the json, something weird might happen now with tags and things" -Level Significant
     }
 
 }
