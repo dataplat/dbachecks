@@ -1,4 +1,10 @@
-Add to psd1 and readme.md
+## Date 29th July 2019
+Thank you @TracyBoggiano
+Added tags for checks that will be part of CIS checks #642
+CIS project started
+Added check for default trace enabled #684
+
+##Latest
 
 ## Date 23rd July 2019
 Thank you @dstrait, @Sozdba
@@ -8,8 +14,6 @@ Improved Run time #635
 Improved Error Log warning window honouring #637
 Ignore SQL 2005 for some tests #630,629,#628
 Skip TF1118 test if SQL2016 or above
-
-##Latest
 
 ## Date 8th July 2019
 Thanks to Chuck for notifying of error

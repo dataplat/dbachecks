@@ -90,11 +90,11 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipConnectionRemoting <Object>] [-ConfigSkipDatabaseFilegrowthdisabled <Object>]
  [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
  [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
- [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipInstanceModeldbgrowth <Object>]
- [-ConfigSkipLogfilecounttest <Object>] [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>]
- [-ConfigSkipTempdbfilecount <Object>] [-ConfigSkipTempdbfilegrowthpercent <Object>]
- [-ConfigSkipTempdbfilesizemax <Object>] [-ConfigSkipTempdbfilesonc <Object>]
- [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
+ [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
+ [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipLogfilecounttest <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
+ [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
+ [-ConfigSkipTempdbfilesonc <Object>] [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
 ```
 
 ### NewOutputSet
@@ -182,11 +182,11 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipConnectionRemoting <Object>] [-ConfigSkipDatabaseFilegrowthdisabled <Object>]
  [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
  [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
- [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipInstanceModeldbgrowth <Object>]
- [-ConfigSkipLogfilecounttest <Object>] [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>]
- [-ConfigSkipTempdbfilecount <Object>] [-ConfigSkipTempdbfilegrowthpercent <Object>]
- [-ConfigSkipTempdbfilesizemax <Object>] [-ConfigSkipTempdbfilesonc <Object>]
- [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
+ [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
+ [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipLogfilecounttest <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
+ [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
+ [-ConfigSkipTempdbfilesonc <Object>] [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -3054,6 +3054,21 @@ Accept wildcard characters: False
 
 ### -ConfigSkipHadrListenerPingcheck
 {{ Fill ConfigSkipHadrListenerPingcheck Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipInstanceDefaulttrace
+{{ Fill ConfigSkipInstanceDefaulttrace Description }}
 
 ```yaml
 Type: Object
