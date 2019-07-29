@@ -675,6 +675,22 @@ InModuleScope dbachecks {
             }
                 (Get-AllInstanceInfo -Instance Dummy -Tags ErrorLog -There $true).ErrorLog | Should -BeOfType PSCustomObject -Because "We need entries when we have sev 17 to 24 errors"
             }
+
+            It "Should return the correct results for Default Trace when it is enabled" {
+                Mock Get-DbaSpConfigure{[pscustomobject]@{
+                    ConfiguredValue = 1
+                }}
+           
+                (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We need to return one when we have default trace enabled"
+            }
+
+            It "Should return the correct results for Default Trace when it is not enabled" {
+                Mock Get-DbaSpConfigure{[pscustomobject]@{
+                    ConfiguredValue = 0
+                }}
+           
+                (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 0 -Because "We need to return zero when default trace is not enabled"
+            }
         }
         Context "Checking ErrorLog Entries" {
            
@@ -694,6 +710,24 @@ InModuleScope dbachecks {
                 }
             }}
                 {Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$null or empty, because these severities indicate serious problems, but got @(@{LogDate=2019-02-14 23:00; ProcessInfo=spid55; Text=Error: 50000, Severity: 18, State: 1.})."
+            }
+        }
+        Context "Checking Default Trace Entries" {
+           
+            It "Should pass the test successfully when default trace is enabled" {
+                 # Mock for success
+            Mock Get-AllInstanceInfo {}
+                Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when when default trace is not enabled" {
+                # Mock for failing test
+            Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                DefaultTrace = [PSCustomObject]@{
+                    ConfiguredValue     = 0
+                }
+            }}
+                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expect the Default Trace to be enabled but got, but got 0."
             }
         }
     }
