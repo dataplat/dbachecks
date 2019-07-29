@@ -50,9 +50,9 @@ function Get-AllInstanceInfo {
             else {
                 $There = $false
                 $ErrorLog = [PSCustomObject]@{
-                    LogDate       = 'Do not know the Date'
-                    ProcessInfo   = 'Do not know the Process'
-                    Text          = 'Do not know the Test'
+                    LogDate      = 'Do not know the Date'
+                    ProcessInfo  = 'Do not know the Process'
+                    Text         = 'Do not know the Test'
                     InstanceName = 'An Error occurred ' + $Instance
                 } 
             }
@@ -86,7 +86,12 @@ function Get-AllInstanceInfo {
         DefaultTrace = $DefaultTrace
     }
 }
+
+function Assert-DefaultTrace {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.Trace.ConfiguredValue)"
 }
+
 
 function Assert-InstanceMaxDop {
     Param(
