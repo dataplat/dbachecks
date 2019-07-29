@@ -795,7 +795,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-    Describe "Default Trace" -Tags DefaultTrace, Low, $filename {
+    Describe "Default Trace" -Tags DefaultTrace, CIS, Low, $filename {
         $skip = Get-DbcConfigValue skip.instance.defaulttrace
         if ($NotContactable -contains $psitem) {
             Context "Checking Default Trace on $psitem" {
