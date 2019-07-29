@@ -31,18 +31,18 @@ function Get-AllInstanceInfo {
                     # It is not enough to check the CreateDate on the log, you must check the LogDate on every error record as well.
                     $ErrorLog = @(Get-ErrorLogEntry).ForEach{
                         [PSCustomObject]@{
-                        LogDate       = $psitem.LogDate
-                        ProcessInfo   = $Psitem.ProcessInfo
-                        Text          = $Psitem.Text
+                            LogDate     = $psitem.LogDate
+                            ProcessInfo = $Psitem.ProcessInfo
+                            Text        = $Psitem.Text
                         } | Where-Object {$psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow)} 
                     }
                 }
                 catch {
                     $There = $false        
                     $ErrorLog = [PSCustomObject]@{
-                        LogDate       = 'Do not know the Date'
-                        ProcessInfo   = 'Do not know the Process'
-                        Text          = 'Do not know the Test'
+                        LogDate      = 'Do not know the Date'
+                        ProcessInfo  = 'Do not know the Process'
+                        Text         = 'Do not know the Test'
                         InstanceName = 'An Error occurred ' + $Instance
                     } 
                 }
@@ -82,10 +82,10 @@ function Get-AllInstanceInfo {
         Default {}
     }
     [PSCustomObject]@{
-        ErrorLog = $ErrorLog 
+        ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
     }
-    }
+}
 }
 
 function Assert-InstanceMaxDop {
