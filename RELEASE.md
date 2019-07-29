@@ -1,10 +1,20 @@
 Add to psd1 and readme.md
 
+## Date 23rd July 2019
+Thank you @dstrait, @Sozdba
+Fix tests that use time to work if client and instance are in different time zones #610
+Fixed Maintenance Solution clean up time test #633
+Improved Run time #635
+Improved Error Log warning window honouring #637
+Ignore SQL 2005 for some tests #630,629,#628
+Skip TF1118 test if SQL2016 or above
+
+##Latest
+
 ## Date 8th July 2019
 Thanks to Chuck for notifying of error
 Fixed Update-DbcPowerBiDataSource
 
-##Latest
 
 ## Date 2nd July 2019
 dbachecks works with PowerShell Core #620

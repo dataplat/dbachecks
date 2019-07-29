@@ -339,7 +339,7 @@ Describe "Ola - $OutputFileJobName" -Tags OutputFileCleanup, OlaJobs, $filename 
             $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
             $jobsteps.Command -match "\/d\s-(\d\d)"
             If($Matches.Count -gt 0){
-                $days = $Matches[1].value
+                $days = $Matches[1]
             }
             else{
                 $days = 0
