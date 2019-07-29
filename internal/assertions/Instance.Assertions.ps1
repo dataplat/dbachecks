@@ -57,10 +57,34 @@ function Get-AllInstanceInfo {
                 } 
             }
         }
+        'DefaultTrace' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'DefaultTraceEnabled'
+                    $DefaultTrace = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $DefaultTrace = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $DefaultTrace = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
         ErrorLog = $ErrorLog 
+        DefaultTrace = $DefaultTrace
+    }
     }
 }
 
