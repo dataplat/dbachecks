@@ -805,8 +805,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
-            Context "Checking Default Trace on $psitem" -Skip:$skip {
-                It "The Default Trace should be enabled on $psitem" {
+            Context "Checking Default Trace on $psitem" {
+                It "The Default Trace should be enabled on $psitem"  -Skip:$skip {
                     Assert-DefaultTrace -AllInstanceInfo $AllInstanceInfo
                 }
             }
