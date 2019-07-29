@@ -131,14 +131,11 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 23rd July 2019
-Thank you @dstrait, @Sozdba
-Fix tests that use time to work if client and instance are in different time zones #610
-Fixed Maintenance Solution clean up time test #633
-Improved Run time #635
-Improved Error Log warning window honouring #637
-Ignore SQL 2005 for some tests #630,629,#628
-Skip TF1118 test if SQL2016 or above
+## Date 29th July 2019
+Thank you @TracyBoggiano
+Added tags for checks that will be part of CIS checks #642
+CIS project started
+Added check for default trace enabled #684
 
 Run Get-DbcReleaseNotes for all release notes
             "
