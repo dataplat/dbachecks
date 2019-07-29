@@ -85,7 +85,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
     Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, $filename {
         if ($NotContactable -contains $psitem) {
-            Context "Testing database collation on $psitem" {
+            Context "Testing SQL Engine Service on $psitem" {
                 It "Can't Connect to $Psitem" {
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
@@ -795,7 +795,23 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-
+    Describe "Default Trace" -Tags DefaultTrace, Low, $filename {
+        $skip = Get-DbcConfigValue skip.instance.defaulttrace
+        if ($NotContactable -contains $psitem) {
+            Context "Checking Default Trace on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking Default Trace on $psitem" -Skip:$skip {
+                It "The Default Trace should be enabled on $psitem" {
+                    Assert-DefaultTrace -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
