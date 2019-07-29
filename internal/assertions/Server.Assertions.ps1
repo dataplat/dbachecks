@@ -15,7 +15,7 @@ function Get-AllServerInfo {
     Param($ComputerName, $Tags)
     $There = $true
     switch ($tags) {
-        {$tags -contains 'PingComputer'} { 
+        'PingComputer' { 
             if ($There) {
                 try {
                     $pingcount = Get-DbcConfigValue policy.connection.pingcount
@@ -36,7 +36,7 @@ function Get-AllServerInfo {
                 } 
             }
         }
-        {$tags -contains 'DiskAllocationUnit'} { 
+        'DiskAllocationUnit' { 
             if ($There) {
                 try {
                     $DiskAllocation = Test-DbaDiskAllocation -ComputerName $ComputerName -EnableException -WarningAction SilentlyContinue -WarningVariable DiskAllocationWarning
@@ -58,7 +58,7 @@ function Get-AllServerInfo {
                 } 
             }
         }
-        {$tags -contains 'PowerPlan'} { 
+        'PowerPlan' { 
             if ($There) {
                 try {
                     $PowerPlan = (Test-DbaPowerPlan -ComputerName $ComputerName -EnableException -WarningVariable PowerWarning -WarningAction SilentlyContinue).IsBestPractice
@@ -79,7 +79,7 @@ function Get-AllServerInfo {
                 $PowerPlan = 'An Error occurred'
             }
         }
-        {$Tags -contains 'SPN'} {
+        'SPN' {
             if ($There) {
                 try {
                     $SPNs = Test-DbaSpn -ComputerName $ComputerName -EnableException -WarningVariable SPNWarning -WarningAction SilentlyContinue
@@ -117,7 +117,7 @@ function Get-AllServerInfo {
                 }
             }
         }
-        {$tags -contains 'DiskCapacity'} { 
+        'DiskCapacity' { 
             if ($There) {
                 try {
                     $DiskSpace = Get-DbaDiskSpace -ComputerName $ComputerName -EnableException -WarningVariable DiskSpaceWarning -WarningAction SilentlyContinue
