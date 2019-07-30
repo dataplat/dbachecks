@@ -131,11 +131,15 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 29th July 2019
-Thank you @TracyBoggiano
-Added tags for checks that will be part of CIS checks #642
-CIS project started
-Added check for default trace enabled #684
+## Date 30th July 2019
+Thank you Rob ;-)
+Added two new checks #239
+    LastJobRunTime and LongRunningJob
+Added four new configs
+    skip.agent.longrunningjobs
+    skip.agent.lastjobruntime
+    agent.longrunningjob.percentage
+    agent.lastjobruntime.percentage
 
 Run Get-DbcReleaseNotes for all release notes
             "
