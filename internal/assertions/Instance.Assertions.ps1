@@ -107,7 +107,7 @@ function Get-AllInstanceInfo {
         'RemoteAccess' {
             if ($There) {
                 try {
-                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'RemoteAccessDisabled'
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'RemoteAccess'
                     $RemoteAccess = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
