@@ -332,7 +332,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     }
                     else {    
                         Context "Testing long running jobs on $psitem" {
-                            foreach ($runningjob in $runningjobs) {
+                            foreach ($runningjob in $runningjobs| Where-Object {$_.AvgSec -ne 0}) {
                                 It "Running job $($runningjob.JobName) duration should be less than $runningjobpercentage % of average run time on $psitem" -Skip:$skip {
                                     Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
                                 }
@@ -399,7 +399,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     }
                     else {    
                         Context "Testing last job run time on $psitem" {
-                            foreach ($lastagentjobrun in $lastagentjobruns) {
+                            foreach ($lastagentjobrun in $lastagentjobruns | Where-Object {$_.AvgSec -ne 0}) {
                                 It "Job $($lastagentjobrun.JobName) last run duration should be less than $runningjobpercentage % of average run time on $psitem" -Skip:$skip {
                                     Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
                                 }
