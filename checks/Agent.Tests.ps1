@@ -291,6 +291,55 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                     }      
                 }
+
+                Describe "Long Running Agent Jobs" -Tags LongRunningJob, $filename {
+                    $skip = Get-DbcConfigValue skip.agent.longrunningjobs
+                    $runningjobpercentage = Get-DbcConfigValue agent.longrunningjob.percentage
+                    if (-not $skip) {
+                        $query = "SELECT 
+    JobName, 
+    AvgSec,
+    start_execution_date as StartDate,
+    RunningSeconds,
+    RunningSeconds - AvgSec AS Diff 
+    FROM
+    (
+    SELECT
+     j.name AS JobName, 
+     start_execution_date,
+     AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' 
+        + CONVERT(VARCHAR(6),jh.run_duration),6),5,0,':'),3,0,':'))) AS AvgSec,
+        ja.start_execution_date as startdate,
+    DATEDIFF(second, ja.start_execution_date, GetDate()) AS RunningSeconds
+    FROM msdb.dbo.sysjobactivity ja 
+    JOIN msdb.dbo.sysjobs j 
+    ON ja.job_id = j.job_id
+    JOIN msdb.dbo.sysjobhistory jh 
+    ON jh.job_id = j.job_id
+    WHERE start_execution_date is not null
+    AND stop_execution_date is null
+    GROUP BY j.name,j.job_id,start_execution_date,stop_execution_date,ja.job_id
+    ) AS t
+    ORDER BY JobName;"
+                        $runningjobs = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
+                    }
+                    if ($NotContactable -contains $psitem) {
+                        Context "Testing long running jobs on $psitem" {
+                            It "Can't Connect to $Psitem" {
+                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                            }
+                        }
+                    }
+                    else {    
+                        Context "Testing long running jobs on $psitem" {
+                            foreach ($runningjob in $runningjobs) {
+                                It "Running job $($runningjob.JobName) duration should be less than $runningjobpercentage % of average run time on $psitem" -Skip:$skip {
+                                    Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
+                                }
+                            }
+                        }
+                    }   
+                }
             }
         }
     }

@@ -222,6 +222,7 @@ Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Valu
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (expecially useful for Azure and AWS)"
 Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
@@ -237,6 +238,7 @@ Set-PSFConfig -Module dbachecks -Name agent.history.maximumhistoryrows -Value 10
 Set-PSFConfig -Module dbachecks -Name agent.history.maximumjobhistoryrows -Value 100 -Initialize -Description "Maximum job history row per job. When the property is disabled the value is 0."
 Set-PSFConfig -Module dbachecks -Name agent.failedjob.excludecancelled -Value $false -Initialize -Description "Exclude agent jobs with a status of cancelled"
 Set-PSFConfig -Module dbachecks -Name agent.failedjob.since -Value 30 -Initialize -Description "The maximum number of days to check for failed jobs"
+Set-PSFConfig -Module dbachecks -Name agent.longrunningjob.percentage -Value 50 -Initialize -Description "The maximum percentage variance that a currently running job is allowed over the average for that job"
 
 # domain
 Set-PSFConfig -Module dbachecks -Name domain.name -Value $null -Initialize -Description "The Active Directory domain that your server is a part of"

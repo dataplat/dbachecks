@@ -410,5 +410,9 @@
     {
         "UniqueTag": "DefaultTrace",
         "Description": "Tests that the default trace configuration is set to enabled"
+    },
+    {
+        "UniqueTag": "LongRunningJob",
+        "Description": "Tests that any currently running agent jobs have not been running for longer than the configured percentage (default 50) of time than the average job run"
     }
  ]
