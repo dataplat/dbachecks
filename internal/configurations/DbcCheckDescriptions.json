@@ -413,6 +413,10 @@
     },
     {
         "UniqueTag": "LongRunningJob",
-        "Description": "Tests that any currently running agent jobs have not been running for longer than the configured percentage (default 50) of time than the average job run"
+        "Description": "Tests that any currently running agent jobs have not been running for longer than the configured percentage (default 50) of time more than the average job run"
+    },
+    {
+        "UniqueTag": "LastJobRunTime",
+        "Description": "Tests that the last duration of the agent jobs were not longer than the configured percentage (default 50) of time more than the average job run"
     }
  ]
