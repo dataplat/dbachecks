@@ -117,6 +117,11 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.Trace.ConfiguredValue)"
 }
 
+function Assert-MaxDump {
+    Param($AllInstanceInfo,$maxdumps)
+    $AllInstanceInfo.MaxDump.Count | Should -BeLessThan $maxdumps -Because "We expected less than $maxdumps dumps but found $($AllInstanceInfo.MaxDump.Count). Memory dumps often suggest issues with the SQL Server instance"
+}
+
 
 function Assert-InstanceMaxDop {
     Param(
