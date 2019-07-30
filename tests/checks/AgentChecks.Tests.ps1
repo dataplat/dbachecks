@@ -167,6 +167,55 @@ Describe "Checking Agent.Tests.ps1 checks" -Tag UnitTest, AgentAssertions {
             {Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage} | Should -Throw -ExpectedMessage "Expected the actual value to be less than 50, because The current running job Waiting for 5 seconds has been running for 40 seconds longer than the average run time. This is more than the 50 % specified as the maximum, but got 105"
         }
     }
+    Context "Checking last run time"{
+        It "Should pass when the last job run duration is less than the average job duration" {
+            # Mock to pass
+            $lastagentjobrun  = @{
+                JobName        = 'Waiting for 5 seconds'
+                AvgSec         = 38
+                Duration       = 25
+                Diff           = -13
+            }
+            $runningjobpercentage = 50
+            Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
+        }
+
+        It "Should pass when the last job run duration is the same as the average job duration" {
+            # Mock to pass
+            $lastagentjobrun  = @{
+                JobName        = 'Waiting for 5 seconds'
+                AvgSec         = 38
+                Duration       = 38
+                Diff           = 0
+            }
+            $runningjobpercentage = 50
+            Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
+        }
+
+        It "Should pass when the last job run duration is more than the average job duration but the percentage difference is less than the specified" {
+            # Mock to pass
+            $lastagentjobrun  = @{
+                JobName        = 'Waiting for 5 seconds'
+                AvgSec         = 38
+                Duration       = 48
+                Diff           = 10
+            }
+            $runningjobpercentage = 50
+            Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
+        }
+
+        It "Should fail when the last job run duration is more than the average job duration and the percentage difference is more than the specified" {
+            # Mock to fail
+            $lastagentjobrun  = @{
+                JobName        = 'Waiting for 5 seconds'
+                AvgSec         = 38
+                Duration       = 68
+                Diff           = 30
+            }
+            $runningjobpercentage = 50
+            {Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage} | Should -Throw -ExpectedMessage "Expected the actual value to be less than 50, because The last run of job Waiting for 5 seconds was 68 seconds. This is more than the 50 % specified as the maximum variance, but got 79"
+        }
+    }
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
