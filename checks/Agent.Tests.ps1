@@ -46,7 +46,8 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                     }
                     else {
-                        if (-not $IsLinux) {
+                        # cant check agent on container - hmm does this actually work with instance nered to check
+                        if (-not $IsLinux -and ($InstanceSMO.HostPlatform -ne 'Linux')) {
                                 
                             Context "Testing SQL Agent is running on $psitem" {
                                 @(Get-DbaService -ComputerName $psitem -Type Agent).ForEach{
@@ -67,7 +68,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                             }
                         }
                         else {
-                            It "Running on Linux so can't check Services on $Psitem" -skip {
+                            It "Running on Linux or connecting to container so can't check Services on $Psitem" -skip {
                             }
                         }
                     }
