@@ -291,6 +291,122 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                     }      
                 }
+
+                Describe "Long Running Agent Jobs" -Tags LongRunningJob, $filename {
+                    $skip = Get-DbcConfigValue skip.agent.longrunningjobs
+                    $runningjobpercentage = Get-DbcConfigValue agent.longrunningjob.percentage
+                    if (-not $skip) {
+                        $query = "SELECT 
+    JobName, 
+    AvgSec,
+    start_execution_date as StartDate,
+    RunningSeconds,
+    RunningSeconds - AvgSec AS Diff 
+    FROM
+    (
+    SELECT
+     j.name AS JobName, 
+     start_execution_date,
+     AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' 
+        + CONVERT(VARCHAR(6),jh.run_duration),6),5,0,':'),3,0,':'))) AS AvgSec,
+        ja.start_execution_date as startdate,
+    DATEDIFF(second, ja.start_execution_date, GetDate()) AS RunningSeconds
+    FROM msdb.dbo.sysjobactivity ja 
+    JOIN msdb.dbo.sysjobs j 
+    ON ja.job_id = j.job_id
+    JOIN msdb.dbo.sysjobhistory jh 
+    ON jh.job_id = j.job_id
+    WHERE start_execution_date is not null
+    AND stop_execution_date is null
+    GROUP BY j.name,j.job_id,start_execution_date,stop_execution_date,ja.job_id
+    ) AS t
+    ORDER BY JobName;"
+                        $runningjobs = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
+                    }
+                    if ($NotContactable -contains $psitem) {
+                        Context "Testing long running jobs on $psitem" {
+                            It "Can't Connect to $Psitem" {
+                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                            }
+                        }
+                    }
+                    else {    
+                        Context "Testing long running jobs on $psitem" {
+                            foreach ($runningjob in $runningjobs| Where-Object {$_.AvgSec -ne 0}) {
+                                It "Running job $($runningjob.JobName) duration should be less than $runningjobpercentage % of average run time on $psitem" -Skip:$skip {
+                                    Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
+                                }
+                            }
+                        }
+                    }   
+                }
+                Describe "Last Agent Job Run" -Tags LastJobRunTime, $filename {
+                    $skip = Get-DbcConfigValue skip.agent.lastjobruntime
+                    $runningjobpercentage = Get-DbcConfigValue agent.lastjobruntime.percentage
+                    if (-not $skip) {
+                        $query = "IF OBJECT_ID('tempdb..#dbachecksLastRunTime') IS NOT NULL DROP Table #dbachecksLastRunTime
+                        SELECT * INTO #dbachecksLastRunTime
+                        FROM
+                        (
+                        SELECT
+                        j.job_id,
+                        j.name AS JobName,
+                        jh.run_duration AS Duration
+                        FROM msdb.dbo.sysjobs j 
+                        INNER JOIN
+                            (
+                                SELECT job_id, instance_id = MAX(instance_id)
+                                    FROM msdb.dbo.sysjobhistory
+                                    GROUP BY job_id
+                            ) AS h
+                            ON j.job_id = h.job_id
+                        INNER JOIN
+                            msdb.dbo.sysjobhistory AS jh
+                            ON jh.job_id = h.job_id
+                            AND jh.instance_id = h.instance_id
+                        ) AS lrt
+                        
+                        IF OBJECT_ID('tempdb..#dbachecksAverageRunTime') IS NOT NULL DROP Table #dbachecksAverageRunTime
+                        SELECT * INTO #dbachecksAverageRunTime
+                        FROM
+                        (
+                        SELECT 
+                        job_id,
+                        AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' + CONVERT(VARCHAR(6),run_duration),6),5,0,':'),3,0,':'))) AS AvgSec
+                        FROM msdb.dbo.sysjobhistory hist
+                        GROUP BY job_id
+                        ) as art
+                        
+                        SELECT 
+                        JobName,
+                        Duration,
+                        AvgSec,
+                        Duration - AvgSec AS Diff
+                        FROM #dbachecksLastRunTime lastrun
+                        JOIN #dbachecksAverageRunTime avgrun
+                        ON lastrun.job_id = avgrun.job_id
+                        
+                        DROP Table #dbachecksLastRunTime
+                        DROP Table #dbachecksAverageRunTime"
+                        $lastagentjobruns = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
+                    }
+                    if ($NotContactable -contains $psitem) {
+                        Context "Testing last job run time on $psitem" {
+                            It "Can't Connect to $Psitem" {
+                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                            }
+                        }
+                    }
+                    else {    
+                        Context "Testing last job run time on $psitem" {
+                            foreach ($lastagentjobrun in $lastagentjobruns | Where-Object {$_.AvgSec -ne 0}) {
+                                It "Job $($lastagentjobrun.JobName) last run duration should be less than $runningjobpercentage % of average run time on $psitem" -Skip:$skip {
+                                    Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
+                                }
+                            }
+                        }
+                    }   
+                }
             }
         }
     }

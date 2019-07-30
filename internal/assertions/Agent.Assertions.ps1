@@ -30,6 +30,16 @@ function Assert-JobHistoryRowsPerJob {
     $AgentServer.MaximumJobHistoryRows | Should -BeGreaterOrEqual $minimumJobHistoryRowsPerJob -Because "We expect the maximum job history row configuration per agent job to be greater than the configured setting $minimumJobHistoryRowsPerJob"
 }
 
+
+function Assert-LongRunningJobs {
+    Param($runningjob,$runningjobpercentage)
+    [math]::Round($runningjob.Diff/$runningjob.AvgSec * 100) | Should -BeLessThan $runningjobpercentage -Because "The current running job $($runningjob.JobName) has been running for $($runningjob.Diff) seconds longer than the average run time. This is more than the $runningjobpercentage % specified as the maximum"
+}
+function Assert-LastJobRun {
+    Param($lastagentjobrun,$runningjobpercentage)
+    [math]::Round($lastagentjobrun.Diff/$lastagentjobrun.AvgSec * 100) | Should -BeLessThan $runningjobpercentage -Because "The last run of job $($lastagentjobrun.JobName) was $($lastagentjobrun.duration) seconds. This is more than the $runningjobpercentage % specified as the maximum variance"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
