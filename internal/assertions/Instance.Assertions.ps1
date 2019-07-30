@@ -57,6 +57,75 @@ function Get-AllInstanceInfo {
                 } 
             }
         }
+        'DefaultTrace' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'DefaultTraceEnabled'
+                    $DefaultTrace = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $DefaultTrace = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $DefaultTrace = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
+
+        'MemoryDump' {
+            if ($There) {
+                try {
+                    $MaxDump = [pscustomobject] @{
+                        # Warning Action removes dbatools output for version too low from test results
+                        # Skip on the it will show in the results
+                        Count = (Get-DbaDump -SqlInstance $psitem -WarningAction SilentlyContinue).Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $MaxDump = [pscustomobject] @{
+                            Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $MaxDump = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+            }
+            }
+        }
+
+        'RemoteAccess' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'RemoteAccessDisabled'
+                    $RemoteAccess = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $RemoteAccess = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $RemoteAccess = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{

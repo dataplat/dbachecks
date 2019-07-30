@@ -19,7 +19,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
             }
             elseif (($connectioncheck).Edition -like "Express Edition*") {}
             else {
-                Describe "Database Mail XPs" -Tags DatabaseMailEnabled, security, $filename {
+                Describe "Database Mail XPs" -Tags DatabaseMailEnabled, CIS, security, $filename {
                     $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
                     if ($NotContactable -contains $psitem) {
                         Context "Testing Database Mail XPs on $psitem" {

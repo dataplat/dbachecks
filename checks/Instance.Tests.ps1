@@ -796,6 +796,41 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
+    Describe "Default Trace" -Tags DefaultTrace, CIS, Low, $filename {
+        $skip = Get-DbcConfigValue skip.instance.defaulttrace
+        if ($NotContactable -contains $psitem) {
+            Context "Checking Default Trace on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking Default Trace on $psitem" {
+                It "The Default Trace should be enabled on $psitem"  -Skip:$skip {
+                    Assert-DefaultTrace -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Remote Access" -Tags RemoteAccess, security, CIS, Medium, $filename {
+        $RemoteAccessDisabled = Get-DbcConfigValue policy.security.RemoteAccessDisabled
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Remote Access on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Remote Access on $psitem" {
+                It "RemoteAccess is set to $RemoteAccessDisabled on $psitem" {
+                    Assert-RemoteAccessDisabled -SQLInstance $Psitem -RemoteAccessDisabled $RemoteAccessDisabled
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
