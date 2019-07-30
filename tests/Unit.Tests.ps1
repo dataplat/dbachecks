@@ -3,6 +3,11 @@ $ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
 if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
     $ModuleBase = Split-Path $ModuleBase -Parent
 }
+
+# This should stop people making breaking changes to the tests without first altering the test
+Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
+Import-Module $ModuleBase\dbachecks.psd1
+
 $tokens = $null
 $errors = $null
 Describe "Checking that each dbachecks Pester test is correctly formatted for Power Bi and Coded correctly" -Tags UnitTest {
@@ -180,9 +185,6 @@ Describe "Database Tests Exclusions"{
         }
     }
 }
-# This should stop people making breaking changes to the tests without first altering the test
-Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
-Import-Module $ModuleBase\dbachecks.psd1
 
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
