@@ -261,6 +261,14 @@ function Assert-XpCmdShellDisabled {
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name XPCmdShellEnabled).ConfiguredValue -eq 0 | Should -Be $XpCmdShellDisabled -Because 'The XP CmdShell setting should be set correctly'
 }
 
+function Assert-RemoteAccessDisabled {
+    param (
+        $SQLInstance,
+        $RemoteAccessDisabled
+    )
+    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name RemoteAccess).ConfiguredValue -eq 0 | Should -Be $RemoteAccessDisabled -Because 'The Remote Access setting should be set correctly'
+}
+
 function Assert-ErrorLogCount {
     param (
         $SQLInstance,
