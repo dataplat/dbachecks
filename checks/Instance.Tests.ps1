@@ -85,7 +85,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
     Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, $filename {
         if ($NotContactable -contains $psitem) {
-            Context "Testing database collation on $psitem" {
+            Context "Testing SQL Engine Service on $psitem" {
                 It "Can't Connect to $Psitem" {
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
@@ -192,7 +192,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Dedicated Administrator Connection" -Tags DAC, Low, $filename {
+    Describe "Dedicated Administrator Connection" -Tags DAC, CIS, Low, $filename {
         $dac = Get-DbcConfigValue policy.dacallowed
         if ($NotContactable -contains $psitem) {
             Context "Testing Dedicated Administrator Connection on $psitem" {
@@ -329,9 +329,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
-                $count = (Get-DbaDump -SqlInstance $psitem).Count
-                It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" -Skip ($InstanceSMO.Version.Major -lt 10 ) {
-                    $Count | Should -BeLessOrEqual $maxdumps -Because 'Memory dumps often suggest issues with the SQL Server instance'
+                It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" -Skip:($InstanceSMO.Version.Major -lt 10 ) {
+                    Assert-MaxDump -AllInstanceInfo $AllInstanceInfo -maxdumps $maxdumps
                 }
             }
         }
@@ -369,7 +368,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "SA Login Renamed" -Tags SaRenamed, DISA, Medium, $filename {
+    Describe "SA Login Renamed" -Tags SaRenamed, DISA, CIS, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Checking that sa login has been renamed on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -484,7 +483,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
         }
     }
-    Describe "OLE Automation" -Tags OLEAutomation, security, Medium, $filename {
+    Describe "OLE Automation" -Tags OLEAutomation, security, CIS, Medium, $filename {
         $OLEAutomation = Get-DbcConfigValue policy.oleautomation
         if ($NotContactable -contains $psitem) {
             Context "Testing OLE Automation on $psitem" {
@@ -633,7 +632,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Error Log Count" -Tags ErrorLogCount, Low, $filename {
+    Describe "Error Log Count" -Tags ErrorLogCount, CIS, Low, $filename {
         $errorLogCount = Get-DbcConfigValue policy.errorlog.logcount
         if ($NotContactable -contains $psitem) {
             Context "Checking error log count on $psitem" {
@@ -726,7 +725,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "CLR Enabled" -Tags CLREnabled, security, High, $filename {
+    Describe "CLR Enabled" -Tags CLREnabled, security, CIS, High, $filename {
         $CLREnabled = Get-DbcConfigValue policy.security.clrenabled
         if ($NotContactable -contains $psitem) {
             Context "Testing CLR Enabled on $psitem" {
@@ -744,7 +743,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Cross Database Ownership Chaining" -Tags CrossDBOwnershipChaining, security, Medium, $filename {
+    Describe "Cross Database Ownership Chaining" -Tags CrossDBOwnershipChaining, security, CIS, Medium, $filename {
         $CrossDBOwnershipChaining = Get-DbcConfigValue policy.security.crossdbownershipchaining
         if ($NotContactable -contains $psitem) {
             Context "Testing Cross Database Ownership Chaining on $psitem" {
@@ -761,7 +760,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-    Describe "Ad Hoc Distributed Queries" -Tags AdHocDistributedQueriesEnabled, security, Medium, $filename {
+    Describe "Ad Hoc Distributed Queries" -Tags AdHocDistributedQueriesEnabled, security, CIS, Medium, $filename {
         $AdHocDistributedQueriesEnabled = Get-DbcConfigValue policy.security.AdHocDistributedQueriesEnabled
         if ($NotContactable -contains $psitem) {
             Context "Testing Ad Hoc Distributed Queries on $psitem" {
@@ -778,7 +777,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-    Describe "XP CmdShell" -Tags XpCmdShellDisabled, security, Medium, $filename {
+    Describe "XP CmdShell" -Tags XpCmdShellDisabled, security, CIS, Medium, $filename {
         $XpCmdShellDisabled = Get-DbcConfigValue policy.security.XpCmdShellDisabled
         if ($NotContactable -contains $psitem) {
             Context "Testing XP CmdShell on $psitem" {

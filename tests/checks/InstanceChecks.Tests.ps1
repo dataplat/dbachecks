@@ -697,32 +697,93 @@ InModuleScope dbachecks {
 
             It "Should return the correct results for ErrorLog Entries when there are severities" {
                 Mock Get-ErrorLogEntry {[PSCustomObject]@{
-                    LogDate     = '2019-02-14 23:00'
-                    ProcessInfo = 'spid55'
-                    Text        = 'Error: 50000, Severity: 18, State: 1.'
+                        LogDate     = '2019-02-14 23:00'
+                        ProcessInfo = 'spid55'
+                        Text        = 'Error: 50000, Severity: 18, State: 1.'
+                    }
                 }
-            }
                 (Get-AllInstanceInfo -Instance Dummy -Tags ErrorLog -There $true).ErrorLog | Should -BeOfType PSCustomObject -Because "We need entries when we have sev 17 to 24 errors"
+            }
+
+            It "Should return the correct results for Default Trace when it is enabled" {
+                Mock Get-DbaSpConfigure {[pscustomobject]@{
+                        ConfiguredValue = 1
+                    }}
+           
+                (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We need to return one when we have default trace enabled"
+            }
+
+            It "Should return the correct results for Default Trace when it is not enabled" {
+                Mock Get-DbaSpConfigure {[pscustomobject]@{
+                        ConfiguredValue = 0
+                    }}
+           
+                (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 0 -Because "We need to return zero when default trace is not enabled"
             }
         }
         Context "Checking ErrorLog Entries" {
            
             It "Should pass the test successfully when there are no Severity Errors" {
-                 # Mock for success
-            Mock Get-AllInstanceInfo {}
+                # Mock for success
+                Mock Get-AllInstanceInfo {}
                 Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when there are Severity Errors" {
                 # MOck for failing test
-            Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                ErrorLog = [PSCustomObject]@{
-                    LogDate     = '2019-02-14 23:00'
-                    ProcessInfo = 'spid55'
-                    Text        = 'Error: 50000, Severity: 18, State: 1.'
-                }
-            }}
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        ErrorLog = [PSCustomObject]@{
+                            LogDate     = '2019-02-14 23:00'
+                            ProcessInfo = 'spid55'
+                            Text        = 'Error: 50000, Severity: 18, State: 1.'
+                        }
+                    }}
                 {Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$null or empty, because these severities indicate serious problems, but got @(@{LogDate=2019-02-14 23:00; ProcessInfo=spid55; Text=Error: 50000, Severity: 18, State: 1.})."
+            }
+        }
+        Context "Checking Default Trace Entries" {
+           
+            It "Should pass the test successfully when default trace is enabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {}
+                Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when when default trace is not enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        DefaultTrace = [PSCustomObject]@{
+                            ConfiguredValue = 0
+                        }
+                    }}
+                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expect the Default Trace to be enabled but got, but got 0."
+            }
+        }
+        Context "Checking Max Dump Entries" {
+           
+            It "Should pass the test successfully when the number of dumps is less than config" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        MaxDump = [PSCustomObject]@{
+                            Count = 0
+                        }
+                    }
+                }
+                $maxdumps = 1
+                Assert-MaxDump  -AllInstanceInfo (Get-AllInstanceInfo)  -maxdumps $maxdumps
+            }
+            
+            It "Should fail the test successfully when the number of dumps is more than config" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {
+                    [PSCustomObject]@{
+                        MaxDump = [PSCustomObject]@{
+                            Count = 7
+                        }
+                    }
+                }
+                $maxdumps = 4
+                {Assert-MaxDump  -AllInstanceInfo (Get-AllInstanceInfo) -maxdumps $maxdumps} | Should -Throw -ExpectedMessage "Expected the actual value to be less than 4, because We expected less than 4 dumps but found 7. Memory dumps often suggest issues with the SQL Server instance, but got 7"
             }
         }
     }

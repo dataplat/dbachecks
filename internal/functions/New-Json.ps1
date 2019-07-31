@@ -1,5 +1,7 @@
 
 function New-Json {
+    [CmdletBinding(SupportsShouldProcess)]
+    Param()
     # Parse repo for tags and descriptions then write json
     $script:localapp = Get-DbcConfigValue -Name app.localapp
     $repos = Get-CheckRepo
@@ -11,11 +13,65 @@ function New-Json {
     $tokens = $null
     $errors = $null
     foreach ($file in $repofiles) {
+        $Check = $null
         $filename = $file.Name.Replace(".Tests.ps1", "")
+
+      #  Write-Verbose "Processing $FileName"
+      #  Write-Verbose "Getting Content of File"
         $Check = Get-Content $file -Raw
+
+        # because custom checks if they are not coded correctly will break this json creation
+        # and they wont get added nicely so that they can be targetted with tags (checks)
+        # this part will check all of the files and ensure that they have the filename variabel at the top and that
+        # each describe is using Tags not Tag and the last tag is the $filename
+
+        if ($Filename -notin ('Agent','Database','Domain','HADR','Instance','LogShipping','MaintenanceSolution','Server')) {
+
+            #all checks files MUST have this at the top
+            if ($Check -notmatch '\$filename = \$MyInvocation\.MyCommand\.Name\.Replace\("\.Tests\.ps1", ""\)') {
+                Write-Verbose "$Filename does not have the correct value at the top so we will add it"
+                $filecontent = @"
+    `$filename = `$MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
+    
+"@
+                $filecontent = $filecontent + $Check
+                if ($PSCmdlet.ShouldProcess("$($File.Name)" , "Adding the filename variable to the file")) {
+                    $Check = $null
+                    Set-Content -Path $file -Value $filecontent
+                    Write-Verbose "Getting Content of File again"                    
+                    $Check = Get-Content $file -Raw
+                }
+
+            }
+
+            ## Parse the file with AST 
+            $CheckFileAST = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors)
+
+            #Check that the tags are set correctly otherwise the json doesnt get properly created
+            $Statements = $CheckFileAST.EndBlock.statements.Extent
+            ## Ignore the filename line
+            @($Statements.Where{$PSItem.StartLineNumber -ne 1}).ForEach{
+              #  Write-Verbose "Checking the Describe Tag $($PSItem.Text.SubString(0,50) )"
+                if ($PSItem.Text -notmatch 'Describe ".*" -Tags .*,.*\$filename \{') {
+                    $RogueDescribe = $PSItem.Text.SubString(0, $PSitem.Text.IndexOf('{'))
+                    Write-Warning "The Describe Tag $RogueDescribe in $($File.Name) is not set up correctly - we will try to fix it for you"
+                    $replace = $RogueDescribe + ', $Filename '
+                    $Check = $Check -replace $RogueDescribe , $replace
+                    $Check = $Check -replace '-Tag ', '-Tags '
+                    if ($PSCmdlet.ShouldProcess("$($File.Name)" , "Fixing the tags on the files")) {
+                        Set-Content $file -Value $Check
+                        $Check = $null
+                    }
+                  #  Write-Verbose "Getting Content of File again"                    
+                    $Check = Get-Content $file -Raw
+
+                }
+            }
+        }
+
         ## Parse the file with AST 
         $CheckFileAST = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors)
-
+                    
         ## New code uses a Computer Name loop to speed up execution so need to find that as well
         $ComputerNameForEach = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
                 param ($ast) 
@@ -24,16 +80,16 @@ function New-Json {
 
         ## New code uses a Computer Name loop to speed up execution so need to find that as well
         $InstanceNameForEach = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
-            param ($ast) 
-            $ast -is [System.Management.Automation.Language.InvokeMemberExpressionAst] -and $ast.expression.Subexpression.Extent.Text -eq 'Get-Instance'
-        }, $true).Extent
+                param ($ast) 
+                $ast -is [System.Management.Automation.Language.InvokeMemberExpressionAst] -and $ast.expression.Subexpression.Extent.Text -eq 'Get-Instance'
+            }, $true).Extent
 
 
         ## Old code we can use the describes
         $Describes = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
                 param ($ast)
                 $ast.CommandElements -and
-                $ast.CommandElements[0].Value -eq 'describe'
+                $ast.CommandElements[0].Value -eq 'Describe'
             }, $true)
     
         @($describes).ForEach{
@@ -56,7 +112,7 @@ function New-Json {
                 if ($ComputerNameForEach -match $title) {
                     $type = "ComputerName"
                 }
-                elseif($InstanceNameForEach -match $title){
+                elseif ($InstanceNameForEach -match $title) {
                     $type = "Sqlinstance"
                 }
                 else {
@@ -149,14 +205,22 @@ function New-Json {
         $check.UniqueTag = $unique.Name
         $Check.Description = $Descriptions.Where{$_.UniqueTag -eq $Check.UniqueTag}.Description
     }
-    ConvertTo-Json -InputObject $collection | Out-File "$script:localapp\checks.json"
+    try {
+        if ($PSCmdlet.ShouldProcess("$script:localapp\checks.json" , "Convert Json and write to file")) {
+            ConvertTo-Json -InputObject $collection | Out-File "$script:localapp\checks.json"
+        }
+    }
+    catch {
+        Write-PSFMessage "Failed to create the json, something weird might happen now with tags and things" -Level Significant
+    }
+
 }
     
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUOzCOEIBVPTRyLwU9C16/5VvS
-# 0n+gggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU0fsGvoQJI0G5lwItZwPc8ygM
+# nrygggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -216,11 +280,11 @@ function New-Json {
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT1x/LEv8ehr+nxkYPj3V1tNu/h
-# xDANBgkqhkiG9w0BAQEFAASCAQA8fIR67YbfYDQsCNKG3V49cAPpar09CM/O2QlJ
-# DX6sIgdaQ0d5u/qD2eRWaAi+ic2cOZGZQKpT096/iwxVIIJfk0bMr0LEaBlv2UDv
-# PKNjtgqVgDHNsyDAty7240S76Km8XPfNPA6TBUkEBla2znrm8sQXZSZ7nBDsndgz
-# Rsd9WfV512qwMIp6be7ebkxfEr2LgHW5T9HOkC1xTV0vtsHrQ8+B5vUcmjoYVZSO
-# VsP7fdPxW1yAtYHv4gU+qK/k+yBFWRmAI7era9hpgjtuWf5J1jwLBZtGva3gGXZy
-# zx2ZRT99lFkTLAMu1UyomPqVYbVU8afejCOuWBjQlixrmAYv
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSFlHCk9kkbEHMP6SbUWCpFhRbv
+# szANBgkqhkiG9w0BAQEFAASCAQAiP1lNcNdaKY065b33HryiBTn57LaR6OTKewO9
+# 3JXKRI/FfKC/5a+4RlOKRZ4oSSto0fqbWejnbD+9y3+pGmVcf7BEDJRcIuD6N9b4
+# xsvyavfUoX/w5QXnmlaeLB+WukDYv1Obk0eN0oWxAFhIv900kWIKje9j2GvouJwu
+# cFetZq1yVb8qcO5O3XoIfhrkQ7aoITtAyaO4MId9OXhM/d5zq1L9IX55tTKH4y6a
+# OOCWV3FU7pZh1zPQHz/PO3bOEnG91RXHCGtwstbCe1mwyY1Qg9ogvyXmnNQOU/eZ
+# nkOaE9W4Lw0824NXGGigInpdcCaEqXKuzWCrHXKW54pd+orW
 # SIG # End signature block

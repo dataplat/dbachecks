@@ -785,7 +785,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Database Orphaned User" -Tags OrphanedUser, Medium, $filename {
+    Describe "Database Orphaned User" -Tags OrphanedUser, CIS, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database orphaned user event on $psitem" {
                 It "Can't Connect to $Psitem" {

@@ -410,5 +410,17 @@
     {
         "UniqueTag": "JobHistory",
         "Description": "Tests that the job history configuration for max number of rows in the whole agent log is greater than or equal to the specified value (default 1000) and that the max number of rows per job configuration is greater than or equal to the specified value (default 100) ."
+    },
+    {
+        "UniqueTag": "DefaultTrace",
+        "Description": "Tests that the default trace configuration is set to enabled"
+    },
+    {
+        "UniqueTag": "LongRunningJob",
+        "Description": "Tests that any currently running agent jobs have not been running for longer than the configured percentage (default 50) of time more than the average job run"
+    },
+    {
+        "UniqueTag": "LastJobRunTime",
+        "Description": "Tests that the last duration of the agent jobs were not longer than the configured percentage (default 50) of time more than the average job run"
     }
  ]
