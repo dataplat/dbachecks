@@ -132,6 +132,7 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
+        RemoteAccess = $RemoteAccess
     }
 }
 
@@ -276,10 +277,10 @@ function Assert-XpCmdShellDisabled {
 
 function Assert-RemoteAccessDisabled {
     param (
-        $SQLInstance,
+        $AllInstanceInfo,
         $RemoteAccessDisabled
     )
-    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name RemoteAccess).ConfiguredValue -eq 0 | Should -Be $RemoteAccessDisabled -Because 'The Remote Access setting should be set correctly'
+    $AllInstanceInfo.RemoteAccess.ConfiguredValue | Should -Be $RemoteAccessDisabled -Because 'The Remtote Access setting should be set correctly'
 }
 
 function Assert-ErrorLogCount {

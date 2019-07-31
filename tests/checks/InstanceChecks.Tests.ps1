@@ -629,14 +629,14 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $actual, $expected)
             Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-RemoteAccessDisabled -SQLInstance 'Dummy' -RemoteAccessDisabled $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The Remote Access setting should be set correctly, but got `$$actual"
+            {Assert-RemoteAccessDisabled -AllInstanceInfo 'Dummy' -RemoteAccessDisabled $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The Remote Access setting should be set correctly, but got `$$actual"
         }
         # again this one is different from the others as we are checking for disabled
         $TestCases = @{spconfig = 1; expected = $false}, @{spconfig = 0; expected = $true; }
         It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $expected)
             Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            Assert-RemoteAccessDisabled -SQLInstance 'Dummy' -RemoteAccessDisabled $expected
+            Assert-RemoteAccessDisabled -AllInstanceInfo 'Dummy' -RemoteAccessDisabled $expected
         }
         # Validate we have called the mock the correct number of times
         It "Should call the mocks" {
