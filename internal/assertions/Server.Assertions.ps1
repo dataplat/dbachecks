@@ -1,6 +1,8 @@
 <#
 This file is used to hold the Assertions for the Server.Tests
 
+Follow the guidance in Instance.Assertions to add new checks
+
 It starts with the Get-AllServerInfo which uses all of the unique
  tags that have been passed and gathers the required information
  which can then be used for the assertions.
