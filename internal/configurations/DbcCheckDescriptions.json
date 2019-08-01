@@ -404,6 +404,10 @@
         "Description": "Tests that the XP CmdShell configuration setting is set as specified (default true - meaning it should be disabled)"
     },
     {
+        "UniqueTag": "ScanForStartupProceduresDisabled",
+        "Description": "Tests that the Scan For Startup Procedures configuration setting is set as specified (default true - meaning it should be disabled)"
+    },
+    {
         "UniqueTag": "JobHistory",
         "Description": "Tests that the job history configuration for max number of rows in the whole agent log is greater than or equal to the specified value (default 1000) and that the max number of rows per job configuration is greater than or equal to the specified value (default 100) ."
     },

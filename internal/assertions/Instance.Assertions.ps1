@@ -80,6 +80,29 @@ function Get-AllInstanceInfo {
             }
         }
 
+        'ScanForStartupProcedures' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'ScanForStartupProcedures'
+                    $ScanForStartupProcedures = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $ScanForStartupProcedures = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $ScanForStartupProcedures = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
+
         'MemoryDump' {
             if ($There) {
                 try {
@@ -109,6 +132,7 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
+        ScanForStartupProcedures = $ScanForStartupProcedures
     }
 }
 
@@ -249,6 +273,14 @@ function Assert-XpCmdShellDisabled {
         $XpCmdShellDisabled
     )
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name XPCmdShellEnabled).ConfiguredValue -eq 0 | Should -Be $XpCmdShellDisabled -Because 'The XP CmdShell setting should be set correctly'
+}
+
+function Assert-ScanForStartupProceduresDisabled {
+    param (
+        $AllInstanceIngo,
+        $ScanForStartupProceduresDisabled
+    )
+    $AllInstanceInfo.ScanForStartupProcedures.ConfiguredValue | Should -Be $ScanForStartupProceduresDisabled -Because 'The Scan For Startup Procedures setting should be set correctly'
 }
 
 function Assert-ErrorLogCount {
