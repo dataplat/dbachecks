@@ -277,7 +277,7 @@ function Assert-XpCmdShellDisabled {
 
 function Assert-ScanForStartupProceduresDisabled {
     param (
-        $AllInstanceIngo,
+        $AllInstanceInfo,
         $ScanForStartupProceduresDisabled
     )
     $AllInstanceInfo.ScanForStartupProcedures.ConfiguredValue | Should -Be $ScanForStartupProceduresDisabled -Because 'The Scan For Startup Procedures setting should be set correctly'
