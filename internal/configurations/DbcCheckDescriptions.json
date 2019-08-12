@@ -17,7 +17,7 @@
     },
     {
         "UniqueTag": "FailedJob",
-        "Description": "Tests that enabled Agent Jobs last outcome was succeeded"
+        "Description": "Tests that enabled Agent Jobs last outcome was succeeded since specified start date (default 30 days ago) and can exclude cancelled jobs (default false)"
     },
     {
         "UniqueTag": "ValidJobOwner",
@@ -196,6 +196,10 @@
         "Description": "Tests that the Dedicated Administrator Connection configuration setting matches the specified value (default true)"
     },
     {
+        "UniqueTag": "TwoDigitYearCutoff",
+        "Description": "Tests that the 'Two Digit Year Cutoff' configuration setting matches the specified value (default 2049)"
+    },
+    {
         "UniqueTag": "NetworkLatency",
         "Description": "Tests that the Network Latency is less than the specified (default 40) ms"
     },
@@ -264,6 +268,10 @@
         "Description": "Tests that the SQL Server Error Log does not have any Severity 17-24 level entries within the specified (default 2) days"
     },
     {
+        "UniqueTag": "ErrorLogCount",
+        "Description": "Tests that the number of SQL Server Error Logs configured. Default value is -1 which means off (will use 6 files)."
+    },
+    {
         "UniqueTag": "LogShippingPrimary",
         "Description": "Tests that the Log Shipping Primary status is ok"
     },
@@ -325,7 +333,7 @@
     },
     {
         "UniqueTag": "InstanceConnection",
-        "Description": "Tests that a SQL query can be run, that the specified authentication scheme (default kerboros) is being used, that the host responds to one ping and that the host supports PS Remoting"
+        "Description": "Tests that a SQL query can be run, that the specified authentication scheme (default kerberos) is being used, that the host responds to one ping and that the host supports PS Remoting"
     },
     {
         "UniqueTag": "SPN",
@@ -361,6 +369,54 @@
     },
     {
         "UniqueTag": "DiskAllocationUnit",
-        "Description": "Tests that the disks available to the server are formatted for optimum performance (64KB allocation unit)"
+        "Description": "Tests that the disks available to the server are formatted for optimum performance (64KB allocation unit) unless a specified disk name (default none)"
+    },
+    {
+        "UniqueTag": "DatabaseExists",
+        "Description": "Tests that the databases are specified are on the instance (Note - Does not check if they are available - Use DatabaseStatus for that))"
+    },
+    {
+        "UniqueTag": "TraceFlagsExpected",
+        "Description": "Tests that the specified (default none) trace flags are running on the instance"
+    },
+    {
+        "UniqueTag": "TraceFlagsNotExpected",
+        "Description": "Tests that the specified (default none) trace flags are not running on the instance"
+    },
+    {
+        "UniqueTag": "CLREnabled",
+        "Description": "Tests that the CLR Enabled configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "CrossDBOwnershipChaining",
+        "Description": "Tests that the Cross Database Ownership Chaining configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "DatabaseMailEnabled",
+        "Description": "Tests that the Database Mail XPs configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "AdHocDistributedQueriesEnabled",
+        "Description": "Tests that the AdHoc Distributed Queries configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "XpCmdShellDisabled",
+        "Description": "Tests that the XP CmdShell configuration setting is set as specified (default true - meaning it should be disabled)"
+    },
+    {
+        "UniqueTag": "JobHistory",
+        "Description": "Tests that the job history configuration for max number of rows in the whole agent log is greater than or equal to the specified value (default 1000) and that the max number of rows per job configuration is greater than or equal to the specified value (default 100) ."
+    },
+    {
+        "UniqueTag": "DefaultTrace",
+        "Description": "Tests that the default trace configuration is set to enabled"
+    },
+    {
+        "UniqueTag": "LongRunningJob",
+        "Description": "Tests that any currently running agent jobs have not been running for longer than the configured percentage (default 50) of time more than the average job run"
+    },
+    {
+        "UniqueTag": "LastJobRunTime",
+        "Description": "Tests that the last duration of the agent jobs were not longer than the configured percentage (default 50) of time more than the average job run"
     }
- ] 
+ ]

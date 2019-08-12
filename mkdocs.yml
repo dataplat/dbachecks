@@ -1,0 +1,27 @@
+site_name: dbachecks
+repo_url: https://github.com/sqlcollaborative/dbachecks
+site_author: The Beard
+edit_uri: edit/master/docs/
+theme: readthedocs
+copyright: "dbachecks is licensed under the <a href='https://github.com/sqlcollaborative/dbachecks/raw/master/LICENSE'>MIT license"
+pages:
+  - Home: index.md
+  - Release Notes: RELEASE.md
+  - Functions:
+    - Clear-DbcPowerBiDataSource: functions/Clear-DbcPowerBiDataSource.md
+    - Export-DbcConfig: functions/Export-DbcConfig.md
+    - Get-DbcCheck: functions/Get-DbcCheck.md
+    - Get-DbcConfig: functions/Get-DbcConfig.md
+    - Get-DbcConfigValue: functions/Get-DbcConfigValue.md
+    - Get-DbcReleaseNote: functions/Get-DbcReleaseNote.md
+    - Get-DbcTagCollection: functions/Get-DbcTagCollection.md
+    - Import-DbcConfig: functions/Import-DbcConfig.md
+    - Invoke-DbcCheck: functions/Invoke-DbcCheck.md
+    - Invoke-DbcConfigFile: functions/Invoke-DbcConfigFile.md
+    - Reset-DbcConfig: functions/Reset-DbcConfig.md
+    - Save-DbcRequiredModules: functions/Save-DbcRequiredModules.md
+    - Set-DbcConfig: functions/Set-DbcConfig.md
+    - Start-DbcPowerBi: functions/Start-DbcPowerBi.md
+    - Update-DbcPowerBiDataSource: functions/Update-DbcPowerBiDataSource.md
+    - Update-DbcRequiredModules: functions/Update-DbcRequiredModules.md
+
