@@ -214,7 +214,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Context "Testing Default Log File Path on $psitem" {
                 It "Default Log File Paths on $psitem" {
                     $diskLog = Get-DbaInstanceProperty -SqlInstance localhost\dev2016 | Where-Object Name -eq DefaultLog
-                    $diskLog.Value.substring(0,1) | Should -Not -Be "C" -Because 'Dafult Log file path should not be your C:\ drive'
+                    $diskLog.Value.substring(0,1) | Should -Not -Be "C" -Because 'Dafault Log file path should not be your C:\ drive'
                 }
             }
         }
