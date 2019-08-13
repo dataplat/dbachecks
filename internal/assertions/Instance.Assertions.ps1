@@ -163,7 +163,7 @@ function Get-AllInstanceInfo {
                     $MaxDump = [pscustomobject] @{
                         # Warning Action removes dbatools output for version too low from test results
                         # Skip on the it will show in the results
-                        Count = (Get-DbaDump -SqlInstance $psitem -WarningAction SilentlyContinue).Count
+                        Count = (Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Count
                     }
                 }
                 catch {
