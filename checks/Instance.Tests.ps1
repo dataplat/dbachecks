@@ -196,6 +196,30 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
+    Describe "Default File Paths" -Tags DefaultFilePaths, $filename {
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Default File Paths on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Default Data File Path on $psitem" {
+                It "Default Data File Paths on $psitem" {
+                    $diskFile = Get-DbaInstanceProperty -SqlInstance localhost\dev2016 | Where-Object Name -eq DefaultFile
+                    $diskFile.Value.substring(0,1) | Should -Not -Be "C" -Because 'Data files should not be on your C:\ drive'
+                }
+            }
+            Context "Testing Default Log File Path on $psitem" {
+                It "Default Log File Paths on $psitem" {
+                    $diskLog = Get-DbaInstanceProperty -SqlInstance localhost\dev2016 | Where-Object Name -eq DefaultLog
+                    $diskLog.Value.substring(0,1) | Should -Not -Be "C" -Because 'Log files should not be on your C:\ drive'
+                }
+            }
+        }
+    }
+
     Describe "Dedicated Administrator Connection" -Tags DAC, CIS, Low, $filename {
         $dac = Get-DbcConfigValue policy.dacallowed
         if ($NotContactable -contains $psitem) {
