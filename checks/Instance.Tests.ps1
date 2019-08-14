@@ -1,12 +1,16 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . $PSScriptRoot/../internal/assertions/Instance.Assertions.ps1
 
+# Check out the comments at the top of Instance.Assertions for guidance on adding checks
+
+# Gather the instances we know are not contactable
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 
 # Get all the tags in use in this run 
 $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
 
 @(Get-Instance).ForEach{
+    # Try to make a connection to the instance and add to NotContactable if required
     if ($NotContactable -notcontains $psitem) {
         $Instance = $psitem
         try {
@@ -29,7 +33,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     else {
         $There = $false
     }
-    # Get the relevant information for the checks in one go to save repeated trips to the instance
+    # Get the relevant information for the checks in one go to save repeated trips to the instance and set values for Not Contactable tests if required
     $AllInstanceInfo = Get-AllInstanceInfo -Instance $InstanceSMO -Tags $Tags -There $There
     Describe "Instance Connection" -Tags InstanceConnection, Connectivity, High, $filename {
         $skipremote = Get-DbcConfigValue skip.connection.remoting

@@ -1,6 +1,83 @@
 <#
 This file is used to hold the Assertions for the Instance.Tests
 
+When adding new checks or improving existing ones - 
+
+    - Ensure your branch is up to date with the development branch
+    - In the Instance.Assertions.ps1 - Add a New code block in the switch using the unique tag name
+
+                'MemoryDump' {  # This is the unique tag
+                if ($There) {  ## we need $There to save trying to gather information from later checks for an instance that is not contactable
+                    ## Then a try catch to gather the required information for the assertion and set a variable to a customobject
+                    try {
+                        $MaxDump = [pscustomobject] @{
+                            # Warning Action removes dbatools output for version too low from test results
+                            # Skip on the it will show in the results
+                            Count = (Get-DbaDump -SqlInstance $psitem -WarningAction SilentlyContinue).Count
+                        }
+                    }
+                    # In the catch set There to false and create an object with the same name but an obvious error entry
+                    catch {
+                        $There = $false
+                        $MaxDump = [pscustomobject] @{
+                            Count = 'We Could not Connect to $Instance'
+                        }
+                    }
+                }
+                # the else matches the catch block 
+                else {
+                    $There = $false
+                    $MaxDump = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+    
+    - Create an Assertion for the Check
+
+    Name must start Assert
+    function Assert-MaxDump {
+        Pass in params for configs
+    Param($AllInstanceInfo,$maxdumps)
+    Ensure Because has good information
+    $AllInstanceInfo.MaxDump.Count | Should -BeLessThan $maxdumps -Because "We expected less than $maxdumps dumps but found $($AllInstanceInfo.MaxDump.Count). Memory dumps often suggest issues with the SQL Server instance"
+}
+
+    - In The Instance.Tests.ps1 file create the check
+
+        # Must be in its own describe block, must use an s on Tags, first tag must be unique, last tag must be $filename
+        Describe "SQL Memory Dumps" -Tags MemoryDump, Medium, $filename {
+        # Gather any config items here so that the code to match config to check works
+        $maxdumps = Get-DbcConfigValue	policy.dump.maxcount
+        # We check if the instance is contactable at the top of the file, use this block with the context title the same as the proper test below
+        if ($NotContactable -contains $psitem) {
+            Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            # The title must end $psitem
+            Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
+                # The check itself - a skip can be added from a config value if required -Skip:$Skip or per version
+                It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" -Skip:($InstanceSMO.Version.Major -lt 10 ) {
+                    # Call the assertion with any parameters here
+                    Assert-MaxDump -AllInstanceInfo $AllInstanceInfo -maxdumps $maxdumps
+                }
+            }
+        }
+    }
+
+    - In the tests\checks\InstanceChecks.Tests.ps1 file add tests for the assertions by mocking passing and failing tests following the code in the file
+    - In a NEW session - checkout your branch of dbachecks
+        cd to the root of the repo
+        import the module with 
+            ipmo .\dbachecks.psd1
+        Run the Pester tests
+
+        Invoke-Pester .\tests\ -ExcludeTag Integration -Show Fails
+
 It starts with the Get-AllInstanceInfo which uses all of the unique
  tags that have been passed and gathers the required information
  which can then be used for the assertions.
