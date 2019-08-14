@@ -794,8 +794,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-    Describe "Scan For Startup Procedures" -Tags ScanForStartupProceduresDisabled, Security, CIS, Medium, $filename {
-        $ScanForStartupProceduresDisabled = Get-DbcConfigValue policy.security.ScanForStartupProcedures
+    Describe "Scan For Startup Procedures" -Tags ScanForStartupProcedures, Security, CIS, Medium, $filename {
+        $ScanForStartupProcedures = Get-DbcConfigValue policy.security.ScanForStartupProcedures
         if ($NotContactable -contains $psitem) {
             Context "Testing Scan For Startup Procedures on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -805,8 +805,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Scan For Startup Procedures on $psitem" {
-                It "Scan For Startup Procedures is set to $ScanForStartupProceduresDisabled on $psitem" {
-                    Assert-ScanForStartupProceduresDisabled -SQLInstance $Psitem -ScanForStartupProceduresDisabled $ScanForStartupProceduresDisabled
+                It "Scan For Startup Procedures is set to $ScanForStartupProcedures on $psitem" {
+                    Assert-ScanForStartupProcedures $AllInstanceInfo
                 }
             }
         }

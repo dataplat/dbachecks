@@ -625,18 +625,18 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         # Define test cases for the results to fail test and fill expected message
         # This one is different from the others as we are checking for disabled !!
         # So the results of SPConfigure is 1, we expect $true but the result is false and the results of SPConfigure is 0, we expect $false but the result is true
-        $TestCases = @{spconfig = 1; expected = $true; actual = $false}, @{spconfig = 0; expected = $false; actual = $true}
+        $TestCases = @{spconfig = 1; expected = 1; actual = 0}, @{spconfig = 0; expected = 0; actual = 1}
         It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $actual, $expected)
             Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-ScanForStartupProceduresDisabled -SQLInstance 'Dummy' -ScanForStartupProceduresDisabled $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The Scan For Startup Procedures setting should be set correctly, but got `$$actual"
+            {Assert-ScanForStartupProcedures -AllInstanceInfo  -SQLInstance 'Dummy' -ScanForStartupProcedures $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The Scan For Startup Procedures setting should be set correctly, but got `$$actual"
         }
         # again this one is different from the others as we are checking for disabled
-        $TestCases = @{spconfig = 1; expected = $false}, @{spconfig = 0; expected = $true; }
+        $TestCases = @{spconfig = 1; expected = 0}, @{spconfig = 0; expected = 1; }
         It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $expected)
             Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            Assert-ScanForStartupProceduresDisabled -SQLInstance 'Dummy' -ScanForStartupProceduresDisabled $expected
+            Assert-ScanForStartupProcedures -SQLInstance 'Dummy' -ScanForStartupProcedures $expected
         }
         # Validate we have called the mock the correct number of times
         It "Should call the mocks" {
