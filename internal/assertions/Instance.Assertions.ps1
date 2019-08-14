@@ -146,6 +146,10 @@ function Assert-MaxDump {
     $AllInstanceInfo.MaxDump.Count | Should -BeLessThan $maxdumps -Because "We expected less than $maxdumps dumps but found $($AllInstanceInfo.MaxDump.Count). Memory dumps often suggest issues with the SQL Server instance"
 }
 
+function Assert-RemoteAccess {
+    param ($AllInstanceInfo)
+    $AllInstanceInfo.RemoteAccess.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be 0 but got $($AllInstanceInfo.RemoteAccess.ConfiguredValue)"
+}
 
 function Assert-InstanceMaxDop {
     Param(
@@ -273,14 +277,6 @@ function Assert-XpCmdShellDisabled {
         $XpCmdShellDisabled
     )
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name XPCmdShellEnabled).ConfiguredValue -eq 0 | Should -Be $XpCmdShellDisabled -Because 'The XP CmdShell setting should be set correctly'
-}
-
-function Assert-RemoteAccessDisabled {
-    param (
-        $AllInstanceInfo,
-        $RemoteAccessDisabled
-    )
-    $AllInstanceInfo.RemoteAccess.ConfiguredValue | Should -Be $RemoteAccessDisabled -Because 'The Remtote Access setting should be set correctly'
 }
 
 function Assert-ErrorLogCount {

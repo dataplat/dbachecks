@@ -54,7 +54,7 @@ Set-PSFConfig -Module dbachecks -Name policy.security.crossdbownershipchaining -
 Set-PSFConfig -Module dbachecks -Name policy.security.databasemailenabled -Validation bool -Value $false -Initialize -Description "Database Mail XPs should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.security.adhocdistributedqueriesenabled -Validation bool -Value $false -Initialize -Description "Ad Hoc Distributed Queries should be enabled `$true or disabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.security.xpcmdshelldisabled -Validation bool -Value $true -Initialize -Description "XP CmdShell should be disabled `$true or enabled `$false"
-Set-PSFConfig -Module dbachecks -Name policy.security.remoteaccess -Validation bool -Value $true -Initialize -Description "Remote Access should be disabled `$true or enabled `$false"
+Set-PSFConfig -Module dbachecks -Name policy.security.remoteaccess -Value 0 -Initialize -Description "Remote Access should be disabled 0 or enabled 1"
 
 #diskspce
 Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -Initialize -Description "Percent disk free"
