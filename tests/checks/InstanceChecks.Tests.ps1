@@ -619,35 +619,6 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Assert-MockCalled @assertMockParams
         }
     }
-    Context "Checking Scan For Startup Procedures is disabled" {
-        # Mock the version check for running tests
-        Mock Connect-DbaInstance {}
-        # Define test cases for the results to fail test and fill expected message
-        # This one is different from the others as we are checking for disabled !!
-        # So the results of SPConfigure is 1, we expect $true but the result is false and the results of SPConfigure is 0, we expect $false but the result is true
-        $TestCases = @{spconfig = 1; expected = 1; actual = 0}, @{spconfig = 0; expected = 0; actual = 1}
-        It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
-            Param($spconfig, $actual, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-ScanForStartupProcedures -AllInstanceInfo  -SQLInstance 'Dummy' -ScanForStartupProcedures $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The Scan For Startup Procedures setting should be set correctly, but got `$$actual"
-        }
-        # again this one is different from the others as we are checking for disabled
-        $TestCases = @{spconfig = 1; expected = 0}, @{spconfig = 0; expected = 1; }
-        It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
-            Param($spconfig, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            Assert-ScanForStartupProcedures -SQLInstance 'Dummy' -ScanForStartupProcedures $expected
-        }
-        # Validate we have called the mock the correct number of times
-        It "Should call the mocks" {
-            $assertMockParams = @{
-                'CommandName' = 'Get-DbaSpConfigure'
-                'Times'       = 4
-                'Exactly'     = $true
-            }
-            Assert-MockCalled @assertMockParams
-        }
-    }
     Context "Checking ErrorLog Count" {
         # if configured value is 30 and test value 30 it will pass
         It "Passes Check Correctly with the number of error log files set to 30" {
@@ -757,6 +728,24 @@ InModuleScope dbachecks {
                         }
                     }}
                 {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expect the Default Trace to be enabled but got, but got 0."
+            }
+        }
+        Context "Checking Scan For Startup Procedures Entries" {
+           
+            It "Should pass the test successfully when scan for startup procedures is disabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {}
+                Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when when default trace is enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        DefaultTrace = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    }}
+                {Assert-ScanForStoredProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expect the Scan For Startup Procedures to be enabled but got, but got 1."
             }
         }
         Context "Checking Max Dump Entries" {

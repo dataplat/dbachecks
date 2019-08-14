@@ -220,7 +220,7 @@ function Assert-DefaultTrace {
 
 function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
-    $AllInstanceInfo.ScanForStartupProcedures.ConfiguredValue | Should -Be 0 -Because "The scan for startup procedures disabled but got $($AllInstanceInfo.ScanForStartupProcedures.ConfiguredValue)"
+    $AllInstanceInfo.ScanForStartupProcedures.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be 0 (disabled) but got $($AllInstanceInfo.ScanForStartupProcedures.ConfiguredValue)"
 }
 function Assert-MaxDump {
     Param($AllInstanceInfo,$maxdumps)
