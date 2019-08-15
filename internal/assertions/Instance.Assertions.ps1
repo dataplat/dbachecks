@@ -157,6 +157,29 @@ function Get-AllInstanceInfo {
             }
         }
 
+        'OleAutomationProcedures' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'OleAutomationProceduresEnabled'
+                    $OleAutomationProcedures = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $OleAutomationProcedures = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $OleAutomationProcedures = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
+
         'MemoryDump' {
             if ($There) {
                 try {
@@ -186,6 +209,7 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
+        OleAutomationProcedures = $OleAutomationProcedures
     }
 }
 
@@ -194,6 +218,10 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.Trace.ConfiguredValue)"
 }
 
+function Assert-OleAutomationProcedures {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.OleAutomationProcedures.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be enabled but got $($AllInstanceInfo.OleAutomationProcedures.ConfiguredValue)"
+}
 function Assert-MaxDump {
     Param($AllInstanceInfo,$maxdumps)
     $AllInstanceInfo.MaxDump.Count | Should -BeLessThan $maxdumps -Because "We expected less than $maxdumps dumps but found $($AllInstanceInfo.MaxDump.Count). Memory dumps often suggest issues with the SQL Server instance"

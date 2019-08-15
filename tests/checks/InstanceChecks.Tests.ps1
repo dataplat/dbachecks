@@ -727,7 +727,25 @@ InModuleScope dbachecks {
                             ConfiguredValue = 0
                         }
                     }}
-                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expect the Default Trace to be enabled but got, but got 0."
+                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expect the Default Trace to be enabled, but got 0."
+            }
+        }
+        Context "Checking OLE Automation Procedures Entries" {
+           
+            It "Should pass the test successfully when OLE Automation Procedures is disabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {}
+                Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when when OLE Automation Procedures is not enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        OLEAutomationProcedures = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    }}
+                {Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the OLE Automation Procedures to be enabled, but got 1."
             }
         }
         Context "Checking Max Dump Entries" {

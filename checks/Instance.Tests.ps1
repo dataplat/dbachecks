@@ -815,6 +815,23 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+    Describe "OLE Automation Procedures" -Tags OLEAutomationProcedures, CIS, Low, $filename {
+        $skip = Get-DbcConfigValue skip.instance.oleautomationprocedures
+        if ($NotContactable -contains $psitem) {
+            Context "Checking OLE Automation Procedures on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking OLE Automation Procedures on $psitem" {
+                It "The OLE Automation Procedures should be disabled on $psitem"  -Skip:$skip {
+                    Assert-OLEAutomationProcedures -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
