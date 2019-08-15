@@ -175,6 +175,40 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
+    Describe "Service Account Access Level" -Tags ServiceAccountAccess, CIS, Medium, $filename {
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Service Account Access Level on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing SQL Service Account Access Level on $psitem" {
+                
+                
+                It "Testing SQL Service Account Access Level on $psitem" {
+
+                    $ServiceAccountEngine =  Get-DbaService -ComputerName $InstanceSMO.ComputerName -InstanceName $InstanceSMO.InstanceName | where ServiceType -eq "Engine" | select StartName
+                    $LocalAdmins = Invoke-Command -ComputerName $InstanceSMO.ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction Stop
+                    
+                    $ServiceAccountEngine.StartName | Should -Not -BeIn $LocalAdmins.Name -Because 'The SQL Service account should not be an Administrator!'
+                }
+                }
+                Context "Testing SQL Agent Account Access Level on $psitem" {
+                    
+
+                    It "Testing SQL Agent Account Access Level on $psitem" {
+
+                        $ServiceAccountAgent =  Get-DbaService -ComputerName $InstanceSMO.ComputerName -InstanceName $InstanceSMO.InstanceName | where ServiceType -eq "Agent" | select StartName
+                        $LocalAdmins = Invoke-Command -ComputerName $InstanceSMO.ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction Stop
+
+                        $ServiceAccountAgent.StartName | Should -Not -BeIn $LocalAdmins.Name -Because 'The SQL Agent account should not be an Administrator!'
+                    }
+                    }
+            }
+        }
+
     Describe "Backup Path Access" -Tags BackupPathAccess, Storage, DISA, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing Backup Path Access on $psitem" {
