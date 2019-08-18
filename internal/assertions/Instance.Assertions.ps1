@@ -91,6 +91,12 @@ function Assert-TempDBSize {
     @((Get-DbaDbFile -SqlInstance $Instance -Database tempdb).Where{$_.Type -eq 0}.Size.Megabyte |Select-Object -Unique).Count | Should -Be 1 -Because "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
 }
 
+function Assert-DBGrowthEvent {
+    Param($Instance)
+    
+    (Get-DatabaseDiskFreeSpace -SqlInstance $Instance).Where{$_.GrowthAchievable -eq 'true'} | Should -Be 'true' -Because "We want enough space to let all the databases grow at least once more."
+}
+
 function Assert-InstanceSupportedBuild {
     Param(
         [string]$Instance,

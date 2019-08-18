@@ -97,12 +97,10 @@ $DiskFreeSpace | ForEach-Object -Process {
             {
                 if($_.GrowthInGB -ge  $localFileSize )
                 {
-                    Write-Host $localDisk 'Don't panic, don't Panic. Time to grow the this disk mr Mainwairing'
                     [PSCustomObject]@{Computer = $computerName ; SQLInstance = $SqlInstance ; DiskFreeSpace = $localFileSize ; Growth = $_.Value ; GrowthAchievable = 'false'} 
                 }
                 else
                 {
-                    Write-Host $localDisk 'Fall in chaps, if you please... yes yes yes you look very smart'
                     [PSCustomObject]@{Computer = $computerName ; SQLInstance = $SqlInstance ; DiskFreeSpace = $localFileSize ; Growth = $_.Value ; GrowthAchievable = 'true'}
                 }
             
