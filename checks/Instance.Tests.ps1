@@ -824,7 +824,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Remote Access on $psitem" {
-                It "The Remote Access should be enabled on $psitem" -Skip:$skip {
+                It "The Remote Access should be disabled on $psitem" -Skip:$skip {
                     Assert-RemoteAccess -AllInstanceInfo $AllInstanceInfo 
                 }
             }
