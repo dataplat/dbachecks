@@ -157,24 +157,24 @@ function Get-AllInstanceInfo {
             }
         }
 
-        'ScanForStartupProcedures' {
+        'ScanForStartupProceduresDisabled' {
             if ($There) {
                 try {
                     $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'ScanForStartupProcedures'
-                    $ScanForStartupProcedures = [pscustomobject] @{
+                    $ScanForStartupProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
                 }
                 catch {
                     $There = $false
-                    $ScanForStartupProcedures = [pscustomobject] @{
+                    $ScanForStartupProceduresDisabled = [pscustomobject] @{
                             ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
             }
             else {
                 $There = $false
-                $ScanForStartupProcedures = [pscustomobject] @{
+                $ScanForStartupProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
             }
@@ -209,18 +209,18 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
-        ScanForStartupProcedures = $ScanForStartupProcedures
+        ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
     }
 }
 
 function Assert-DefaultTrace {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.Trace.ConfiguredValue)"
+    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.ConfiguredValue)"
 }
 
 function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
-    $AllInstanceInfo.ScanForStartupProcedures.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be 0 (disabled) but got $($AllInstanceInfo.ScanForStartupProcedures.ConfiguredValue)"
+    $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled but got $($AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue)"
 }
 function Assert-MaxDump {
     Param($AllInstanceInfo,$maxdumps)

@@ -717,7 +717,7 @@ InModuleScope dbachecks {
             It "Should pass the test successfully when default trace is enabled" {
                 # Mock for success
                 Mock Get-AllInstanceInfo {}
-                Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
+                Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when when default trace is not enabled" {
@@ -735,17 +735,17 @@ InModuleScope dbachecks {
             It "Should pass the test successfully when scan for startup procedures is disabled" {
                 # Mock for success
                 Mock Get-AllInstanceInfo {}
-                Assert-ScanForStoredProcedures -AllInstanceInfo (Get-AllInstanceInfo)
+                Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when when scan for startup procedures is enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    ScanForStartupProcedures = [PSCustomObject]@{
+                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
                     }}
-                {Assert-ScanForStoredProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expect the Scan For Startup Procedures to be 0 but got 1."
+                {Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the Scan For Startup Procedures to be 0 but got 1."
             }
         }
         Context "Checking Max Dump Entries" {

@@ -404,7 +404,7 @@
         "Description": "Tests that the XP CmdShell configuration setting is set as specified (default true - meaning it should be disabled)"
     },
     {
-        "UniqueTag": "ScanForStartupProcedures",
+        "UniqueTag": "ScanForStartupProceduresDisabled",
         "Description": "Tests that the Scan For Startup Procedures configuration setting is set as specified (default 0 - meaning it should be disabled)"
     },
     {
