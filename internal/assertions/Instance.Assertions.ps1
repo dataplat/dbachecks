@@ -104,24 +104,24 @@ function Get-AllInstanceInfo {
             }
         }
 
-        'RemoteAccess' {
+        'RemoteAccessDisabled' {
             if ($There) {
                 try {
                     $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'RemoteAccess'
-                    $RemoteAccess = [pscustomobject] @{
+                    $RemoteAccessDisabled = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
                 }
                 catch {
                     $There = $false
-                    $RemoteAccess = [pscustomobject] @{
+                    $RemoteAccessDisabled = [pscustomobject] @{
                             ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
             }
             else {
                 $There = $false
-                $RemoteAccess = [pscustomobject] @{
+                $RemoteAccessDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
             }
@@ -132,7 +132,7 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
-        RemoteAccess = $RemoteAccess
+        RemoteAccessDisabled = $RemoteAccessDisabled
     }
 }
 
@@ -148,7 +148,7 @@ function Assert-MaxDump {
 
 function Assert-RemoteAccess {
     param ($AllInstanceInfo)
-    $AllInstanceInfo.RemoteAccess.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be 0 but got $($AllInstanceInfo.RemoteAccess.ConfiguredValue)"
+    $AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be 0 but got $($AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue)"
 }
 
 function Assert-InstanceMaxDop {

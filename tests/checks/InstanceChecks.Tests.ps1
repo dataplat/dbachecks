@@ -741,7 +741,7 @@ InModuleScope dbachecks {
             It "Should fail the test successfully when remote access is enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                        RemoteAccess = [PSCustomObject]@{
+                        RemoteAccessDisabled = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
                     }}

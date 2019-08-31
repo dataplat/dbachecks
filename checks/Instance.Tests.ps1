@@ -813,18 +813,18 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Remote Access" -Tags RemoteAccess, Security, CIS, Medium, $filename {
-        $RemoteAccess = Get-DbcConfigValue policy.security.RemoteAccess
+    Describe "Remote Access Disabled" -Tags RemoteAccessDisabled, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.instance.remoteaccessdisabled
         if ($NotContactable -contains $psitem) {
             Context "Testing Remote Access on $psitem" {
-                It "Can't Connect to $Psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
             Context "Testing Remote Access on $psitem" {
-                It "RemoteAccess is set to $RemoteAccess on $psitem" {
+                It "The Remote Access should be enabled on $psitem" -Skip:$skip {
                     Assert-RemoteAccess -AllInstanceInfo $AllInstanceInfo 
                 }
             }
