@@ -741,11 +741,11 @@ InModuleScope dbachecks {
             It "Should fail the test successfully when when OLE Automation Procedures is not enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                        OLEAutomationProcedures = [PSCustomObject]@{
+                        OLEAutomationProceduresDisabled = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
                     }}
-                {Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the OLE Automation Procedures to be enabled, but got 1."
+                {Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0 because we expect the OLE Automation Procedures to be disabled but got 1 (enabled)."
             }
         }
         Context "Checking Max Dump Entries" {

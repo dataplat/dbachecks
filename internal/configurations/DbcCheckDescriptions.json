@@ -404,7 +404,7 @@
         "Description": "Tests that the XP CmdShell configuration setting is set as specified (default true - meaning it should be disabled)"
     },
     {
-        "UniqueTag": "OLEAutomationProcedures",
+        "UniqueTag": "OLEAutomationProceduresDisabled",
         "Description": "Tests that the OLE Automation Procedures configuration setting is set as specified (default 0 - meaning it should be disabled)"
     },
     {

@@ -157,24 +157,24 @@ function Get-AllInstanceInfo {
             }
         }
 
-        'OleAutomationProcedures' {
+        'OleAutomationProceduresDisabled' {
             if ($There) {
                 try {
                     $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'OleAutomationProceduresEnabled'
-                    $OleAutomationProcedures = [pscustomobject] @{
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
                 }
                 catch {
                     $There = $false
-                    $OleAutomationProcedures = [pscustomobject] @{
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
                             ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
             }
             else {
                 $There = $false
-                $OleAutomationProcedures = [pscustomobject] @{
+                $OleAutomationProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
             }
@@ -209,7 +209,7 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
-        OleAutomationProcedures = $OleAutomationProcedures
+        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
     }
 }
 
@@ -220,7 +220,7 @@ function Assert-DefaultTrace {
 
 function Assert-OleAutomationProcedures {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.OleAutomationProcedures.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be enabled but got $($AllInstanceInfo.OleAutomationProcedures.ConfiguredValue)"
+    $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be enabled but got $($AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue)"
 }
 function Assert-MaxDump {
     Param($AllInstanceInfo,$maxdumps)

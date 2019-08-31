@@ -487,23 +487,6 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
         }
     }
-    Describe "OLE Automation" -Tags OLEAutomation, security, CIS, Medium, $filename {
-        $OLEAutomation = Get-DbcConfigValue policy.oleautomation
-        if ($NotContactable -contains $psitem) {
-            Context "Testing OLE Automation on $psitem" {
-                It "Can't Connect to $Psitem" {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
-                }
-            }
-        }
-        else {
-            Context "Testing OLE Automation on $psitem" {
-                It "OLE Automation is set to $OLEAutomation on $psitem" {
-                    (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should -Be $OLEAutomation -Because 'OLE Automation can introduce additional security risks'
-                }
-            }
-        }
-    }
 
     Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, Low, $filename {
         $db = Get-DbcConfigValue policy.whoisactive.database
@@ -815,8 +798,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-    Describe "OLE Automation Procedures" -Tags OLEAutomationProcedures, CIS, Low, $filename {
-        $skip = Get-DbcConfigValue skip.instance.oleautomationprocedures
+    Describe "OLE Automation Procedures Disabled" -Tags OLEAutomationProceduresDisabled, CIS, Low, $filename {
+        $skip = Get-DbcConfigValue skip.instance.oleautomationproceduresdisabled
         if ($NotContactable -contains $psitem) {
             Context "Checking OLE Automation Procedures on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
