@@ -734,7 +734,11 @@ InModuleScope dbachecks {
            
             It "Should pass the test successfully when remote access is disabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {}
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    RemoteAccessDisabled = [PSCustomObject]@{
+                        ConfiguredValue = 0
+                    }
+                }}
                 Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
@@ -745,7 +749,7 @@ InModuleScope dbachecks {
                             ConfiguredValue = 1
                         }
                     }}
-                {Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the Remote Access to be enabled but got 1."
+                {Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be enabled, but got 1."
             }
         }
         Context "Checking Max Dump Entries" {
