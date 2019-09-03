@@ -156,7 +156,28 @@ function Get-AllInstanceInfo {
                     }
             }
         }
-
+        'CrossDBOwnershipChaining' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'CrossDBOwnershipChaining'
+                    $CrossDBOwnershipChaining = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $CrossDBOwnershipChaining = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $CrossDBOwnershipChaining = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
         'MemoryDump' {
             if ($There) {
                 try {
@@ -186,6 +207,7 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
+        CrossDBOwnershipChaining = $CrossDBOwnershipChaining
     }
 }
 
@@ -306,12 +328,13 @@ function Assert-CLREnabled {
 
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name IsSqlClrEnabled).ConfiguredValue -eq 1 | Should -Be $CLREnabled -Because 'The CLR Enabled should be set correctly'
 }
+function Assert-DefaultTrace {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.Trace.ConfiguredValue)"
+}
 function Assert-CrossDBOwnershipChaining {
-    param (
-        $SQLInstance,
-        $CrossDBOwnershipChaining
-    )
-    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name CrossDBOwnershipChaining).ConfiguredValue -eq 1 | Should -Be $CrossDBOwnershipChaining -Because 'The Cross Database Ownership Chaining setting should be set correctly'
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect the Cross Db Ownership Chaining to be enabled but got $($AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue)"
 }
 function Assert-AdHocDistributedQueriesEnabled {
     param (
