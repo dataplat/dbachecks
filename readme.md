@@ -167,17 +167,17 @@ Update-DbcPowerBiDataSource -Environment Prod
 We even included a command to make emailing the results easier!
 
 ```powershell
-$ouputDirectory = (Get-DbcConfigValue -Name app.maildirectory)
+$outputDirectory = (Get-DbcConfigValue -Name app.maildirectory)
 $filename = $outputDirectory + '\file.xml'
 Invoke-Dbccheck -OutputFile $fileName -OutputFormat NunitXML
 
-$outputpath = $ouputDirectory + "\index.html"
+$outputpath = $outputDirectory + "\index.html"
 $reportunit = "ModulePath\bin\ReportUnit.exe"
-& $reportunit $ouputDirectory
+& $reportunit $outputDirectory
 
 $htmlbody = Get-Content -Path $outputpath -ErrorAction SilentlyContinue | Out-String
 
-Send-MailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SMTP smtp.ad.local -body $htmlbody
+Send-MailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SMTP smtp.ad.local -BodyAsHtml $htmlbody
 ```
 
 ![image](https://user-images.githubusercontent.com/8278033/34316816-cc157d04-e79e-11e7-971d-1cfee90b2e11.png)
