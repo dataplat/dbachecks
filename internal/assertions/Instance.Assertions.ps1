@@ -203,13 +203,36 @@ function Get-AllInstanceInfo {
             }
             }
         }
+
+        'RemoteAccessDisabled' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'RemoteAccess'
+                    $RemoteAccessDisabled = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $RemoteAccessDisabled = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $RemoteAccessDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
-        ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
+        RemoteAccessDisabled = $RemoteAccessDisabled
     }
 }
 
@@ -227,6 +250,10 @@ function Assert-MaxDump {
     $AllInstanceInfo.MaxDump.Count | Should -BeLessThan $maxdumps -Because "We expected less than $maxdumps dumps but found $($AllInstanceInfo.MaxDump.Count). Memory dumps often suggest issues with the SQL Server instance"
 }
 
+function Assert-RemoteAccess {
+    param ($AllInstanceInfo)
+    $AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be enabled"
+}
 
 function Assert-InstanceMaxDop {
     Param(

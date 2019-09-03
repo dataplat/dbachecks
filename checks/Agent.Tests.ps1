@@ -19,12 +19,12 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
             }
             elseif (($connectioncheck).Edition -like "Express Edition*") {}
             else {
-                Describe "Database Mail XPs" -Tags DatabaseMailEnabled, security, $filename {
+                Describe "Database Mail XPs" -Tags DatabaseMailEnabled, CIS, security, $filename {
                     $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
                     if ($NotContactable -contains $psitem) {
                         Context "Testing Database Mail XPs on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -41,7 +41,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing SQL Agent is running on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -78,7 +78,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing DBA Operators exists on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -108,7 +108,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing failsafe operator exists on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -126,7 +126,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing database mail profile is set on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -145,7 +145,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Checking for failed enabled jobs on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -181,7 +181,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing job owners on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -206,12 +206,12 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing Agent Alerts Severity exists on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                         Context "Testing Agent Alerts MessageID exists on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -264,7 +264,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing job history configuration on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -326,7 +326,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing long running jobs on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -393,7 +393,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing last job run time on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
