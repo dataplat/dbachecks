@@ -716,7 +716,11 @@ InModuleScope dbachecks {
            
             It "Should pass the test successfully when default trace is enabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {}
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    DefaultTrace = [PSCustomObject]@{
+                        ConfiguredValue = 1
+                    }
+                }}
                 Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
@@ -727,7 +731,7 @@ InModuleScope dbachecks {
                             ConfiguredValue = 0
                         }
                     }}
-                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expect the Default Trace to be enabled but got, but got 0."
+                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expected the Default Trace to be enabled, but got 0."
             }
         }
         Context "Checking Remote Access Entries" {

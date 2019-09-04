@@ -238,7 +238,7 @@ function Get-AllInstanceInfo {
 
 function Assert-DefaultTrace {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.ConfiguredValue)"
+    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 
 function Assert-ScanForStartupProcedures {
