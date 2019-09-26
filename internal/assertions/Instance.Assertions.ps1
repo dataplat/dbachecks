@@ -233,6 +233,7 @@ function Get-AllInstanceInfo {
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
         RemoteAccessDisabled = $RemoteAccessDisabled
+        ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
     }
 }
 
@@ -243,7 +244,7 @@ function Assert-DefaultTrace {
 
 function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
-    $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled but got $($AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue)"
+    $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
 }
 function Assert-MaxDump {
     Param($AllInstanceInfo,$maxdumps)

@@ -226,6 +226,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation boo
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.remoteaccessdisabled -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.scanforstartupprocedures -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"

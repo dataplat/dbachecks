@@ -816,6 +816,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
+    Describe "Scan For Startup Procedures Disabled" -Tags ScanForStartupProceduresDisabled, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.instance.scanforstartuppoceduresdisabled
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Scan For Startup Procedures on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Scan For Startup Procedures on $psitem" {
+                It "The Scan For Startup Procedures should be disabled on $psitem" -Skip:$skip {
+                    Assert-ScanForStartupProcedures -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
+
     Describe "Remote Access Disabled" -Tags RemoteAccessDisabled, Security, CIS, Medium, $filename {
         $skip = Get-DbcConfigValue skip.instance.remoteaccessdisabled
         if ($NotContactable -contains $psitem) {
