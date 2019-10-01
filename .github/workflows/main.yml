@@ -11,6 +11,18 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install and run Pester
       run: |
-        Install-Module Pester -Force
+        $Modules = Get-ManifestValue -Path .\dbachecks.psd1 -PropertyName RequiredModules
+        $PesterVersion = $Modules.Where{$_.Get_Item('ModuleName') -eq 'Pester'}[0].Get_Item('ModuleVersion')
+        $PSFrameworkVersion = $Modules.Where{$_.Get_Item('ModuleName') -eq 'PSFramework'}[0].Get_Item('ModuleVersion')
+        $dbatoolsVersion = $Modules.Where{$_.Get_Item('ModuleName') -eq 'dbatools'}[0].Get_Item('ModuleVersion')
+
+        Install-Module Pester  -RequiredVersion $PesterVersion  -Force
+        Install-Module dbatools  -RequiredVersion $dbatoolsVersion  -Force
+        Install-Module PSFramework  -RequiredVersion $PsFrameworkVersion  -Force
+
+        Import-Module Pester  -RequiredVersion $PesterVersion  
+        Import-Module dbatools  -RequiredVersion $dbatoolsVersion  
+        Import-Module PSFramework  -RequiredVersion $PsFrameworkVersion  
+        Import-Module .\dbachecks.psd1
         Invoke-Pester .\tests -ExcludeTag Integration -Show Fails
       shell: pwsh
