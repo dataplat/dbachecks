@@ -17,6 +17,6 @@ jobs:
         echo test, and deploy your project.
     - name: Install and run Pester
       run: |
-        pwd
-        Install-Module Pester 
+        gci
+        Install-Module Pester -Force
       shell: pwsh
