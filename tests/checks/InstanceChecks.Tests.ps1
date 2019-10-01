@@ -760,7 +760,13 @@ InModuleScope dbachecks {
            
             It "Should pass the test successfully when scan for startup procedures is disabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {}
+                                # Mock for success
+                                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                                        ConfiguredValue = 0
+                                    }
+                                }
+                            }
                 Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
@@ -771,7 +777,7 @@ InModuleScope dbachecks {
                             ConfiguredValue = 1
                         }
                     }}
-                {Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the Scan For Startup Procedures to be 0 but got 1."
+                {Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected the scan for startup procedures to be disabled, but got 1."
             }
         }
         Context "Checking Max Dump Entries" {
