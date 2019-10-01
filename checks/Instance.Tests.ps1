@@ -798,6 +798,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Scan For Startup Procedures" -Tags ScanForStartupProceduresDisabled, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.instance.scanforstartupproceduresdisabled
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Scan For Startup Procedures on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Scan For Startup Procedures on $psitem" {
+                It "Scan For Startup Procedures should be disabled on $psitem" -Skip:$skip {
+                    Assert-ScanForStartupProcedures -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
     Describe "Default Trace" -Tags DefaultTrace, CIS, Low, $filename {
         $skip = Get-DbcConfigValue skip.instance.defaulttrace
         if ($NotContactable -contains $psitem) {

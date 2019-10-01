@@ -756,6 +756,24 @@ InModuleScope dbachecks {
                 {Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be enabled, but got 1."
             }
         }
+        Context "Checking Scan For Startup Procedures Entries" {
+           
+            It "Should pass the test successfully when scan for startup procedures is disabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {}
+                Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when when scan for startup procedures is enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    }}
+                {Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the Scan For Startup Procedures to be 0 but got 1."
+            }
+        }
         Context "Checking Max Dump Entries" {
            
             It "Should pass the test successfully when the number of dumps is less than config" {
