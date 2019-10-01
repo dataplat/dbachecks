@@ -21,5 +21,9 @@ jobs:
         Install-Module PSFramework  -RequiredVersion $PsFrameworkVersion  -Force
 
         Import-Module .\dbachecks.psd1
-        Invoke-Pester .\tests -ExcludeTag Integration -Show Fails
+        $PesterResults = Invoke-Pester .\tests -ExcludeTag Integration -Show Fails -PassThru
+        If($PesterResults.FailedCount -ne 0){
+          Write-Warning "Some Tests Failed - See results above"
+          Write-Error
+        }
       shell: pwsh
