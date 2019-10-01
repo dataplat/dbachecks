@@ -1,6 +1,6 @@
 name: PR-Pester
 
-on:
+on: [push, pull_request]
   pull_request:
     branches:
     - development
