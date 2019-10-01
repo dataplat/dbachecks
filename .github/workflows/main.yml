@@ -9,14 +9,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
     - name: Install and run Pester
       run: |
-        gci
         Install-Module Pester -Force
+        Invoke-Pester .\tests -ExcludeTag Integration -Show Fails
       shell: pwsh
