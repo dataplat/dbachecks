@@ -24,6 +24,6 @@ jobs:
         $PesterResults = Invoke-Pester .\tests -ExcludeTag Integration -Show Fails -PassThru
         If($PesterResults.FailedCount -ne 0){
           Write-Warning "Some Tests Failed - See results above"
-          Write-Error
+          [System.Environment]::Exit(1)
         }
       shell: pwsh
