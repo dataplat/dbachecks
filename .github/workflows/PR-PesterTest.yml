@@ -29,13 +29,3 @@ jobs:
           [System.Environment]::Exit(1)
         }
       shell: powershell
-
-      action "Trigger Azure Pipelines" {
-      uses = "Azure/github-actions/pipelines@master"
-  env = {
-		AZURE_DEVOPS_URL = "<Azure DevOps URL>"
-		AZURE_DEVOPS_PROJECT = "<Azure DevOps Project Name>"
-		AZURE_PIPELINE_NAME= "<Azure Pipeline Name>"
-	}
-  secrets = ["AZURE_DEVOPS_TOKEN"]
-}
