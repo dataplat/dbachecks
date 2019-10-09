@@ -157,13 +157,36 @@ function Get-AllInstanceInfo {
             }
         }
 
+        'ScanForStartupProceduresDisabled' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'ScanForStartupProcedures'
+                    $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
+
         'MemoryDump' {
             if ($There) {
                 try {
                     $MaxDump = [pscustomobject] @{
                         # Warning Action removes dbatools output for version too low from test results
                         # Skip on the it will show in the results
-                        Count = (Get-DbaDump -SqlInstance $psitem -WarningAction SilentlyContinue).Count
+                        Count = (Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Count
                     }
                 }
                 catch {
@@ -180,25 +203,58 @@ function Get-AllInstanceInfo {
             }
             }
         }
+
+        'RemoteAccessDisabled' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'RemoteAccess'
+                    $RemoteAccessDisabled = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $RemoteAccessDisabled = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $RemoteAccessDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
+        RemoteAccessDisabled = $RemoteAccessDisabled
+        ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled 
     }
 }
 
 function Assert-DefaultTrace {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.Trace.ConfiguredValue)"
+    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 
+function Assert-ScanForStartupProcedures {
+    param ($AllInstanceInfo)
+    $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
+}
 function Assert-MaxDump {
     Param($AllInstanceInfo,$maxdumps)
     $AllInstanceInfo.MaxDump.Count | Should -BeLessThan $maxdumps -Because "We expected less than $maxdumps dumps but found $($AllInstanceInfo.MaxDump.Count). Memory dumps often suggest issues with the SQL Server instance"
 }
 
+function Assert-RemoteAccess {
+    param ($AllInstanceInfo)
+    $AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be enabled"
+}
 
 function Assert-InstanceMaxDop {
     Param(
@@ -327,7 +383,6 @@ function Assert-XpCmdShellDisabled {
     )
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name XPCmdShellEnabled).ConfiguredValue -eq 0 | Should -Be $XpCmdShellDisabled -Because 'The XP CmdShell setting should be set correctly'
 }
-
 function Assert-ErrorLogCount {
     param (
         $SQLInstance,
