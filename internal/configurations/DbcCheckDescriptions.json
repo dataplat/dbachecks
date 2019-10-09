@@ -4,7 +4,7 @@
         "Description": "Tests that the SQL Agent Account is running and set to automatic"
     },
     {
-        "UniqueTag": "Default File Path",
+        "UniqueTag": "DefaultFilePath",
         "Description": "Tests that the default file path for an instance is not the C drive"
     },
     {
