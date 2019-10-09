@@ -4,10 +4,6 @@
         "Description": "Tests that the SQL Agent Account is running and set to automatic"
     },
     {
-        "UniqueTag": "DefaultFilePath",
-        "Description": "Tests that the default file path for an instance is not the C drive"
-    },
-    {
         "UniqueTag": "DbaOperator",
         "Description": "Tests that the specified (default blank) DBA Operators exist and have the correct email address"
     },
@@ -398,6 +394,10 @@
     {
         "UniqueTag": "DatabaseMailEnabled",
         "Description": "Tests that the Database Mail XPs configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "DefaultFilePath",
+        "Description": "Tests that the default file path for an instance is not the C drive"
     },
     {
         "UniqueTag": "AdHocDistributedQueriesEnabled",
