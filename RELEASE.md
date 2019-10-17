@@ -1,3 +1,11 @@
+## Date 17th October
+Thank you Shane @SOZDBA
+    Improved Documentation
+Thank you Gareth NewMan
+    Added New Check - Default File Path
+
+##Latest
+
 ## Date 1st October 2019
 Thank you Rob
 Fixed some merge issues with a load of code :-(
@@ -14,8 +22,6 @@ Thank you Richard Imenes
     Fixed dead links in readme #702
 Thank you Benjamin Schenk
     Fixed Send-MailMessage in readme #705
-
-##Latest
 
 ## Date 30th July 2019
 Thank you Rob ;-)
