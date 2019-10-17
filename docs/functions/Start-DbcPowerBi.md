@@ -30,13 +30,6 @@ Start-DbcPowerBi -Path \\nas\projects\dbachecks.pbix
 
 Launches \\\\nas\projects\dbachecks.pbix using "C:\windows\Temp\dbachecks\*.json" as the datasource
 
-### EXAMPLE 3
-```
-Start-DbcPowerBi -Path \\nas\projects\dbachecks.pbix -DataSource "C:\windows\Temp\dbachecks.json"
-```
-
-Launches \\\\nas\projects\dbachecks.pbix using "C:\windows\Temp\dbachecks.json" as the datasource
-
 ## PARAMETERS
 
 ### -Path
