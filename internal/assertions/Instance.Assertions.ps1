@@ -164,17 +164,40 @@ function Get-AllInstanceInfo {
                     $ScanForStartupProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
+                    catch {
+                        $There = $false
+                        $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                                ConfiguredValue = 'We Could not Connect to $Instance'
+                        }
+                    }
+                }              
+                else {
+                    $There = $false
+                    $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                    $CrossDBOwnershipChaining = [pscustomobject] @{
+                            ConfiguredValue = 'We Could not Connect to $Instance'
+                        }
+                }
+            }
+
+            'CrossDBOwnershipChaining' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'CrossDBOwnershipChaining'
+                    $CrossDBOwnershipChaining = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
                 }
                 catch {
                     $There = $false
-                    $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                    $CrossDBOwnershipChaining = [pscustomobject] @{
                             ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
             }
             else {
                 $There = $false
-                $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                $CrossDBOwnershipChaining = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
             }
@@ -233,6 +256,8 @@ function Get-AllInstanceInfo {
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
         RemoteAccessDisabled = $RemoteAccessDisabled
+        CrossDBOwnershipChaining = $CrossDBOwnershipChaining
+        ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
     }
 }
 
@@ -243,7 +268,7 @@ function Assert-DefaultTrace {
 
 function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
-    $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled but got $($AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue)"
+    $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
 }
 function Assert-MaxDump {
     Param($AllInstanceInfo,$maxdumps)
@@ -361,12 +386,13 @@ function Assert-CLREnabled {
 
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name IsSqlClrEnabled).ConfiguredValue -eq 1 | Should -Be $CLREnabled -Because 'The CLR Enabled should be set correctly'
 }
+function Assert-DefaultTrace {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.Trace.ConfiguredValue)"
+}
 function Assert-CrossDBOwnershipChaining {
-    param (
-        $SQLInstance,
-        $CrossDBOwnershipChaining
-    )
-    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name CrossDBOwnershipChaining).ConfiguredValue -eq 1 | Should -Be $CrossDBOwnershipChaining -Because 'The Cross Database Ownership Chaining setting should be set correctly'
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect the Cross Db Ownership Chaining to be disabled"
 }
 function Assert-AdHocDistributedQueriesEnabled {
     param (
