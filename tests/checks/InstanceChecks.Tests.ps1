@@ -537,30 +537,20 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         }
     }
     Context "Checking Cross DB Ownership Chaining" {
-        # Mock the version check for running tests
-        Mock Connect-DbaInstance {}
-        # Define test cases for the results to fail test and fill expected message
-        # So the results of SPConfigure is 1, we expect $false but the result is true and the results of SPConfigure is 0, we expect $true but the result is false
-        $TestCases = @{spconfig = 1; expected = $false; actual = $true}, @{spconfig = 0; expected = $true; actual = $false}
-        It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
-            Param($spconfig, $actual, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-CrossDBOwnershipChaining -SQLInstance 'Dummy' -CrossDBOwnershipChaining $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The Cross Database Ownership Chaining setting should be set correctly, but got `$$actual"
+        It "Should pass the test successfully when cross db ownership chaining is disabled" {
+            # Mock for success
+            Mock Get-AllInstanceInfo {}
+            Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
         }
-        $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
-        It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
-            Param($spconfig, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            Assert-CrossDBOwnershipChaining -SQLInstance 'Dummy' -CrossDBOwnershipChaining $expected
-        }
-        # Validate we have called the mock the correct number of times
-        It "Should call the mocks" {
-            $assertMockParams = @{
-                'CommandName' = 'Get-DbaSpConfigure'
-                'Times'       = 4
-                'Exactly'     = $true
-            }
-            Assert-MockCalled @assertMockParams
+        
+        It "Should fail the test successfully when cross db ownership chaining is enabled" {
+            # Mock for failing test
+            Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    CrossDBOwnershipChaining = [PSCustomObject]@{
+                        ConfiguredValue = 0
+                    }
+                }}
+            {Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the cross db ownership chaining to be disabled but got 1."
         }
     }
     Context "Checking AdHoc Distributed Queries Enabled" {
