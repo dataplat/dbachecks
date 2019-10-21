@@ -396,12 +396,24 @@
         "Description": "Tests that the Database Mail XPs configuration setting is set as specified (default false)"
     },
     {
+        "UniqueTag": "DefaultFilePath",
+        "Description": "Tests that the default file path for an instance is not the C drive"
+    },
+    {
         "UniqueTag": "AdHocDistributedQueriesEnabled",
         "Description": "Tests that the AdHoc Distributed Queries configuration setting is set as specified (default false)"
     },
     {
         "UniqueTag": "XpCmdShellDisabled",
         "Description": "Tests that the XP CmdShell configuration setting is set as specified (default true - meaning it should be disabled)"
+    },
+    {
+        "UniqueTag": "RemoteAccessDisabled",
+        "Description": "Tests that the Remote Access configuration setting is set as specified (default true - meaning it should be disabled)"
+    },
+    {
+        "UniqueTag": "ScanForStartupProceduresDisabled",
+        "Description": "Tests that the Scan For Startup Procedures configuration setting is set as specified (default 0 - meaning it should be disabled)"
     },
     {
         "UniqueTag": "JobHistory",
