@@ -80,6 +80,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
  [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
  [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
+ [-ConfigPolicySecurityRemoteaccessdisabled <Object>]
+ [-ConfigPolicySecurityScanforstartupproceduresdisabled <Object>]
  [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
  [-ConfigPolicyServerExcludeDiskAllocationUnit <Object>] [-ConfigPolicyStorageBackuppath <Object>]
  [-ConfigPolicyTraceflagsExpected <Object>] [-ConfigPolicyTraceflagsNotexpected <Object>]
@@ -93,7 +95,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
  [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
  [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
- [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipLogfilecounttest <Object>]
+ [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
+ [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
  [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
  [-ConfigSkipTempdbfilesonc <Object>] [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
@@ -174,6 +177,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
  [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
  [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
+ [-ConfigPolicySecurityRemoteaccessdisabled <Object>]
+ [-ConfigPolicySecurityScanforstartupproceduresdisabled <Object>]
  [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
  [-ConfigPolicyServerExcludeDiskAllocationUnit <Object>] [-ConfigPolicyStorageBackuppath <Object>]
  [-ConfigPolicyTraceflagsExpected <Object>] [-ConfigPolicyTraceflagsNotexpected <Object>]
@@ -187,7 +192,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
  [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
  [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
- [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipLogfilecounttest <Object>]
+ [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
+ [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
  [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
  [-ConfigSkipTempdbfilesonc <Object>] [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
@@ -2741,6 +2747,36 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigPolicySecurityRemoteaccessdisabled
+{{ Fill ConfigPolicySecurityRemoteaccessdisabled Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicySecurityScanforstartupproceduresdisabled
+{{ Fill ConfigPolicySecurityScanforstartupproceduresdisabled Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigPolicySecurityXpcmdshelldisabled
 {{ Fill ConfigPolicySecurityXpcmdshelldisabled Description }}
 
@@ -3148,6 +3184,36 @@ Accept wildcard characters: False
 
 ### -ConfigSkipInstanceModeldbgrowth
 {{ Fill ConfigSkipInstanceModeldbgrowth Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipInstanceRemoteaccessdisabled
+{{ Fill ConfigSkipInstanceRemoteaccessdisabled Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipInstanceScanforstartupproceduresdisabled
+{{ Fill ConfigSkipInstanceScanforstartupproceduresdisabled Description }}
 
 ```yaml
 Type: Object
