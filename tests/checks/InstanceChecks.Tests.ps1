@@ -716,8 +716,12 @@ InModuleScope dbachecks {
            
             It "Should pass the test successfully when default trace is enabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {}
-                Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    DefaultTrace = [PSCustomObject]@{
+                        ConfiguredValue = 1
+                    }
+                }}
+                Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when when default trace is not enabled" {
@@ -726,7 +730,8 @@ InModuleScope dbachecks {
                         DefaultTrace = [PSCustomObject]@{
                             ConfiguredValue = 0
                         }
-                    }}
+                    }
+                }
                 {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expect the Default Trace to be enabled, but got 0."
             }
         }
@@ -744,8 +749,57 @@ InModuleScope dbachecks {
                         OLEAutomationProceduresDisabled = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
-                    }}
+                    }
+                }
                 {Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0 because we expect the OLE Automation Procedures to be disabled but got 1 (enabled)."
+            }
+        }
+        Context "Checking Remote Access Entries" {
+           
+            It "Should pass the test successfully when remote access is disabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    RemoteAccessDisabled = [PSCustomObject]@{
+                        ConfiguredValue = 0
+                    }
+                }
+            }
+                Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when remote access is enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        RemoteAccessDisabled = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    }
+                }
+                {Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be enabled, but got 1."
+            }
+        }
+        Context "Checking Scan For Startup Procedures Entries" {
+           
+            It "Should pass the test successfully when scan for startup procedures is disabled" {
+                # Mock for success
+                                # Mock for success
+                                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                                        ConfiguredValue = 0
+                                    }
+                                }
+                            }
+                Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when when scan for startup procedures is enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    }}
+                {Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected the scan for startup procedures to be disabled, but got 1."
             }
         }
         Context "Checking Max Dump Entries" {

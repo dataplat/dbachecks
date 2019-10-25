@@ -17,14 +17,14 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
             if ($null -eq $InstanceSMO.version) {
                 $NotContactable += $Instance
             }
-            elseif (($connectioncheck).Edition -like "Express Edition*") {}
+            elseif (($connectioncheck).Edition -like "Express Edition*") { }
             else {
-                Describe "Database Mail XPs" -Tags DatabaseMailEnabled, security, $filename {
+                Describe "Database Mail XPs" -Tags DatabaseMailEnabled, CIS, security, $filename {
                     $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
                     if ($NotContactable -contains $psitem) {
                         Context "Testing Database Mail XPs on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -41,7 +41,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing SQL Agent is running on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -78,7 +78,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing DBA Operators exists on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -108,7 +108,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing failsafe operator exists on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -126,7 +126,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing database mail profile is set on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -145,7 +145,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Checking for failed enabled jobs on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -154,7 +154,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         $startdate = (Get-Date).AddDays( - $maxdays)
                         Context "Checking for failed enabled jobs since $startdate on $psitem" {
                             $excludecancelled = Get-DbcConfigValue agent.failedjob.excludecancelled
-                            @(Get-DbaAgentJob -SqlInstance $psitem | Where-Object {$Psitem.IsEnabled -and ($psitem.LastRunDate -gt $startdate)}).ForEach{
+                            @(Get-DbaAgentJob -SqlInstance $psitem | Where-Object { $Psitem.IsEnabled -and ($psitem.LastRunDate -gt $startdate) }).ForEach{
                                 if ($psitem.LastRunOutcome -eq "Unknown") {
                                     It -Skip "$psitem's last run outcome on $($psitem.SqlInstance) is unknown" {
                                         $psitem.LastRunOutcome | Should -Be "Succeeded" -Because 'All Agent Jobs should have succeed this one is unknown - you need to investigate the failed jobs'
@@ -181,7 +181,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing job owners on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -206,12 +206,12 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing Agent Alerts Severity exists on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                         Context "Testing Agent Alerts MessageID exists on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -220,19 +220,19 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         Context "Testing Agent Alerts Severity exists on $psitem" {
                             ForEach ($sev in $severity) {
                                 It "$psitem should have Severity $sev Alert" {
-                                    ($alerts.Where{$psitem.Severity -eq $sev}) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
+                                    ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
                                 }
                                 It "$psitem should have Severity $sev Alert enabled" {
-                                    ($alerts.Where{$psitem.Severity -eq $sev}) | Should -be $true -Because "Configured alerts should be enabled"
+                                    ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Configured alerts should be enabled"
                                 }
                                 if ($AgentAlertJob) {
                                     It "$psitem should have Jobname for Severity $sev Alert" {
-                                        ($alerts.Where{$psitem.Severity -eq $sev}).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
+                                        ($alerts.Where{ $psitem.Severity -eq $sev }).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
                                     }
                                 }
                                 if ($AgentAlertNotification) {
                                     It "$psitem should have notification for Severity $sev Alert" {
-                                        ($alerts.Where{$psitem.Severity -eq $sev}).HasNotification -in 1, 2, 3, 4, 5, 6, 7  | Should -be $true -Because "Should notify by Agent notifications"
+                                        ($alerts.Where{ $psitem.Severity -eq $sev }).HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -be $true -Because "Should notify by Agent notifications"
                                     }
                                 }
                             }
@@ -240,19 +240,19 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         Context "Testing Agent Alerts MessageID exists on $psitem" {
                             ForEach ($mid in $messageid) {
                                 It "$psitem should have Message_ID $mid Alert" {
-                                    ($alerts.Where{$psitem.messageid -eq $mid}) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
+                                    ($alerts.Where{ $psitem.messageid -eq $mid }) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
                                 }
                                 It "$psitem should have Message_ID $mid Alert enabled" {
-                                    ($alerts.Where{$psitem.messageid -eq $mid}) | Should -be $true -Because "Configured alerts should be enabled"
+                                    ($alerts.Where{ $psitem.messageid -eq $mid }) | Should -be $true -Because "Configured alerts should be enabled"
                                 }
                                 if ($AgentAlertJob) {
                                     It "$psitem should have Job name for Message_ID $mid Alert" {
-                                        ($alerts.Where{$psitem.messageid -eq $mid}).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
+                                        ($alerts.Where{ $psitem.messageid -eq $mid }).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
                                     }
                                 }
                                 if ($AgentAlertNotification) {
                                     It "$psitem should have notification for Message_ID $mid Alert" {
-                                        ($alerts.Where{$psitem.messageid -eq $mid}).HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -be $true -Because "Should notify by Agent notifications"
+                                        ($alerts.Where{ $psitem.messageid -eq $mid }).HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -be $true -Because "Should notify by Agent notifications"
                                     }
                                 }
                             }
@@ -264,7 +264,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     if ($NotContactable -contains $psitem) {
                         Context "Testing job history configuration on $psitem" {
                             It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                             }
                         }
                     }
@@ -291,12 +291,12 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                     }      
                 }
-
-                Describe "Long Running Agent Jobs" -Tags LongRunningJob, $filename {
-                    $skip = Get-DbcConfigValue skip.agent.longrunningjobs
-                    $runningjobpercentage = Get-DbcConfigValue agent.longrunningjob.percentage
-                    if (-not $skip) {
-                        $query = "SELECT 
+            }
+            Describe "Long Running Agent Jobs" -Tags LongRunningJob, $filename {
+                $skip = Get-DbcConfigValue skip.agent.longrunningjobs
+                $runningjobpercentage = Get-DbcConfigValue agent.longrunningjob.percentage
+                if (-not $skip) {
+                    $query = "SELECT 
     JobName, 
     AvgSec,
     start_execution_date as StartDate,
@@ -321,21 +321,20 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
     GROUP BY j.name,j.job_id,start_execution_date,stop_execution_date,ja.job_id
     ) AS t
     ORDER BY JobName;"
-                        $runningjobs = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
-                    }
-                    if ($NotContactable -contains $psitem) {
-                        Context "Testing long running jobs on $psitem" {
-                            It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
-                            }
+                    $runningjobs = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
+                }
+                if ($NotContactable -contains $psitem) {
+                    Context "Testing long running jobs on $psitem" {
+                        It "Can't Connect to $Psitem" {
+                            $false | Should -BeTrue -Because "The instance should be available to be connected to!"
                         }
                     }
-                    else {    
-                        Context "Testing long running jobs on $psitem" {
-                            foreach ($runningjob in $runningjobs| Where-Object {$_.AvgSec -ne 0}) {
-                                It "Running job $($runningjob.JobName) duration should be less than $runningjobpercentage % of average run time on $psitem" -Skip:$skip {
-                                    Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
-                                }
+                }
+                else {    
+                    Context "Testing long running jobs on $psitem" {
+                        foreach ($runningjob in $runningjobs | Where-Object { $_.AvgSec -ne 0 }) {
+                            It "Running job $($runningjob.JobName) duration should not be more than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
+                                Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
                             }
                         }
                     }   
@@ -390,17 +389,19 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         DROP Table #dbachecksAverageRunTime"
                         $lastagentjobruns = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
                     }
-                    if ($NotContactable -contains $psitem) {
-                        Context "Testing last job run time on $psitem" {
-                            It "Can't Connect to $Psitem" {
-                                $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+                else {    
+                    Context "Testing last job run time on $psitem" {
+                        foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
+                            It "Job $($lastagentjobrun.JobName) last run duration should be not be greater than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
+                                Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
                             }
                         }
                     }
                     else {    
                         Context "Testing last job run time on $psitem" {
-                            foreach ($lastagentjobrun in $lastagentjobruns | Where-Object {$_.AvgSec -ne 0}) {
-                                It "Job $($lastagentjobrun.JobName) last run duration should be less than $runningjobpercentage % of average run time on $psitem" -Skip:$skip {
+                            foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
+                                It "Job $($lastagentjobrun.JobName) last run duration should be not be greater than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
                                     Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
                                 }
                             }
@@ -415,8 +416,8 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUiubvXEyxk23NrmXhsS+dYutt
-# bD6gggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU/8W9J42jlnLnom4+HFoVIGfE
+# u4KgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -476,11 +477,11 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSn/Tgg0eO8yGEDKucWs7tJiREG
-# RTANBgkqhkiG9w0BAQEFAASCAQAvH4jWAv/eVytRllMBCiQMj1FySxM62Mzn/NQN
-# mB1+KBybhJhORq9wOItiE7eSsiSKIxctAAKbdpom8mc9a7/IHmmk4aRdpDqCBrQl
-# xcUNXBc/qIHoRCov1WBo+dtLkPSTxxlkox52UR+3R1/DpEM7yd8dcOI+++xuYacB
-# By3e5KA5fEUMd6SRAsGF6i2Pb+AdxHCdobZG4sv7Mr2CPJy18jhwRMXS+5Qi5Uav
-# KBUq9hCBYheVLQllMQClBeV4OVlQ9BH0MTYbCESqIIvNaSpvsH4sWYTJvH5UJBJZ
-# DLb7MdJapj+pbnaRZaxz3UxwrqNKyxF+Vp/KnmtaPMkrg/IB
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQBC47MVcWp52vpLo1Ci/6QKSmI
+# 3DANBgkqhkiG9w0BAQEFAASCAQBE8Qn2XnezpEpAG+z7uKYFYTInzhD4geYqvOx3
+# irsxCKiEFsrUcM3YcSkgFGb3TIfL1VUbgqBHegSQ1Jl2tukMbbBL9DqfTP3gdnca
+# GUaOecOkg6JLNAmwFm5TFkt0P8bkWNZcDlI97MlOkOY28y83by2U1Lew3s9ZuiK2
+# 9roWxpX7gV6lQCAmoRY4qV3YZJrQXw5945vOK7S9PdanAXOA0Wksgn/cpNZkJRxd
+# 58MxW4cBPP12VELyg14iYuKNbzn0/u4xDFiFQMbeBnIFVhFyypFDiL8OPNUvBGco
+# u/E+0NVt32e8528Z5XEnu9DdpHTy444zKB2ymPKWWrNCAH4r
 # SIG # End signature block

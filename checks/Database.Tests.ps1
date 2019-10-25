@@ -36,7 +36,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing database collation on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -62,7 +62,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing suspect pages on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -86,7 +86,7 @@ $ExcludedDatabases += $ExcludeDatabase
             if ($NotContactable -contains $psitem) {
                 Context "Testing Backup Restore & Integrity Checks on $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
@@ -118,7 +118,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "VerifyOnly tests of last backups on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -143,7 +143,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Database Owners on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -165,7 +165,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Database Owners on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -187,7 +187,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Last Good DBCC CHECKDB on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -217,7 +217,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Column Identity Usage on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -248,7 +248,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Recovery Model on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -271,7 +271,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing duplicate indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -298,7 +298,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Unused indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -324,7 +324,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Disabled indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -345,7 +345,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing database growth event on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -366,7 +366,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing page verify on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -409,7 +409,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Close on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -429,7 +429,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Shrink on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -451,7 +451,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing last full backups on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -475,7 +475,7 @@ $ExcludedDatabases += $ExcludeDatabase
             if ($NotContactable -contains $psitem) {
                 Context "Testing last diff backups on $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
@@ -499,7 +499,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing last log backups on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -522,7 +522,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Database VLFs on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -544,7 +544,7 @@ $ExcludedDatabases += $ExcludeDatabase
             if ($NotContactable -contains $psitem) {
                 Context "Testing Log File count for $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
@@ -568,7 +568,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Log File size for $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -597,7 +597,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing for files likely to grow soon on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -623,7 +623,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing for balanced FileGroups on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -653,7 +653,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Checking that encryption certificates have not expired on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -676,7 +676,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Create Statistics on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -696,7 +696,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Update Statistics on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -716,7 +716,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Auto Update Statistics Asynchronously on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -739,7 +739,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing datafile growth type on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -770,7 +770,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing database trustworthy option on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -789,7 +789,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing database orphaned user event on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -809,7 +809,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing database is not in PseudoSimple recovery model on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -828,7 +828,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing database compatibility level matches server compatibility level on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -847,7 +847,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -876,7 +876,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Database MaxDop setting is correct on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -899,7 +899,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Database status is correct on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -923,7 +923,7 @@ $ExcludedDatabases += $ExcludeDatabase
         if ($NotContactable -contains $psitem) {
             Context "Database exists on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false  |  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }

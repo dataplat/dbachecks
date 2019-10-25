@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.2.11'
+    ModuleVersion          = '1.2.15'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -131,15 +131,13 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 30th July 2019
-Thank you Rob ;-)
-Added two new checks #239
-    LastJobRunTime and LongRunningJob
-Added four new configs
-    skip.agent.longrunningjobs
-    skip.agent.lastjobruntime
-    agent.longrunningjob.percentage
-    agent.lastjobruntime.percentage
+## Date 17th October
+Thank you Shane @SOZDBA
+    Improved Documentation
+Thank you Gareth NewMan
+    Added New Check - Default File Path
+
+##Latest
 
 Run Get-DbcReleaseNotes for all release notes
             "
