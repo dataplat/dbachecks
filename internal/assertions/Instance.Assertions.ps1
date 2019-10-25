@@ -168,16 +168,16 @@ function Get-AllInstanceInfo {
                     $There = $false
                     $CrossDBOwnershipChaining = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
                 }
             }
+            else {
+                $There = $false
+                $CrossDBOwnershipChaining = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
         }
-        else {
-            $There = $false
-            $CrossDBOwnershipChaining = [pscustomobject] @{
-                    ConfiguredValue = 'We Could not Connect to $Instance'
-                }
-        }
-    }
         'ScanForStartupProceduresDisabled' {
             if ($There) {
                 try {
@@ -200,7 +200,6 @@ function Get-AllInstanceInfo {
                     }
             }
         }
-
         'MemoryDump' {
             if ($There) {
                 try {
@@ -221,7 +220,7 @@ function Get-AllInstanceInfo {
                 $There = $false
                 $MaxDump = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
-            }
+                }
             }
         }
 
@@ -390,7 +389,7 @@ function Assert-DefaultTrace {
 }
 function Assert-CrossDBOwnershipChaining {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect the Cross Db Ownership Chaining to be enabled but got $($AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue)"
+    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect the Cross Db Ownership Chaining to be enabled but should be disabled"
 }
 function Assert-AdHocDistributedQueriesEnabled {
     param (
