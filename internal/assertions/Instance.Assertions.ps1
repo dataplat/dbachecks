@@ -274,7 +274,7 @@ function Assert-MaxDump {
 
 function Assert-RemoteAccess {
     param ($AllInstanceInfo)
-    $AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be enabled"
+    $AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be disabled"
 }
 
 function Assert-InstanceMaxDop {
@@ -389,7 +389,7 @@ function Assert-DefaultTrace {
 }
 function Assert-CrossDBOwnershipChaining {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect the Cross Db Ownership Chaining to be enabled but should be disabled"
+    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect Cross Db Ownership Chaining to be disabled"
 }
 function Assert-AdHocDistributedQueriesEnabled {
     param (
