@@ -267,7 +267,7 @@ function Assert-DefaultTrace {
 
 function Assert-OleAutomationProcedures {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled but got $($AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue)"
+    $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
 }
     function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
