@@ -167,7 +167,7 @@ function Get-AllInstanceInfo {
                 }
                 catch {
                     $There = $false
-                    $OleAutomationProceduresDisabled = = [pscustomobject] @{
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                 }
             }
