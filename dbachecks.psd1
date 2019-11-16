@@ -131,11 +131,9 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 17th October
-Thank you Shane @SOZDBA
-    Improved Documentation
-Thank you Gareth NewMan
-    Added New Check - Default File Path
+## Date 16th November
+Thank you Matt @matt2005
+    Removed rogue else from Agents Tests #713
 
 ##Latest
 
