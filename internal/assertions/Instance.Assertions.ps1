@@ -179,12 +179,8 @@ function Get-AllInstanceInfo {
                 }
         }
     }
-<<<<<<< HEAD
     
     'ScanForStartupProceduresDisabled' {
-=======
-        'ScanForStartupProceduresDisabled' {
->>>>>>> upstream/development
             if ($There) {
                 try {
                     $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'ScanForStartupProcedures'
@@ -286,12 +282,8 @@ function Get-AllInstanceInfo {
         MaxDump = $MaxDump
         OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
         RemoteAccessDisabled = $RemoteAccessDisabled
-<<<<<<< HEAD
         CrossDBOwnershipChaining = $CrossDBOwnershipChaining
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
-=======
-        ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled 
->>>>>>> upstream/development
     }
 }
 
@@ -300,23 +292,16 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 
-<<<<<<< HEAD
 function Assert-CrossDBOwnershipChaining {
     Param($AllInstanceInfo)
     $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect the Cross Db Ownership Chaining to be disabled"
 }
 
-=======
->>>>>>> upstream/development
 function Assert-OleAutomationProcedures {
     Param($AllInstanceInfo)
     $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
 }
-<<<<<<< HEAD
 function Assert-ScanForStartupProcedures {
-=======
-    function Assert-ScanForStartupProcedures {
->>>>>>> upstream/development
     param ($AllInstanceInfo)
     $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
 }

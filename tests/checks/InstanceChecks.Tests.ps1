@@ -536,23 +536,6 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Assert-MockCalled @assertMockParams
         }
     }
-    Context "Checking Cross DB Ownership Chaining" {
-        It "Should pass the test successfully when cross db ownership chaining is disabled" {
-            # Mock for success
-            Mock Get-AllInstanceInfo {}
-            Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
-        }
-        
-        It "Should fail the test successfully when cross db ownership chaining is enabled" {
-            # Mock for failing test
-            Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    CrossDBOwnershipChaining = [PSCustomObject]@{
-                        ConfiguredValue = 0
-                    }
-                }}
-            {Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the cross db ownership chaining to be disabled but got 1."
-        }
-    }
     Context "Checking AdHoc Distributed Queries Enabled" {
         # Mock the version check for running tests
         Mock Connect-DbaInstance {}
@@ -713,7 +696,7 @@ InModuleScope dbachecks {
                 Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
-            It "Should fail the test successfully when when default trace is not enabled" {
+            It "Should fail the test successfully when when default trace is disabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
                         DefaultTrace = [PSCustomObject]@{
@@ -796,6 +779,27 @@ InModuleScope dbachecks {
                         }
                     }}
                 {Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected the scan for startup procedures to be disabled, but got 1."
+            }
+        }
+        Context "Checking Cross DB Ownership Chaining" {
+            It "Should pass the test successfully when cross db ownership chaining is disabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    CrossDBOwnershipChaining = [PSCustomObject]@{
+                        ConfiguredValue = 0
+                    }
+                }}
+                Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when cross db ownership chaining is enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        CrossDBOwnershipChaining = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    }}
+                {Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the cross db ownership chaining to be disabled, but got 1."
             }
         }
         Context "Checking Max Dump Entries" {
