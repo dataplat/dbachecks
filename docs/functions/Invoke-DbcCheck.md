@@ -80,6 +80,7 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
  [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
  [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
+ [-ConfigPolicySecurityOleautomationproceduresdisabled <Object>]
  [-ConfigPolicySecurityRemoteaccessdisabled <Object>]
  [-ConfigPolicySecurityScanforstartupproceduresdisabled <Object>]
  [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
@@ -95,7 +96,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
  [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
  [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
- [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
+ [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
+ [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
  [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
@@ -177,6 +179,7 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
  [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
  [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
+ [-ConfigPolicySecurityOleautomationproceduresdisabled <Object>]
  [-ConfigPolicySecurityRemoteaccessdisabled <Object>]
  [-ConfigPolicySecurityScanforstartupproceduresdisabled <Object>]
  [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
@@ -192,7 +195,8 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
  [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
  [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
- [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
+ [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
+ [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
  [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
@@ -2747,6 +2751,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigPolicySecurityOleautomationproceduresdisabled
+{{ Fill ConfigPolicySecurityOleautomationproceduresdisabled Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigPolicySecurityRemoteaccessdisabled
 {{ Fill ConfigPolicySecurityRemoteaccessdisabled Description }}
 
@@ -3184,6 +3203,21 @@ Accept wildcard characters: False
 
 ### -ConfigSkipInstanceModeldbgrowth
 {{ Fill ConfigSkipInstanceModeldbgrowth Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipInstanceOleautomationproceduresdisabled
+{{ Fill ConfigSkipInstanceOleautomationproceduresdisabled Description }}
 
 ```yaml
 Type: Object
