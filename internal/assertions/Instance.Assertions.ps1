@@ -157,6 +157,28 @@ function Get-AllInstanceInfo {
             }
         }
 
+        'OleAutomationProceduresDisabled' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'OleAutomationProceduresEnabled'
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        else {
+            $There = $false
+            $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                    ConfiguredValue = 'We Could not Connect to $Instance'
+                }
+        }
+    }
         'ScanForStartupProceduresDisabled' {
             if ($There) {
                 try {
@@ -232,6 +254,7 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
+        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
         RemoteAccessDisabled = $RemoteAccessDisabled
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled 
     }
@@ -242,7 +265,11 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 
-function Assert-ScanForStartupProcedures {
+function Assert-OleAutomationProcedures {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
+}
+    function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
     $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
 }
