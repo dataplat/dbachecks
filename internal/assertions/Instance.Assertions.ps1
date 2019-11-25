@@ -157,30 +157,55 @@ function Get-AllInstanceInfo {
             }
         }
 
-        'ScanForStartupProceduresDisabled' {
+        'OleAutomationProceduresDisabled' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'OleAutomationProceduresEnabled'
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        else {
+            $There = $false
+            $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                    ConfiguredValue = 'We Could not Connect to $Instance'
+                }
+        }
+    }
+    
+    'ScanForStartupProceduresDisabled' {
             if ($There) {
                 try {
                     $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'ScanForStartupProcedures'
                     $ScanForStartupProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
-                    catch {
-                        $There = $false
-                        $ScanForStartupProceduresDisabled = [pscustomobject] @{
-                                ConfiguredValue = 'We Could not Connect to $Instance'
-                        }
-                    }
-                }              
-                else {
+                }
+                catch {
                     $There = $false
                     $ScanForStartupProceduresDisabled = [pscustomobject] @{
-                    $CrossDBOwnershipChaining = [pscustomobject] @{
                             ConfiguredValue = 'We Could not Connect to $Instance'
-                        }
+                    }
                 }
             }
+            else {
+                $There = $false
+                $ScanForStartupProceduresDisabled = [pscustomobject] @{
+                $CrossDBOwnershipChaining = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
+    }
 
-            'CrossDBOwnershipChaining' {
+    'CrossDBOwnershipChaining' {
             if ($There) {
                 try {
                     $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'CrossDBOwnershipChaining'
@@ -203,7 +228,7 @@ function Get-AllInstanceInfo {
             }
         }
 
-        'MemoryDump' {
+    'MemoryDump' {
             if ($There) {
                 try {
                     $MaxDump = [pscustomobject] @{
@@ -224,37 +249,38 @@ function Get-AllInstanceInfo {
                 $MaxDump = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
             }
-            }
         }
+    }
 
-        'RemoteAccessDisabled' {
-            if ($There) {
-                try {
-                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'RemoteAccess'
-                    $RemoteAccessDisabled = [pscustomobject] @{
-                        ConfiguredValue = $SpConfig.ConfiguredValue
-                    }
-                }
-                catch {
-                    $There = $false
-                    $RemoteAccessDisabled = [pscustomobject] @{
-                            ConfiguredValue = 'We Could not Connect to $Instance'
-                    }
+    'RemoteAccessDisabled' {
+        if ($There) {
+            try {
+                $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'RemoteAccess'
+                $RemoteAccessDisabled = [pscustomobject] @{
+                    ConfiguredValue = $SpConfig.ConfiguredValue
                 }
             }
-            else {
+            catch {
                 $There = $false
                 $RemoteAccessDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
-                    }
+                }
             }
         }
+        else {
+            $There = $false
+            $RemoteAccessDisabled = [pscustomobject] @{
+                    ConfiguredValue = 'We Could not Connect to $Instance'
+                }
+        }
+    }
         Default {}
     }
     [PSCustomObject]@{
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
+        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
         RemoteAccessDisabled = $RemoteAccessDisabled
         CrossDBOwnershipChaining = $CrossDBOwnershipChaining
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
@@ -266,6 +292,15 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 
+function Assert-CrossDBOwnershipChaining {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect the Cross Db Ownership Chaining to be disabled"
+}
+
+function Assert-OleAutomationProcedures {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
+}
 function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
     $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
@@ -353,7 +388,6 @@ function Assert-TraceFlag {
         [int[]]$ExpectedTraceFlag
     )
     if ($null -eq $ExpectedTraceFlag) {
-        $a = (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag
         (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
     else {

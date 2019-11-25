@@ -1,3 +1,32 @@
+## Date 16th November
+Thank you Matt @matt2005
+    Removed rogue else from Agents Tests #713
+
+##Latest
+
+## Date 17th October
+Thank you Shane @SOZDBA
+    Improved Documentation
+Thank you Gareth NewMan
+    Added New Check - Default File Path
+
+## Date 1st October 2019
+Thank you Rob
+Fixed some merge issues with a load of code :-(
+Created GitHub Action to run Pester Checks on PR
+Thank you @TracyBoggiano
+Added New Checks 
+    RemoteAccessDisabled
+    ScanForStartUpProcedures
+Thank you Gareth Newman
+    Improved wording in tests #700 , #697
+    Fix incorrect calculation in last agent run time #696 #698
+Fixed bug in AllInstanceInfo
+Thank you Richard Imenes 
+    Fixed dead links in readme #702
+Thank you Benjamin Schenk
+    Fixed Send-MailMessage in readme #705
+
 ## Date 30th July 2019
 Thank you Rob ;-)
 Added two new checks #239
@@ -7,8 +36,6 @@ Added four new configs
     skip.agent.lastjobruntime
     agent.longrunningjob.percentage
     agent.lastjobruntime.percentage
-
-##Latest
 
 ## Date 29th July 2019
 Thank you @TracyBoggiano
