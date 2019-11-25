@@ -732,7 +732,7 @@ InModuleScope dbachecks {
                         }
                     }
                 }
-                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expect the Default Trace to be enabled, but got 0."
+                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expected the Default Trace to be enabled, but got 0."
             }
         }
         Context "Checking OLE Automation Procedures Entries" {
