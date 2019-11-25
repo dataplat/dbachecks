@@ -677,10 +677,9 @@ InModuleScope dbachecks {
             }
 
             It "Should return the correct results for Default Trace when it is enabled" {
-                Mock Get-DbaSpConfigure {[pscustomobject]@{
-                        ConfiguredValue = 1
+                Mock Get-DbaSpConfigure {@{
+                        'ConfiguredValue' = 1
                     }}
-           
                 (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We need to return one when we have default trace enabled"
             }
 
@@ -730,8 +729,35 @@ InModuleScope dbachecks {
                         DefaultTrace = [PSCustomObject]@{
                             ConfiguredValue = 0
                         }
-                    }}
+                    }
+                }
                 {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expected the Default Trace to be enabled, but got 0."
+            }
+        }
+        Context "Checking OLE Automation Procedures Entries" {
+           
+            It "Should pass the test successfully when OLE Automation Procedures is disabled" {
+                # Mock for success
+                # This should pass when the configured value for OleAutomationProcedures enabled is 0 (ie disabled)
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    OleAutomationProceduresDisabled = [PSCustomObject]@{
+                        ConfiguredValue = 0
+                    }
+                }
+            }
+                Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when when OLE Automation Procedures is enabled" {
+                # Mock for failing test
+                # This should pass when the configured value for OleAutomationProcedures enabled is 1 (ie enabled)
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    OleAutomationProceduresDisabled = [PSCustomObject]@{
+                        ConfiguredValue = 1
+                    }
+                }
+            }
+                {Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the OLE Automation Procedures to be disabled, but got 1."
             }
         }
         Context "Checking Remote Access Entries" {
@@ -742,7 +768,8 @@ InModuleScope dbachecks {
                     RemoteAccessDisabled = [PSCustomObject]@{
                         ConfiguredValue = 0
                     }
-                }}
+                }
+            }
                 Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
@@ -752,7 +779,8 @@ InModuleScope dbachecks {
                         RemoteAccessDisabled = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
-                    }}
+                    }
+                }
                 {Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be enabled, but got 1."
             }
         }

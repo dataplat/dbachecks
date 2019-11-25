@@ -131,9 +131,9 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 16th November
-Thank you Matt @matt2005
-    Removed rogue else from Agents Tests #713
+## Date 25th November
+Thank you Tracey tboggiano
+    Added new CIS Check for OLE AUtomation Procedures to be disabled #707
 
 ##Latest
 
