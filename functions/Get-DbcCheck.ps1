@@ -8,6 +8,9 @@
     .PARAMETER Pattern
         May be any string, supports wildcards.
 
+    .PARAMETER Group
+        To be able to filter by group
+
     .PARAMETER EnableException
         By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
         This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -30,6 +33,7 @@ function Get-DbcCheck {
     [CmdletBinding()]
     param (
         [string]$Pattern,
+        [string]$Group,
         [switch]$EnableException
     )
    
@@ -42,9 +46,6 @@ function Get-DbcCheck {
                         $_.Group -match $Pattern -or $_.Description -match $Pattern -or
                         $_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern -or $_.Type -match $Pattern
                     }
-                    @($output).ForEach{
-                        Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags', 'Config', 'Description'
-                    }
                 }
             }
             else {
@@ -53,17 +54,21 @@ function Get-DbcCheck {
                         $_.Group -like $Pattern -or $_.Description -like $Pattern -or
                         $_.UniqueTag -like $Pattern -or $_.AllTags -like $Pattern -or $_.Type -like $Pattern
                     }
-                    @($output).ForEach{
-                        Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags' , 'Config', 'Description'
-                    }
                 }
             }
         }
         else {
             $output = Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json
-            @($output).ForEach{
-                Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags', 'Config', 'Description'
+        }
+        if ($Group) {
+            $output = @($output).ForEach{ 
+                $psitem | Where-Object {
+                    $_.Group -eq $Group
+                } 
             }
+        }
+        @($output).ForEach{
+            Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags', 'Config', 'Description'
         }
     }
 }
