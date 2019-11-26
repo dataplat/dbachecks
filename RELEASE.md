@@ -2,6 +2,8 @@
 Thank you Tracey @tboggiano
     Added new CIS Check for OLE AUtomation Procedures to be disabled #707
     Moving the Cross DB Ownership Chaining check into the AllInstance check to help speed up checks #708
+Thank you Rob
+    Fixing the Tags so that they are picked up by AllInstanceInfo Fixes #715
 
 ##Latest
 
