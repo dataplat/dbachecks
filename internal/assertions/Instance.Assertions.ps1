@@ -415,7 +415,7 @@ function Assert-CLREnabled {
 
 function Assert-CrossDBOwnershipChaining {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect Cross Db Ownership Chaining to be disabled"
+    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expected the Cross DB Ownership Chaining to be disabled"
 }
 
 function Assert-AdHocDistributedQueriesEnabled {
