@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.2.18'
+    ModuleVersion          = '1.2.19'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -131,9 +131,10 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 25th November
+## Date 26th November
 Thank you Tracey tboggiano
     Added new CIS Check for OLE AUtomation Procedures to be disabled #707
+    Moving the Cross DB Ownership Chaining check into the AllInstance check to help speed up checks #708
 
 ##Latest
 
