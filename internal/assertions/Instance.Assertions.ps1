@@ -169,16 +169,40 @@ function Get-AllInstanceInfo {
                     $There = $false
                     $OleAutomationProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
                 }
             }
+            else {
+                $There = $false
+                $OleAutomationProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
         }
-        else {
-            $There = $false
-            $ScanForStartupProceduresDisabled = [pscustomobject] @{
-                    ConfiguredValue = 'We Could not Connect to $Instance'
+
+        'CrossDBOwnershipChaining' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'CrossDBOwnershipChaining'
+                    $CrossDBOwnershipChaining = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
                 }
+                catch {
+                    $There = $false
+                    $CrossDBOwnershipChaining = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $CrossDBOwnershipChaining = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
         }
-    }
+
         'ScanForStartupProceduresDisabled' {
             if ($There) {
                 try {
@@ -201,7 +225,6 @@ function Get-AllInstanceInfo {
                     }
             }
         }
-
         'MemoryDump' {
             if ($There) {
                 try {
@@ -222,7 +245,7 @@ function Get-AllInstanceInfo {
                 $There = $false
                 $MaxDump = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
-            }
+                }
             }
         }
 
@@ -254,9 +277,10 @@ function Get-AllInstanceInfo {
         ErrorLog = $ErrorLog
         DefaultTrace = $DefaultTrace
         MaxDump = $MaxDump
+        CrossDBOwnershipChaining = $CrossDBOwnershipChaining
+        ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
+        RemoteAccess = $RemoteAccessDisabled
         OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
-        RemoteAccessDisabled = $RemoteAccessDisabled
-        ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled 
     }
 }
 
@@ -269,7 +293,7 @@ function Assert-OleAutomationProcedures {
     Param($AllInstanceInfo)
     $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
 }
-    function Assert-ScanForStartupProcedures {
+function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
     $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
 }
@@ -280,7 +304,7 @@ function Assert-MaxDump {
 
 function Assert-RemoteAccess {
     param ($AllInstanceInfo)
-    $AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be enabled"
+    $AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be disabled"
 }
 
 function Assert-InstanceMaxDop {
@@ -356,7 +380,6 @@ function Assert-TraceFlag {
         [int[]]$ExpectedTraceFlag
     )
     if ($null -eq $ExpectedTraceFlag) {
-        $a = (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag
         (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
     else {
@@ -389,13 +412,12 @@ function Assert-CLREnabled {
 
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name IsSqlClrEnabled).ConfiguredValue -eq 1 | Should -Be $CLREnabled -Because 'The CLR Enabled should be set correctly'
 }
+
 function Assert-CrossDBOwnershipChaining {
-    param (
-        $SQLInstance,
-        $CrossDBOwnershipChaining
-    )
-    (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name CrossDBOwnershipChaining).ConfiguredValue -eq 1 | Should -Be $CrossDBOwnershipChaining -Because 'The Cross Database Ownership Chaining setting should be set correctly'
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expected the Cross DB Ownership Chaining to be disabled"
 }
+
 function Assert-AdHocDistributedQueriesEnabled {
     param (
         $SQLInstance,

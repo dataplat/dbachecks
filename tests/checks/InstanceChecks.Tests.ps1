@@ -536,33 +536,6 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Assert-MockCalled @assertMockParams
         }
     }
-    Context "Checking Cross DB Ownership Chaining" {
-        # Mock the version check for running tests
-        Mock Connect-DbaInstance {}
-        # Define test cases for the results to fail test and fill expected message
-        # So the results of SPConfigure is 1, we expect $false but the result is true and the results of SPConfigure is 0, we expect $true but the result is false
-        $TestCases = @{spconfig = 1; expected = $false; actual = $true}, @{spconfig = 0; expected = $true; actual = $false}
-        It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
-            Param($spconfig, $actual, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-CrossDBOwnershipChaining -SQLInstance 'Dummy' -CrossDBOwnershipChaining $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The Cross Database Ownership Chaining setting should be set correctly, but got `$$actual"
-        }
-        $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
-        It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
-            Param($spconfig, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            Assert-CrossDBOwnershipChaining -SQLInstance 'Dummy' -CrossDBOwnershipChaining $expected
-        }
-        # Validate we have called the mock the correct number of times
-        It "Should call the mocks" {
-            $assertMockParams = @{
-                'CommandName' = 'Get-DbaSpConfigure'
-                'Times'       = 4
-                'Exactly'     = $true
-            }
-            Assert-MockCalled @assertMockParams
-        }
-    }
     Context "Checking AdHoc Distributed Queries Enabled" {
         # Mock the version check for running tests
         Mock Connect-DbaInstance {}
@@ -683,7 +656,7 @@ InModuleScope dbachecks {
                 (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We need to return one when we have default trace enabled"
             }
 
-            It "Should return the correct results for Default Trace when it is not enabled" {
+            It "Should return the correct results for Default Trace when it is disabled" {
                 Mock Get-DbaSpConfigure {[pscustomobject]@{
                         ConfiguredValue = 0
                     }}
@@ -711,6 +684,28 @@ InModuleScope dbachecks {
                 {Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$null or empty, because these severities indicate serious problems, but got @(@{LogDate=2019-02-14 23:00; ProcessInfo=spid55; Text=Error: 50000, Severity: 18, State: 1.})."
             }
         }
+        Context "Checking Cross DB Ownership Chaining" {
+            It "Should pass the test successfully when cross db ownership chaining is disabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    CrossDBOwnershipChaining = [PSCustomObject]@{
+                        ConfiguredValue = 0}
+                    }}
+
+                    Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when cross db ownership chaining is enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        CrossDBOwnershipChaining = [PSCustomObject]@{
+                            ConfiguredValue = 1}
+                    }}
+
+                {Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected the Cross DB Ownership Chaining to be disabled, but got 1."
+            }
+        }
+
         Context "Checking Default Trace Entries" {
            
             It "Should pass the test successfully when default trace is enabled" {
@@ -723,7 +718,7 @@ InModuleScope dbachecks {
                 Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
-            It "Should fail the test successfully when when default trace is not enabled" {
+            It "Should fail the test successfully when when default trace is disabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
                         DefaultTrace = [PSCustomObject]@{
@@ -781,20 +776,20 @@ InModuleScope dbachecks {
                         }
                     }
                 }
-                {Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be enabled, but got 1."
+                
+                {Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be disabled, but got 1."
             }
         }
         Context "Checking Scan For Startup Procedures Entries" {
            
             It "Should pass the test successfully when scan for startup procedures is disabled" {
                 # Mock for success
-                                # Mock for success
-                                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
-                                        ConfiguredValue = 0
-                                    }
-                                }
-                            }
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                        ConfiguredValue = 0
+                    }
+                }
+            }
                 Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
             }
             

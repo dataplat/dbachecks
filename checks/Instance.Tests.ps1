@@ -770,9 +770,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-
     Describe "Cross Database Ownership Chaining" -Tags CrossDBOwnershipChaining, security, CIS, Medium, $filename {
-        $CrossDBOwnershipChaining = Get-DbcConfigValue policy.security.crossdbownershipchaining
         if ($NotContactable -contains $psitem) {
             Context "Testing Cross Database Ownership Chaining on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -782,8 +780,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Cross Database Ownership Chaining on $psitem" {
-                It "Cross Database Ownership Chaining is set to $CrossDBOwnershipChaining on $psitem" {
-                    Assert-CrossDBOwnershipChaining -SQLInstance $Psitem -CrossDBOwnershipChaining $CrossDBOwnershipChaining
+                It "Cross Database Ownership Chaining should be disabled on $psitem" {
+                    Assert-CrossDBOwnershipChaining -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
