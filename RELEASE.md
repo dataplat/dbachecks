@@ -1,6 +1,7 @@
-## Date 25th November
-Thank you Tracey tboggiano
+## Date 26th November
+Thank you Tracey @tboggiano
     Added new CIS Check for OLE AUtomation Procedures to be disabled #707
+    Moving the Cross DB Ownership Chaining check into the AllInstance check to help speed up checks #708
 
 ##Latest
 
