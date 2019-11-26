@@ -304,7 +304,7 @@ function Assert-MaxDump {
 
 function Assert-RemoteAccess {
     param ($AllInstanceInfo)
-    $AllInstanceInfo.RemoteAccessDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be disabled"
+    $AllInstanceInfo.RemoteAccess.ConfiguredValue | Should -Be 0 -Because "We expected Remote Access to be disabled"
 }
 
 function Assert-InstanceMaxDop {

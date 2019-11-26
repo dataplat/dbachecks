@@ -19,7 +19,7 @@ Describe "Testing Get-CheckInformation" -Tag Get-CheckInformation, Unittest {
     }
     Context "Output" {
         $results = (Get-Content $ModuleBase\get-check.json) -join "`n"| ConvertFrom-Json
-        Mock Get-DbcCheck {$results}
+        Mock Get-DbcCheck {$results.Where{$_.Group -eq $Group}} -ParameterFilter {$Group -and $Group -in ('Server','Database')}
         It "Should Return All of the checks for a group when the Check equals the group and nothing excluded" {
             Get-CheckInformation -Group Server -Check Server | Should -Be 'PowerPlan', 'InstanceConnection', 'Connectivity', 'SPN', 'DiskCapacity', 'Storage', 'DISA', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit' -Because 'When the Check is specified and is a group it should return all of the tags for that group and not the groupname if nothing is exclueded'
         }
@@ -32,11 +32,11 @@ Describe "Testing Get-CheckInformation" -Tag Get-CheckInformation, Unittest {
         It "Should Return two checks for a group when two unique tags are specified and nothing excluded" {
             Get-CheckInformation -Group Server -Check SPN,InstanceConnection | Should -Be  'SPN', 'InstanceConnection' -Because 'When a Check is specified it should return just that check'
         }
-        It "Should return a none-unique tag if a none-unique tag is specified and nothing is excluded"{
-            Get-CheckInformation -Group Database -Check LastBackup | Should -Be 'LastBackup' -Because 'When a none-unique tag is specified it should return just that tag'
+        It "Should return a the unique tags for the none-unique tag if a none-unique tag is specified and nothing is excluded"{
+            Get-CheckInformation -Group Database -Check LastBackup | Should -Be 'TestLastBackup', 'TestLastBackupVerifyOnly', 'LastFullBackup', 'LastDiffBackup', 'LastLogBackup' -Because 'When a none-unique tag is specified it should return all of the unique tags'
         }
-        It "Should return two none-unique tags if two none-unique tags are specified and nothing is excluded"{
-            Get-CheckInformation -Group Database -Check LastBackup, DISA | Should -Be 'LastBackup','DISA' -Because 'When a none-unique tag is specified it should return just that tag'
+        It "Should return the unique tags for the none-unique tags if two none-unique tags are specified and nothing is excluded"{
+            Get-CheckInformation -Group Database -Check LastBackup, MaxDop  | Should -Be 'TestLastBackup', 'TestLastBackupVerifyOnly', 'LastFullBackup', 'LastDiffBackup', 'LastLogBackup', 'MaxDopDatabase', 'MaxDopInstance' -Because 'When a none-unique tag is specified it should return all of the unique tags'
         }
         It "Should Return All of the checks for a group except the excluded ones when the Check equals the group and one check is excluded" {
             Get-CheckInformation -Group Server -Check Server -ExcludeCheck PowerPlan | Should -Be  'InstanceConnection', 'Connectivity', 'SPN', 'DiskCapacity', 'Storage', 'DISA', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit' -Because 'When the Check is specified and is a group it should return all of the tags for that group except the excluded one and not the groupname'
