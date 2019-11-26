@@ -1,10 +1,18 @@
+## Date 25th November
+Thank you Tracey tboggiano
+    Added new CIS Check for OLE AUtomation Procedures to be disabled #707
+
+##Latest
+
+## Date 16th November
+Thank you Matt @matt2005
+    Removed rogue else from Agents Tests #713
+
 ## Date 17th October
 Thank you Shane @SOZDBA
     Improved Documentation
 Thank you Gareth NewMan
     Added New Check - Default File Path
-
-##Latest
 
 ## Date 1st October 2019
 Thank you Rob

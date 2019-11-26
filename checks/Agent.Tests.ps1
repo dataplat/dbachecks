@@ -389,15 +389,6 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         DROP Table #dbachecksAverageRunTime"
                         $lastagentjobruns = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
                     }
-                }
-                else {    
-                    Context "Testing last job run time on $psitem" {
-                        foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
-                            It "Job $($lastagentjobrun.JobName) last run duration should be not be greater than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
-                                Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
-                            }
-                        }
-                    }
                     else {    
                         Context "Testing last job run time on $psitem" {
                             foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
@@ -405,8 +396,8 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                                     Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
                                 }
                             }
-                        }
-                    }   
+                        }  
+                    }
                 }
             }
         }
@@ -416,8 +407,8 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU/8W9J42jlnLnom4+HFoVIGfE
-# u4KgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUMQncZfyqvmhKY/g0TqgpOFZh
+# BaCgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -477,11 +468,11 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQBC47MVcWp52vpLo1Ci/6QKSmI
-# 3DANBgkqhkiG9w0BAQEFAASCAQBE8Qn2XnezpEpAG+z7uKYFYTInzhD4geYqvOx3
-# irsxCKiEFsrUcM3YcSkgFGb3TIfL1VUbgqBHegSQ1Jl2tukMbbBL9DqfTP3gdnca
-# GUaOecOkg6JLNAmwFm5TFkt0P8bkWNZcDlI97MlOkOY28y83by2U1Lew3s9ZuiK2
-# 9roWxpX7gV6lQCAmoRY4qV3YZJrQXw5945vOK7S9PdanAXOA0Wksgn/cpNZkJRxd
-# 58MxW4cBPP12VELyg14iYuKNbzn0/u4xDFiFQMbeBnIFVhFyypFDiL8OPNUvBGco
-# u/E+0NVt32e8528Z5XEnu9DdpHTy444zKB2ymPKWWrNCAH4r
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRN0Grzp0iMeIsYPLMtS8P8OShF
+# mjANBgkqhkiG9w0BAQEFAASCAQACsWUPDmS88eY7dxXAMAC2GCrwpZXcoFxFWfLS
+# dfb2wOqa6aeqc82WUqfyoHV+NBugo0Svz9esPKukI0jrGlF+ns0V+XFpDk7Hb8Z0
+# R/IpX58BhvvAVeN89nQ+gnFDPSMaBCHbSl6HtkuW6wfabgMavw4oD6XOtiM4JChP
+# frWbghbZZuTcMVTbPWDf5hHmsmpSj7wEJjtc0KyG8d9utMjczfaQI210AN3w6Opk
+# yvOHrHJg/J53jEStKfl9R+y2mSHyIY+Z7PmqiTSb4QBJWvwmcGLUSbKn+9ShMxt7
+# i4RTtEQ4+0TaN78/pgvddzyvd1GYzDXiRijre6yPffRYa5Ab
 # SIG # End signature block

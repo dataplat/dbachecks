@@ -156,6 +156,30 @@ function Get-AllInstanceInfo {
                     }
             }
         }
+
+        'OleAutomationProceduresDisabled' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'OleAutomationProceduresEnabled'
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $OleAutomationProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $OleAutomationProceduresDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+            }
+        }
+
         'CrossDBOwnershipChaining' {
             if ($There) {
                 try {
@@ -178,6 +202,7 @@ function Get-AllInstanceInfo {
                     }
             }
         }
+
         'ScanForStartupProceduresDisabled' {
             if ($There) {
                 try {
@@ -255,6 +280,7 @@ function Get-AllInstanceInfo {
         CrossDBOwnershipChaining = $CrossDBOwnershipChaining
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
         RemoteAccess = $RemoteAccessDisabled
+        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
     }
 }
 
@@ -263,6 +289,10 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 
+function Assert-OleAutomationProcedures {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
+}
 function Assert-ScanForStartupProcedures {
     param ($AllInstanceInfo)
     $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
@@ -350,7 +380,6 @@ function Assert-TraceFlag {
         [int[]]$ExpectedTraceFlag
     )
     if ($null -eq $ExpectedTraceFlag) {
-        $a = (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag
         (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag  | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
     else {
@@ -383,14 +412,12 @@ function Assert-CLREnabled {
 
     (Get-DbaSpConfigure -SqlInstance $SQLInstance -Name IsSqlClrEnabled).ConfiguredValue -eq 1 | Should -Be $CLREnabled -Because 'The CLR Enabled should be set correctly'
 }
-function Assert-DefaultTrace {
-    Param($AllInstanceInfo)
-    $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expect the Default Trace to be enabled but got $($AllInstanceInfo.DefaultTrace.Trace.ConfiguredValue)"
-}
+
 function Assert-CrossDBOwnershipChaining {
     Param($AllInstanceInfo)
     $AllInstanceInfo.CrossDBOwnershipChaining.ConfiguredValue | Should -Be 0 -Because "We expect Cross Db Ownership Chaining to be disabled"
 }
+
 function Assert-AdHocDistributedQueriesEnabled {
     param (
         $SQLInstance,
