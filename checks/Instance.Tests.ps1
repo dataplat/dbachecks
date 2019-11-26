@@ -643,7 +643,6 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "Error Log Entries" -Tags ErrorLog, Medium, $filename {
-        $logWindow = Get-DbcConfigValue policy.errorlog.warningwindow
         if ($NotContactable -contains $psitem) {
             Context "Checking error log on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -885,6 +884,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Context "Testing Remote Access on $psitem" {
                 It "The Remote Access should be disabled on $psitem" -Skip:$skip {
                     Assert-RemoteAccess -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
+
+    Describe "Latest Build" -Tags LatestBuild, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.instance.latestbuild
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Latest Build on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Latest Build on $psitem" {
+                It "The Latest Build of SQL should be installed on $psitem" -Skip:$skip {
+                    Assert-LatestBuild -AllInstanceInfo $AllInstanceInfo 
                 }
             }
         }

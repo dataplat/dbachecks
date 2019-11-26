@@ -271,6 +271,29 @@ function Get-AllInstanceInfo {
                     }
             }
         }
+
+        'LatestBuild' {
+            if ($There) {
+                try {
+                    $results = Test-DbaBuild -SqlInstance $Instance -Latest
+                    $LatestBuild = [pscustomobject] @{
+                         Compliant = $results.Compliant
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LatestBuild = [pscustomobject] @{
+                        Compliant = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LatestBuild = [pscustomobject] @{
+                    Compliant = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
@@ -281,6 +304,7 @@ function Get-AllInstanceInfo {
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
         RemoteAccess = $RemoteAccessDisabled
         OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
+        LatestBuild = $LatestBuild
     }
 }
 
@@ -445,6 +469,10 @@ function Assert-ErrorLogEntry {
     $AllInstanceInfo.ErrorLog | Should -BeNullOrEmpty -Because "these severities indicate serious problems"
 }
 
+function Assert-LatestBuild {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LatestBuild.Compliant | Should -Be $true -Because "We expected the SQL Server to be on the newest SQL Server Packs/CUs"
+}
 
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
