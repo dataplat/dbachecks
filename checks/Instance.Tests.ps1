@@ -88,6 +88,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, $filename {
+        $starttype = Get-DbcConfigValue policy.instance.sqlenginestart 
+        $state = Get-DbcConfigValue policy.instance.sqlenginestate
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Engine Service on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -100,17 +102,17 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Context "Testing SQL Engine Service on $psitem" {
                 if ( -not $IsLInux) {
                     @(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
-                        It "SQL Engine service account should Be running on $($psitem.InstanceName)" {
-                            $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
+                        It "SQL Engine service account should be $state on $($psitem.InstanceName)" {
+                            Assert-EngineState -AllInstanceInfo $AllInstanceInfo -state $state
                         }
                         if ($IsClustered) {
                             It "SQL Engine service account should have a start mode of Manual on FailOver Clustered Instance $($psitem.InstanceName)" {
-                                $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the SQL engine service is set to manual'
+                                Assert-EngineStartTypeCluster -AllInstanceInfo $AllInstanceInfo
                             }
                         }
                         else {
-                            It "SQL Engine service account should have a start mode of Automatic on standalone instance $($psitem.InstanceName)" {
-                                $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessible'
+                            It "SQL Engine service account should have a start mode of $starttype on standalone instance $($psitem.InstanceName)" {
+                                Assert-EngineStartType -AllInstanceInfo $AllInstanceInfo -StartType $starttype
                             }
                         }
                     }

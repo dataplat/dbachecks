@@ -1,22 +1,22 @@
 # load all of the assertion functions
-(Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
+(Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{ . $Psitem.FullName }
 
 Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
     Context "Checking Backup Compression" {
         # Mock the version check for running tests
-        Mock Connect-DbaInstance {@{Version = @{Major = 14}}}
+        Mock Connect-DbaInstance { @{Version = @{Major = 14 } } }
         # Define test cases for the results to fail test and fill expected message
         # So the results of SPConfigure is 1, we expect $false but the result is true and the results of SPConfigure is 0, we expect $true but the result is false
-        $TestCases = @{spconfig = 1; expected = $false; actual = $true}, @{spconfig = 0; expected = $true; actual = $false}
+        $TestCases = @{spconfig = 1; expected = $false; actual = $true }, @{spconfig = 0; expected = $true; actual = $false }
         It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $actual, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-BackupCompression -Instance 'Dummy' -defaultbackupcompression $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The default backup compression should be set correctly, but got `$$actual"
+            Mock Get-DbaSpConfigure { @{"ConfiguredValue" = $spconfig } }
+            { Assert-BackupCompression -Instance 'Dummy' -defaultbackupcompression $expected } | Should -Throw -ExpectedMessage "Expected `$$expected, because The default backup compression should be set correctly, but got `$$actual"
         }
-        $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
+        $TestCases = @{spconfig = 0; expected = $false }, @{spconfig = 1; expected = $true; }
         It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            Mock Get-DbaSpConfigure { @{"ConfiguredValue" = $spconfig } }
             Assert-BackupCompression -Instance 'Dummy' -defaultbackupcompression $expected
         }
         # Validate we have called the mock the correct number of times
@@ -52,30 +52,30 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         # if Userecommended it should pass if CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the RecommendedMaxDop property
         It "Passes Check Correctly with the use recommended parameter set to true" {
             # Mock to pass
-            Mock Test-DbaMaxDop {@{"CurrentInstanceMaxDop" = 0; "RecommendedMaxDop" = 0}}
+            Mock Test-DbaMaxDop { @{"CurrentInstanceMaxDop" = 0; "RecommendedMaxDop" = 0 } }
             Assert-InstanceMaxDop  -Instance 'Dummy' -UseRecommended
         }
         # if Userecommended it should fail if CurrentInstanceMaxDop property returned from Test-DbaMaxDop does not match the RecommendedMaxDop property
         It "Fails Check Correctly with the use recommended parameter set to true" {
             # Mock to fail
-            Mock Test-DbaMaxDop {@{"CurrentInstanceMaxDop" = 0; "RecommendedMaxDop" = 5}}
-            {Assert-InstanceMaxDop -Instance 'Dummy' -UseRecommended} | Should -Throw -ExpectedMessage "Expected 5, because We expect the MaxDop Setting to be the recommended value 5"
+            Mock Test-DbaMaxDop { @{"CurrentInstanceMaxDop" = 0; "RecommendedMaxDop" = 5 } }
+            { Assert-InstanceMaxDop -Instance 'Dummy' -UseRecommended } | Should -Throw -ExpectedMessage "Expected 5, because We expect the MaxDop Setting to be the recommended value 5"
         }
-        $TestCases = @{"MaxDopValue" = 5}
+        $TestCases = @{"MaxDopValue" = 5 }
         # if not UseRecommended - it should pass if the CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the MaxDopValue parameter
         It "Passes Check Correctly with a specified value <MaxDopValue>" -TestCases $TestCases {
             Param($MaxDopValue)
             # Mock to pass
-            Mock Test-DbaMaxDop {@{"CurrentInstanceMaxDop" = 5; "RecommendedMaxDop" = $MaxDopValue}}
+            Mock Test-DbaMaxDop { @{"CurrentInstanceMaxDop" = 5; "RecommendedMaxDop" = $MaxDopValue } }
             Assert-InstanceMaxDop -Instance 'Dummy' -MaxDopValue $MaxDopValue
         }
-        $TestCases = @{"MaxDopValue" = 5}, @{"MaxDopValue" = 0}
+        $TestCases = @{"MaxDopValue" = 5 }, @{"MaxDopValue" = 0 }
         # if not UseRecommended - it should fail if the CurrentInstanceMaxDop property returned from Test-DbaMaxDop does not match the MaxDopValue parameter
         It "Fails Check Correctly with with a specified value <MaxDopValue>" -TestCases $TestCases {
             Param($MaxDopValue)
             # Mock to fail
-            Mock Test-DbaMaxDop {@{"CurrentInstanceMaxDop" = 4; "RecommendedMaxDop" = 73}}
-            {Assert-InstanceMaxDop -Instance 'Dummy' -MaxDopValue $MaxDopValue} | Should -Throw -ExpectedMessage "Expected $MaxDopValue, because We expect the MaxDop Setting to be $MaxDopValue"
+            Mock Test-DbaMaxDop { @{"CurrentInstanceMaxDop" = 4; "RecommendedMaxDop" = 73 } }
+            { Assert-InstanceMaxDop -Instance 'Dummy' -MaxDopValue $MaxDopValue } | Should -Throw -ExpectedMessage "Expected $MaxDopValue, because We expect the MaxDop Setting to be $MaxDopValue"
         }
         # Validate we have called the mock the correct number of times
         It "Should call the mocks" {
@@ -88,7 +88,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         }
     }
     Context "Checking tempdb size" {
-        Mock Get-DbaDbFile {@(
+        Mock Get-DbaDbFile { @(
                 [PSCustomObject]@{
                     Type = 0
                     Size = [PSCustomObject]@{
@@ -113,13 +113,13 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                         Megabyte = 8
                     }
                 }
-            )}
+            ) }
 
         It "Should pass the test when all tempdb files are the same size" {
             Assert-TempDBSize -Instance Dummy
         }
 
-        Mock Get-DbaDbFile {@(
+        Mock Get-DbaDbFile { @(
                 [PSCustomObject]@{
                     Type = 0
                     Size = [PSCustomObject]@{
@@ -144,10 +144,10 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                         Megabyte = 7
                     }
                 }
-            )}
+            ) }
 
         It "Should fail when all of the tempdb files are not the same size" {
-            {Assert-TempDBSize -Instance Dummy} | Should -Throw -ExpectedMessage "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
+            { Assert-TempDBSize -Instance Dummy } | Should -Throw -ExpectedMessage "We want all the tempdb data files to be the same size - See https://blogs.sentryone.com/aaronbertrand/sql-server-2016-tempdb-fixes/ and https://www.brentozar.com/blitz/tempdb-data-files/ for more information"
         }
     }
     Context "Checking Supported Build" {
@@ -159,50 +159,50 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         It "Passed check correctly when the current build is not behind the BuildBehind value of <BuildBehind>" -TestCases $TestCases {
             Param($BuildBehind, $Date)
             #Mock to pass
-            Mock Test-DbaBuild {@{"SPLevel" = "{SP4, LATEST}"; "CULevel" = "CU4"; "Compliant" = $true; "SupportedUntil" = $Date.AddMonths(1)}}
+            Mock Test-DbaBuild { @{"SPLevel" = "{SP4, LATEST}"; "CULevel" = "CU4"; "Compliant" = $true; "SupportedUntil" = $Date.AddMonths(1) } }
             Assert-InstanceSupportedBuild -Instance 'Dummy' -BuildBehind $BuildBehind -Date $Date
         }
-        $TestCases = @{"Date" = $Date; "BuildBehind" = "1SP"; "BuildWarning" = 6; "expected" = $true; "actual" = $false},
-        @{"Date" = $Date; "BuildBehind" = "1CU"; "BuildWarning" = 6; "expected" = $true; "actual" = $false}
+        $TestCases = @{"Date" = $Date; "BuildBehind" = "1SP"; "BuildWarning" = 6; "expected" = $true; "actual" = $false },
+        @{"Date" = $Date; "BuildBehind" = "1CU"; "BuildWarning" = 6; "expected" = $true; "actual" = $false }
         #if BuildBehind it should fail if build is <= SP/CU specified & Support dates are valid
         It "Failed check correctly when the current build is behind the BuildBehind value of <BuildBehind>" -TestCases $TestCases {
             Param($BuildBehind, $Date, $expected, $actual)
             #Mock to fail
-            Mock Test-DbaBuild {@{"SPLevel" = "{SP2}"; "CULevel" = "CU2"; "SPTarget" = "SP4"; "CUTarget" = "CU4"; "Compliant" = $false; "SupportedUntil" = $Date.AddMonths(1); "Build" = 42}}
-            { Assert-InstanceSupportedBuild -Instance 'Dummy' -BuildBehind $BuildBehind -Date $Date} | Should -Throw -ExpectedMessage "Expected `$$expected, because this build 42 should not be behind the required build, but got `$$actual"
+            Mock Test-DbaBuild { @{"SPLevel" = "{SP2}"; "CULevel" = "CU2"; "SPTarget" = "SP4"; "CUTarget" = "CU4"; "Compliant" = $false; "SupportedUntil" = $Date.AddMonths(1); "Build" = 42 } }
+            { Assert-InstanceSupportedBuild -Instance 'Dummy' -BuildBehind $BuildBehind -Date $Date } | Should -Throw -ExpectedMessage "Expected `$$expected, because this build 42 should not be behind the required build, but got `$$actual"
         }
-        $TestCases = @{"Date" = $Date}
+        $TestCases = @{"Date" = $Date }
         #if neither BuildBehind nor BuildWarning it should pass if support dates are valid
         It "Passed check correctly with a SupportedUntil date > today" -TestCases $TestCases {
             Param($Date)
             #Mock to pass
-            Mock Test-DbaBuild {@{"SupportedUntil" = $Date.AddMonths(1)}}
+            Mock Test-DbaBuild { @{"SupportedUntil" = $Date.AddMonths(1) } }
             Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date
         }
-        $TestCases = @{"Date" = $Date}
+        $TestCases = @{"Date" = $Date }
         #if neither BuildBehind nor BuildWarning it should fail if support date is out of the support window
         It "Failed check correctly with a SupportedUntil date < today" -TestCases $TestCases {
             Param($Date)
             #Mock to fail
-            Mock Test-DbaBuild {@{"SupportedUntil" = $Date.AddMonths(-1); "Build" = 42}}
+            Mock Test-DbaBuild { @{"SupportedUntil" = $Date.AddMonths(-1); "Build" = 42 } }
             $SupportedUntil = Get-Date $Date.AddMonths(-1) -Format O
             $Date = Get-Date $Date -Format O
             { Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date } | Should -Throw -ExpectedMessage "Expected the actual value to be greater than $Date, because this build 42 is now unsupported by Microsoft, but got $SupportedUntil"
         }
-        $TestCases = @{"Date" = $Date; "BuildWarning" = 6}
+        $TestCases = @{"Date" = $Date; "BuildWarning" = 6 }
         #if BuildWarning it should fail if support date is in the warning window
         It "Passed check correctly with the BuildWarning window > today" -TestCases $TestCases {
             Param($Date, $BuildWarning)
             #Mock to pass
-            Mock Test-DbaBuild {@{"SupportedUntil" = $Date.AddMonths(9); "Build" = 42}}
+            Mock Test-DbaBuild { @{"SupportedUntil" = $Date.AddMonths(9); "Build" = 42 } }
             { Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date -BuildWarning $BuildWarning }
         }
-        $TestCases = @{"Date" = $Date; "BuildWarning" = 6}
+        $TestCases = @{"Date" = $Date; "BuildWarning" = 6 }
         #if BuildWarning it should fail if support date is in the warning window
         It "Failed check correctly with the BuildWarning window < today" -TestCases $TestCases {
             Param($Date, $BuildWarning)
             #Mock to fail
-            Mock Test-DbaBuild {@{"SupportedUntil" = $Date.AddMonths(3); "Build" = 42}}
+            Mock Test-DbaBuild { @{"SupportedUntil" = $Date.AddMonths(3); "Build" = 42 } }
             $SupportedUntil = Get-Date $Date.AddMonths(3) -Format O
             $expected = Get-Date $Date.AddMonths($BuildWarning) -Format O
             { Assert-InstanceSupportedBuild -Instance 'Dummy' -Date $Date -BuildWarning $BuildWarning } | Should -Throw -ExpectedMessage "Expected the actual value to be greater than $expected, because this build 42 will be unsupported by Microsoft on $SupportedUntil which is less than $BuildWarning months away, but got $SupportedUntil"
@@ -227,7 +227,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118
         }
         It "Should fail correctly when the trace flag does not exist but there is a different trace flag" {
-            {Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 117} | Should -Throw -ExpectedMessage  "Expected 117 to be found in collection 118, because We expect that Trace Flag 117 will be set on Dummy, but it was not found."
+            { Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 117 } | Should -Throw -ExpectedMessage  "Expected 117 to be found in collection 118, because We expect that Trace Flag 117 will be set on Dummy, but it was not found."
         }
         It "Should fail correctly when the trace flag does not exist and there is no trace flag" {
             Mock Get-DbaTraceFlag {
@@ -242,7 +242,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'TraceFlag'    = 118
                 }
             }
-            {Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 117} | Should -Throw -ExpectedMessage  "Expected 117 to be found in collection 118, because We expect that Trace Flag 117 will be set on Dummy, but it was not found."
+            { Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 117 } | Should -Throw -ExpectedMessage  "Expected 117 to be found in collection 118, because We expect that Trace Flag 117 will be set on Dummy, but it was not found."
         }
         It "Should Pass Correctly for more than one trace flag when they all exist" {
             Mock Get-DbaTraceFlag {
@@ -356,7 +356,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'TraceFlag'    = 3604
                 }
             }
-            {Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605} | Should -Throw -ExpectedMessage "Expected 3605 to be found in collection @(117, 118, 3604), because We expect that Trace Flag 3605 will be set on Dummy, but it was not found."
+            { Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605 } | Should -Throw -ExpectedMessage "Expected 3605 to be found in collection @(117, 118, 3604), because We expect that Trace Flag 3605 will be set on Dummy, but it was not found."
         }
         It "Should Fail Correctly when checking more than one trace flag when 2 are missing" {
             Mock Get-DbaTraceFlag {
@@ -379,7 +379,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'TraceFlag'    = 118
                 }
             }
-            {Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605} | Should -Throw -ExpectedMessage "Expected 3604 to be found in collection @(117, 118), because We expect that Trace Flag 3604 will be set on Dummy, but it was not found"
+            { Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag 118, 117, 3604, 3605 } | Should -Throw -ExpectedMessage "Expected 3604 to be found in collection @(117, 118), because We expect that Trace Flag 3604 will be set on Dummy, but it was not found"
         }
         It "Should pass correctly when no trace flag exists and none expected" {
             Mock Get-DbaTraceFlag {
@@ -398,7 +398,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'TraceFlag'    = 117
                 }
             }
-            {Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag $null} | Should -Throw -ExpectedMessage "Expected `$null or empty, because We expect that there will be no Trace Flags set on Dummy, but got 117"
+            { Assert-TraceFlag -SQLInstance Dummy -ExpectedTraceFlag $null } | Should -Throw -ExpectedMessage "Expected `$null or empty, because We expect that there will be no Trace Flags set on Dummy, but got 117"
         }
     }
     Context "Checking Trace Flags Not Expected" {
@@ -418,7 +418,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
             Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117
         }
         It "Should pass correctly when no trace flag is running" {
-            Mock Get-DbaTraceFlag {}
+            Mock Get-DbaTraceFlag { }
             Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117
         }
         It "Should fail correctly when the trace flag is running and is the only one" {
@@ -433,7 +433,7 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'TraceFlag'    = 118
                 }
             }
-            {Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 118} | Should -Throw -ExpectedMessage "Expected 118 to not be found in collection 118, because We expect that Trace Flag 118 will not be set on Dummy, but it was found."
+            { Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 118 } | Should -Throw -ExpectedMessage "Expected 118 to not be found in collection 118, because We expect that Trace Flag 118 will not be set on Dummy, but it was found."
         }
         It "Should fail correctly for one trace flag when the trace flag is running but there is another one running as well" {
             Mock Get-DbaTraceFlag {
@@ -456,10 +456,10 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'TraceFlag'    = 118
                 }
             }
-            {Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117} | Should -Throw -ExpectedMessage  "Expected 117 to not be found in collection @(117, 118), because We expect that Trace Flag 117 will not be set on Dummy, but it was found."
+            { Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 117 } | Should -Throw -ExpectedMessage  "Expected 117 to not be found in collection @(117, 118), because We expect that Trace Flag 117 will not be set on Dummy, but it was found."
         }
         It "Should Pass Correctly for more than one trace flag when no trace flag is set" {
-            Mock Get-DbaTraceFlag {}
+            Mock Get-DbaTraceFlag { }
             Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag 118, 117, 3604, 3605
         }
         It "Should Pass Correctly for more than one trace flag when a different one is running" {
@@ -506,24 +506,24 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
                     'TraceFlag'    = 118
                 }
             }
-            {Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag  117, 3604, 3605} | Should -Throw -ExpectedMessage  "Expected 117 to not be found in collection @(117, 118), because We expect that Trace Flag 117 will not be set on Dummy, but it was found."
+            { Assert-NotTraceFlag -SQLInstance Dummy -NotExpectedTraceFlag  117, 3604, 3605 } | Should -Throw -ExpectedMessage  "Expected 117 to not be found in collection @(117, 118), because We expect that Trace Flag 117 will not be set on Dummy, but it was found."
         }
     }
     Context "Checking CLR Enabled" {
         # Mock the version check for running tests
-        Mock Connect-DbaInstance {}
+        Mock Connect-DbaInstance { }
         # Define test cases for the results to fail test and fill expected message
         # So the results of SPConfigure is 1, we expect $false but the result is true and the results of SPConfigure is 0, we expect $true but the result is false
-        $TestCases = @{spconfig = 1; expected = $false; actual = $true}, @{spconfig = 0; expected = $true; actual = $false}
+        $TestCases = @{spconfig = 1; expected = $false; actual = $true }, @{spconfig = 0; expected = $true; actual = $false }
         It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $actual, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-CLREnabled -SQLInstance 'Dummy' -CLREnabled $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The CLR Enabled should be set correctly, but got `$$actual"
+            Mock Get-DbaSpConfigure { @{"ConfiguredValue" = $spconfig } }
+            { Assert-CLREnabled -SQLInstance 'Dummy' -CLREnabled $expected } | Should -Throw -ExpectedMessage "Expected `$$expected, because The CLR Enabled should be set correctly, but got `$$actual"
         }
-        $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
+        $TestCases = @{spconfig = 0; expected = $false }, @{spconfig = 1; expected = $true; }
         It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            Mock Get-DbaSpConfigure { @{"ConfiguredValue" = $spconfig } }
             Assert-CLREnabled -SQLInstance 'Dummy' -CLREnabled $expected
         }
         # Validate we have called the mock the correct number of times
@@ -538,19 +538,19 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
     }
     Context "Checking AdHoc Distributed Queries Enabled" {
         # Mock the version check for running tests
-        Mock Connect-DbaInstance {}
+        Mock Connect-DbaInstance { }
         # Define test cases for the results to fail test and fill expected message
         # So the results of SPConfigure is 1, we expect $false but the result is true and the results of SPConfigure is 0, we expect $true but the result is false
-        $TestCases = @{spconfig = 1; expected = $false; actual = $true}, @{spconfig = 0; expected = $true; actual = $false}
+        $TestCases = @{spconfig = 1; expected = $false; actual = $true }, @{spconfig = 0; expected = $true; actual = $false }
         It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $actual, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-AdHocDistributedQueriesEnabled -SQLInstance 'Dummy' -AdHocDistributedQueriesEnabled $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The AdHoc Distributed Queries Enabled setting should be set correctly, but got `$$actual"
+            Mock Get-DbaSpConfigure { @{"ConfiguredValue" = $spconfig } }
+            { Assert-AdHocDistributedQueriesEnabled -SQLInstance 'Dummy' -AdHocDistributedQueriesEnabled $expected } | Should -Throw -ExpectedMessage "Expected `$$expected, because The AdHoc Distributed Queries Enabled setting should be set correctly, but got `$$actual"
         }
-        $TestCases = @{spconfig = 0; expected = $false}, @{spconfig = 1; expected = $true; }
+        $TestCases = @{spconfig = 0; expected = $false }, @{spconfig = 1; expected = $true; }
         It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            Mock Get-DbaSpConfigure { @{"ConfiguredValue" = $spconfig } }
             Assert-AdHocDistributedQueriesEnabled -SQLInstance 'Dummy' -AdHocDistributedQueriesEnabled $expected
         }
         # Validate we have called the mock the correct number of times
@@ -565,21 +565,21 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
     }
     Context "Checking XPCmdShell is disabled" {
         # Mock the version check for running tests
-        Mock Connect-DbaInstance {}
+        Mock Connect-DbaInstance { }
         # Define test cases for the results to fail test and fill expected message
         # This one is different from the others as we are checking for disabled !!
         # So the results of SPConfigure is 1, we expect $true but the result is false and the results of SPConfigure is 0, we expect $false but the result is true
-        $TestCases = @{spconfig = 1; expected = $true; actual = $false}, @{spconfig = 0; expected = $false; actual = $true}
+        $TestCases = @{spconfig = 1; expected = $true; actual = $false }, @{spconfig = 0; expected = $false; actual = $true }
         It "Fails Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $actual, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
-            {Assert-XpCmdShellDisabled -SQLInstance 'Dummy' -XpCmdShellDisabled $expected} | Should -Throw -ExpectedMessage "Expected `$$expected, because The XP CmdShell setting should be set correctly, but got `$$actual"
+            Mock Get-DbaSpConfigure { @{"ConfiguredValue" = $spconfig } }
+            { Assert-XpCmdShellDisabled -SQLInstance 'Dummy' -XpCmdShellDisabled $expected } | Should -Throw -ExpectedMessage "Expected `$$expected, because The XP CmdShell setting should be set correctly, but got `$$actual"
         }
         # again this one is different from the others as we are checking for disabled
-        $TestCases = @{spconfig = 1; expected = $false}, @{spconfig = 0; expected = $true; }
+        $TestCases = @{spconfig = 1; expected = $false }, @{spconfig = 0; expected = $true; }
         It "Passes Check Correctly for Config <spconfig> and expected value <expected>" -TestCases $TestCases {
             Param($spconfig, $expected)
-            Mock Get-DbaSpConfigure {@{"ConfiguredValue" = $spconfig}}
+            Mock Get-DbaSpConfigure { @{"ConfiguredValue" = $spconfig } }
             Assert-XpCmdShellDisabled -SQLInstance 'Dummy' -XpCmdShellDisabled $expected
         }
         # Validate we have called the mock the correct number of times
@@ -596,21 +596,21 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
         # if configured value is 30 and test value 30 it will pass
         It "Passes Check Correctly with the number of error log files set to 30" {
             # Mock to pass
-            Mock Get-DbaErrorLogConfig {@{"LogCount" = 30}}
+            Mock Get-DbaErrorLogConfig { @{"LogCount" = 30 } }
             Assert-ErrorLogCount -SQLInstance 'Dummy' -errorLogCount 30
         }
 
         # if configured value is less than the current value it fails
         It "Fails Check Correctly with the number of error log files being 10 instead of 30 or higher" {
             # Mock to fail
-            Mock Get-DbaErrorLogConfig {@{"LogCount" = 10}}
-            {Assert-ErrorLogCount -SQLInstance 'Dummy' -errorLogCount 30}  | Should -Throw -ExpectedMessage "Expected the actual value to be greater than or equal to 30, because We expect to have at least 30 number of error log files, but got 10."
+            Mock Get-DbaErrorLogConfig { @{"LogCount" = 10 } }
+            { Assert-ErrorLogCount -SQLInstance 'Dummy' -errorLogCount 30 } | Should -Throw -ExpectedMessage "Expected the actual value to be greater than or equal to 30, because We expect to have at least 30 number of error log files, but got 10."
         }
 
         # if configured value is higher than the current value it fails
         It "Passes Check Correctly with the number of error log files being 40 and test of 30 or higher" {
             # Mock to Pass
-            Mock Get-DbaErrorLogConfig {@{"LogCount" = 40}}
+            Mock Get-DbaErrorLogConfig { @{"LogCount" = 40 } }
             Assert-ErrorLogCount -SQLInstance 'Dummy' -errorLogCount 30
         }
 
@@ -627,12 +627,12 @@ Describe "Checking Instance.Tests.ps1 checks" -Tag UnitTest {
 }
 
 InModuleScope dbachecks {
-    (Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
+    (Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{ . $Psitem.FullName }
     Describe "Testing AllInstanceInfo and Relevant Assertions" -Tag AllInstanceInfo {
-        function Get-ErrorLogEntry {}
-        Mock Get-DbcConfigValue {} -ParameterFilter {$Name -and $Name -eq 'policy.errorlog.warningwindow'}
+        function Get-ErrorLogEntry { }
+        Mock Get-DbcConfigValue { } -ParameterFilter { $Name -and $Name -eq 'policy.errorlog.warningwindow' }
         Context "Checking Get-AllInstanceInfo" {
-            Mock Get-ErrorLogEntry {}
+            Mock Get-ErrorLogEntry { }
     
             It "Should return the correct results for ErrorLog Entries when there are no severities" {
            
@@ -640,7 +640,7 @@ InModuleScope dbachecks {
             }
 
             It "Should return the correct results for ErrorLog Entries when there are severities" {
-                Mock Get-ErrorLogEntry {[PSCustomObject]@{
+                Mock Get-ErrorLogEntry { [PSCustomObject]@{
                         LogDate     = '2019-02-14 23:00'
                         ProcessInfo = 'spid55'
                         Text        = 'Error: 50000, Severity: 18, State: 1.'
@@ -650,16 +650,16 @@ InModuleScope dbachecks {
             }
 
             It "Should return the correct results for Default Trace when it is enabled" {
-                Mock Get-DbaSpConfigure {@{
+                Mock Get-DbaSpConfigure { @{
                         'ConfiguredValue' = 1
-                    }}
+                    } }
                 (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We need to return one when we have default trace enabled"
             }
 
             It "Should return the correct results for Default Trace when it is disabled" {
-                Mock Get-DbaSpConfigure {[pscustomobject]@{
+                Mock Get-DbaSpConfigure { [pscustomobject]@{
                         ConfiguredValue = 0
-                    }}
+                    } }
            
                 (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 0 -Because "We need to return zero when default trace is not enabled"
             }
@@ -668,41 +668,43 @@ InModuleScope dbachecks {
            
             It "Should pass the test successfully when there are no Severity Errors" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {}
+                Mock Get-AllInstanceInfo { }
                 Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when there are Severity Errors" {
                 # MOck for failing test
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
                         ErrorLog = [PSCustomObject]@{
                             LogDate     = '2019-02-14 23:00'
                             ProcessInfo = 'spid55'
                             Text        = 'Error: 50000, Severity: 18, State: 1.'
                         }
-                    }}
-                {Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$null or empty, because these severities indicate serious problems, but got @(@{LogDate=2019-02-14 23:00; ProcessInfo=spid55; Text=Error: 50000, Severity: 18, State: 1.})."
+                    } }
+                { Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected `$null or empty, because these severities indicate serious problems, but got @(@{LogDate=2019-02-14 23:00; ProcessInfo=spid55; Text=Error: 50000, Severity: 18, State: 1.})."
             }
         }
         Context "Checking Cross DB Ownership Chaining" {
             It "Should pass the test successfully when cross db ownership chaining is disabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    CrossDBOwnershipChaining = [PSCustomObject]@{
-                        ConfiguredValue = 0}
-                    }}
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        CrossDBOwnershipChaining = [PSCustomObject]@{
+                            ConfiguredValue = 0
+                        }
+                    } }
 
-                    Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
+                Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when cross db ownership chaining is enabled" {
                 # Mock for failing test
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
                         CrossDBOwnershipChaining = [PSCustomObject]@{
-                            ConfiguredValue = 1}
-                    }}
+                            ConfiguredValue = 1
+                        }
+                    } }
 
-                {Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected the Cross DB Ownership Chaining to be disabled, but got 1."
+                { Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected 0, because We expected the Cross DB Ownership Chaining to be disabled, but got 1."
             }
         }
 
@@ -710,23 +712,23 @@ InModuleScope dbachecks {
            
             It "Should pass the test successfully when default trace is enabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    DefaultTrace = [PSCustomObject]@{
-                        ConfiguredValue = 1
-                    }
-                }}
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        DefaultTrace = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    } }
                 Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when when default trace is disabled" {
                 # Mock for failing test
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
                         DefaultTrace = [PSCustomObject]@{
                             ConfiguredValue = 0
                         }
                     }
                 }
-                {Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 1, because We expected the Default Trace to be enabled, but got 0."
+                { Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected 1, because We expected the Default Trace to be enabled, but got 0."
             }
         }
         Context "Checking OLE Automation Procedures Entries" {
@@ -734,101 +736,101 @@ InModuleScope dbachecks {
             It "Should pass the test successfully when OLE Automation Procedures is disabled" {
                 # Mock for success
                 # This should pass when the configured value for OleAutomationProcedures enabled is 0 (ie disabled)
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    OleAutomationProceduresDisabled = [PSCustomObject]@{
-                        ConfiguredValue = 0
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        OleAutomationProceduresDisabled = [PSCustomObject]@{
+                            ConfiguredValue = 0
+                        }
                     }
                 }
-            }
                 Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when when OLE Automation Procedures is enabled" {
                 # Mock for failing test
                 # This should pass when the configured value for OleAutomationProcedures enabled is 1 (ie enabled)
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    OleAutomationProceduresDisabled = [PSCustomObject]@{
-                        ConfiguredValue = 1
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        OleAutomationProceduresDisabled = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
                     }
                 }
-            }
-                {Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expect the OLE Automation Procedures to be disabled, but got 1."
+                { Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected 0, because we expect the OLE Automation Procedures to be disabled, but got 1."
             }
         }
         Context "Checking Remote Access Entries" {
            
             It "Should pass the test successfully when remote access is disabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    RemoteAccess = [PSCustomObject]@{
-                        ConfiguredValue = 0
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        RemoteAccess = [PSCustomObject]@{
+                            ConfiguredValue = 0
+                        }
                     }
                 }
-            }
                 Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when remote access is enabled" {
                 # Mock for failing test
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
                         RemoteAccess = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
                     }
                 }
                 
-                {Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be disabled, but got 1."
+                { Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be disabled, but got 1."
             }
         }
         Context "Checking Scan For Startup Procedures Entries" {
            
             It "Should pass the test successfully when scan for startup procedures is disabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
-                        ConfiguredValue = 0
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                            ConfiguredValue = 0
+                        }
                     }
                 }
-            }
                 Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when scan for startup procedures is enabled" {
                 # Mock for failing test
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        ScanForStartupProceduresDisabled = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
-                    }}
-                {Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected the scan for startup procedures to be disabled, but got 1."
+                    } }
+                { Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected 0, because We expected the scan for startup procedures to be disabled, but got 1."
             }
         }
         Context "Checking Cross DB Ownership Chaining" {
             It "Should pass the test successfully when cross db ownership chaining is disabled" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    CrossDBOwnershipChaining = [PSCustomObject]@{
-                        ConfiguredValue = 0
-                    }
-                }}
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        CrossDBOwnershipChaining = [PSCustomObject]@{
+                            ConfiguredValue = 0
+                        }
+                    } }
                 Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when cross db ownership chaining is enabled" {
                 # Mock for failing test
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
                         CrossDBOwnershipChaining = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
-                    }}
-                {Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected the cross db ownership chaining to be disabled, but got 1."
+                    } }
+                { Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected 0, because we expected the cross db ownership chaining to be disabled, but got 1."
             }
         }
         Context "Checking Max Dump Entries" {
            
             It "Should pass the test successfully when the number of dumps is less than config" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
                         MaxDump = [PSCustomObject]@{
                             Count = 0
                         }
@@ -848,30 +850,214 @@ InModuleScope dbachecks {
                     }
                 }
                 $maxdumps = 4
-                {Assert-MaxDump  -AllInstanceInfo (Get-AllInstanceInfo) -maxdumps $maxdumps} | Should -Throw -ExpectedMessage "Expected the actual value to be less than 4, because We expected less than 4 dumps but found 7. Memory dumps often suggest issues with the SQL Server instance, but got 7"
+                { Assert-MaxDump  -AllInstanceInfo (Get-AllInstanceInfo) -maxdumps $maxdumps } | Should -Throw -ExpectedMessage "Expected the actual value to be less than 4, because We expected less than 4 dumps but found 7. Memory dumps often suggest issues with the SQL Server instance, but got 7"
             }
         }
         Context "Checking Latest Build of SQL Server" {
            
             It "Should pass the test successfully when scan for latest build of SQL passes" {
                 # Mock for success
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    LatestBuild = [PSCustomObject]@{
-                        Compliant = $true
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        LatestBuild = [PSCustomObject]@{
+                            Compliant = $true
+                        }
                     }
                 }
-            }
                 Assert-LatestBuild -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
             It "Should fail the test successfully when scan for latest build of SQL fails" {
                 # Mock for failing test
-                Mock Get-AllInstanceInfo {[PSCustomObject]@{
-                    LatestBuild = [PSCustomObject]@{
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        LatestBuild = [PSCustomObject]@{
                             Compliant = $false
                         }
-                    }}
-                {Assert-LatestBuild -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$true, because We expected the SQL Server to be on the newest SQL Server Packs/CUs, but got `$false."
+                    } }
+                { Assert-LatestBuild -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected `$true, because We expected the SQL Server to be on the newest SQL Server Packs/CUs, but got `$false."
+            }
+        }
+        Context "Checking SQL Engine" {
+           
+            It "Should pass the test successfully when the sql engine is running and the config is set to running" {
+                # Mock for success
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Running'
+                            StartType = 'Automatic'
+                        }
+                    }
+                }
+                Assert-EngineState  -AllInstanceInfo (Get-AllInstanceInfo) -state 'Running'
+            }
+            
+            It "Should fail the test successfully successfully when the sql engine is stopped and the config is set to running" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Automatic'
+                        }
+                    }
+                }
+                { Assert-EngineState  -AllInstanceInfo (Get-AllInstanceInfo) -state 'Running' } | Should -Throw -ExpectedMessage "Expected strings to be the same, because The SQL Service was expected to be Running, but they were different."
+            }
+            It "Should pass the test successfully when the sql engine is stopped and the config is set to stopped" {
+                # Mock for success
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Running'
+                            StartType = 'Automatic'
+                        }
+                    }
+                }
+                Assert-EngineState  -AllInstanceInfo (Get-AllInstanceInfo) -state 'Running'
+            }
+            
+            It "Should fail the test successfully successfully when the sql engine is running and the config is set to stopped" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Automatic'
+                        }
+                    }
+                }
+                { Assert-EngineState  -AllInstanceInfo (Get-AllInstanceInfo) -state 'Running' } | Should -Throw -ExpectedMessage "Expected strings to be the same, because The SQL Service was expected to be Running, but they were different."
+            }
+
+            It "Should pass the test successfully when the sql engine is set to Automatic and the config is set to Automatic and it is not a cluster" {
+                # Mock for success
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Running'
+                            StartType = 'Automatic'
+                        }
+                    }
+                }
+                Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Automatic'
+            }
+            
+            It "Should fail the test successfully when the sql engine is set to Manual and the config is set to Automatic and it is not a cluster" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Manual'
+                        }
+                    }
+                }
+                { Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Automatic' } | Should -Throw -ExpectedMessage "Expected strings to be the same, because The SQL Service Start Type was expected to be Automatic, but they were different."
+            }
+            It "Should fail the test successfully when the sql engine is set to Disabled and the config is set to Automatic and it is not a cluster" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Disabled'
+                        }
+                    }
+                }
+                { Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Automatic' } | Should -Throw -ExpectedMessage "Expected strings to be the same, because The SQL Service Start Type was expected to be Automatic, but they were different."
+            }
+            It "Should pass the test successfully when the sql engine is set to Manual and the config is set to Manual and it is not a cluster" {
+                # Mock for success
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Running'
+                            StartType = 'Manual'
+                        }
+                    }
+                }
+                Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Manual'
+            }
+            
+            It "Should fail the test successfully when the sql engine is set to Automatic and the config is set to Manual and it is not a cluster" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Automatic'
+                        }
+                    }
+                }
+                { Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Manual' } | Should -Throw -ExpectedMessage "Expected strings to be the same, because The SQL Service Start Type was expected to be Manual, but they were different."
+            }
+            It "Should fail the test successfully when the sql engine is set to Disabled and the config is set to Manual and it is not a cluster" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Disabled'
+                        }
+                    }
+                }
+                { Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Manual' } | Should -Throw -ExpectedMessage "Expected strings to be the same, because The SQL Service Start Type was expected to be Manual, but they were different."
+            }
+            It "Should pass the test successfully when the sql engine is set to Disabled and the config is set to Disabled and it is not a cluster" {
+                # Mock for success
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Running'
+                            StartType = 'Disabled'
+                        }
+                    }
+                }
+                Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Disabled'
+            }
+            It "Should fail the test successfully when the sql engine is set to Manual and the config is set to Disabled and it is not a cluster" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Manual'
+                        }
+                    }
+                }
+                { Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Disabled' } | Should -Throw -ExpectedMessage "Expected strings to be the same, because The SQL Service Start Type was expected to be Disabled, but they were different."
+            }
+            It "Should fail the test successfully when the sql engine is set to Automatic and the config is set to Disabled and it is not a cluster" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Automatic'
+                        }
+                    }
+                }
+                { Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Disabled' } | Should -Throw -ExpectedMessage "Expected strings to be the same, because The SQL Service Start Type was expected to be Disabled, but they were different."
+            }
+            It "Should pass the test successfully when the sql engine is set to Manual and it is a cluster" {
+                # Mock for success
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Running'
+                            StartType = 'Manual'
+                        }
+                    }
+                }
+                Assert-EngineStartTypeCluster  -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            It "Should fail the test successfully when the sql engine is set to Automatic and it is a cluster" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Automatic'
+                        }
+                    }
+                }
+                { Assert-EngineStartTypeCluster  -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected strings to be the same, because Clustered Instances required that the SQL engine service is set to manual, but they were different."
+            }
+            It "Should fail the test successfully when the sql engine is set to Disabled and it is a cluster" {
+                # Mock for failure
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        EngineService = [pscustomobject] @{
+                            State     = 'Stopped'
+                            StartType = 'Disabled'
+                        }
+                    }
+                }
+                { Assert-EngineStartTypeCluster  -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected strings to be the same, because Clustered Instances required that the SQL engine service is set to manual, but they were different."
             }
         }
     }
