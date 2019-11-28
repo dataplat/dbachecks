@@ -297,21 +297,21 @@ function Get-AllInstanceInfo {
         'SqlEngineServiceAccount' {
             if ($There) {
                 try {
-                    $ComputerName , $InstanceName = $psitem.Split('\')
+                    $ComputerName , $InstanceName = $Instance.Name.Split('\')
                     if ($null -eq $InstanceName) {
                         $InstanceName = 'MSSQLSERVER'
                     }
                     $SqlEngineService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type Engine -ErrorAction SilentlyContinue
                     $EngineService = [pscustomobject] @{
                         State     = $SqlEngineService.State 
-                        StartMode = $SqlEngineService.StartType
+                        StartType = $SqlEngineService.StartMode
                     }
                 }
                 catch {
                     $There = $false
                     $EngineService = [pscustomobject] @{
-                        State     = 'We Could not Connect to $Instance'
-                        StartType = 'We Could not Connect to $Instance'
+                        State     = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                        StartType = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
                     }
                 }
             }
