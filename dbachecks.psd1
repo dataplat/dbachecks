@@ -131,12 +131,12 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 26th November
+## Date 28th November
 Thank you Tracey tboggiano
-    Added new CIS Check for OLE AUtomation Procedures to be disabled #707
-    Moving the Cross DB Ownership Chaining check into the AllInstance check to help speed up checks #708
+    Added new CIS Check for the latest SQL build #716
+    
 Thank you Rob
-    Fixing the Tags so that they are picked up by AllInstanceInfo Fixes #715
+    Making the SQL Engine Service Check configurable #706
 ##Latest
 
 Run Get-DbcReleaseNotes for all release notes
