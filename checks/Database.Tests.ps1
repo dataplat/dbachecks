@@ -766,7 +766,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, $filename {
+    Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, CIS, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Testing database trustworthy option on $psitem" {
                 It "Can't Connect to $Psitem" {

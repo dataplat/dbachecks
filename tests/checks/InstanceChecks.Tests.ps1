@@ -793,7 +793,7 @@ InModuleScope dbachecks {
                 Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
             }
             
-            It "Should fail the test successfully when when scan for startup procedures is enabled" {
+            It "Should fail the test successfully when scan for startup procedures is enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
                     ScanForStartupProceduresDisabled = [PSCustomObject]@{
@@ -801,6 +801,27 @@ InModuleScope dbachecks {
                         }
                     }}
                 {Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected the scan for startup procedures to be disabled, but got 1."
+            }
+        }
+        Context "Checking Cross DB Ownership Chaining" {
+            It "Should pass the test successfully when cross db ownership chaining is disabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    CrossDBOwnershipChaining = [PSCustomObject]@{
+                        ConfiguredValue = 0
+                    }
+                }}
+                Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when cross db ownership chaining is enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                        CrossDBOwnershipChaining = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    }}
+                {Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because we expected the cross db ownership chaining to be disabled, but got 1."
             }
         }
         Context "Checking Max Dump Entries" {
@@ -828,6 +849,29 @@ InModuleScope dbachecks {
                 }
                 $maxdumps = 4
                 {Assert-MaxDump  -AllInstanceInfo (Get-AllInstanceInfo) -maxdumps $maxdumps} | Should -Throw -ExpectedMessage "Expected the actual value to be less than 4, because We expected less than 4 dumps but found 7. Memory dumps often suggest issues with the SQL Server instance, but got 7"
+            }
+        }
+        Context "Checking Latest Build of SQL Server" {
+           
+            It "Should pass the test successfully when scan for latest build of SQL passes" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    LatestBuild = [PSCustomObject]@{
+                        Compliant = $true
+                    }
+                }
+            }
+                Assert-LatestBuild -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when scan for latest build of SQL fails" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    LatestBuild = [PSCustomObject]@{
+                            Compliant = $false
+                        }
+                    }}
+                {Assert-LatestBuild -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$true, because We expected the SQL Server to be on the newest SQL Server Packs/CUs, but got `$false."
             }
         }
     }
