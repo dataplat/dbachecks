@@ -281,4 +281,4 @@ Nice work!
 
 # How to Contribute
 
-We welcome contributions to the project. You can fork the repository and make changes and create a Pull Request. [Rob has written a guide here](https://sqldbawithabeard.com/?p=11030)
+We welcome contributions to the project. You can fork the repository, make changes and create a Pull Request. [Rob has written a guide here](https://sqldbawithabeard.com/?p=11030)
