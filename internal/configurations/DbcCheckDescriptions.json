@@ -173,7 +173,7 @@
     },
     {
         "UniqueTag": "SqlEngineServiceAccount",
-        "Description": "Tests that the SQL Engine Service is started and set to auto-start"
+        "Description": "Tests that the SQL Engine Service state is set to the configured value (default - Running) and that the start mode is set to the configured value (default - Automatic) unless it is a cluster in which case it checks that the start mode is set to Manual"
     },
     {
         "UniqueTag": "SqlBrowserServiceAccount",

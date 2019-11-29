@@ -1,11 +1,18 @@
+## Date 28th November
+Thank you Tracey tboggiano
+    Added new CIS Check for the latest SQL build #716
+    
+Thank you Rob
+    Making the SQL Engine Service Check configurable #706
+
+##Latest
+
 ## Date 26th November
 Thank you Tracey @tboggiano
     Added new CIS Check for OLE AUtomation Procedures to be disabled #707
     Moving the Cross DB Ownership Chaining check into the AllInstance check to help speed up checks #708
 Thank you Rob
     Fixing the Tags so that they are picked up by AllInstanceInfo Fixes #715
-
-##Latest
 
 ## Date 16th November
 Thank you Matt @matt2005
