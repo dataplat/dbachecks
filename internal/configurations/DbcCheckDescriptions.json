@@ -438,5 +438,13 @@
     {
         "UniqueTag": "LatestBuild",
         "Description": "Tests that the sees is SQL Server has the newest Service Packs and CUs installed."
+    },
+    {
+        "UniqueTag": "ContainedDBAutoClose",
+        "Description": "Tests that the sees is contained databases has AUTO CLOSE disabled."
+    },
+    {
+        "UniqueTag": "ContainedDBSQLAuth",
+        "Description": "Tests that the sees is contained databases has does not use SQL authentication."
     }
  ]

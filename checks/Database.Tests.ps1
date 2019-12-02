@@ -938,6 +938,25 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
     }
+    Describe "Contained Database Auto Close" -Tags ContainedDBAutoClose, CIS, $filename {
+        if ($NotContactable -contains $psitem) {
+            Context "Testing conatined database auto close option on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing conatined database auto close option on $psitem" {
+                @($InstanceSMO.Databases.Where{$psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                    It "$($psitem.Name) on $($psitem.Parent.Name) should have auto close set to true" {
+                        $psitem.AutoClose | Should -BeTrue -Because "Contained Databases should have auto close set to true for CIS compliance"
+                    }
+                }
+            }
+        }
+    }
+
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 

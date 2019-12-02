@@ -58,6 +58,8 @@ Set-PSFConfig -Module dbachecks -Name policy.security.oleautomationproceduresdis
 Set-PSFConfig -Module dbachecks -Name policy.security.remoteaccessdisabled -Value 0 -Initialize -Description "Remote Access should be disabled 0"
 Set-PSFConfig -Module dbachecks -Name policy.security.scanforstartupproceduresdisabled -Validation bool -Value $true -Initialize -Description "Scan For Startup Procedures disabled `$true or enabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.security.latestbuild -Validation bool -Value $true -Initialize -Description "SQL Server should have the latest SQL build (service packs/CUs) installed"
+Set-PSFConfig -Module dbachecks -Name policy.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Contained databases should have Auto Close enabled"
+Set-PSFConfig -Module dbachecks -Name policy.security.containeddbsqlauth -Validation bool -Value $false -Initialize -Description "Contained databases should not use SQL authenication"
 
 #diskspce
 Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -Initialize -Description "Percent disk free"
