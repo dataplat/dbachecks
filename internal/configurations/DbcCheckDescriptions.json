@@ -441,10 +441,6 @@
     },
     {
         "UniqueTag": "ContainedDBAutoClose",
-        "Description": "Tests that the sees is contained databases has AUTO CLOSE disabled."
-    },
-    {
-        "UniqueTag": "ContainedDBSQLAuth",
-        "Description": "Tests that the sees is contained databases has does not use SQL authentication."
+        "Description": "Tests that each contained database has AUTO CLOSE disabled."
     }
  ]
