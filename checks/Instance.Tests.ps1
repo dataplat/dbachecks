@@ -409,7 +409,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Checking that sa login has been renamed on $psitem" {
                 $results = Get-DbaLogin -SqlInstance $psitem -Login sa
-                It "sa login has been renamed on $psitem" {
+                It "sa login has been renamed on $psitem"{
                     $results | Should -Be $null -Because 'Renaming the sa account is a requirement'
                 }
             }
@@ -426,7 +426,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking that sa login has been disabled on $psitem" {
-                It "sa login is disabled on $psitem" {
+                $skip = Get-DbcConfigValue skip.security.sadisabled
+                It "sa login is disabled on $psitem" -Skip:$Skip {
                     Assert-SaDisabled -AllInstanceInfo $AllInstanceInfo
                 }
             }
@@ -443,7 +444,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking that a login named sa does not exist on $psitem" {
-                It "sa login does not exist on $psitem" {
+                $skip = Get-DbcConfigValue skip.security.saexist
+                It "sa login does not exist on $psitem" -Skip:$Skip {
                     Assert-SaExist -AllInstanceInfo $AllInstanceInfo
                 }
             }
