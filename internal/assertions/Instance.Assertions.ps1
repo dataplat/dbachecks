@@ -294,6 +294,65 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        'SaDisabled' {
+            if ($There) {
+                try {
+                    #This needs to be done in query just in case the account had already been renamed
+                    $query = "SELECT is_disabled 
+                            FROM sys.sql_logins
+                            WHERE principal_id = 1"
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    $SaDisabled = [pscustomobject] @{
+                         Disabled = $results.is_disabled
+
+                    }
+                }
+                catch {
+                    $There = $false
+                    $SaDisabled = [pscustomobject] @{
+                        Disabled = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $SaDisabled = [pscustomobject] @{
+                    Disabled = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'SaExist' {
+            if ($There) {
+                try {
+                    $results = Get-DbaLogin -SqlInstance $Instance -Login sa
+                    if ($null -eq $results.Name) {
+                        $Exist = $false
+                    }
+                    else {
+                        $Exist = $true
+                    }
+
+                    $SaExist = [pscustomobject] @{
+                        Exist = $Exist
+                    }
+                }
+                catch {
+                    $There = $false
+                    $SaExist = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $SaExist = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
         'SqlEngineServiceAccount' {
             if ($There) {
                 try {
@@ -323,7 +382,7 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-        Default { }
+        Default {}
     }
     [PSCustomObject]@{
         ErrorLog                         = $ErrorLog
@@ -331,9 +390,11 @@ function Get-AllInstanceInfo {
         MaxDump                          = $MaxDump
         CrossDBOwnershipChaining         = $CrossDBOwnershipChaining
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
-        RemoteAccess                     = $RemoteAccessDisabled
-        OleAutomationProceduresDisabled  = $OleAutomationProceduresDisabled
-        LatestBuild                      = $LatestBuild
+        RemoteAccess = $RemoteAccessDisabled
+        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
+        LatestBuild = $LatestBuild
+        SaExist = $SaExist
+        SaDisabled = $SaDisabled
         EngineService                    = $EngineService
     }
 }
@@ -516,11 +577,21 @@ function Assert-LatestBuild {
     $AllInstanceInfo.LatestBuild.Compliant | Should -Be $true -Because "We expected the SQL Server to be on the newest SQL Server Packs/CUs"
 }
 
+function Assert-SaDisabled {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.SaDisabled.Disabled | Should -Be $true -Because "We expected the original sa login to be disabled"
+}
+
+function Assert-SaExist {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUncCtYi0k2a2nT5KzPa5J1DXf
-# eyagggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUUSq5eR44NExtCJltIXTiayOj
+# 3cCgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -580,11 +651,11 @@ function Assert-LatestBuild {
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQj7PN2tTpWBwr8+8QWASk0wtYp
-# WjANBgkqhkiG9w0BAQEFAASCAQBfsbQiu0GEMgNlw6NUt9PHAvTjmnflhcm0DbMN
-# QCMMs0aklDPOFaPD1Q7nEh0L8MWyldqA+sBMKJVfgpwOctPXfn5w9dOAzqQcYA9e
-# 4Ub8g6T+vWsTqtBb3ojpeRUarAo+HiMJbInlUay22PP4HnWsqLjsSjVhpZqCzDhh
-# /r8zA/xis4o5ZmwmsK5xaAqT3MkriYylf2Glhl13FBo9R1U9xxk+DWwa7XiDuwoT
-# RveVeSjNrXJRkOsMrs/vjFumfCp1YbesJojDbOITjPo8IGGgLqsbyxpF7KHAik1s
-# 8XWIc/re4Er01v8u5U4rxwI4oD9NKTWLk8/pkfGc9fnWYArO
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSUzgQRTdWd2Gr/xQpcs+8v4iRz
+# YjANBgkqhkiG9w0BAQEFAASCAQAsrpN6w4z8xce6ddPsQUCJ1b/osoVcOGB4ViwD
+# 5nENd2vU4GBgqZcDHkDBKmMJJhfsM/EaLbAN34ib52GoJxt9+3wYTWtHf+cAi4Ip
+# chkVADcS3Npc1HssA+C2XZvQkuPd49kFruuxLsSqyx3CmDjR3l96Xw1W7sfzovvK
+# 6aXHmKDBja4m1+M9jRGTgY6sPAYZR+Hjvrt7AkQprQOPZzvMytVyr76FU8UZh3Ov
+# B9ZerFbJOao5fpYu5Smb3jDT0N3A7ZpA7mmYDM8UDMC/7v9DnuEFifrEqHC/mb8j
+# woxXBA8s0AdK3CAh1G6Q3jEsZ4s6AWdFZSl8fQOU6JphgB8e
 # SIG # End signature block

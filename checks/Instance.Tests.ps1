@@ -409,13 +409,48 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Checking that sa login has been renamed on $psitem" {
                 $results = Get-DbaLogin -SqlInstance $psitem -Login sa
-                It "sa login does not exist on $psitem" {
+                It "sa login has been renamed on $psitem"{
                     $results | Should -Be $null -Because 'Renaming the sa account is a requirement'
                 }
             }
         }
     }
 
+    Describe "SA Login Disabled" -Tags SaDisabled, DISA, CIS, Medium, $filename {
+        if ($NotContactable -contains $psitem) {
+            Context "Checking that sa login has been disabled on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking that sa login has been disabled on $psitem" {
+                $skip = Get-DbcConfigValue skip.security.sadisabled
+                It "sa login is disabled on $psitem" -Skip:$Skip {
+                    Assert-SaDisabled -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Login SA cannot exist" -Tags SaExist, CIS, Medium, $filename {
+        if ($NotContactable -contains $psitem) {
+            Context "Checking that a login named sa does not exist on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking that a login named sa does not exist on $psitem" {
+                $skip = Get-DbcConfigValue skip.security.saexist
+                It "sa login does not exist on $psitem" -Skip:$Skip {
+                    Assert-SaExist -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
     Describe "Default Backup Compression" -Tags DefaultBackupCompression, Low, $filename {
         $defaultbackupcompression = Get-DbcConfigValue policy.backup.defaultbackupcompression
         if ($NotContactable -contains $psitem) {

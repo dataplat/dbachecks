@@ -232,6 +232,14 @@
         "Description": "Tests that the SA Login has been renamed"
     },
     {
+        "UniqueTag": "SaExist",
+        "Description": "Tests that a sa login does not exist"
+    },
+    {
+        "UniqueTag": "SaDisabled",
+        "Description": "Tests that the original SA Login is disabled"
+    },
+    {
         "UniqueTag": "DefaultBackupCompression",
         "Description": "Tests that an instances Default Backup Compression is set to the specified (default true) setting"
     },
@@ -438,5 +446,9 @@
     {
         "UniqueTag": "LatestBuild",
         "Description": "Tests that the sees is SQL Server has the newest Service Packs and CUs installed."
+    },
+    {
+        "UniqueTag": "ContainedDBAutoClose",
+        "Description": "Tests that each contained database has AUTO CLOSE disabled."
     }
  ]

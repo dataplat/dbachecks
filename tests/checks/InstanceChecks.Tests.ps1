@@ -1060,6 +1060,52 @@ InModuleScope dbachecks {
                 { Assert-EngineStartTypeCluster  -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected strings to be the same, because Clustered Instances required that the SQL engine service is set to manual, but they were different."
             }
         }
+        Context "Checking sa login disabled" {
+           
+            It "Should pass the test successfully when the original sa account is disabled" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    SaDisabled = [PSCustomObject]@{
+                        Disabled = $true
+                    }
+                }
+            }
+                Assert-SaDisabled -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when the original sa account is enabled" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    SaDisabled = [PSCustomObject]@{
+                        Disabled = $false
+                        }
+                    }}
+                {Assert-SaDisabled -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$true, because We expected the original sa login to be disabled, but got `$false."
+            }
+        }
+        Context "Checking no sa login exist" {
+           
+            It "Should pass the test successfully when no sa login exist" {
+                # Mock for success
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    SaExist = [PSCustomObject]@{
+                        Exist = $false
+                    }
+                }
+            }
+                Assert-SaExist -AllInstanceInfo (Get-AllInstanceInfo)
+            }
+            
+            It "Should fail the test successfully when a sa login doesn't exist" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo {[PSCustomObject]@{
+                    SaExist = [PSCustomObject]@{
+                        Exist = $true
+                        }
+                    }}
+                {Assert-SaExist -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$false, because We expected no login to exist with the name sa, but got `$true."
+            }
+        }
     }
 }
 # SIG # Begin signature block
