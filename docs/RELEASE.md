@@ -1,11 +1,19 @@
+## Date 22nd December
+Thank you Tracey tboggiano
+    Two New CIS Checks Contained databases should be auto-closed #721
+    sa login disabled and should not exist #719
+    
+Thank you Rob
+    Fix bug in Agent Tests #723
+
+##Latest
+
 ## Date 28th November
 Thank you Tracey tboggiano
     Added new CIS Check for the latest SQL build #716
     
 Thank you Rob
     Making the SQL Engine Service Check configurable #706
-
-##Latest
 
 ## Date 26th November
 Thank you Tracey @tboggiano

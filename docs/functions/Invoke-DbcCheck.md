@@ -80,8 +80,9 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyOleautomation <Object>] [-ConfigPolicyPageverify <Object>]
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
  [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
- [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
- [-ConfigPolicySecurityLatestbuild <Object>] [-ConfigPolicySecurityOleautomationproceduresdisabled <Object>]
+ [-ConfigPolicySecurityContainedbautoclose <Object>] [-ConfigPolicySecurityCrossdbownershipchaining <Object>]
+ [-ConfigPolicySecurityDatabasemailenabled <Object>] [-ConfigPolicySecurityLatestbuild <Object>]
+ [-ConfigPolicySecurityOleautomationproceduresdisabled <Object>]
  [-ConfigPolicySecurityRemoteaccessdisabled <Object>]
  [-ConfigPolicySecurityScanforstartupproceduresdisabled <Object>]
  [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
@@ -101,7 +102,9 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
+ [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
+ [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
  [-ConfigSkipTempdbfilesonc <Object>] [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
 ```
@@ -181,8 +184,9 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyOleautomation <Object>] [-ConfigPolicyPageverify <Object>]
  [-ConfigPolicyRecoverymodelExcludedb <Object>] [-ConfigPolicyRecoverymodelType <Object>]
  [-ConfigPolicySecurityAdhocdistributedqueriesenabled <Object>] [-ConfigPolicySecurityClrenabled <Object>]
- [-ConfigPolicySecurityCrossdbownershipchaining <Object>] [-ConfigPolicySecurityDatabasemailenabled <Object>]
- [-ConfigPolicySecurityLatestbuild <Object>] [-ConfigPolicySecurityOleautomationproceduresdisabled <Object>]
+ [-ConfigPolicySecurityContainedbautoclose <Object>] [-ConfigPolicySecurityCrossdbownershipchaining <Object>]
+ [-ConfigPolicySecurityDatabasemailenabled <Object>] [-ConfigPolicySecurityLatestbuild <Object>]
+ [-ConfigPolicySecurityOleautomationproceduresdisabled <Object>]
  [-ConfigPolicySecurityRemoteaccessdisabled <Object>]
  [-ConfigPolicySecurityScanforstartupproceduresdisabled <Object>]
  [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
@@ -202,7 +206,9 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
+ [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
+ [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
  [-ConfigSkipTempdbfilesonc <Object>] [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
 ```
@@ -2755,6 +2761,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigPolicySecurityContainedbautoclose
+{{ Fill ConfigPolicySecurityContainedbautoclose Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigPolicySecurityCrossdbownershipchaining
 {{ Fill ConfigPolicySecurityCrossdbownershipchaining Description }}
 
@@ -3342,6 +3363,51 @@ Accept wildcard characters: False
 
 ### -ConfigSkipLogshiptesting
 {{ Fill ConfigSkipLogshiptesting Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityContainedbautoclose
+{{ Fill ConfigSkipSecurityContainedbautoclose Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecuritySadisabled
+{{ Fill ConfigSkipSecuritySadisabled Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecuritySaexist
+{{ Fill ConfigSkipSecuritySaexist Description }}
 
 ```yaml
 Type: Object
