@@ -131,13 +131,13 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 28th November
+## Date 22nd December
 Thank you Tracey tboggiano
-    Added new CIS Check for the latest SQL build #716
+    Two New CIS Checks Contained databases should be auto-closed #721
+    sa login disabled and should not exist #719
     
 Thank you Rob
-    Making the SQL Engine Service Check configurable #706
-##Latest
+    Fix bug in Agent Tests #723
 
 Run Get-DbcReleaseNotes for all release notes
             "
