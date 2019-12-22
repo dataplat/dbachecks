@@ -294,6 +294,65 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        'SaDisabled' {
+            if ($There) {
+                try {
+                    #This needs to be done in query just in case the account had already been renamed
+                    $query = "SELECT is_disabled 
+                            FROM sys.sql_logins
+                            WHERE principal_id = 1"
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    $SaDisabled = [pscustomobject] @{
+                         Disabled = $results.is_disabled
+
+                    }
+                }
+                catch {
+                    $There = $false
+                    $SaDisabled = [pscustomobject] @{
+                        Disabled = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $SaDisabled = [pscustomobject] @{
+                    Disabled = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'SaExist' {
+            if ($There) {
+                try {
+                    $results = Get-DbaLogin -SqlInstance $Instance -Login sa
+                    if ($null -eq $results.Name) {
+                        $Exist = $false
+                    }
+                    else {
+                        $Exist = $true
+                    }
+
+                    $SaExist = [pscustomobject] @{
+                        Exist = $Exist
+                    }
+                }
+                catch {
+                    $There = $false
+                    $SaExist = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $SaExist = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
         'SqlEngineServiceAccount' {
             if ($There) {
                 try {
@@ -323,7 +382,7 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-        Default { }
+        Default {}
     }
     [PSCustomObject]@{
         ErrorLog                         = $ErrorLog
@@ -331,9 +390,11 @@ function Get-AllInstanceInfo {
         MaxDump                          = $MaxDump
         CrossDBOwnershipChaining         = $CrossDBOwnershipChaining
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
-        RemoteAccess                     = $RemoteAccessDisabled
-        OleAutomationProceduresDisabled  = $OleAutomationProceduresDisabled
-        LatestBuild                      = $LatestBuild
+        RemoteAccess = $RemoteAccessDisabled
+        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
+        LatestBuild = $LatestBuild
+        SaExist = $SaExist
+        SaDisabled = $SaDisabled
         EngineService                    = $EngineService
     }
 }
@@ -514,6 +575,16 @@ function Assert-ErrorLogEntry {
 function Assert-LatestBuild {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LatestBuild.Compliant | Should -Be $true -Because "We expected the SQL Server to be on the newest SQL Server Packs/CUs"
+}
+
+function Assert-SaDisabled {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.SaDisabled.Disabled | Should -Be $true -Because "We expected the original sa login to be disabled"
+}
+
+function Assert-SaExist {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
 }
 
 # SIG # Begin signature block
