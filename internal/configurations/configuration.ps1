@@ -63,6 +63,7 @@ Set-PSFConfig -Module dbachecks -Name policy.security.oleautomationproceduresdis
 Set-PSFConfig -Module dbachecks -Name policy.security.remoteaccessdisabled -Value 0 -Initialize -Description "Remote Access should be disabled 0"
 Set-PSFConfig -Module dbachecks -Name policy.security.scanforstartupproceduresdisabled -Validation bool -Value $true -Initialize -Description "Scan For Startup Procedures disabled `$true or enabled `$false"
 Set-PSFConfig -Module dbachecks -Name policy.security.latestbuild -Validation bool -Value $true -Initialize -Description "SQL Server should have the latest SQL build (service packs/CUs) installed"
+Set-PSFConfig -Module dbachecks -Name policy.security.containedbautoclose -Validation bool -Value $false -Initialize -Description "Contained databases should have auto close enabled"
 
 #diskspce
 Set-PSFConfig -Module dbachecks -Name policy.diskspace.percentfree -Value 20 -Initialize -Description "Percent disk free"
@@ -237,6 +238,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.oleautomationproceduresdisab
 Set-PSFConfig -Module dbachecks -Name skip.instance.remoteaccessdisabled -Validation bool -Value $false -Initialize -Description "Skip the remote access check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.scanforstartupproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip the scan for startup procedures disabled check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool -Value $false -Initialize -Description "Skip the scan the latest build of SQL Server check"
+Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
