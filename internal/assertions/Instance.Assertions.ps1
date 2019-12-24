@@ -471,14 +471,14 @@ function Assert-InstanceSupportedBuild {
     )
     #If $BuildBehind check against SP/CU parameter to determine validity of the build
     if ($BuildBehind) {
-        $results = Test-DbaBuild -SqlInstance $Instance -MaxBehind $BuildBehind
+        $results = Test-DbaBuild -SqlInstance $Instance -SqlCredential $sqlcredential -MaxBehind $BuildBehind
         $Compliant = $results.Compliant
         $Build = $results.build
         $Compliant | Should -Be $true -Because "this build $Build should not be behind the required build"
         #If no $BuildBehind only check against support dates
     }
     else {
-        $Results = Test-DbaBuild -SqlInstance $Instance -Latest
+        $Results = Test-DbaBuild -SqlInstance $Instance -SqlCredential $sqlcredential -Latest
         [DateTime]$SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $Build = $results.build
         #If $BuildWarning, check for support date within the warning window
