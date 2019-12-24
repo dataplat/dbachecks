@@ -180,7 +180,7 @@ Describe "Database Tests Exclusions"{
     }
 
     $Describes.ForEach{
-        It "$($Psitem.Name) should reference the gloabl exclude configuration" {
+        It "$($Psitem.Name) should reference the global exclude configuration" {
             $psitem.Extent -like "*`$ExcludedDatabases*" | Should -BeTrue -Because "We need to exclude the databases specified in the config command.invokedbccheck.excludedatabases"
         }
     }
