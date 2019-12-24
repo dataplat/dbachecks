@@ -24,7 +24,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                     $ast.CommandElements -and
                     $ast.CommandElements[0].Value -eq 'describe'
                 }, $true) |
-                ForEach-Object {
+            ForEach-Object {
                 $CE = $PSItem.CommandElements
                 $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
                 $tagIdx = $CE.IndexOf(($CE | Where-Object ParameterName -eq 'Tags')) + 1
@@ -39,17 +39,17 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             @($describes).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
                 It "$title Should Use a double quote after the Describe" {
-                    $PSItem.Name.ToString().Startswith('"')  | Should -BeTrue -Because 'We need use double quotes for titles'
-                    $PSItem.Name.ToString().Endswith('"')  | Should -BeTrue -Because 'We need use double quotes for titles'
+                    $PSItem.Name.ToString().Startswith('"') | Should -BeTrue -Because 'You need to alter the title of the Describe - We need use double quotes for titles'
+                    $PSItem.Name.ToString().Endswith('"') | Should -BeTrue -Because 'You need to alter the title of the Describe - We need use double quotes for titles'
                 }
                 It "$title should use a plural for tags" {
-                    $PSItem.Tags | Should -Not -BeNullOrEmpty -Because 'We use the plural of Tags'
+                    $PSItem.Tags | Should -Not -BeNullOrEmpty -Because 'You need to alter the tags parameter of the Describe - We use the plural of Tags'
                 }
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
-                    $PSItem.Tags.Text.Split(',').Trim().Where{($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') -and ($PSItem -notlike '*status*')  -and ($PSItem -notlike '*exists')  -and ($PSItem -notlike '*Ops')}.ForEach{
+                    $PSItem.Tags.Text.Split(',').Trim().Where{ ($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') -and ($PSItem -notlike '*status*') -and ($PSItem -notlike '*exists') -and ($PSItem -notlike '*Ops') }.ForEach{
                         It "$PSItem should be Singular" {
-                            $PSItem.ToString().Endswith('s') | Should -BeFalse -Because 'Our coding standards say tags should be singular'
+                            $PSItem.ToString().Endswith('s') | Should -BeFalse -Because 'You need to alter the tags for this Describe OR alter this test if the tag makes sense - Our coding standards say tags should be singular'
                         }
                     }
                     It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) should be in the unique Tags returned from Get-DbcCheck" {
@@ -58,7 +58,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 }
                 else {
                     It "You haven't used the Tags Parameter so we can't check the tags" {
-                        $false | Should -BeTrue -Because 'We use the Tags parameter'
+                        $false | Should -BeTrue -Because 'You need to alter the Describe - We use the Tags parameter'
                     }
                 }
             }
@@ -71,7 +71,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                     $ast.CommandElements -and
                     $ast.CommandElements[0].Value -eq 'Context'
                 }, $true) |
-                ForEach-Object {
+            ForEach-Object {
                 $CE = $PSItem.CommandElements
                 $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
                 New-Object PSCustomObject -Property @{
@@ -82,7 +82,32 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             @($Contexts).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
                 It "$Title Should end with `$PSItem (or `$clustername) So that the PowerBi will work correctly" {
-                    $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('clustername"') | Should -BeTrue -Because 'This helps the PowerBi to parse the data'
+                    $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('clustername"') | Should -BeTrue -Because 'You need to alter the title of the Contect - This helps the PowerBi to parse the data'
+                }
+            }
+        }
+        Context "$($PSItem.Name) - Checking teh Its" {
+            ## Find the Its
+            $Its = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
+            FindAll([Func[Management.Automation.Language.Ast, bool]] {
+                    param ($ast)
+                    $ast.CommandElements -and
+                    $ast.CommandElements[0].Value -eq 'It'
+                }, $true) |
+            ForEach-Object {
+                $CE = $PSItem.CommandElements
+                $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
+                New-Object PSCustomObject -Property @{
+                    Name = $secondString
+                }
+            }
+
+
+            @($Its).ForEach{
+                $title = $PSItem.Name.ToString().Trim('"').Trim('''')
+                It "$Title of the It Should end with `$PSItem (or `$clustername) So that the PowerBi will work correctly" {
+                    $Lower = $PSItem.Name.ToString().ToLower()
+                    $Lower.Endswith('psitem"') -or $Lower.Endswith('clustername"') -or $Lower.EndsWith('psitem.Server)"') -or $Lower.EndsWith('psitem.instancename)"') -or $Lower.EndsWith('instance"') -or $Lower.EndsWith('instance)"') -or $Lower.EndsWith('psitem.domain)"') | Should -BeTrue -Because 'You need to alter the title of the It - This helps the PowerBi to parse the data'
                 }
             }
         }
@@ -92,7 +117,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             $AST = [System.Management.Automation.Language.Parser]::ParseInput($Check, [ref]$null, [ref]$null)
             $Statements = $AST.EndBlock.statements.Extent
             ## Ignore the filename line
-            @($Statements.Where{$PSItem.StartLineNumber -ne 1}).ForEach{
+            @($Statements.Where{ $PSItem.StartLineNumber -ne 1 }).ForEach{
                 # make sure we only regex if the title contains a describe
                 if ($PSItem.Text -match 'Describe') {
                     $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
@@ -107,28 +132,28 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                         }
                     }
                     It "$title Should not use `$_" {
-                        ($PSItem.text -match '$_' )| Should -BeFalse -Because '¬$psitem is the correct one to use'
+                        ($PSItem.text -match '$_' ) | Should -BeFalse -Because '¬$psitem is the correct one to use'
                     }
                     if ($CheckName -ne 'Agent.Tests.ps1') {
                         It "$title Should Contain a Context Block" {
                             $PSItem.text -match 'Context' | Should -BeTrue -Because 'This helps the Power BI'
                         }
                     }
-                    else{
+                    else {
                         $Contexts = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
                         FindAll([Func[Management.Automation.Language.Ast, bool]] {
                                 param ($ast)
                                 $ast.CommandElements -and
                                 $ast.CommandElements[0].Value -eq 'Context'
                             }, $true) |
-                            ForEach-Object {
+                        ForEach-Object {
                             $CE = $PSItem.CommandElements
                             $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
                             New-Object PSCustomObject -Property @{
                                 Name = $secondString
                             }
                         }
-                        It "$CheckName should have the right number of Context blocks as the AST doesnt parse how I like and I cant be bothered to fix it right now"{
+                        It "$CheckName should have the right number of Context blocks as the AST doesnt parse how I like and I cant be bothered to fix it right now" {
                             $Contexts.Count | Should -Be 23 -Because "There should be 23 context blocks in the Agent checks file"
                         }
                     }
@@ -138,7 +163,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
     }
     (Get-DbcCheck).ForEach{
         It "Should have one Unique Tag for each check" {
-            $psitem.UniqueTag.Count | Should -Be 1 -Because "We want to only have one Unique Tag per test and we got $($psitem.UniqueTag) instead"
+            $psitem.UniqueTag.Count | Should -Be 1 -Because "You need to check that the tags for this check -  We want to only have one Unique Tag per test and we got $($psitem.UniqueTag) instead"
         }
     }
 }
@@ -153,15 +178,15 @@ Describe "Checking that there is a description for each check" -Tags UnitTest {
 
 Describe "Each Config referenced in a check should exist" -Tags UnitTest {
     $dbcConfig = (Get-DbcConfig).Name
-    ((Get-DbcCheck).Config.Split(' ') | Sort-Object -Unique).Where{$Psitem -ne ''}.ForEach{
+    ((Get-DbcCheck).Config.Split(' ') | Sort-Object -Unique).Where{ $Psitem -ne '' }.ForEach{
         It "Config Value $psitem Should exist in Get-DbcConfig" {
-            $Psitem | Should -BeIn $dbcConfig
+            $Psitem | Should -BeIn $dbcConfig -Because "You need to look at the configurations as there appears to not be a unique tag"
         }
     }
 }
 
-Describe "Database Tests Exclusions"{
-    $DbChecks = (Get-ChildItem $ModuleBase\checks).Where{$PSItem.Name -eq 'Database.Tests.ps1'}
+Describe "Database Tests Exclusions" {
+    $DbChecks = (Get-ChildItem $ModuleBase\checks).Where{ $PSItem.Name -eq 'Database.Tests.ps1' }
     $Check = Get-Content $DbChecks.FullName -Raw
 
     $Describes = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
@@ -170,11 +195,11 @@ Describe "Database Tests Exclusions"{
             $ast.CommandElements -and
             $ast.CommandElements[0].Value -eq 'describe'
         }, $true) |
-        ForEach-Object {
+    ForEach-Object {
         $CE = $PSItem.CommandElements
         $secondString = ($CE | Where-Object { $PSItem.StaticType.name -eq 'string' })[1]
         [PSCustomObject] @{
-            Name = $secondString.Value
+            Name   = $secondString.Value
             Extent = $secondString.Parent.Extent.Text
         }
     }
