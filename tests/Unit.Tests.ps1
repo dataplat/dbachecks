@@ -38,26 +38,26 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
             }
             @($describes).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
-                It "$title Should Use a double quote after the Describe" {
+                It "The Describe Title - $title - Should Use a double quote after the Describe" {
                     $PSItem.Name.ToString().Startswith('"') | Should -BeTrue -Because 'You need to alter the title of the Describe - We need use double quotes for titles'
                     $PSItem.Name.ToString().Endswith('"') | Should -BeTrue -Because 'You need to alter the title of the Describe - We need use double quotes for titles'
                 }
-                It "$title should use a plural for tags" {
+                It "The Describe Title - $title - should use a plural for tags" {
                     $PSItem.Tags | Should -Not -BeNullOrEmpty -Because 'You need to alter the tags parameter of the Describe - We use the plural of Tags'
                 }
                 # a simple test for no esses apart from statistics and Access!!
                 if ($null -ne $PSItem.Tags) {
                     $PSItem.Tags.Text.Split(',').Trim().Where{ ($PSItem -ne '$filename') -and ($PSItem -notlike '*statistics*') -and ($PSItem -notlike '*BackupPathAccess*') -and ($PSItem -notlike '*OlaJobs*') -and ($PSItem -notlike '*status*') -and ($PSItem -notlike '*exists') -and ($PSItem -notlike '*Ops') }.ForEach{
-                        It "$PSItem should be Singular" {
+                        It "The Describe Title - $title - Tags parameter $PSItem should be Singular" {
                             $PSItem.ToString().Endswith('s') | Should -BeFalse -Because 'You need to alter the tags for this Describe OR alter this test if the tag makes sense - Our coding standards say tags should be singular'
                         }
                     }
-                    It "The first Tag $($PSItem.Tags.Text.Split(',')[0]) should be in the unique Tags returned from Get-DbcCheck" {
+                    It "The Describe Title - $title - The first Tag $($PSItem.Tags.Text.Split(',')[0]) should be in the unique Tags returned from Get-DbcCheck" {
                         $UniqueTags | Should -Contain $PSItem.Tags.Text.Split(',')[0].ToString() -Because 'We need a unique tag for each test - Format should be -Tags space UniqueTag comma - Also if you are running this on a machine where dbachecks has already been imported previously try running reset-dbcconfig, which will create a new checks.json for Get-DbcCheck'
                     }
                 }
                 else {
-                    It "You haven't used the Tags Parameter so we can't check the tags" {
+                    It "The Describe Title - $title - You haven't used the Tags Parameter so we can't check the tags" {
                         $false | Should -BeTrue -Because 'You need to alter the Describe - We use the Tags parameter'
                     }
                 }
@@ -81,7 +81,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
 
             @($Contexts).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
-                It "$Title Should end with `$PSItem (or `$clustername) So that the PowerBi will work correctly" {
+                It "The Context Titel - $Title - Should end with `$PSItem (or `$clustername) So that the PowerBi will work correctly" {
                     $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('clustername"') | Should -BeTrue -Because 'You need to alter the title of the Contect - This helps the PowerBi to parse the data'
                 }
             }
@@ -105,9 +105,9 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
 
             @($Its).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
-                It "$Title of the It Should end with `$PSItem (or `$clustername) So that the PowerBi will work correctly" {
+                It "The It Title - $Title - Should end with the right ending so that the PowerBi will work correctly" {
                     $Lower = $PSItem.Name.ToString().ToLower()
-                    $Lower.Endswith('psitem"') -or $Lower.Endswith('clustername"') -or $Lower.EndsWith('psitem.Server)"') -or $Lower.EndsWith('psitem.instancename)"') -or $Lower.EndsWith('instance"') -or $Lower.EndsWith('instance)"') -or $Lower.EndsWith('psitem.domain)"') | Should -BeTrue -Because 'You need to alter the title of the It - This helps the PowerBi to parse the data'
+                    $Lower.Endswith('psitem"') -or $Lower.Endswith('clustername"') -or $Lower.EndsWith('psitem.Server)"') -or $Lower.EndsWith('psitem.instancename)"') -or $Lower.EndsWith('instance"') -or $Lower.EndsWith('instance)"') -or $Lower.EndsWith('psitem.domain)"')  -or $Lower.EndsWith('psitem.computername)"')| Should -BeTrue -Because 'You need to alter the title of the It, it should end with the instance name or computername - This helps the PowerBi to parse the data'
                 }
             }
         }
