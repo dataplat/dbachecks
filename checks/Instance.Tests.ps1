@@ -64,7 +64,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                         (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme | Should -Be $authscheme
                     }
                 }
-                It -Skip:$skipping "$psitem is pingable" {
+                It -Skip:$skipping "We should be able to ping host $psitem" {
                     $ping = New-Object System.Net.NetworkInformation.Ping
                     $timeout = 1000 #milliseconds
                     $reply = $ping.Send($InstanceSMO.ComputerName, $timeout)
@@ -72,7 +72,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     $pingable | Should -BeTrue
 
                 }
-                It -Skip:$skipremote "$psitem Is PSRemoteable" {
+                It -Skip:$skipremote "We should be able to remote onto $psitem" {
                     #simple remoting check
                     try {
                         $null = Invoke-Command -ComputerName $InstanceSMO.ComputerName -ScriptBlock { Get-ChildItem } -ErrorAction Stop
@@ -168,7 +168,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
-                It "$psitem Should be Optimize for Ad Hoc workloads" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
+                It "Should have Optimize for Ad Hoc workloads set correctly on $psitem" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
                     @(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
                         $psitem.CurrentOptimizeAdHoc | Should -Be $psitem.RecommendedOptimizeAdHoc -Because "optimize for ad hoc workloads is a recommended setting"
                     }
@@ -271,7 +271,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Linked Servers on $psitem" {
                 @(Test-DbaLinkedServerConnection -SqlInstance $psitem).ForEach{
-                    It "Linked Server $($psitem.LinkedServerName) on on $($psitem.SqlInstance) has connectivity" {
+                    It "Linked Server $($psitem.LinkedServerName) has connectivity on $($psitem.SqlInstance)" {
                         $psitem.Connectivity | Should -BeTrue -Because 'You need to be able to connect to your linked servers'
                     }
                 }
@@ -318,7 +318,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking for orphaned database files on $psitem" {
-                It "$psitem doesn't have orphan files" {
+                It "There should be zero orphaned database files on $psitem" {
                     @(Find-DbaOrphanedFile -SqlInstance $psitem).Count | Should -Be 0 -Because 'You dont want any orphaned files - Use Find-DbaOrphanedFile to locate them'
                 }
             }
@@ -336,11 +336,11 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing instance name matches Windows name for $psitem" {
                 if ($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -like '*,*')) {
-                    It "$psitem doesn't require rename as it appears to be a local container" -Skip {
+                    It "We wont check this as it appears to be a local container - for $psitem" -Skip {
                     }
                 }
                 else {
-                    It "$psitem doesn't require rename" {
+                    It "Testing rename required for $psitem" {
                         (Test-DbaInstanceName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
                     }
                 }
@@ -382,18 +382,16 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Checking that build is still supportedby Microsoft for $psitem" {
                 if ($BuildBehind) {
-                    It "$psitem is not behind the latest build by more than $BuildBehind" {
+                    It "The build is not behind the latest build by more than $BuildBehind for $psitem" {
                         Assert-InstanceSupportedBuild -Instance $psitem -BuildBehind $BuildBehind -Date $Date
                     }
                 }
-                It "$Instance's build is supported by Microsoft" {
+                It "The build is supported by Microsoft for $psitem" {
                     Assert-InstanceSupportedBuild -Instance $psitem -Date $Date
                 }
-                It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
+                It "The build is supported by Microsoft within the warning window of $BuildWarning months for $psitem" {
                     Assert-InstanceSupportedBuild -Instance $psitem -BuildWarning $BuildWarning -Date $Date
                 }
-
-
             }
         }
     }
@@ -959,20 +957,20 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
                 if (-not $IsLinux) {
                     $Services = Get-DbaService -ComputerName $psitem
                     if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
-                        It "SQL browser service on $psitem should be Stopped as only one instance is installed" {
+                        It "SQL browser service should be Stopped as only one instance is installed on $psitem" {
                             $Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
                         }
                     }
                     else {
-                        It "SQL browser service on $psitem should be Running as multiple instances are installed" {
+                        It "SQL browser service should be Running as multiple instances are installed on $psitem" {
                             $Services.Where{$_.ServiceType -eq 'Browser'}.State| Should -Be "Running" -Because 'You need the browser service with multiple instances' }
                     }
                     if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
-                        It "SQL browser service startmode should be Disabled on $psitem as only one instance is installed" {
+                        It "SQL browser service startmode should be Disabled as only one instance is installed on $psitem" {
                             $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' }
                     }
                     else {
-                        It "SQL browser service startmode should be Automatic on $psitem as multiple instances are installed" {
+                        It "SQL browser service startmode should be Automatic as multiple instances are installed on $psitem" {
                             $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Automatic"
                         }
                     }
