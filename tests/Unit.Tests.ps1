@@ -86,7 +86,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 }
             }
         }
-        Context "$($PSItem.Name) - Checking teh Its" {
+        Context "$($PSItem.Name) - Checking the Its" {
             ## Find the Its
             $Its = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
             FindAll([Func[Management.Automation.Language.Ast, bool]] {
