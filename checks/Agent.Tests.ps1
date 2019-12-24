@@ -68,7 +68,9 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                             }
                         }
                         else {
-                            It "Running on Linux or connecting to container so can't check Services on $Psitem" -skip {
+                            Context "Testing SQL Agent is running on $psitem" {
+                                It "Running on Linux or connecting to container so can't check Services on $Psitem" -skip {
+                                }
                             }
                         }
                     }
