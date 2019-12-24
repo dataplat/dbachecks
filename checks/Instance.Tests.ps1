@@ -14,7 +14,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     if ($NotContactable -notcontains $psitem) {
         $Instance = $psitem
         try {
-            $InstanceSMO = Connect-DbaInstance	-SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+            $InstanceSMO = Connect-DbaInstance -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
         }
         catch {
             $NotContactable += $Instance
@@ -383,14 +383,14 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Context "Checking that build is still supportedby Microsoft for $psitem" {
                 if ($BuildBehind) {
                     It "The build is not behind the latest build by more than $BuildBehind for $psitem" {
-                        Assert-InstanceSupportedBuild -Instance $psitem -BuildBehind $BuildBehind -Date $Date
+                        Assert-InstanceSupportedBuild -Instance $InstanceSMO -BuildBehind $BuildBehind -Date $Date
                     }
                 }
                 It "The build is supported by Microsoft for $psitem" {
-                    Assert-InstanceSupportedBuild -Instance $psitem -Date $Date
+                    Assert-InstanceSupportedBuild -Instance $InstanceSMO-Date $Date
                 }
                 It "The build is supported by Microsoft within the warning window of $BuildWarning months for $psitem" {
-                    Assert-InstanceSupportedBuild -Instance $psitem -BuildWarning $BuildWarning -Date $Date
+                    Assert-InstanceSupportedBuild -Instance $InstanceSMO -BuildWarning $BuildWarning -Date $Date
                 }
             }
         }
