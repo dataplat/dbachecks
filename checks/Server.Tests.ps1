@@ -21,7 +21,7 @@ Return
         Context "Testing SPNs on $psitem" {
             $computername = $psitem
             @($AllServerInfo.SPNs).ForEach{
-                It "$computername should have a SPN $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount)" {
+                It "There should be an SPN $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount) on $computername" {
                     Assert-SPN -SPN $psitem
                 }
             }

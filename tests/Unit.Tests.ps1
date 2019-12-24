@@ -107,7 +107,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
                 It "The It Title - $Title - Should end with the right ending so that the PowerBi will work correctly" {
                     $Lower = $PSItem.Name.ToString().ToLower()
-                    $Lower.Endswith('psitem"') -or $Lower.Endswith('clustername"') -or $Lower.EndsWith('server)"') -or $Lower.EndsWith('name)"') -or $Lower.EndsWith('instance"') -or $Lower.EndsWith('instance)"') -or $Lower.EndsWith('domain)"') -or $Lower.EndsWith('domain"') -or $Lower.EndsWith('replica)"') | Should -BeTrue -Because 'You need to alter the title of the It, it should end with the instance name or computername - This helps the PowerBi to parse the data'
+                    $Lower.Endswith('psitem"') -or $Lower.Endswith('clustername"') -or $Lower.EndsWith('server)"') -or $Lower.EndsWith('name)"') -or $Lower.EndsWith('name"') -or $Lower.EndsWith('instance"') -or $Lower.EndsWith('instance)"') -or $Lower.EndsWith('domain)"') -or $Lower.EndsWith('domain"') -or $Lower.EndsWith('replica)"') | Should -BeTrue -Because 'You need to alter the title of the It, it should end with the instance name or computername - This helps the PowerBi to parse the data'
                 }
             }
         }
