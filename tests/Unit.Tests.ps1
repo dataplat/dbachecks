@@ -81,12 +81,13 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
 
             @($Contexts).ForEach{
                 $title = $PSItem.Name.ToString().Trim('"').Trim('''')
-                It "The Context Titel - $Title - Should end with `$PSItem (or `$clustername) So that the PowerBi will work correctly" {
+                It "The Context Title - $Title - Should end with `$PSItem (or `$clustername) So that the PowerBi will work correctly" {
                     $PSItem.Name.ToString().Endswith('psitem"') -or $PSItem.Name.ToString().Endswith('clustername"') | Should -BeTrue -Because 'You need to alter the title of the Contect - This helps the PowerBi to parse the data'
                 }
             }
         }
         Context "$($PSItem.Name) - Checking the Its" {
+            $CheckName = $psitem.Name
             ## Find the Its
             $Its = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors).
             FindAll([Func[Management.Automation.Language.Ast, bool]] {
@@ -109,6 +110,11 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                     $Lower = $PSItem.Name.ToString().ToLower()
                     $Lower.Endswith('psitem"') -or $Lower.Endswith('clustername"') -or $Lower.EndsWith('server)"') -or $Lower.EndsWith('name)"') -or $Lower.EndsWith('name"') -or $Lower.EndsWith('instance"') -or $Lower.EndsWith('instance)"') -or $Lower.EndsWith('domain)"') -or $Lower.EndsWith('domain"') -or $Lower.EndsWith('replica)"') | Should -BeTrue -Because 'You need to alter the title of the It, it should end with the instance name or computername - This helps the PowerBi to parse the data'
                 }
+                if ($CheckName -eq 'Database.Tests.ps1') {
+                    It "The It Title - $Title - Should begin with - Database" {
+                        $PSItem.Name.ToString().StartsWith('"Database') -or $PSItem.Name.ToString().StartsWith('"Can') | Should -BeTrue -Because 'You need to alter the It Title to start with Database (or Can t Connect) - For the database checks we can parse them and make magic'
+                    }
+                }
             }
         }
         Context "$($PSItem.Name) - Checking Code" {
@@ -122,20 +128,20 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                 if ($PSItem.Text -match 'Describe') {
                     $title = [regex]::matches($PSItem.text, "Describe(.*)-Tag").groups[1].value.Replace('"', '').Replace('''', '').trim()
                     if ($title -ne 'Cluster $clustername Health using Node $clustervm') {
-                        It "$title Should Use Get-Instance or Get-ComputerName" {
+                        It "Describe - $title - Should Use Get-Instance or Get-ComputerName" {
                             ($PSItem.text -Match 'Get-Instance') -or ($PSItem.text -match 'Get-ComputerName') | Should -BeTrue -Because 'These are the commands to use to get Instances or Computers'
                         }
                     }
                     if ($title -ne 'Cluster $clustername Health using Node $clustervm') {
-                        It "$title Should use the ForEach Method" {
+                        It "Describe - $title Should use the ForEach Method" {
                             ($PSItem.text -match 'Get-Instance\).ForEach{' ) -or ($Psitem.text -match 'Get-ComputerName\).ForEach{' ) | Should -BeTrue # use the \ to escape the ) -Because 'We use the ForEach method in our coding standards'
                         }
                     }
-                    It "$title Should not use `$_" {
+                    It "Describe - $title Should not use `$_" {
                         ($PSItem.text -match '$_' ) | Should -BeFalse -Because '¬$psitem is the correct one to use'
                     }
                     if ($CheckName -ne 'Agent.Tests.ps1') {
-                        It "$title Should Contain a Context Block" {
+                        It "Describe - $title Should Contain a Context Block" {
                             $PSItem.text -match 'Context' | Should -BeTrue -Because 'This helps the Power BI'
                         }
                     }
@@ -154,7 +160,7 @@ Describe "Checking that each dbachecks Pester test is correctly formatted for Po
                             }
                         }
                         It "$CheckName should have the right number of Context blocks as the AST doesnt parse how I like and I cant be bothered to fix it right now" {
-                            $Contexts.Count | Should -Be 23 -Because "There should be 23 context blocks in the Agent checks file"
+                            $Contexts.Count | Should -Be 24 -Because "There should be 24 context blocks in the Agent checks file"
                         }
                     }
                 }
