@@ -43,13 +43,13 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing database collation on $psitem" {
                 @(Test-DbaDbCollation -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
-                    It "database collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
+                    It "Database $($psitem.Database) collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) on $($psitem.SqlInstance)" {
                         $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation -Because "You will get collation conflict errors in tempdb"
                     }
                 }
                 if ($Wrongcollation) {
                     @(Test-DbaDbCollation -SqlInstance $psitem -Database $Wrongcollation ).ForEach{
-                        It "database collation ($($psitem.DatabaseCollation)) should not match server collation ($($psitem.ServerCollation)) for $($psitem.Database) on $($psitem.SqlInstance)" {
+                        It "Database $($psitem.Database) collation ($($psitem.DatabaseCollation)) should not match server collation ($($psitem.ServerCollation)) on $($psitem.SqlInstance)" {
                             $psitem.ServerCollation | Should -Not -Be $psitem.DatabaseCollation -Because "You have defined the database to have another collation then the server. You will get collation conflict errors in tempdb"
                         }
                     }
@@ -70,7 +70,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing suspect pages on $psitem" {
                 $InstanceSMO.Databases.Where{if ($Database) {$_.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}}.ForEach{
                     $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
-                    It "$($psitem.Name) should return 0 suspect pages on $($psitem.Parent.Name)" {
+                    It "Database $($psitem.Name) should return 0 suspect pages on $($psitem.Parent.Name)" {
                         @($results).Count | Should -Be 0 -Because "You do not want suspect pages"
                     }
                 }
@@ -100,10 +100,10 @@ $ExcludedDatabases += $ExcludeDatabase
                     if (-not ($destdata)) {$destdata -eq $srv.DefaultFile}
                     if (-not ($destlog)) {$destlog -eq $srv.DefaultLog}
                     @(Test-DbaLastBackup -SqlInstance $psitem -Database $dbs -Destination $destserver -DataDirectory $destdata -LogDirectory $destlog -VerifyOnly).ForEach{                    if ($psitem.DBCCResult -notmatch "skipped for restored master") {
-                            It "DBCC CheckDB for $($psitem.Database) should be success on $($psitem.SourceServer)" {
+                            It "Database $($psitem.Database) DBCC CheckDB should be success on $($psitem.SourceServer)" {
                                 $psitem.DBCCResult | Should -Be "Success" -Because "You need to run DBCC CHECKDB to ensure your database is consistent"
                             }
-                            It "The Restore for $($psitem.Database) should be success on $($psitem.SourceServer)" {
+                            It "Database $($psitem.Database) restore should be success on $($psitem.SourceServer)" {
                                 $psitem.RestoreResult | Should -Be "Success" -Because "The backup file has not successfully restored - you have no backup"
                             }
                         }
@@ -125,10 +125,10 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "VerifyOnly tests of last backups on $psitem" {
                 @(Test-DbaLastBackup -SqlInstance $psitem -Database ($InstanceSMO.Databases.Where{$_.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) {$_.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Name -VerifyOnly).ForEach{
-                    It "The restore for Database $($psitem.Database) should be success on $($psitem.SourceServer)" {
+                    It "Database $($psitem.Database) restore for Database should be success for $($psitem.SourceServer)" {
                         $psitem.RestoreResult | Should -Be "Success" -Because "The restore file has not successfully verified - you have no backup"
                     }
-                    It "The file exists for last backup of Database $($psitem.Database) on $($psitem.SourceServer)" {
+                    It "Database $($psitem.Database) last backup file exists for $($psitem.SourceServer)" {
                         $psitem.FileExists | Should -BeTrue -Because "Without a backup file you have no backup"
                     }
                 }
@@ -195,7 +195,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing Last Good DBCC CHECKDB on $psitem" {
                 @(Get-DbaLastGoodCheckDb -SqlInstance $psitem -Database ($InstanceSMO.Databases.Where{$_.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and ($_.IsAccessible -eq $true) -and $(if ($database) {$psitem.name -in $Database}else {$ExcludedDatabases -notcontains $_.Name})}).Name ).ForEach{
                     if ($psitem.Database -ne "tempdb") {
-                        It "The last good integrity check for $($psitem.Database) should be less than $maxdays days old on $($psitem.SqlInstance)" {
+                        It "Database $($psitem.Database) last good integrity check should be less than $maxdays days old on $($psitem.SqlInstance)" {
                             if ($psitem.LastGoodCheckDb) {
                                 $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddDays( - ($maxdays)) -Because "You should have run a DBCC CheckDB inside that time"
                             }
@@ -234,7 +234,7 @@ $ExcludedDatabases += $ExcludeDatabase
                     @(Test-DbaIdentityUsage -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
                         if ($psitem.Database -ne "tempdb") {
                             $columnfqdn = "$($psitem.Database).$($psitem.Schema).$($psitem.Table).$($psitem.Column)"
-                            It "The usage for $columnfqdn should be less than $maxpercentage percent on $($psitem.SqlInstance)" {
+                            It "Database $($psitem.Database) - The usage for $columnfqdn should be less than $maxpercentage percent on $($psitem.SqlInstance)" {
                                 $psitem.PercentUsed -lt $maxpercentage | Should -BeTrue -Because "You do not want your Identity columns to hit the max value and stop inserts"
                             }
                         }
@@ -258,7 +258,7 @@ $ExcludedDatabases += $ExcludeDatabase
                 $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
                 $exclude += $ExcludedDatabases 
                 @(Get-DbaDbRecoveryModel -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
-                    It "$($psitem.Name) should be set to $recoverymodel on $($psitem.SqlInstance)" {
+                    It "Database $($psitem.Name) should be set to $recoverymodel on $($psitem.SqlInstance)" {
                         $psitem.RecoveryModel | Should -Be $recoverymodel -Because "You expect this recovery model"
                     }
                 }
@@ -332,7 +332,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing Disabled indexes on $psitem" {
                 $InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}) -and ($_.IsAccessible -eq $true)}.ForEach{
                     $results = Find-DbaDbDisabledIndex -SqlInstance $psitem.Parent -Database $psitem.Name
-                    It "$($psitem.Name) should return 0 Disabled indexes on $($psitem.Parent.Name)" {
+                    It "Database $($psitem.Name) should return 0 Disabled indexes on $($psitem.Parent.Name)" {
                         @($results).Count | Should -Be 0 -Because "Disabled indexes are wasting disk space"
                     }
                 }
@@ -353,7 +353,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing database growth event on $psitem" {
                 $InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name)})}.ForEach{
                     $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
-                    It "$($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
+                    It "Database $($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                         @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
                     }
                 }
@@ -374,7 +374,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing page verify on $psitem" {
                 switch ($version) {
                     8 {                         
-                        It "Page verify is not available on SQL 2000 on $($psitem.Parent.Name)" {
+                        It "Database Page verify is not available on SQL 2000 on $($psitem.Parent.Name)" {
                             $true | Should -BeTrue
                         } 
                     }
@@ -386,7 +386,7 @@ $ExcludedDatabases += $ExcludeDatabase
                                 }
                             }
                             else {
-                                It "Page verify is not available on tempdb on SQL 2005 on $($psitem.Parent.Name)" {
+                                It "Database Page verify is not available on tempdb on SQL 2005 on $($psitem.Parent.Name)" {
                                     $true | Should -BeTrue
                                 } 
                             }
@@ -436,7 +436,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Auto Shrink on $psitem" {
                 $InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
-                    It "$($psitem.Name) should have Auto Shrink set to $autoshrink on $($psitem.Parent.Name)" {
+                    It "Database $($psitem.Name) should have Auto Shrink set to $autoshrink on $($psitem.Parent.Name)" {
                         $psitem.AutoShrink | Should -Be $autoshrink -Because "Shrinking databases causes fragmentation and performance issues"
                     }
                 }
@@ -637,7 +637,7 @@ $ExcludedDatabases += $ExcludeDatabase
                         $Average = ($psitem.Group.Size | Measure-Object -Average).Average
                         ## files where average size is less than 95% of the average or more than 105% of the average filegroup size (using default 5% config value)
                         $Unbalanced = $psitem | Where-Object {$psitem.group.Size -lt ((1 - ($Tolerance / 100)) * $Average) -or $psitem.group.Size -gt ((1 + ($Tolerance / 100)) * $Average)}
-                        It "File Group $($psitem.Name) of Database $($psitem.Group[0].Database) Should have FileGroup members with sizes within $tolerance % of the average on $($psitem.Group[0].SqlInstance)" {
+                        It "Database $($psitem.Group[0].Database) File Group $($psitem.Name) should have FileGroup members with sizes within $tolerance % of the average on $($psitem.Group[0].SqlInstance)" {
                             $Unbalanced.count | Should -Be 0 -Because "If your file groups are not balanced the files with the most free space will become allocation hotspots"
                         }
                     }
@@ -660,10 +660,10 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Checking that encryption certificates have not expired on $psitem" {
                 @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object {$_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude)}).ForEach{
-                    It "$($psitem.Name) in $($psitem.Database) has not expired on $($psitem.SqlInstance)" {
+                    It "Database $($psitem.Database) certificate $($psitem.Name) has not expired on $($psitem.SqlInstance)" {
                         $psitem.ExpirationDate.ToUniversalTime()  | Should -BeGreaterThan (Get-Date).ToUniversalTime() -Because "this certificate should not be expired"
                     }
-                    It "$($psitem.Name) in $($psitem.Database) does not expire for more than $CertificateWarning months on $($psitem.SqlInstance)" {
+                    It "Database $($psitem.Database) certificate $($psitem.Name) does not expire for more than $CertificateWarning months on $($psitem.SqlInstance)" {
                         $psitem.ExpirationDate.ToUniversalTime()  | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning"
                     }
                 }
@@ -703,7 +703,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Auto Update Statistics on $psitem" {
                 $InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
-                    It "$($psitem.Name) should have Auto Update Statistics set to $autoupdatestatistics on $($psitem.Parent.Name)" {
+                    It "Database $($psitem.Name) should have Auto Update Statistics set to $autoupdatestatistics on $($psitem.Parent.Name)" {
                         $psitem.AutoUpdateStatisticsEnabled | Should -Be $autoupdatestatistics  -Because "This value is expected for autoupdate statistics"
                     }
                 }
@@ -747,16 +747,16 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing datafile growth type on $psitem" {
                 @(Get-DbaDbFile -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude ).ForEach{
                     if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
-                        It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
+                        It "Database $Database datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
                             $psitem.GrowthType | Should -Be $datafilegrowthtype -Because "We expect a certain file growth type"
                         }
                         if ($datafilegrowthtype -eq "kb") {
-                            It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
+                            It "Database $Database datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
                                 $psitem.Growth * 8 | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain file growth value"
                             }
                         }
                         else {
-                            It "$($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
+                            It "Database $Database datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
                                 $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain fFile growth value"
                             }
                         }
@@ -817,7 +817,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing database is not in PseudoSimple recovery model on $psitem" {
                 @($InstanceSMO.Databases.Where{$psitem.Name -ne 'tempdb' -and $psitem.Name -ne 'model' -and $psitem.Status -ne 'Offline' -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     if (-not($psitem.RecoveryModel -eq "Simple")) {
-                        It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { 
+                        It "Database $($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { 
                             (Test-DbaDbRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
                     }
                 }
@@ -836,7 +836,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing database compatibility level matches server compatibility level on $psitem" {
                 @(Test-DbaDbCompatibility -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).ForEach{
-                    It "$($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
+                    It "Database $($psitem.Database) has a database compatibility level equal to the level of $($psitem.SqlInstance)" {
                         $psItem.DatabaseCompatibility | Should -Be $psItem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features"
                     }
                 }
@@ -855,13 +855,13 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Foreign Keys and Check Constraints are not trusted $psitem" {
                 @(Get-DbaDbForeignKey -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).Where{$_.NotForReplication -eq $false}.ForEach{
-                    It "Foreign Key $($psitem.Name) on table $($psitem.Parent) within database $($psitem.Database) should be trusted on $($psitem.SqlInstance)" {
+                    It "Database $($psitem.Database) Foreign Key $($psitem.Name) on table $($psitem.Parent) should be trusted on $($psitem.SqlInstance)" {
                         $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
                     }
                 }
 
                 @(Get-DbaDbCheckConstraint -SqlInstance $psitem -ExcludeDatabase $ExcludedDatabases -Database $Database).Where{$_.NotForReplication -eq $false -and $_.IsEnabled -eq $true}.ForEach{
-                    It "Check Constraint $($psitem.Name) on table $($psitem.Parent) within database $($psitem.Database) should be trusted on $($psitem.SqlInstance)" {
+                    It "Database $($psitem.Database) Check Constraint $($psitem.Name) on table $($psitem.Parent) should be trusted on $($psitem.SqlInstance)" {
                         $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
                     }
                 }
