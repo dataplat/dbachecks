@@ -90,7 +90,8 @@
         'Clear-DbcPowerBiDataSource',
         'Save-DbcRequiredModules',
         'Update-DbcRequiredModules',
-        'Set-DbcFile'
+        'Set-DbcFile',
+        'Convert-DbcResult'
     )
 
     # Cmdlets to export from this module
