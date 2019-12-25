@@ -91,7 +91,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
             Mock Test-Path { $false } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
             Mock Test-Path { $false } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
             
-            Set-DbcFile -TestResults $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType CSV  -verbose
+            Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType CSV  -verbose
               
             #Check that Test-Path mock was called
             $assertMockParams = @{
@@ -137,7 +137,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
             
-            Set-DbcFile -TestResults $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType CSV -Verbose
+            Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType CSV -Verbose
               
             #Check that Test-Path mock was called
             $assertMockParams = @{
@@ -182,7 +182,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
             
-            Set-DbcFile -TestResults $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -Force -FileType CSV -Verbose
+            Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -Force -FileType CSV -Verbose
               
             #Check that Test-Path mock was called
             $assertMockParams = @{
@@ -228,7 +228,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
             
-            Set-DbcFile -TestResults $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType CSV -Verbose
+            Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType CSV -Verbose
               
             #Check that Test-Path mock was called
             $assertMockParams = @{
@@ -274,7 +274,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
             
-            Set-DbcFile -TestResults $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType XML
+            Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType XML
               
             #Check that Test-Path mock was called
             $assertMockParams = @{
@@ -320,7 +320,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
     # mock for test-path to suceed
     Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
     Mock Test-Path { $false } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
-    Set-DbcFile -TestResults $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType CSV 
+    Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType CSV 
       #Check that correct Export-Csv mock was called
       $assertMockParams = @{
         'CommandName'     = 'Export-Csv'
@@ -334,7 +334,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
     # mock for test-path to suceed
     Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
     Mock Test-Path { $false } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
-    Set-DbcFile -TestResults $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType json 
+    Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType json 
       #Check that ConvertTo-Json mock was called
       $assertMockParams = @{
         'CommandName'     = 'ConvertTo-Json'
@@ -356,7 +356,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
     # mock for test-path to suceed
     Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
     Mock Test-Path { $false } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
-    Set-DbcFile -TestResults $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType xml 
+    Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -FileType xml 
       #Check that Export-Clixml  mock was called
       $assertMockParams = @{
         'CommandName'     = 'Export-Clixml'
