@@ -451,4 +451,9 @@
         "UniqueTag": "ContainedDBAutoClose",
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
     }
+    ,
+    {
+        "UniqueTag": "BuiltInAdmin",
+        "Description": "Tests to see if the BUILTIN\\Administrator login exist."
+    }
  ]

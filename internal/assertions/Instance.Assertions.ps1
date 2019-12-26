@@ -382,6 +382,36 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        'BuiltInAdmin' {
+            if ($There) {
+                try {
+                    $results = Get-DbaLogin -SqlInstance $Instance -Login "BUILTIN\Administrators"
+                    if ($null -eq $results.Name) {
+                        $Exist = $false
+                    }
+                    else {
+                        $Exist = $true
+                    }
+
+                    $BuiltInAdmin = [pscustomobject] @{
+                        Exist = $Exist
+                    }
+                }
+                catch {
+                    $There = $false
+                    $BuiltInAdmin = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $BuiltInAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
@@ -396,6 +426,7 @@ function Get-AllInstanceInfo {
         SaExist = $SaExist
         SaDisabled = $SaDisabled
         EngineService                    = $EngineService
+        BuiltInAdmin = $BuiltInAdmin
     }
 }
 
@@ -585,6 +616,11 @@ function Assert-SaDisabled {
 function Assert-SaExist {
     Param($AllInstanceInfo)
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+}
+
+function Assert-BuiltInAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be $false -Because "We expected no login to exist with the name BUILTIN\Administrators"
 }
 
 # SIG # Begin signature block

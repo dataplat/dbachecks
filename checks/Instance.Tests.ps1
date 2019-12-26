@@ -943,6 +943,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Login BUILTIN\Administrators cannot exist" -Tags BuiltInAdmin, CIS, Medium, $filename {
+        if ($NotContactable -contains $psitem) {
+            Context "Checking that a login named BUILTIN\Administrators does not exist on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking that a login named BUILTIN\Administrators does not exist on $psitem" {
+                $skip = Get-DbcConfigValue skip.security.builtinadmin
+                It "BUILTIN\Administrators login does not exist on $psitem" -Skip:$skip {
+                    Assert-BuiltInAdmin -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
