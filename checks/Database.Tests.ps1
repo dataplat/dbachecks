@@ -964,7 +964,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $skip = Get-DbcConfigValue skip.security.guestuserconnect
         
         if ($NotContactable -contains $psitem) {
-            Context "Testing Guest user has CONNECT permission on $($psitem.Name)" {
+            Context "Testing Guest user has CONNECT permission in $($psitem.Name) on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
                     $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
@@ -972,7 +972,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             $instance = $Psitem
-            Context "Testing Guest user has CONNECT permission on $psitem" {
+            Context "Testing Guest user has CONNECT permission in $($psitem.Name) on $psitem" {
                 @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
                     It "$($psitem.Name) on $Instance should return no CONNECT permissions for the guest user" -Skip:$skip {
                         Assert-GuestUserConnect -Instance $instance -Database $($psitem.Name) 
