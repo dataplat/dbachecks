@@ -1,4 +1,5 @@
 function Convert-DbcResult {
+    [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Data.DataTable])]
     Param(
         # The pester results object
@@ -24,10 +25,9 @@ function Convert-DbcResult {
     $col4 = New-Object system.Data.DataColumn Context, ([string])
     $col5 = New-Object system.Data.DataColumn Name, ([string])
     $col6 = New-Object system.Data.DataColumn Database, ([string])
-    $col7 = New-Object system.Data.DataColumn ComputerName, ([string])
-    $col8 = New-Object system.Data.DataColumn Instance, ([string])
-    $col9 = New-Object system.Data.DataColumn Result, ([string])
-    $col10 = New-Object system.Data.DataColumn FailureMessage, ([string])
+    $col7 = New-Object system.Data.DataColumn Instance, ([string])
+    $col8 = New-Object system.Data.DataColumn Result, ([string])
+    $col9 = New-Object system.Data.DataColumn FailureMessage, ([string])
 
 
     
@@ -41,12 +41,10 @@ function Convert-DbcResult {
     $table.columns.add($col7)
     $table.columns.add($col8)
     $table.columns.add($col9)
-    $table.columns.add($col10)
     
     Write-PSFMessage "Processing the test results" -Level Verbose
     $TestResults.TestResult.ForEach{
         $ContextSplit = ($PSitem.Context -split ' ')
-        $ComputerName = ($ContextSplit[-1] -split '\\')[0]
         $NameSplit = ($PSitem.Name -split ' ')
         if ($PSitem.Name -match '^Database\s(.*?)\s') {
             $Database = $Matches[1]
@@ -70,7 +68,6 @@ function Convert-DbcResult {
         $Row.Context = $ContextSplit[0..($ContextSplit.Count - 3)] -join ' '
         $Row.Name = $NameSplit[0..($NameSplit.Count - 3)] -join ' '
         $Row.Database = $Database
-        $Row.ComputerName = $ComputerName
         $Row.Instance = $ContextSplit[-1]
         $Row.Result = $PSitem.Result
         $Row.FailureMessage = $PSitem.FailureMessage

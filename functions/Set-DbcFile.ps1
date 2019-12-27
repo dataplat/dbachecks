@@ -78,7 +78,7 @@ function Set-DbcFile {
             'Json' {
                 if ($PSCmdlet.ShouldProcess("$FilePath" , "Creating a Json file named $FileName in ")) {
                     $Date = @{Name = 'Date'; Expression = {($_.Date).Tostring('MM/dd/yy HH:mm:ss')}}
-                    $InputObject  | Select-Object $Date, Label,Describe,Context,Name,Database,ComputerName,Instance,Result,FailureMessage | ConvertTo-Json | Out-File -FilePath $File -Append:$Append
+                    $InputObject  | Select-Object $Date, Label,Describe,Context,Name,Database,Instance,Result,FailureMessage | ConvertTo-Json | Out-File -FilePath $File -Append:$Append
                 }
             }
             'Xml' {
