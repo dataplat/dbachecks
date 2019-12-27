@@ -5,7 +5,7 @@ Remove-Module dbachecks -ErrorAction SilentlyContinue
 Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 . "$PSScriptRoot\..\constants.ps1"
 
-<#
+
 Describe "$commandname Unit Tests" -Tags UnitTest {
     Context "Parameters and parameter sets" {
         $ParametersList = 'TestResults', 'FilePath', 'FileName', 'FileType', 'Append', 'Force'
@@ -26,7 +26,7 @@ Describe "$commandname Unit Tests" -Tags UnitTest {
         }
     }
 }
-#>
+
 Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
 
     Context "Execution" {
