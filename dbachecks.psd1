@@ -91,7 +91,8 @@
         'Save-DbcRequiredModules',
         'Update-DbcRequiredModules',
         'Set-DbcFile',
-        'Convert-DbcResult'
+        'Convert-DbcResult',
+        'Write-DbcTable'
     )
 
     # Cmdlets to export from this module

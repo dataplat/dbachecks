@@ -1,4 +1,4 @@
-function Write-DbcTable{
+function Write-DbcTable {
     [CmdletBinding(SupportsShouldProcess)]
     Param(
         [Parameter(Mandatory)]
