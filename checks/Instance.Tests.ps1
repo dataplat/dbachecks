@@ -387,7 +387,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     }
                 }
                 It "The build is supported by Microsoft for $psitem" {
-                    Assert-InstanceSupportedBuild -Instance $InstanceSMO-Date $Date
+                    Assert-InstanceSupportedBuild -Instance $InstanceSMO -Date $Date
                 }
                 It "The build is supported by Microsoft within the warning window of $BuildWarning months for $psitem" {
                     Assert-InstanceSupportedBuild -Instance $InstanceSMO -BuildWarning $BuildWarning -Date $Date
@@ -469,71 +469,90 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
     Describe "XE Sessions That should be Stopped" -Tags XESessionStopped, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
-        # no point running if we dont have something to check
-        if ($xesession) {
-            if ($NotContactable -contains $psitem) {
-                Context "Checking sessions on $psitem" {
-                    It "Can't Connect to $Psitem" {
-                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+        if ((Get-Version -SQLInstance $psitem) -gt 10) {
+            # no point running if we dont have something to check
+            if ($xesession) {
+                if ($NotContactable -contains $psitem) {
+                    Context "Checking sessions on $psitem" {
+                        It "Can't Connect to $Psitem" {
+                            $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                        }
                     }
                 }
-            }
-            else {
-                Context "Checking sessions on $psitem" {
-                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
-                    @($xesession).ForEach{
-                        It "Session $psitem should not be running on $Instance" {
-                            $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
+                else {
+                    Context "Checking sessions on $psitem" {
+                        $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
+                        @($xesession).ForEach{
+                            It "Session $psitem should not be running on $Instance" {
+                                $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
+                            }
                         }
                     }
                 }
             }
+            else {
+                Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredstoppedsession -Value to add some Extended Events session names to run this check"
+            }
         }
         else {
-            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredstoppedsession -Value to add some Extended Events session names to run this check"
+            Context "Checking sessions on $psitem" {
+                It "Version does not support XE sessions on $Instance" -skip {
+                    1 | Should -Be 3
+                }
+            }
         }
     }
 
     Describe "XE Sessions That should be Running" -Tags XESessionRunning, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
-        # no point running if we dont have something to check
-        if ($xesession) {
-            if ($NotContactable -contains $psitem) {
-                Context "Checking running sessions on $psitem" {
-                    It "Can't Connect to $Psitem" {
-                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+        if ((Get-Version -SQLInstance $psitem) -gt 10) {
+            # no point running if we dont have something to check
+            if ($xesession) {
+                if ($NotContactable -contains $psitem) {
+                    Context "Checking running sessions on $psitem" {
+                        It "Can't Connect to $Psitem" {
+                            $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                        }
                     }
                 }
-            }
-            else {
-                Context "Checking running sessions on $psitem" {
-                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
-                    @($xesession).ForEach{
-                        It "session $psitem should be running on $Instance" {
-                            $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
+                else {
+                    Context "Checking running sessions on $psitem" {
+                        $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
+                        @($xesession).ForEach{
+                            It "session $psitem should be running on $Instance" {
+                                $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
+                            }
                         }
                     }
                 }
             }
+            else {
+                Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value to add some Extended Events session names to run this check"
+            }
         }
         else {
-            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value to add some Extended Events session names to run this check"
+            Context "Checking running sessions on $psitem" {
+                It "Version does not support XE sessions on $Instance" -skip {
+                    1 | Should -Be 3
+                }
+            }
         }
     }
 
     Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
+        if ((Get-Version -SQLInstance $psitem) -gt 10) {
         # no point running if we dont have something to check
         if ($xesession) {
             if ($NotContactable -contains $psitem) {
-                Context "Checking sessions on $psitem" {
+                Context "Checking running sessions allowed on $psitem" {
                     It "Can't Connect to $Psitem" {
                         $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
             else {
-                Context "Checking sessions on $psitem" {
+                Context "Checking running sessions allowed on $psitem" {
                     @(Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.ForEach{
                         It "Session $($Psitem.Name) is allowed to be running on $Instance" {
                             $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
@@ -544,6 +563,14 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
+        }
+    }
+        else {
+            Context "Checking running sessions allowed on $psitem" {
+                It "Version does not support XE sessions on $Instance" -skip {
+                    1 | Should -Be 3
+                }
+            }
         }
     }
     Describe "OLE Automation" -Tags OLEAutomation, security, CIS, Medium, $filename {
