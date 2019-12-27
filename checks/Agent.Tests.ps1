@@ -344,6 +344,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                 Describe "Last Agent Job Run" -Tags LastJobRunTime, $filename {
                     $skip = Get-DbcConfigValue skip.agent.lastjobruntime
                     $runningjobpercentage = Get-DbcConfigValue agent.lastjobruntime.percentage
+                    $SqlInstance = $psitem
                     if (-not $skip) {
                         $query = "IF OBJECT_ID('tempdb..#dbachecksLastRunTime') IS NOT NULL DROP Table #dbachecksLastRunTime
                         SELECT * INTO #dbachecksLastRunTime
@@ -389,17 +390,27 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         
                         DROP Table #dbachecksLastRunTime
                         DROP Table #dbachecksAverageRunTime"
-                        $lastagentjobruns = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
-                    }
-                    else {    
-                        Context "Testing last job run time on $psitem" {
-                            foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
-                                It "Job $($lastagentjobrun.JobName) last run duration should be not be greater than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
-                                    Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
-                                }
+                       
+                        try {
+                            $lastagentjobruns = Invoke-DbaQuery -SqlInstance $SqlInstance -Database msdb -Query $query -EnableException
+                        }
+                        catch {
+                            # because Rob had a syspolicy job with a duration of -954439937 which broke things - Dont ask me why!!
+                            $lastagentjobruns = @{
+                                Diff     = 1
+                                AvgSec   = 1
+                                JobName  = 'Something Broke'
+                                Duration = 'Query went wrong'
                             }
-                        }  
+                        }
                     }
+                    Context "Testing last job run time on $SqlInstance" {
+                        foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
+                            It "Job $($lastagentjobrun.JobName) last run duration should be not be greater than $runningjobpercentage % extra of the average run time on $SqlInstance" -Skip:$skip {
+                                Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
+                            }
+                        }
+                    }  
                 }
             }
         }
