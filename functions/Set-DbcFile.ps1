@@ -70,18 +70,27 @@ function Set-DbcFile {
     try {
         switch ($FileType) {
             'CSV' { 
+                if(-not ($FileName.ToLower().EndsWith('.csv'))){
+                    $FileName = $FileName + '.csv'
+                }
                 if ($PSCmdlet.ShouldProcess("$FilePath" , "Creating a CSV named $FileName in ")) {
                     $InputObject  | Select-Object * -ExcludeProperty ItemArray, Table, RowError, RowState, HasErrors | Export-Csv -Path $File -NoTypeInformation -Append:$Append 
                 }
                 
             }
             'Json' {
+                if(-not ($FileName.ToLower().EndsWith('.json'))){
+                    $FileName = $FileName + '.json'
+                }
                 if ($PSCmdlet.ShouldProcess("$FilePath" , "Creating a Json file named $FileName in ")) {
                     $Date = @{Name = 'Date'; Expression = {($_.Date).Tostring('MM/dd/yy HH:mm:ss')}}
                     $InputObject  | Select-Object $Date, Label,Describe,Context,Name,Database,ComputerName,Instance,Result,FailureMessage | ConvertTo-Json | Out-File -FilePath $File -Append:$Append
                 }
             }
             'Xml' {
+                if(-not ($FileName.ToLower().EndsWith('.xml'))){
+                    $FileName = $FileName + '.xml'
+                }
                 if ($PSCmdlet.ShouldProcess("$FilePath" , "Creating a XML named $FileName in ")) {
                     $InputObject  | Select-Object * -ExcludeProperty ItemArray, Table, RowError, RowState, HasErrors | Export-Clixml -Path $File -Force:$force
                 }
