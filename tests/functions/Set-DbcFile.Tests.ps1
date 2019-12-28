@@ -182,7 +182,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory' }
             Mock Test-Path { $true } -ParameterFilter { $Path -and $Path -eq 'DummyDirectory\DummyFileName' }
             
-            Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -Force -FileType CSV -Verbose
+            Set-DbcFile -InputObject $TheTestResults -FilePath DummyDirectory -FileName DummyFileName -Force -FileType CSV
               
             #Check that Test-Path mock was called
             $assertMockParams = @{
@@ -367,5 +367,140 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
     { Assert-MockCalled @assertMockParams } | Should -Not -Throw -Because "Did we output a XML - Because we need to know that the Mocks are working" 
         }
 
+    }
+}
+
+Describe "$commandname integration tests" -Tag UnitTest {
+    $TheTestResults = Get-Content $PSScriptRoot\results.json -raw | ConvertFrom-Json | Convert-DbcResult -Label 'Testing'
+     # So that we dont get any output in the tests but can test for It
+     Mock Write-PSFMessage { } -ParameterFilter { $Level -and $Level -eq 'Output' }
+    Context "File Creation"{
+        $TestCases = @{
+            FileName1 = 'DummyFileName'
+            FileName2= 'DummyFileName1.csv'
+            Filetype = 'csv'
+        },
+         @{
+            FileName1 = 'DummyFileName'
+            FileName2= 'DummyFileName1.json'
+            Filetype = 'json'
+        },
+         @{
+            FileName1 = 'DummyFileName'
+            FileName2= 'DummyFileName1.xml'
+            Filetype = 'xml'
+        }
+        It "Should create a file with an extension .<Filetype> even if the extension is not specified" -TestCases $TestCases{
+            Param($FileName1,$FileType)
+            Set-DbcFile -InputObject $TheTestResults -FilePath $TestDrive -FileName $FileName1 -FileType $Filetype
+            $FileName = "$TestDrive\$filename1" + '.' + $FileType
+            $FileName| Should -Exist
+        }
+        It "Should create a file with an extension .<Filetype> if the extension is specified"-TestCases $TestCases{
+            Param($FileName2,$FileType)
+            Set-DbcFile -InputObject $TheTestResults -FilePath $TestDrive -FileName $FileName2 -FileType $Filetype 
+            $FileName = "$TestDrive\$FileName2"
+            $FileName| Should -Exist
+        }
+    }
+
+# Need ot have .* whereveer there is a date as the date is dynamic
+$JsonFileContent = @"
+    [
+        {
+            "Date":  ".*",
+            "Label":  "Testing",
+            "Describe":  "Last Good DBCC CHECKDB",
+            "Context":  "Testing Last Good DBCC CHECKDB",
+            "Name":  "Database master last good integrity check should be less than 3 days old",
+            "Database":  "master",
+            "ComputerName":  "localhost,15592",
+            "Instance":  "localhost,15592",
+            "Result":  "Failed",
+            "FailureMessage":  "Expected the actual value to be greater than .*, because You should have run a DBCC CheckDB inside that time, but got .*"
+        },
+        {
+            "Date":  ".*",
+            "Label":  "Testing",
+            "Describe":  "Last Good DBCC CHECKDB",
+            "Context":  "Testing Last Good DBCC CHECKDB",
+            "Name":  "Database master has Data Purity Enabled",
+            "Database":  "master",
+            "ComputerName":  "localhost,15592",
+            "Instance":  "localhost,15592",
+            "Result":  "Passed",
+            "FailureMessage":  ""
+        },
+    ]
+"@
+$CSVFileContent = @"
+".*","Testing","Last Good DBCC CHECKDB","Testing Last Good DBCC CHECKDB","Database master last good integrity check should be less than 3 days old","master","localhost,15592","localhost,15592","Failed","Expected the actual value to be greater than .*, because You should have run a DBCC CheckDB inside that time, but got .*"
+".*","Testing","Last Good DBCC CHECKDB","Testing Last Good DBCC CHECKDB","Database master has Data Purity Enabled","master","localhost,15592","localhost,15592","Passed",""
+"@
+$XMLFileContent = @"
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Selected.System.Data.DataRow</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <DT N="Date">.*</DT>
+      <S N="Label">Testing</S>
+      <S N="Describe">Last Good DBCC CHECKDB</S>
+      <S N="Context">Testing Last Good DBCC CHECKDB</S>
+      <S N="Name">Database master last good integrity check should be less than 3 days old</S>
+      <S N="Database">master</S>
+      <S N="ComputerName">localhost,15592</S>
+      <S N="Instance">localhost,15592</S>
+      <S N="Result">Failed</S>
+      <S N="FailureMessage">Expected the actual value to be greater than .*, because You should have run a DBCC CheckDB inside that time, but got .*</S>
+    </MS>
+  </Obj>
+  <Obj RefId="1">
+    <TNRef RefId="0" />
+    <MS>
+      <DT N="Date">.*</DT>
+      <S N="Label">Testing</S>
+      <S N="Describe">Last Good DBCC CHECKDB</S>
+      <S N="Context">Testing Last Good DBCC CHECKDB</S>
+      <S N="Name">Database master has Data Purity Enabled</S>
+      <S N="Database">master</S>
+      <S N="ComputerName">localhost,15592</S>
+      <S N="Instance">localhost,15592</S>
+      <S N="Result">Passed</S>
+      <S N="FailureMessage"></S>
+    </MS>
+  </Obj>
+</Objs>
+"@
+
+    Context "File Content"{
+        $TestCases = @{
+            FileName1 = 'DummyFileName'
+            FileName2= 'DummyFileName1.csv'
+            Filetype = 'csv'
+            FileContent = $CSVFileContent
+        },
+         @{
+            FileName1 = 'DummyFileName'
+            FileName2= 'DummyFileName1.json'
+            Filetype = 'json'
+            FileContent = $JsonFileContent
+        },
+         @{
+            FileName1 = 'DummyFileName'
+            FileName2= 'DummyFileName1.xml'
+            Filetype = 'xml'
+            FileContent = $XMLFileContent
+        }
+        It "<FileType> File should have the correct contents" -TestCases $TestCases{
+            Param($FileName1,$FileType, $FileContent)
+            Set-DbcFile -InputObject $TheTestResults -FilePath $TestDrive -FileName $FileName1 -FileType $Filetype
+            $Date = Get-Date -Format "MM/dd/yyyy HH:mm:ss"
+            $FileName = "$TestDrive\$filename1" + '.' + $FileType
+            $FileName | Should -FileContentMatchMultiline $FileContent
+        }
     }
 }
