@@ -9,7 +9,7 @@ Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 
 Describe "$commandname Unit Tests" -Tags UnitTest {
     Context "Parameters and parameter sets" {
-        $ParametersList = 'TestResults', 'FilePath', 'FileName', 'FileType', 'Append', 'Force'
+        $ParametersList =  'InputObject','FilePath', 'FileName', 'FileType', 'Append', 'Force'
 
         $ParametersList.ForEach{
             It "$commandname Should have a mandatory parameter $psitem" {
