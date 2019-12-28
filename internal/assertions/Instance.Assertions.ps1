@@ -368,7 +368,8 @@ function Get-AllInstanceInfo {
                 catch {
                     $There = $false
                     $EngineService = [pscustomobject] @{
-                        Result     = 'We Could not Connect to $Instance'
+                        State     = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'	                        
+                        StartType = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
                     }
                 }
             }
@@ -376,6 +377,7 @@ function Get-AllInstanceInfo {
                 $There = $false
                 $EngineService = [pscustomobject] @{
                     State     = 'We Could not Connect to $Instance'
+                    StartType = 'We Could not Connect to $Instance'
                 }
             }
         }
