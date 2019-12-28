@@ -2,6 +2,7 @@ $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Remove-Module dbachecks -ErrorAction SilentlyContinue
 # Import-Module "$PSScriptRoot\..\..\dbachecks.psd1"
 . "$PSScriptRoot\..\..\functions\Set-DbcFile.ps1"
+. "$PSScriptRoot\..\..\functions\Convert-DbcResult.ps1"
 Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 . "$PSScriptRoot\..\constants.ps1"
 
