@@ -382,6 +382,40 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+        'PublicRolePermission' {
+            if ($There) {
+                try {
+                    #This needs to be done in query just in case the account had already been renamed
+                    $query = "
+                        SELECT Count(*) AS [RowCount]
+                        FROM master.sys.server_permissions
+                        WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%')
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER')
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
+                        "
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    Write-Host $results.RowCount
+                    $PublicRolePermission = [pscustomobject] @{
+                         Count = $results.RowCount
+                    }
+                }
+                catch {
+                    $There = $false
+                    $PublicRolePermission = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $PublicRolePermission = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
@@ -396,6 +430,7 @@ function Get-AllInstanceInfo {
         SaExist = $SaExist
         SaDisabled = $SaDisabled
         EngineService                    = $EngineService
+        PublicRolePermission = $PublicRolePermission
     }
 }
 
@@ -585,6 +620,11 @@ function Assert-SaDisabled {
 function Assert-SaExist {
     Param($AllInstanceInfo)
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+}
+
+function Assert-PublicRolePermission {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.PublicRolePermission.Count | Should -Be 0 -Because "We expected the public server role to have been granted no permissions"
 }
 
 # SIG # Begin signature block

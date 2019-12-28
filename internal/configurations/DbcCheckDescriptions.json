@@ -450,5 +450,9 @@
     {
         "UniqueTag": "ContainedDBAutoClose",
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
+    },
+    {
+        "UniqueTag": "PublicRolePermission",
+        "Description": "Tests that server public role does not have any permissions."
     }
  ]
