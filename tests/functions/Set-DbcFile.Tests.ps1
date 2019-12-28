@@ -29,7 +29,6 @@ Describe "$commandname Unit Tests" -Tags UnitTest {
 }
 
 Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
-
     Context "Execution" {
         # So that we dont get any output in the tests but can test for It
         Mock Write-PSFMessage { } -ParameterFilter { $Level -and $Level -eq 'Significant' }
@@ -325,7 +324,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
       #Check that correct Export-Csv mock was called
       $assertMockParams = @{
         'CommandName'     = 'Export-Csv'
-        'Times'           = 20 # No idea why
+        'Times'           = 1
         'Exactly'         = $true
         'Scope'           = 'It'
     }
@@ -339,7 +338,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
       #Check that ConvertTo-Json mock was called
       $assertMockParams = @{
         'CommandName'     = 'ConvertTo-Json'
-        'Times'           = 20 
+        'Times'           = 1
         'Exactly'         = $true
         'Scope'           = 'It'
     }
@@ -347,7 +346,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
       #Check that correct Out-File mock was called
       $assertMockParams = @{
         'CommandName'     = 'Out-File'
-        'Times'           = 20 
+        'Times'           = 1
         'Exactly'         = $true
         'Scope'           = 'It'
     }
@@ -361,7 +360,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
       #Check that Export-Clixml  mock was called
       $assertMockParams = @{
         'CommandName'     = 'Export-Clixml'
-        'Times'           = 20 
+        'Times'           = 1
         'Exactly'         = $true
         'Scope'           = 'It'
     }
