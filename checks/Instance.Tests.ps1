@@ -945,7 +945,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "Hide Instance" -Tags HideInstance, Security, CIS, Medium, $filename {
-        $skip = Get-DbcConfigValue skip.instance.hideinstance
+        $skip = Get-DbcConfigValue skip.security.hideinstance
         if ($NotContactable -contains $psitem) {
             Context "Testing Hide Instance on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
