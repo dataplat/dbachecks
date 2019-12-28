@@ -127,31 +127,35 @@ function Set-DbcFile {
         }
     }
 
+    function Add-Extension {
+        Param ($FileType)
+                if(-not ($FileName.ToLower().EndsWith(".$FileType"))){
+                    Write-PSFMessage "No Extension supplied so I will add .$FileType to $Filename" -Level Verbose
+                    $FileName = $FileName + '.' + $FileType
+                }
+                $File = "$FilePath\$FileName"
+                $File
+            }
+
     try {
         switch ($FileType) {
             'CSV' { 
-                if(-not ($FileName.ToLower().EndsWith('.csv'))){
-                    $FileName = $FileName + '.csv'
-                }
-                if ($PSCmdlet.ShouldProcess("$FilePath" , "Creating a CSV named $FileName in ")) {
+                $file = Add-Extension -FileType csv
+                if ($PSCmdlet.ShouldProcess("$File" , "Adding results to CSV")) {
                     $InputObject  | Select-Object * -ExcludeProperty ItemArray, Table, RowError, RowState, HasErrors | Export-Csv -Path $File -NoTypeInformation -Append:$Append 
                 }
                 
             }
             'Json' {
-                if(-not ($FileName.ToLower().EndsWith('.json'))){
-                    $FileName = $FileName + '.json'
-                }
-                if ($PSCmdlet.ShouldProcess("$FilePath" , "Creating a Json file named $FileName in ")) {
+                $file = Add-Extension -FileType json
+                if ($PSCmdlet.ShouldProcess("$File" , "Adding results to Json file")) {
                     $Date = @{Name = 'Date'; Expression = {($_.Date).Tostring('MM/dd/yy HH:mm:ss')}}
                     $InputObject  | Select-Object $Date, Label,Describe,Context,Name,Database,ComputerName,Instance,Result,FailureMessage | ConvertTo-Json | Out-File -FilePath $File -Append:$Append
                 }
             }
             'Xml' {
-                if(-not ($FileName.ToLower().EndsWith('.xml'))){
-                    $FileName = $FileName + '.xml'
-                }
-                if ($PSCmdlet.ShouldProcess("$FilePath" , "Creating a XML named $FileName in ")) {
+                $file = Add-Extension -FileType xml
+                if ($PSCmdlet.ShouldProcess("$File" , "Adding results to XML file ")) {
                     $InputObject  | Select-Object * -ExcludeProperty ItemArray, Table, RowError, RowState, HasErrors | Export-Clixml -Path $File -Force:$force
                 }
             }
