@@ -305,7 +305,6 @@ function Get-AllInstanceInfo {
                     $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
                     $SaDisabled = [pscustomobject] @{
                          Disabled = $results.is_disabled
-
                     }
                 }
                 catch {
@@ -369,8 +368,7 @@ function Get-AllInstanceInfo {
                 catch {
                     $There = $false
                     $EngineService = [pscustomobject] @{
-                        State     = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
-                        StartType = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                        Result     = 'We Could not Connect to $Instance'
                     }
                 }
             }
@@ -378,7 +376,39 @@ function Get-AllInstanceInfo {
                 $There = $false
                 $EngineService = [pscustomobject] @{
                     State     = 'We Could not Connect to $Instance'
-                    StartType = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        'HideInstance' {
+            if ($There) {
+                try {
+                    $query = "
+                        DECLARE @getValue INT;
+        
+                        EXEC master.sys.xp_instance_regread
+                            @rootkey = N'HKEY_LOCAL_MACHINE',
+                            @key = N'SOFTWARE\Microsoft\Microsoft SQL Server\MSSQLServer\SuperSocketNetLib',
+                            @value_name = N'HideInstance',
+                            @value = @getValue OUTPUT;
+        
+                        SELECT @getValue as Value;
+                    "
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    $HideInstance = [pscustomobject] @{
+                        Value = $results.Value
+                   }
+                }
+                catch {
+                    $There = $false
+                    $HideInstance = [pscustomobject] @{
+                        Value  = StartType = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $HideInstance = [pscustomobject] @{
+                    Value  = 'We Could not Connect to $Instance'
                 }
             }
         }
@@ -396,6 +426,7 @@ function Get-AllInstanceInfo {
         SaExist = $SaExist
         SaDisabled = $SaDisabled
         EngineService                    = $EngineService
+        HideInstance = $HideInstance
     }
 }
 
@@ -585,6 +616,11 @@ function Assert-SaDisabled {
 function Assert-SaExist {
     Param($AllInstanceInfo)
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+}
+
+function Assert-HideInstance {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.HideInstance.Value | Should -Be 1 -Because "We expected the hide instance proptety to be set to YES (1)"
 }
 
 # SIG # Begin signature block

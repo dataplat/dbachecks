@@ -450,5 +450,9 @@
     {
         "UniqueTag": "ContainedDBAutoClose",
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
+    },
+    {
+        "UniqueTag": "HideInstance",
+        "Description": "Tests that each hide instance is set to YES for the instance."
     }
  ]

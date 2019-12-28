@@ -943,6 +943,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Hide Instance" -Tags HideInstance, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.instance.hideinstance
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Hide Instance on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Hide Instance on $psitem" {
+                It "The Hide Instance on SQL Server instance $psitem" -Skip:$skip {
+                    Assert-HideInstance -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
