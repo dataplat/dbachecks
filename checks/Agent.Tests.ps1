@@ -344,6 +344,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                 Describe "Last Agent Job Run" -Tags LastJobRunTime, $filename {
                     $skip = Get-DbcConfigValue skip.agent.lastjobruntime
                     $runningjobpercentage = Get-DbcConfigValue agent.lastjobruntime.percentage
+                    $maxdays = Get-DbcConfigValue agent.failedjob.since
                     $SqlInstance = $psitem
                     if (-not $skip) {
                         $query = "IF OBJECT_ID('tempdb..#dbachecksLastRunTime') IS NOT NULL DROP Table #dbachecksLastRunTime
@@ -366,6 +367,8 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                             msdb.dbo.sysjobhistory AS jh
                             ON jh.job_id = h.job_id
                             AND jh.instance_id = h.instance_id
+                            WHERE msdb.dbo.agent_datetime(jh.run_date, jh.run_time) > DATEADD(DAY,- $maxdays,GETDATE())
+                            AND jh.step_id = 0
                         ) AS lrt
                         
                         IF OBJECT_ID('tempdb..#dbachecksAverageRunTime') IS NOT NULL DROP Table #dbachecksAverageRunTime
@@ -376,8 +379,11 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         job_id,
                         AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' + CONVERT(VARCHAR(6),run_duration),6),5,0,':'),3,0,':'))) AS AvgSec
                         FROM msdb.dbo.sysjobhistory hist
+                        WHERE msdb.dbo.agent_datetime(run_date, run_time) > DATEADD(DAY,- $maxdays,GETDATE())
+                        AND Step_id = 0
                         GROUP BY job_id
                         ) as art
+                        
                         
                         SELECT 
                         JobName,
@@ -389,7 +395,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         ON lastrun.job_id = avgrun.job_id
                         
                         DROP Table #dbachecksLastRunTime
-                        DROP Table #dbachecksAverageRunTime"
+                       DROP Table #dbachecksAverageRunTime"
                        
                         try {
                             $lastagentjobruns = Invoke-DbaQuery -SqlInstance $SqlInstance -Database msdb -Query $query -EnableException
@@ -406,7 +412,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     }
                     Context "Testing last job run time on $SqlInstance" {
                         foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
-                            It "Job $($lastagentjobrun.JobName) last run duration should be not be greater than $runningjobpercentage % extra of the average run time on $SqlInstance" -Skip:$skip {
+                            It "Job $($lastagentjobrun.JobName) last run duration of $($lastagentjobrun.duration) seconds should be not be greater than $runningjobpercentage % variance of the average run time of $($lastagentjobrun.AvgSec) seconds on $SqlInstance" -Skip:$skip {
                                 Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
                             }
                         }
