@@ -623,7 +623,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing for files likely to grow soon on $psitem" {
-                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $PsItem.Name -notin $exclude }) }.ForEach{
+                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $PsItem.Name -notin $exclude }) -and ($psitem.IsAccessible) }.ForEach{
                     $Files = Get-DbaDbFile -SqlInstance $psitem.Parent.Name -Database $psitem.Name
                     $Files | Add-Member ScriptProperty -Name PercentFree -Value { 100 - [Math]::Round(([int64]$PSItem.UsedSpace.Byte / [int64]$PSItem.Size.Byte) * 100, 3) }
                     $Files | ForEach-Object {
