@@ -943,6 +943,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Local Windows Groups Not Have SQL Logins" -Tags LocalWindowsGroup, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.instance.localwindowgroup
+        if ($NotContactable -contains $psitem) {
+            Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
+                It "Local Windows groups should not SQL Logins on $psitem" -Skip:$skip {
+                    Assert-LocalWindowsGroup -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {

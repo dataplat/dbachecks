@@ -382,6 +382,36 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        'LocalWindowsGroup' {
+            if ($There) {
+                try {
+                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object LoginType -eq WindowsGroup
+                    if ($null -ne $logins) {
+                        $LocalWindowsGroup = [pscustomobject] @{
+                            Exist = $true
+                        }
+                    }
+                    else {
+                        $LocalWindowsGroup = [pscustomobject] @{
+                            Exist = $false
+                        }
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LocalWindowsGroup = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LocalWindowsGroup = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
@@ -396,6 +426,7 @@ function Get-AllInstanceInfo {
         SaExist = $SaExist
         SaDisabled = $SaDisabled
         EngineService                    = $EngineService
+        LocalWindowsGroup = $LocalWindowsGroup
     }
 }
 
@@ -585,6 +616,11 @@ function Assert-SaDisabled {
 function Assert-SaExist {
     Param($AllInstanceInfo)
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+}
+
+function Assert-LocalWindowsGroup {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LocalWindowsGroup.Exist | Should -Be $false -Because "We expected to have no local Windows groups as SQL logins"
 }
 
 # SIG # Begin signature block
