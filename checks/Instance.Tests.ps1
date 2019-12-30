@@ -945,7 +945,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "Local Windows Groups Not Have SQL Logins" -Tags LocalWindowsGroup, Security, CIS, Medium, $filename {
-        $skip = Get-DbcConfigValue skip.instance.localwindowgroup
+        $skip = Get-DbcConfigValue skip.security.localwindowsgroup
         if ($NotContactable -contains $psitem) {
             Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
