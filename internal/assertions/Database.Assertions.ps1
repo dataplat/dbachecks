@@ -75,15 +75,7 @@ function Assert-AsymmetricKeySize {
         [string]$Instance,
         [string]$Database
     )
-    $query = "
-        SELECT name,
-            key_length
-        FROM sys.asymmetric_keys
-        WHERE key_length < 2048;
-    "
-
-    $Actual = Get-Database -Instance $instance -Requiredinfo Name
-    $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
+    @(Get-DbaDbEncryption -SqlInstance $Instance -Database $Database | Where-Object {$_.Encryption -eq "Symmetric Key" -and $_.KeyLength -LT 2048}).Count | Should -Be 0 -Because "Symmetric keys should have a key length greater than or equal to 2048"
 }
 
 function Assert-SymmetricKeyEncryptionLevel {
@@ -91,15 +83,7 @@ function Assert-SymmetricKeyEncryptionLevel {
         [string]$Instance,
         [string]$Database
     )
-    $query = "
-        SELECT name,
-            algorithm_desc
-        FROM sys.symmetric_keys
-        WHERE algorithm_desc NOT IN ('AES_128','AES_192','AES_256');
-    "
-    Get-DbaDbEncryption (Get-DbaDbEncryption -SqlInstance . -Database master | Where-Object Encryption -eq "Asymmetric Key") | Where-Object EncryptionAlgrothim
-    $Actual = Get-Database -Instance $instance -Requiredinfo Name
-    $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
+    @(Get-DbaDbEncryption -SqlInstance $Instance -Database $Database | Where-Object {$_.Encryption -eq "Asymmetric Key" -and $_.EncryptionAlgrothim -notin "AES_128","AES_192","AES_256"}).Count  | Should -Be 0 -Because "Asymmetric keys should have an encryption algrothim of at least AES_128"
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
