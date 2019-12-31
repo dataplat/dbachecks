@@ -241,6 +241,8 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool
 Set-PSFConfig -Module dbachecks -Name skip.security.sadisabled -Validation bool -Value $true -Initialize -Description "Skip the check for if the sa login is disabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip teh check for a login named sa does not exist"
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
+Set-PSFConfig -Module dbachecks -Name skip.security.symmetrickeyencryptionlevel -Validation bool -Value $true -Initialize -Description "Skips the test for if the Symmetric Encryption is at least AES_128 or higher in non-system databases"
+Set-PSFConfig -Module dbachecks -Name skip.security.asymmetrickeysize -Validation bool -Value $true -Initialize -Description "Skips the test for the size of the Assymetric Key sizes being above 2048 in non-system databases"
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"

@@ -450,5 +450,13 @@
     {
         "UniqueTag": "ContainedDBAutoClose",
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
+    },
+    {
+        "UniqueTag": "SymmetricKeyEncryptionLevel",
+        "Description": "Tests that Symmetric Key Encryption Level is at least AES_128 in non-system databases."
+    },
+    {
+        "UniqueTag": "AsymmetricKeySize",
+        "Description": "Tests that Asymmetric Key Sizes are at least 2048 in non-system databases."
     }
  ]

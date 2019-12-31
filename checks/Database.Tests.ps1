@@ -957,6 +957,48 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
      }
+
+     Describe "AsymmetricKeySize" -Tags AssymetricKeySize, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.assymetrickeysize
+        $ExcludedDatabases += "master", "tempdb", "msdb"
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
+                @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                    It "$($psitem.Name) on $($psitem.Parent.Name) asymmetric keys sizes of at least 2048" -Skip:$skip {
+                        $psitem.AutoClose | Should -BeTrue -Because "Asymmetric Key Size should be 2048 or higher for CIS compliance"
+                    }
+                }
+            }
+        }
+     }
+
+     Describe "SymmetricKeyEncryptionLevel" -Tags SymmetricKeyEncryptionLevel, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.symmetrickeyencryptionlevel
+        $ExcludedDatabases += "master", "tempdb", "msdb"
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Symmetric Key Encruption Level at least AES_128 or higher on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Symmetric Key Encruption Level at least AES_128 or higher on $psitem" {
+                @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                    It "$($psitem.Name) on $($psitem.Parent.Name) should have symmetric key encyption levels of at least AES_128" -Skip:$skip {
+                        $psitem.AutoClose | Should -BeTrue -Because "Symmetric Key Encruption Level at least AES_128 or higher for CIS compliance"
+                    }
+                }
+            }
+        }
+     }
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 

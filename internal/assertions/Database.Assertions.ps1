@@ -69,6 +69,38 @@ function Assert-DatabaseExists {
     $Actual = Get-Database -Instance $instance -Requiredinfo Name
     $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
 }
+
+function Assert-AsymmetricKeySize {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    $query = "
+        SELECT name,
+            key_length
+        FROM sys.asymmetric_keys
+        WHERE key_length < 2048;
+    "
+
+    $Actual = Get-Database -Instance $instance -Requiredinfo Name
+    $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
+}
+
+function Assert-SymmetricKeyEncryptionLevel {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    $query = "
+        SELECT name,
+            algorithm_desc
+        FROM sys.symmetric_keys
+        WHERE algorithm_desc NOT IN ('AES_128','AES_192','AES_256');
+    "
+    Get-DbaDbEncryption (Get-DbaDbEncryption -SqlInstance . -Database master | Where-Object Encryption -eq "Asymmetric Key") | Where-Object EncryptionAlgrothim
+    $Actual = Get-Database -Instance $instance -Requiredinfo Name
+    $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
+}
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
