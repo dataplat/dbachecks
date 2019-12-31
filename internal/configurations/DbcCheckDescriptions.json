@@ -450,5 +450,9 @@
     {
         "UniqueTag": "ContainedDBAutoClose",
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
+    },
+    {
+        "UniqueTag": "SqlAgentProxiesNoPublicRole",
+        "Description": "Tests that the public role does not have access to SQL Agent Proxies."
     }
  ]

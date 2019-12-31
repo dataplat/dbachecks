@@ -382,6 +382,37 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        'SqlAgentProxiesNoPublicRole' {
+            if ($There) {
+                try {
+                    $query = "
+                        SELECT count(*) [Count]
+                        FROM dbo.sysproxylogin spl
+                            JOIN sys.database_principals dp ON dp.sid = spl.sid
+                            JOIN dbo.sysproxies sp ON sp.proxy_id = spl.proxy_id
+                        WHERE principal_id = USER_ID('public');
+                    "
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Database "msdb" -Query $query
+                    
+                    $SqlAgentProxiesNoPublicRole = [pscustomobject] @{
+                        Count = $results.Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $SqlAgentProxiesNoPublicRole = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $SqlAgentProxiesNoPublicRole = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
@@ -396,6 +427,7 @@ function Get-AllInstanceInfo {
         SaExist = $SaExist
         SaDisabled = $SaDisabled
         EngineService                    = $EngineService
+        SqlAgentProxiesNoPublicRole = $SqlAgentProxiesNoPublicRole
     }
 }
 
@@ -585,6 +617,11 @@ function Assert-SaDisabled {
 function Assert-SaExist {
     Param($AllInstanceInfo)
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+}
+
+function Assert-SqlAgentProxiesNoPublicRole {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.SqlAgentProxiesNoPublicRole.Count | Should -Be 0 -Because "We expected the public role to not have access to any SQL Agent proxies"
 }
 
 # SIG # Begin signature block

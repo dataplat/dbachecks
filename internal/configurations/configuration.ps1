@@ -241,6 +241,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool
 Set-PSFConfig -Module dbachecks -Name skip.security.sadisabled -Validation bool -Value $true -Initialize -Description "Skip the check for if the sa login is disabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip teh check for a login named sa does not exist"
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
+Set-PSFConfig -Module dbachecks -Name skip.security.sqlagentproxiesnopublicrole -Validation bool -Value $true -Initialize -Description "Skips the scan for if the public role has access to SQL Agent proxies"
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
