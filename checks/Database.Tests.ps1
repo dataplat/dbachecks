@@ -958,8 +958,8 @@ $ExcludedDatabases += $ExcludeDatabase
         }
      }
 
-     Describe "AsymmetricKeySize" -Tags AssymetricKeySize, CIS, $filename {
-        $skip = Get-DbcConfigValue skip.security.assymetrickeysize
+     Describe "AsymmetricKeySize" -Tags AsymmetricKeySize, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.asymmetrickeysize
         $ExcludedDatabases += "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
