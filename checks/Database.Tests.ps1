@@ -957,6 +957,26 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
      }
+
+     Describe "CLR Assemblies SAFE_ACCESS" -Tags CLRAssembliesSafe, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.clrassembliessafe
+        if ($NotContactable -contains $psitem) {
+            Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
+                @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                    It "$($psitem.Name) on $($psitem.Parent.Name) user-defined CLR assemblies are set to SAFE_ACCESS" {
+                        Assert-CLRAssembliesSafe -Instance $instance -Database $psitem
+                    }
+                }
+            }
+        }
+     }
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 

@@ -69,6 +69,21 @@ function Assert-DatabaseExists {
     $Actual = Get-Database -Instance $instance -Requiredinfo Name
     $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
 }
+
+function Assert-CLRAssembliesSafe {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    $query = "
+        SELECT name
+        FROM sys.assemblies
+        WHERE is_user_defined = 1
+            AND permission_set_desc <> 'SAFE_ACCESS';
+    "
+    @(Invoke-DbaQuery -SqlInstance $Instance -Database $Database -Query $query).Count | Should -Be 0 -Because "We expected all user-defined CLR assemblies to have SAFE_ACCESS"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
