@@ -943,6 +943,42 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Failed Login Auditing" -Tags LoginAuditFailed, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.loginauditlevelfailed
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if failed login auditing is in place on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if failed login auditing is in place on $psitem" {
+                It "The failed login auditing should be set on $psitem" -Skip:$skip {
+                    Assert-LoginAuditFailed -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
+
+    Describe "Successful Login Auditing" -Tags LoginAuditSuccessful, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.loginauditlevelsuccessful
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if successful and failed login auditing is in place on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if successful and failed login auditing is in place on $psitem" {
+                It "The successful and failed auditng should be set on $psitem" -Skip:$skip {
+                    Assert-LoginAuditSuccessful -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
