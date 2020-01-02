@@ -969,9 +969,10 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
+                $instance = $psitem
                 @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) user-defined CLR assemblies are set to SAFE_ACCESS" {
-                        Assert-CLRAssembliesSafe -Instance $instance -Database $psitem
+                        Assert-CLRAssembliesSafe -Instance $instance -Database $psitem.Name
                     }
                 }
             }
