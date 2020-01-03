@@ -450,5 +450,17 @@
     {
         "UniqueTag": "ContainedDBAutoClose",
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
+    },
+    {
+        "UniqueTag": "EngineServiceAdmin",
+        "Description": "Tests that the SQL Engine service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "AgentServiceAdmin",
+        "Description": "Tests that the SQL Agent service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "FullTextServiceAdmin",
+        "Description": "Tests that the SQL Full Text service account is not a local administrator."
     }
  ]

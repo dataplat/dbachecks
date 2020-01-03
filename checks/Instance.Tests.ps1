@@ -943,6 +943,60 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "SQL Engine Service Admin" -Tags EngineServiceAdmin, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.EngineServiceAdmin
+        if ($NotContactable -contains $psitem) {
+            Context "Testing whether SQL Engine account is a local adminstrator on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing whether SQL Engine account is a local adminstrator on $psitem" {
+                It "The SQL Engine service account should not be a local administrator on $psitem" -Skip:$skip {
+                    Assert-EngineServiceAdmin -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
+
+    Describe "SQL Agent Service Admin" -Tags AgentServiceAdmin, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.AgentServiceAdmin
+        if ($NotContactable -contains $psitem) {
+            Context "Testing whether SQL Agent account is a local adminstrator on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing whether SQL Agent account is a local adminstrator on $psitem" {
+                It "The SQL Agent service account should not be a local administrator on $psitem" -Skip:$skip {
+                    Assert-AgentServiceAdmin -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
+
+    Describe "SQL Full Text Service Admin" -Tags FullTextServiceAdmin, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.FullTextServiceAdmin
+        if ($NotContactable -contains $psitem) {
+            Context "Testing whether SQL Full Text account is a local adminstrator on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing whether SQL Full Text account is a local adminstrator on  $psitem" {
+                It "The SQL Full Text service account should not be a local administrator on $psitem" -Skip:$skip {
+                    Assert-FullTextServiceAdmin -AllInstanceInfo $AllInstanceInfo 
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {

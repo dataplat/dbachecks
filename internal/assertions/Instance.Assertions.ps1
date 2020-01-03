@@ -382,6 +382,93 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        'EngineServiceAdmin' {
+            if ($There) {
+                try {
+                    $ComputerName , $InstanceName = $Instance.Name.Split('\')
+                    if ($null -eq $InstanceName) {
+                        $InstanceName = 'MSSQLSERVER'
+                    }
+                    $SqlEngineService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type Engine -ErrorAction SilentlyContinue
+                    $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
+                    
+                    $EngineServiceAdmin = [pscustomobject] @{
+                        Exist = $localAdmins.Name.Contains($SqlEngineService.StartName) 
+                    }
+                }
+                catch {
+                    $There = $false
+                    $EngineServiceAdmin = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $EngineServiceAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }     
+
+        'AgentServiceAdmin' {
+            if ($There) {
+                try {
+                    $ComputerName , $InstanceName = $Instance.Name.Split('\')
+                    if ($null -eq $InstanceName) {
+                        $InstanceName = 'MSSQLSERVER'
+                    }
+                    $SqlAgentService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type Agent -ErrorAction SilentlyContinue
+                    $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
+                    
+                    $AgentServiceAdmin = [pscustomobject] @{
+                        Exist = $localAdmins.Name.Contains($SqlAgentService.StartName) 
+                    }
+                }
+                catch {
+                    $There = $false
+                    $AgentServiceAdmin = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $AgentServiceAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }   
+
+        'FullTextServiceAdmin' {
+            if ($There) {
+                try {
+                    $ComputerName , $InstanceName = $Instance.Name.Split('\')
+                    if ($null -eq $InstanceName) {
+                        $InstanceName = 'MSSQLSERVER'
+                    }
+                    $SqlFullTextService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type FullText -ErrorAction SilentlyContinue
+                    $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
+                    
+                    $FullTextServiceAdmin = [pscustomobject] @{
+                        Exist = $localAdmins.Name.Contains($SqlFullTextService.StartName) 
+                    }
+                }
+                catch {
+                    $There = $false
+                    $FullTextServiceAdmin = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $FullTextServiceAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }   
         Default {}
     }
     [PSCustomObject]@{
@@ -396,6 +483,9 @@ function Get-AllInstanceInfo {
         SaExist = $SaExist
         SaDisabled = $SaDisabled
         EngineService                    = $EngineService
+        EngineServiceAdmin = $EngineServiceAdmin
+        AgentServiceAdmin = $AgentServiceAdmin
+        FullTextServiceAdmin = $FullTextServiceAdmin
     }
 }
 
@@ -585,6 +675,21 @@ function Assert-SaDisabled {
 function Assert-SaExist {
     Param($AllInstanceInfo)
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+}
+
+function Assert-AgentServiceAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.AgentServiceAdmin.Exist | Should -Be $false -Because "We expected the service account for the SQL Agent to not be a local administrator"
+}
+
+function Assert-EngineServiceAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.EngineServiceAdmin.Exist | Should -Be $false -Because "We expected the service account for the SQL Engine to not be a local administrator"
+}
+
+function Assert-FullTextServiceAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.FullTextServiceAdmin.Exist | Should -Be $false -Because "We expected the service account for the SQL Full Text to not be a local administrator"
 }
 
 # SIG # Begin signature block
