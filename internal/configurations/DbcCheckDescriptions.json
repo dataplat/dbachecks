@@ -452,6 +452,10 @@
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
     },
     {
+        "UniqueTag": "LocalWindowsGroup",
+        "Description": "Tests that no local Windows group has has a SQL Login."
+    },
+    {
         "UniqueTag": "PublicRolePermission",
         "Description": "Tests that server public role does not have any permissions."
     },

@@ -300,7 +300,7 @@ function Get-AllInstanceInfo {
                     #This needs to be done in query just in case the account had already been renamed
                     $login = Get-DbaLogin -SqlInstance $server | Where-Object Id -eq 1 
                     $SaDisabled = [pscustomobject] @{
-                         Disabled = $login.IsDisabled
+                        Disabled = $login.IsDisabled
                     }
                 }
                 catch {
@@ -394,7 +394,7 @@ function Get-AllInstanceInfo {
                     $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
                     Write-Host $results.RowCount
                     $PublicRolePermission = [pscustomobject] @{
-                         Count = $results.RowCount
+                        Count = $results.RowCount
                     }
                 }
                 catch {
@@ -441,7 +441,36 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-        Default {}
+        'LocalWindowsGroup' {
+            if ($There) {
+                try {
+                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object LoginType -eq WindowsGroup
+                    if ($null -ne $logins) {
+                        $LocalWindowsGroup = [pscustomobject] @{
+                            Exist = $true
+                        }
+                    }
+                    else {
+                        $LocalWindowsGroup = [pscustomobject] @{
+                            Exist = $false
+                        }
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LocalWindowsGroup = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LocalWindowsGroup = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        Default { }
     }
     [PSCustomObject]@{
         ErrorLog                         = $ErrorLog
@@ -449,14 +478,15 @@ function Get-AllInstanceInfo {
         MaxDump                          = $MaxDump
         CrossDBOwnershipChaining         = $CrossDBOwnershipChaining
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
-        RemoteAccess = $RemoteAccessDisabled
-        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
-        LatestBuild = $LatestBuild
-        SaExist = $SaExist
-        SaDisabled = $SaDisabled
+        RemoteAccess                     = $RemoteAccessDisabled
+        OleAutomationProceduresDisabled  = $OleAutomationProceduresDisabled
+        LatestBuild                      = $LatestBuild
+        SaExist                          = $SaExist
+        SaDisabled                       = $SaDisabled
         EngineService                    = $EngineService
-        PublicRolePermission = $PublicRolePermission
-        BuiltInAdmin = $BuiltInAdmin
+        LocalWindowsGroup                = $LocalWindowsGroup
+        BuiltInAdmin                     = $BuiltInAdmin
+        PublicRolePermission             = $PublicRolePermission
     }
 }
 
@@ -465,11 +495,11 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 function Assert-EngineState {
-    Param($AllInstanceInfo,$state)
+    Param($AllInstanceInfo, $state)
     $AllInstanceInfo.EngineService.State | Should -Be $state -Because "The SQL Service was expected to be $state"
 }
 function Assert-EngineStartType {
-    Param($AllInstanceInfo,$starttype)
+    Param($AllInstanceInfo, $starttype)
     $AllInstanceInfo.EngineService.StartType | Should -Be $starttype -Because "The SQL Service Start Type was expected to be $starttype"
 }
 function Assert-EngineStartTypeCluster {
@@ -648,6 +678,10 @@ function Assert-SaExist {
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
 }
 
+function Assert-LocalWindowsGroup {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LocalWindowsGroup.Exist | Should -Be $false -Because "We expected to have no local Windows groups as SQL logins"
+}
 function Assert-PublicRolePermission {
     Param($AllInstanceInfo)
     $AllInstanceInfo.PublicRolePermission.Count | Should -Be 0 -Because "We expected the public server role to have been granted no permissions"

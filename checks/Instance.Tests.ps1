@@ -43,7 +43,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Instance Connection on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -51,12 +51,12 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Context "Testing Instance Connection on $psitem" {
                 It "connects successfully to $psitem" {
                     #Because Test-DbaInstance only shows connectsuccess false if the Connect-SQlInstance throws an error and we use Connect-DbaInstance
-                    $true| Should -BeTrue
+                    $true | Should -BeTrue
                 }
                 #local is always NTLM except when its a container ;-)
                 if ($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -notlike '*,*')) {
                     It -Skip:$skipauth "auth scheme should be NTLM on the local machine on $psitem" {
-                        (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme| Should -Be NTLM
+                        (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme | Should -Be NTLM
                     }
                 }
                 else {
@@ -93,7 +93,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Engine Service on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -129,7 +129,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing TempDB Configuration on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -162,7 +162,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -181,7 +181,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Backup Path Access on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -202,7 +202,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Default File Path on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -210,13 +210,13 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Context "Testing Default Data File Path on $psitem" {
                 It "Default Data File Path on $psitem" {
                     $diskFile = Get-DbaInstanceProperty -SqlInstance $psitem | Where-Object Name -eq DefaultFile
-                    $diskFile.Value.substring(0,1) | Should -Not -Be "C" -Because 'Default Data file path should not be your C:\ drive'
+                    $diskFile.Value.substring(0, 1) | Should -Not -Be "C" -Because 'Default Data file path should not be your C:\ drive'
                 }
             }
             Context "Testing Default Log File Path on $psitem" {
                 It "Default Log File Path on $psitem" {
                     $diskLog = Get-DbaInstanceProperty -SqlInstance $psitem | Where-Object Name -eq DefaultLog
-                    $diskLog.Value.substring(0,1) | Should -Not -Be "C" -Because 'Dafault Log file path should not be your C:\ drive'
+                    $diskLog.Value.substring(0, 1) | Should -Not -Be "C" -Because 'Dafault Log file path should not be your C:\ drive'
                 }
             }
         }
@@ -227,7 +227,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Dedicated Administrator Connection on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -245,7 +245,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Network Latency on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -264,7 +264,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Linked Servers on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -283,7 +283,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Max Memory on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -312,7 +312,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking for orphaned database files on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -329,7 +329,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing instance name matches Windows name for $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -353,7 +353,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -375,7 +375,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking that build is still supportedby Microsoft for $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -402,14 +402,14 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking that sa login has been renamed on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
             Context "Checking that sa login has been renamed on $psitem" {
                 $results = Get-DbaLogin -SqlInstance $psitem -Login sa
-                It "sa login has been renamed on $psitem"{
+                It "sa login has been renamed on $psitem" {
                     $results | Should -Be $null -Because 'Renaming the sa account is a requirement'
                 }
             }
@@ -420,7 +420,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking that sa login has been disabled on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -438,7 +438,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking that a login named sa does not exist on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -456,7 +456,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Default Backup Compression on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -476,13 +476,13 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             if ($NotContactable -contains $psitem) {
                 Context "Checking sessions on $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
             else {
                 Context "Checking sessions on $psitem" {
-                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
+                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
                     @($xesession).ForEach{
                         It "Session $psitem should not be running on $Instance" {
                             $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
@@ -503,13 +503,13 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             if ($NotContactable -contains $psitem) {
                 Context "Checking running sessions on $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
             else {
                 Context "Checking running sessions on $psitem" {
-                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.Name
+                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
                     @($xesession).ForEach{
                         It "session $psitem should be running on $Instance" {
                             $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
@@ -530,13 +530,13 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             if ($NotContactable -contains $psitem) {
                 Context "Checking sessions on $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
             else {
                 Context "Checking sessions on $psitem" {
-                    @(Get-DbaXESession -SqlInstance $psitem).Where{$_.Status -eq 'Running'}.ForEach{
+                    @(Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.ForEach{
                         It "Session $($Psitem.Name) is allowed to be running on $Instance" {
                             $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
                         }
@@ -553,7 +553,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing OLE Automation on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -571,7 +571,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing WhoIsActive exists on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -590,7 +590,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             if ($NotContactable -contains $psitem) {
                 Context "Testing model database growth setting is not default on $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
@@ -617,12 +617,12 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             if ($NotContactable -contains $psitem) {
                 Context "Testing Active Directory users on $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
                 Context "Testing Active Directory groups on $psitem" {
                     It "Can't Connect to $Psitem" {
-                        $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
@@ -668,12 +668,12 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Active Directory users on $psitem" {
                 It "Running on Linux so can't check AD on $Psitem" -skip {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
             Context "Testing Active Directory groups on $psitem" {
                 It "Running on Linux so can't check AD on $Psitem" -skip {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -683,7 +683,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking error log on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -701,7 +701,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking error log count on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -722,12 +722,12 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Instance MaxDop Value on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            if ($psitem -in $ExcludeInstance) {$Skip = $true}else {$skip = $false}
+            if ($psitem -in $ExcludeInstance) { $Skip = $true }else { $skip = $false }
             Context "Testing Instance MaxDop Value on $psitem" {
                 It "Instance Level MaxDop setting should be correct on $psitem" -Skip:$Skip {
                     Assert-InstanceMaxDop -Instance $psitem -UseRecommended:$UseRecommended -MaxDopValue $MaxDop
@@ -741,7 +741,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Two Digit Year Cutoff on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -759,7 +759,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Expected Trace Flags on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -776,7 +776,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Not Expected Trace Flags on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -794,7 +794,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing CLR Enabled on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -810,7 +810,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Cross Database Ownership Chaining on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -827,7 +827,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Ad Hoc Distributed Queries on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -844,7 +844,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing XP CmdShell on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -862,7 +862,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Scan For Startup Procedures on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -879,7 +879,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking Default Trace on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -896,7 +896,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking OLE Automation Procedures on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -913,7 +913,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Remote Access on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -931,7 +931,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing Latest Build on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -948,7 +948,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking that a login named BUILTIN\Administrators does not exist on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -961,20 +961,19 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
-
-    Describe "Public Role Permission" -Tags PublicRolePermission, Security, CIS, Medium, $filename {
-        $skip = Get-DbcConfigValue skip.security.publicrolepermission
+    Describe "Local Windows Groups Not Have SQL Logins" -Tags LocalWindowsGroup, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.localwindowsgroup
         if ($NotContactable -contains $psitem) {
-            Context "Testing public role has permission on $psitem" {
+            Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            Context "Testing public role has permission on $psitem" {
-                It "The public role should not have permission on $psitem" -Skip:$skip {
-                    Assert-PublicRolePermission -AllInstanceInfo $AllInstanceInfo 
+            Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
+                It "Local Windows groups should not SQL Logins on $psitem" -Skip:$skip {
+                    Assert-LocalWindowsGroup -AllInstanceInfo $AllInstanceInfo 
                 }
             }
         }
@@ -986,7 +985,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Browser Service on $psitem" {
                 It "Can't Connect to $Psitem" {
-                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -994,28 +993,28 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
             Context "Testing SQL Browser Service on $psitem" {
                 if (-not $IsLinux) {
                     $Services = Get-DbaService -ComputerName $psitem
-                    if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
+                    if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
                         It "SQL browser service on $psitem should be Stopped as only one instance is installed" {
-                            $Services.Where{$_.ServiceType -eq 'Browser'}.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
-                        }
-                    }
-                    else {
-                        It "SQL browser service on $psitem should be Running as multiple instances are installed" {
-                            $Services.Where{$_.ServiceType -eq 'Browser'}.State| Should -Be "Running" -Because 'You need the browser service with multiple instances' }
-                    }
-                    if ($Services.Where{$_.ServiceType -eq 'Engine'}.Count -eq 1) {
-                        It "SQL browser service startmode should be Disabled on $psitem as only one instance is installed" {
-                            $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' }
-                    }
-                    else {
-                        It "SQL browser service startmode should be Automatic on $psitem as multiple instances are installed" {
-                            $Services.Where{$_.ServiceType -eq 'Browser'}.StartMode | Should -Be "Automatic"
+                            $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
                         }
                     }
                 }
                 else {
-                    It "Running on Linux so can't check Services on $Psitem" -skip {
+                    It "SQL browser service on $psitem should be Running as multiple instances are installed" {
+                        $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'You need the browser service with multiple instances' }
+                }
+                if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
+                    It "SQL browser service startmode should be Disabled on $psitem as only one instance is installed" {
+                        $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' }
+                }
+                else {
+                    It "SQL browser service startmode should be Automatic on $psitem as multiple instances are installed" {
+                        $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
                     }
+                }
+            }
+            else {
+                It "Running on Linux so can't check Services on $Psitem" -skip {
                 }
             }
         }
@@ -1084,6 +1083,24 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 # BggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAKBghghkgB
 # hv1sAzAdBgNVHQ4EFgQUWsS5eyoKo6XqcQPAYPkt9mV1DlgwHwYDVR0jBBgwFoAU
 # Reuir/SSy4IxLVGLp6chnfNtyA8wDQYJKoZIhvcNAQELBQADggEBAD7sDVoks/Mi
+# 0RXILHwlKXaoHV0cLToaxO8wYdd+C2D9wz0PxK+L/e8q3yBVN7Dh9tGSdQ9RtG6l
+# jlriXiSBThCk7j9xjmMOE0ut119EefM2FAaK95xGTlz/kLEbBw6RFfu6r7VRwo0k
+# riTGxycqoSkoGjpxKAI8LpGjwCUR4pwUR6F6aGivm6dcIFzZcbEMj7uo+MUSaJ/P
+# QMtARKUT8OZkDCUIQjKyNookAv4vcn4c10lFluhZHen6dGRrsutmQ9qzsIzV6Q3d
+# 9gEgzpkxYz0IGhizgZtPxpMQBvwHgfqL2vmCSfdibqFT+hKUGIUukpHqaGxEMrJm
+# oecYpJpkUe8xggIoMIICJAIBATCBhjByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMM
+# RGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQD
+# EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
+# dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
+# AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQY/UyyFNReMHHbXG9PUklWOG1v
+# AzANBgkqhkiG9w0BAQEFAASCAQBY1yL4MQt2oT6a+aMidW3pi3RwSoahwM1nFXQr
+# oD8qufrrt3uR7EnluQDcHN07OGmEUMHdlMLt23NIqapc/f4YBvFlgRdcvzWCPfWq
+# nq8a4Sslfi4x0g2UHIBYmstvKy1H3ztY/EGg/mrCXA+pGrCpJZsHjkQte8A7FSwR
+# 9HEskbH5U6xQfiDIYSEC5O9D3FwbcqvT9VSqfF99NCLTa+B0U8uLGOCWAy6C6TyZ
+# XpRwwzeN4Im4cOv2LHmUWVtFnQZ8m0wEBHyd4dLtfZF6NElf7x+IEttWFuzFvPw5
+# 7ewR/pDi9COKaRNg9lpaEO9DLHiJ7F7DJsihxaW9+GwqFYRU
+# SIG # End signature block
 # 0RXILHwlKXaoHV0cLToaxO8wYdd+C2D9wz0PxK+L/e8q3yBVN7Dh9tGSdQ9RtG6l
 # jlriXiSBThCk7j9xjmMOE0ut119EefM2FAaK95xGTlz/kLEbBw6RFfu6r7VRwo0k
 # riTGxycqoSkoGjpxKAI8LpGjwCUR4pwUR6F6aGivm6dcIFzZcbEMj7uo+MUSaJ/P
