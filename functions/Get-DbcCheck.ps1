@@ -1,4 +1,4 @@
-<#
+﻿<#
     .SYNOPSIS
         Lists all checks, tags and unique identifiers
 
@@ -45,19 +45,19 @@ function Get-DbcCheck {
         $script:localapp = Get-DbcConfigValue -Name app.localapp
         if ($Pattern) {
             if ($Pattern -notmatch '\*') {
-                @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                    $output = $psitem | Where-Object {
+                $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
+                    $psitem | Where-Object {
                         $_.Group -match $Pattern -or $_.Description -match $Pattern -or
                         $_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern -or $_.Type -match $Pattern
-                    }
+                    } | Select -Last 1
                 }
             }
             else {
-                @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                    $output = $psitem | Where-Object {
-                        $_.Group -like $Pattern -or $_.Description -like $Pattern -or
-                        $_.UniqueTag -like $Pattern -or $_.AllTags -like $Pattern -or $_.Type -like $Pattern
-                    }
+                $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
+                    $psitem | Where-Object {
+                        $_.Group -match $Pattern -or $_.Description -match $Pattern -or
+                        $_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern -or $_.Type -match $Pattern
+                    } | Select -Last 1
                 }
             }
         }
@@ -65,7 +65,7 @@ function Get-DbcCheck {
             $output = Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json
         }
         if ($Group) {
-            $output = @($output).ForEach{ 
+            $output = @($output).ForEach{
                 $psitem | Where-Object {
                     $_.Group -eq $Group
                 } 
