@@ -82,7 +82,7 @@ It starts with the Get-AllInstanceInfo which uses all of the unique
  tags that have been passed and gathers the required information
  which can then be used for the assertions.
 
- The long term aim is to make Get-AllInstanceInfo as performant as 
+ The long term aim is to make Get-AllInstanceInfo as performant as
  possible and to cover all of the tests
 #>
 
@@ -99,7 +99,6 @@ function Get-AllInstanceInfo {
                     function Get-ErrorLogEntry {
                         # get the number of the first error log that was created after the logwindow config
                         $OldestErrorLogNumber = ($InstanceSMO.EnumErrorLogs() | Where-Object { $psitem.CreateDate -gt (Get-Date).AddDays( - $LogWindow) } | Sort-Object ArchiveNo -Descending | Select-Object -First 1).ArchiveNo + 1
-                    
                         # Get the Error Log entries for each one
                         (0..$OldestErrorLogNumber).ForEach{
                             $InstanceSMO.ReadErrorLog($psitem).Where{ $_.Text -match "Severity: 1[7-9]|Severity: 2[0-4]" }
@@ -382,6 +381,40 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+        'PublicRolePermission' {
+            if ($There) {
+                try {
+                    #This needs to be done in query just in case the account had already been renamed
+                    $query = "
+                        SELECT Count(*) AS [RowCount]
+                        FROM master.sys.server_permissions
+                        WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%')
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER')
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
+                        "
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    Write-Host $results.RowCount
+                    $PublicRolePermission = [pscustomobject] @{
+                         Count = $results.RowCount
+                    }
+                }
+                catch {
+                    $There = $false
+                    $PublicRolePermission = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $PublicRolePermission = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
 
         'BuiltInAdmin' {
             if ($There) {
@@ -426,6 +459,7 @@ function Get-AllInstanceInfo {
         SaExist = $SaExist
         SaDisabled = $SaDisabled
         EngineService                    = $EngineService
+        PublicRolePermission = $PublicRolePermission
         BuiltInAdmin = $BuiltInAdmin
     }
 }
@@ -618,6 +652,10 @@ function Assert-SaExist {
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
 }
 
+function Assert-PublicRolePermission {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.PublicRolePermission.Count | Should -Be 0 -Because "We expected the public server role to have been granted no permissions"
+}
 function Assert-BuiltInAdmin {
     Param($AllInstanceInfo)
     $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be $false -Because "We expected no login to exist with the name BUILTIN\Administrators"

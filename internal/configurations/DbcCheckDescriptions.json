@@ -452,10 +452,13 @@
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
     },
     {
+        "UniqueTag": "PublicRolePermission",
+        "Description": "Tests that server public role does not have any permissions."
+    },
+    {
         "UniqueTag": "GuestUserConnect",
         "Description": "Tests that guest user does not have CONNECT permission."
-    }
-    ,
+    },
     {
         "UniqueTag": "BuiltInAdmin",
         "Description": "Tests to see if the BUILTIN\\Administrator login exist."
