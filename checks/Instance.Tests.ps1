@@ -944,7 +944,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Login BUILTIN\Administrators cannot exist" -Tags BuiltInAdmin, CIS, Medium, $filename {
+    Describe "Login BUILTIN Administrators cannot exist" -Tags BuiltInAdmin, CIS, Medium, $filename {
         if ($NotContactable -contains $psitem) {
             Context "Checking that a login named BUILTIN\Administrators does not exist on $psitem" {
                 It "Can't Connect to $Psitem" {
