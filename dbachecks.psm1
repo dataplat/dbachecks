@@ -7,7 +7,7 @@ function Import-ModuleFile {
         [string]
         $Path
     )
-    
+
     if ($doDotSource) { . $Path }
     else { 
         try {
