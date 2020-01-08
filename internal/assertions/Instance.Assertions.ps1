@@ -82,7 +82,7 @@ It starts with the Get-AllInstanceInfo which uses all of the unique
  tags that have been passed and gathers the required information
  which can then be used for the assertions.
 
- The long term aim is to make Get-AllInstanceInfo as performant as 
+ The long term aim is to make Get-AllInstanceInfo as performant as
  possible and to cover all of the tests
 #>
 
@@ -99,7 +99,6 @@ function Get-AllInstanceInfo {
                     function Get-ErrorLogEntry {
                         # get the number of the first error log that was created after the logwindow config
                         $OldestErrorLogNumber = ($InstanceSMO.EnumErrorLogs() | Where-Object { $psitem.CreateDate -gt (Get-Date).AddDays( - $LogWindow) } | Sort-Object ArchiveNo -Descending | Select-Object -First 1).ArchiveNo + 1
-                    
                         # Get the Error Log entries for each one
                         (0..$OldestErrorLogNumber).ForEach{
                             $InstanceSMO.ReadErrorLog($psitem).Where{ $_.Text -match "Severity: 1[7-9]|Severity: 2[0-4]" }
@@ -299,13 +298,9 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     #This needs to be done in query just in case the account had already been renamed
-                    $query = "SELECT is_disabled 
-                            FROM sys.sql_logins
-                            WHERE principal_id = 1"
-                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    $login = Get-DbaLogin -SqlInstance $server | Where-Object Id -eq 1 
                     $SaDisabled = [pscustomobject] @{
-                         Disabled = $results.is_disabled
-
+                        Disabled = $login.IsDisabled
                     }
                 }
                 catch {
@@ -382,6 +377,101 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+        'PublicRolePermission' {
+            if ($There) {
+                try {
+                    #This needs to be done in query just in case the account had already been renamed
+                    $query = "
+                        SELECT Count(*) AS [RowCount]
+                        FROM master.sys.server_permissions
+                        WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%')
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER')
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
+                        "
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    Write-Host $results.RowCount
+                    $PublicRolePermission = [pscustomobject] @{
+                        Count = $results.RowCount
+                    }
+                }
+                catch {
+                    $There = $false
+                    $PublicRolePermission = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $PublicRolePermission = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'BuiltInAdmin' {
+            if ($There) {
+                try {
+                    $results = Get-DbaLogin -SqlInstance $Instance -Login "BUILTIN\Administrators"
+                    if ($null -eq $results.Name) {
+                        $Exist = $false
+                    }
+                    else {
+                        $Exist = $true
+                    }
+
+                    $BuiltInAdmin = [pscustomobject] @{
+                        Exist = $Exist
+                    }
+                }
+                catch {
+                    $There = $false
+                    $BuiltInAdmin = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $BuiltInAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        'LocalWindowsGroup' {
+            if ($There) {
+                try {
+                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object LoginType -eq WindowsGroup
+                    if ($null -ne $logins) {
+                        $LocalWindowsGroup = [pscustomobject] @{
+                            Exist = $true
+                        }
+                    }
+                    else {
+                        $LocalWindowsGroup = [pscustomobject] @{
+                            Exist = $false
+                        }
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LocalWindowsGroup = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LocalWindowsGroup = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        
 
         'LoginAuditFailed' {
             if ($There) {
@@ -428,7 +518,7 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-        Default {}
+        Default { }
     }
     [PSCustomObject]@{
         ErrorLog                         = $ErrorLog
@@ -436,14 +526,17 @@ function Get-AllInstanceInfo {
         MaxDump                          = $MaxDump
         CrossDBOwnershipChaining         = $CrossDBOwnershipChaining
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
-        RemoteAccess = $RemoteAccessDisabled
-        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
-        LatestBuild = $LatestBuild
-        SaExist = $SaExist
-        SaDisabled = $SaDisabled
+        RemoteAccess                     = $RemoteAccessDisabled
+        OleAutomationProceduresDisabled  = $OleAutomationProceduresDisabled
+        LatestBuild                      = $LatestBuild
+        SaExist                          = $SaExist
+        SaDisabled                       = $SaDisabled
         EngineService                    = $EngineService
         LoginAuditFailed = $LoginAuditFailed
         LoginAuditSuccessful = $LoginAuditSuccessful
+        LocalWindowsGroup                = $LocalWindowsGroup
+        BuiltInAdmin                     = $BuiltInAdmin
+        PublicRolePermission             = $PublicRolePermission
     }
 }
 
@@ -452,11 +545,11 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 function Assert-EngineState {
-    Param($AllInstanceInfo,$state)
+    Param($AllInstanceInfo, $state)
     $AllInstanceInfo.EngineService.State | Should -Be $state -Because "The SQL Service was expected to be $state"
 }
 function Assert-EngineStartType {
-    Param($AllInstanceInfo,$starttype)
+    Param($AllInstanceInfo, $starttype)
     $AllInstanceInfo.EngineService.StartType | Should -Be $starttype -Because "The SQL Service Start Type was expected to be $starttype"
 }
 function Assert-EngineStartTypeCluster {
@@ -635,6 +728,19 @@ function Assert-SaExist {
     $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
 }
 
+function Assert-LocalWindowsGroup {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LocalWindowsGroup.Exist | Should -Be $false -Because "We expected to have no local Windows groups as SQL logins"
+}
+function Assert-PublicRolePermission {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.PublicRolePermission.Count | Should -Be 0 -Because "We expected the public server role to have been granted no permissions"
+}
+function Assert-BuiltInAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be $false -Because "We expected no login to exist with the name BUILTIN\Administrators"
+}
+
 function Assert-LoginAuditSuccessful {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LoginAuditSuccessful.AuditLevel | Should -Be "All" -Because "We exepcted the audit level to be set to capture all logins (successfull and failed)"
@@ -644,7 +750,6 @@ function Assert-LoginAuditFailed {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected expected the audit level to be set to capture failed logins"
 }
-
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
