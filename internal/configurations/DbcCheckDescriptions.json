@@ -452,6 +452,14 @@
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
     },
     {
+        "UniqueTag": "LoginAuditFailed",
+        "Description": "Tests that server level logins are recorded for failed logins."
+    },
+    {
+        "UniqueTag": "LoginAuditSuccessful",
+        "Description": "Tests that server level logins are recorded for successful and failed logins."
+    },   
+    {
         "UniqueTag": "LocalWindowsGroup",
         "Description": "Tests that no local Windows group has has a SQL Login."
     },

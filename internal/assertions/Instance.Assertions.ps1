@@ -470,6 +470,54 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        
+
+        'LoginAuditFailed' {
+            if ($There) {
+                try {
+                    $results = Get-DbaInstanceProperty -SQLInstance $instance -InstanceProperty AuditLevel
+                    $LoginAuditFailed = [pscustomobject] @{
+                        AuditLevel = $results.Value
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginAuditFailed = [pscustomobject] @{
+                        AuditLevel = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginAuditFailed = [pscustomobject] @{
+                    AuditLevel = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'LoginAuditSuccessful' {
+            if ($There) {
+                try {
+                    $results = Get-DbaInstanceProperty -SQLInstance $instance -InstanceProperty AuditLevel
+                    $LoginAuditSuccessful = [pscustomobject] @{
+                        AuditLevel = $results.Value
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginAuditSuccessful = [pscustomobject] @{
+                        AuditLevel = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginAuditSuccessful = [pscustomobject] @{
+                    AuditLevel = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default { }
     }
     [PSCustomObject]@{
@@ -484,6 +532,8 @@ function Get-AllInstanceInfo {
         SaExist                          = $SaExist
         SaDisabled                       = $SaDisabled
         EngineService                    = $EngineService
+        LoginAuditFailed = $LoginAuditFailed
+        LoginAuditSuccessful = $LoginAuditSuccessful
         LocalWindowsGroup                = $LocalWindowsGroup
         BuiltInAdmin                     = $BuiltInAdmin
         PublicRolePermission             = $PublicRolePermission
@@ -691,6 +741,15 @@ function Assert-BuiltInAdmin {
     $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be $false -Because "We expected no login to exist with the name BUILTIN\Administrators"
 }
 
+function Assert-LoginAuditSuccessful {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LoginAuditSuccessful.AuditLevel | Should -Be "All" -Because "We exepcted the audit level to be set to capture all logins (successfull and failed)"
+}
+
+function Assert-LoginAuditFailed {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected expected the audit level to be set to capture failed logins"
+}
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
