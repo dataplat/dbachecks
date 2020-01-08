@@ -82,7 +82,7 @@ It starts with the Get-AllInstanceInfo which uses all of the unique
  tags that have been passed and gathers the required information
  which can then be used for the assertions.
 
- The long term aim is to make Get-AllInstanceInfo as performant as 
+ The long term aim is to make Get-AllInstanceInfo as performant as
  possible and to cover all of the tests
 #>
 
@@ -99,7 +99,6 @@ function Get-AllInstanceInfo {
                     function Get-ErrorLogEntry {
                         # get the number of the first error log that was created after the logwindow config
                         $OldestErrorLogNumber = ($InstanceSMO.EnumErrorLogs() | Where-Object { $psitem.CreateDate -gt (Get-Date).AddDays( - $LogWindow) } | Sort-Object ArchiveNo -Descending | Select-Object -First 1).ArchiveNo + 1
-                    
                         # Get the Error Log entries for each one
                         (0..$OldestErrorLogNumber).ForEach{
                             $InstanceSMO.ReadErrorLog($psitem).Where{ $_.Text -match "Severity: 1[7-9]|Severity: 2[0-4]" }
@@ -299,13 +298,14 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     #This needs to be done in query just in case the account had already been renamed
-                    $query = "SELECT is_disabled 
-                            FROM sys.sql_logins
-                            WHERE principal_id = 1"
-                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    $login = Get-DbaLogin -SqlInstance $server | Where-Object Id -eq 1 
                     $SaDisabled = [pscustomobject] @{
+                        <<<<<<< HEAD
                         Disabled = $results.is_disabled
 
+                        =======
+                        Disabled = $login.IsDisabled
+                        >>>>>>> development
                     }
                 }
                 catch {
@@ -379,6 +379,40 @@ function Get-AllInstanceInfo {
                 $EngineService = [pscustomobject] @{
                     State     = 'We Could not Connect to $Instance'
                     StartType = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        'PublicRolePermission' {
+            if ($There) {
+                try {
+                    #This needs to be done in query just in case the account had already been renamed
+                    $query = "
+                        SELECT Count(*) AS [RowCount]
+                        FROM master.sys.server_permissions
+                        WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%')
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER')
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4)
+                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
+                        "
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    Write-Host $results.RowCount
+                    $PublicRolePermission = [pscustomobject] @{
+                        Count = $results.RowCount
+                    }
+                }
+                catch {
+                    $There = $false
+                    $PublicRolePermission = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $PublicRolePermission = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
                 }
             }
         }
@@ -457,6 +491,7 @@ function Get-AllInstanceInfo {
         EngineService                    = $EngineService
         LocalWindowsGroup                = $LocalWindowsGroup
         BuiltInAdmin                     = $BuiltInAdmin
+        PublicRolePermission             = $PublicRolePermission
     }
 }
 
@@ -651,6 +686,10 @@ function Assert-SaExist {
 function Assert-LocalWindowsGroup {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LocalWindowsGroup.Exist | Should -Be $false -Because "We expected to have no local Windows groups as SQL logins"
+}
+function Assert-PublicRolePermission {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.PublicRolePermission.Count | Should -Be 0 -Because "We expected the public server role to have been granted no permissions"
 }
 function Assert-BuiltInAdmin {
     Param($AllInstanceInfo)
