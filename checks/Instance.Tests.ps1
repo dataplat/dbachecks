@@ -944,20 +944,38 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
-    Describe "Local Windows Groups Not Have SQL Logins" -Tags LocalWindowsGroup, Security, CIS, Medium, $filename {
-        $skip = Get-DbcConfigValue skip.security.localwindowsgroup
+    Describe "Login BUILTIN\Administrators cannot exist" -Tags BuiltInAdmin, CIS, Medium, $filename {
         if ($NotContactable -contains $psitem) {
-            Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
-                It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            Context "Checking that a login named BUILTIN\Administrators does not exist on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true  |  Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
-                It "Local Windows groups should not SQL Logins on $psitem" -Skip:$skip {
-                    Assert-LocalWindowsGroup -AllInstanceInfo $AllInstanceInfo 
+            Context "Checking that a login named BUILTIN\Administrators does not exist on $psitem" {
+                $skip = Get-DbcConfigValue skip.security.builtinadmin
+                It "BUILTIN\Administrators login does not exist on $psitem" -Skip:$skip {
+                    Assert-BuiltInAdmin -AllInstanceInfo $AllInstanceInfo
                 }
+            }
+        }
+    }
+}
+
+Describe "Local Windows Groups Not Have SQL Logins" -Tags LocalWindowsGroup, Security, CIS, Medium, $filename {
+    $skip = Get-DbcConfigValue skip.security.localwindowsgroup
+    if ($NotContactable -contains $psitem) {
+        Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
+            It "Can't Connect to $Psitem" -Skip:$skip {
+                $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+            }
+        }
+    }
+    else {
+        Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
+            It "Local Windows groups should not SQL Logins on $psitem" -Skip:$skip {
+                Assert-LocalWindowsGroup -AllInstanceInfo $AllInstanceInfo 
             }
         }
     }

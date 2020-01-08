@@ -957,6 +957,30 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
      }
+
+    Describe "Guest User" -Tags GuestUserConnect, Security, CIS, Medium, $filename {
+        $exclude = "master", "tempdb", "msdb"
+        $ExcludedDatabases += $exclude
+        $skip = Get-DbcConfigValue skip.security.guestuserconnect
+        
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Guest user has CONNECT permission on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            $instance = $Psitem
+            Context "Testing Guest user has CONNECT permission on $psitem" {
+                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                    It "Guest user should return no CONNECT permissions in $($psitem.Name) on $Instance" -Skip:$skip {
+                        Assert-GuestUserConnect -Instance $instance -Database $($psitem.Name) 
+                    }
+                }
+            }
+        }
+    }
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 

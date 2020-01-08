@@ -304,7 +304,7 @@ function Get-AllInstanceInfo {
                             WHERE principal_id = 1"
                     $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
                     $SaDisabled = [pscustomobject] @{
-                         Disabled = $results.is_disabled
+                        Disabled = $results.is_disabled
 
                     }
                 }
@@ -383,6 +383,35 @@ function Get-AllInstanceInfo {
             }
         }
 
+        'BuiltInAdmin' {
+            if ($There) {
+                try {
+                    $results = Get-DbaLogin -SqlInstance $Instance -Login "BUILTIN\Administrators"
+                    if ($null -eq $results.Name) {
+                        $Exist = $false
+                    }
+                    else {
+                        $Exist = $true
+                    }
+
+                    $BuiltInAdmin = [pscustomobject] @{
+                        Exist = $Exist
+                    }
+                }
+                catch {
+                    $There = $false
+                    $BuiltInAdmin = [pscustomobject] @{
+                        Exist = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $BuiltInAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         'LocalWindowsGroup' {
             if ($There) {
                 try {
@@ -412,7 +441,7 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-        Default {}
+        Default { }
     }
     [PSCustomObject]@{
         ErrorLog                         = $ErrorLog
@@ -420,13 +449,14 @@ function Get-AllInstanceInfo {
         MaxDump                          = $MaxDump
         CrossDBOwnershipChaining         = $CrossDBOwnershipChaining
         ScanForStartupProceduresDisabled = $ScanForStartupProceduresDisabled
-        RemoteAccess = $RemoteAccessDisabled
-        OleAutomationProceduresDisabled = $OleAutomationProceduresDisabled
-        LatestBuild = $LatestBuild
-        SaExist = $SaExist
-        SaDisabled = $SaDisabled
+        RemoteAccess                     = $RemoteAccessDisabled
+        OleAutomationProceduresDisabled  = $OleAutomationProceduresDisabled
+        LatestBuild                      = $LatestBuild
+        SaExist                          = $SaExist
+        SaDisabled                       = $SaDisabled
         EngineService                    = $EngineService
-        LocalWindowsGroup = $LocalWindowsGroup
+        LocalWindowsGroup                = $LocalWindowsGroup
+        BuiltInAdmin                     = $BuiltInAdmin
     }
 }
 
@@ -435,11 +465,11 @@ function Assert-DefaultTrace {
     $AllInstanceInfo.DefaultTrace.ConfiguredValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
 }
 function Assert-EngineState {
-    Param($AllInstanceInfo,$state)
+    Param($AllInstanceInfo, $state)
     $AllInstanceInfo.EngineService.State | Should -Be $state -Because "The SQL Service was expected to be $state"
 }
 function Assert-EngineStartType {
-    Param($AllInstanceInfo,$starttype)
+    Param($AllInstanceInfo, $starttype)
     $AllInstanceInfo.EngineService.StartType | Should -Be $starttype -Because "The SQL Service Start Type was expected to be $starttype"
 }
 function Assert-EngineStartTypeCluster {
@@ -621,6 +651,10 @@ function Assert-SaExist {
 function Assert-LocalWindowsGroup {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LocalWindowsGroup.Exist | Should -Be $false -Because "We expected to have no local Windows groups as SQL logins"
+}
+function Assert-BuiltInAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be $false -Because "We expected no login to exist with the name BUILTIN\Administrators"
 }
 
 # SIG # Begin signature block
