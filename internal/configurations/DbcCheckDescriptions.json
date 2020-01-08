@@ -450,6 +450,10 @@
     {
         "UniqueTag": "ContainedDBAutoClose",
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
+    },
+    {
+        "UniqueTag": "GuestUserConnect",
+        "Description": "Tests that guest user does not have CONNECT permission."
     }
     ,
     {

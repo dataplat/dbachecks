@@ -69,6 +69,16 @@ function Assert-DatabaseExists {
     $Actual = Get-Database -Instance $instance -Requiredinfo Name
     $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
 }
+
+function Assert-GuestUserConnect {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )  
+    $guestperms = Get-DbaUserPermission -SqlInstance $Instance -Database $psitem.Name | Where-Object {$_.Grantee -eq "guest" -and $_.Permission -eq "CONNECT"}
+    $guestperms.Count | Should -Be 0 -Because "We expect the guest user in $Database on $Instance to not have CONNECT permissions"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

@@ -13,6 +13,14 @@ This open source module allows us to crowd-source our checklists using [Pester](
 * Disk space is not about to run out
 * All enabled jobs have succeeded
 
+## Interactive dbachecks PowerShell Notebooks for Azure Data Studio 
+
+You can find a set of interactive PowerShell Notebooks which will introduce you to all of the core concepts in Robs GitHub https://github.com/SQLDBAWithABeard/Presentations/tree/master/Notebooks/dbachecks
+
+There is a zip file containing the Notebooks here
+
+https://github.com/SQLDBAWithABeard/Presentations/raw/master/Notebooks/dbachecks/Notebooks.zip
+
 Have questions about development? Please visit our [Wiki](https://github.com/sqlcollaborative/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
 
 ## Build Status
