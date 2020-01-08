@@ -31,6 +31,9 @@
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion      = '5.0'
 
+    # Supported PSEditions
+    CompatiblePSEditions = 'Desktop', 'Core'
+
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName     = ''
 
@@ -131,13 +134,19 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 22nd December
+## Date 8th January 2020
 Thank you Tracey tboggiano
-    Two New CIS Checks Contained databases should be auto-closed #721
-    sa login disabled and should not exist #719
-    
+    New CIS Check Guest Account connect permissions #725
+    New CIS Check BuiltIn Admins login #726
+    New CIS Check public role permissions #729
+    New CIS Check local windows groups do not have logins #731
+    Update sa login check #730
+
 Thank you Rob
-    Fix bug in Agent Tests #723
+    Added Tag parameter to Get-DbcCheck
+    Updated tests to work with PowerShell 7
+
+##Latest
 
 Run Get-DbcReleaseNotes for all release notes
             "
