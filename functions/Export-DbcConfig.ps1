@@ -15,11 +15,11 @@ Using this switch turns this "nice by default" feature off and enables you to ca
 
 .EXAMPLE
     Export-DbcConfig
-    
+
     Exports config to "$script:localapp\config.json"
 .EXAMPLE
     Export-DbcConfig -Path \\nfs\projects\config.json
-    
+
     Exports config to \\nfs\projects\config.jso
 
 .LINK
@@ -31,7 +31,7 @@ function Export-DbcConfig {
         [string]$Path = "$script:localapp\config.json",
         [switch]$EnableException
     )
-    
+
     try {
         Get-DbcConfig | Select-Object * | ConvertTo-Json -Depth 10 | Out-File -FilePath $Path -ErrorAction Stop
         Write-PSFMessage -Message "Wrote file to $Path" -Level Output
