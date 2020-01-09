@@ -24,7 +24,7 @@ function Assert-DatabaseMaxDop {
     Param(
         [pscustomobject]$MaxDop,
         [int]$MaxDopValue
-    )   
+    )
     $MaxDop.DatabaseMaxDop | Should -Be $MaxDopValue -Because "We expect the Database MaxDop Value to be the specified value $MaxDopValue"
 }
 
@@ -46,7 +46,7 @@ function Assert-DatabaseStatus {
     $results.Where{$_.Name -notin $ExcludeReadOnly -and $_.IsDatabaseSnapshot -eq $false}.Readonly | Should -Not -Contain True -Because "We expect that there will be no Read-Only databases except for those specified"
     $results.Where{$_.Name -notin $ExcludeOffline}.Status | Should -Not -Match 'Offline' -Because "We expect that there will be no offline databases except for those specified"
     $results.Where{$_.Name -notin $ExcludeRestoring}.Status | Should -Not -Match 'Restoring' -Because "We expect that there will be no databases in a restoring state except for those specified"
-    $results.Where{$_.Name -notin $ExcludeOffline}.Status | Should -Not -Match 'AutoClosed' -Because "We expect that there will be no databases that have been auto closed"    
+    $results.Where{$_.Name -notin $ExcludeOffline}.Status | Should -Not -Match 'AutoClosed' -Because "We expect that there will be no databases that have been auto closed"
     $results.Status | Should -Not -Match 'Recover' -Because "We expect that there will be no databases going through the recovery process or in a recovery pending state"
     $results.Status | Should -Not -Match 'Emergency' -Because "We expect that there will be no databases in EmergencyMode"
     $results.Status | Should -Not -Match 'Standby' -Because "We expect that there will be no databases in Standby"
@@ -62,6 +62,8 @@ function Assert-DatabaseDuplicateIndex {
 }
 
 function Assert-DatabaseExists {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
+    [CmdletBinding()]
     Param (
         [string]$Instance,
         [string]$ExpectedDB
@@ -69,6 +71,16 @@ function Assert-DatabaseExists {
     $Actual = Get-Database -Instance $instance -Requiredinfo Name
     $Actual | Should -Contain $expecteddb -Because "We expect $expecteddb to be on $Instance"
 }
+
+function Assert-GuestUserConnect {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    $guestperms = Get-DbaUserPermission -SqlInstance $Instance -Database $psitem.Name | Where-Object {$_.Grantee -eq "guest" -and $_.Permission -eq "CONNECT"}
+    $guestperms.Count | Should -Be 0 -Because "We expect the guest user in $Database on $Instance to not have CONNECT permissions"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

@@ -1,3 +1,6 @@
+[cmdletbinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='Because they are used just parsed')]
+Param()
 <#
     # Need to create a credential to be saved using user sa and password Password0! by running
     Get-Credential | Export-Clixml -Path $CredentialPath
@@ -18,7 +21,7 @@ Set-Location $dbacheckslocalpath\tests\Integration
 
 Write-PSFMessage "resetting docker-compose to save Rob from troubleshooting for hours because the containers already existed"
 docker-compose down
-Write-PSFMessage "Starting containers" 
+Write-PSFMessage "Starting containers"
 try {
     $ErrorActionPreference = 'Stop'
     docker-compose up -d
@@ -30,16 +33,16 @@ catch {
 }
 
 $containers = 'localhost,15589', 'localhost,15588', 'localhost,15587', 'localhost,15586'
-$cred = Import-Clixml $CredentailPath 
+$cred = Import-Clixml $CredentailPath
 
-Write-PSFMessage "Setting default configs" 
+Write-PSFMessage "Setting default configs"
 $null = Set-DbcConfig -Name app.sqlinstance $containers
 $null = Set-DbcConfig -Name policy.connection.authscheme -Value SQL
 $null = Set-DbcConfig -Name policy.network.latencymaxms -Value 150 # because the containers run a bit slow!
 $null = Set-DbcConfig -Name skip.connection.auth -Value $true
 
 ## Ensure that SQLAgent is started - SQL2014 agent wont start in container
-Write-PSFMessage "Starting SQL Agent on all containers except SQL2014" 
+Write-PSFMessage "Starting SQL Agent on all containers except SQL2014"
 docker exec -ti integration_sql2012_1 powershell start-service SQLSERVERAGENT
 docker exec -ti integration_sql2016_1 powershell start-service SQLSERVERAGENT
 docker exec -ti integration_sql2017_1 powershell start-service SQLSERVERAGENT
@@ -68,7 +71,7 @@ function Invoke-ValueCheck {
 #endregion
 
 # make sure the containers are up and running
-Write-PSFMessage "Default connectivity check" 
+Write-PSFMessage "Default connectivity check"
 $ConnectivityTests = Invoke-DbcCheck -SqlCredential $cred -Check Connectivity -Show None -PassThru
 
 #region error Log Count - PR 583
@@ -113,7 +116,7 @@ $jobhistoryvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check JobHistory
 
 #region BackupPathAccess
 
-# run the checks against these instances 
+# run the checks against these instances
 Write-PSFMessage "Checking BackupPathAccess default"
 $null = Set-DbcConfig -Name app.sqlinstance $containers
 # by default all tests should pass on default instance settings
@@ -126,12 +129,12 @@ $BackupPathAccessconfigchanged = Invoke-DbcCheck -SqlCredential $cred -Check Bac
 Write-PSFMessage "Checking BackupPathAccess value changed"
 
 foreach ($container in $containers) {
-    $Instance = Connect-DbaInstance -SqlInstance $container -SqlCredential $cred 
+    $Instance = Connect-DbaInstance -SqlInstance $container -SqlCredential $cred
     $Instance.BackupDirectory = 'C:\Windows\temp\'
     $Instance.Alter()
 }
 
-$null = Set-DbcConfig -Name policy.storage.backuppath -value 'C:\Windows\temp\' 
+$null = Set-DbcConfig -Name policy.storage.backuppath -value 'C:\Windows\temp\'
 
 $BackupPathAccessvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check BackupPathAccess -Show None  -PassThru
 
@@ -140,7 +143,7 @@ $BackupPathAccessvaluechanged = Invoke-DbcCheck -SqlCredential $cred -Check Back
 
 #region DAC
 
-# run the checks against these instances 
+# run the checks against these instances
 Write-PSFMessage "Checking DAC default"
 $null = Set-DbcConfig -Name app.sqlinstance $containers
 foreach($container in $containers){

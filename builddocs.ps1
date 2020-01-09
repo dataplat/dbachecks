@@ -1,5 +1,5 @@
 Install-Module PlatyPs -Scope CurrentUser -Force
-Import-Module PlatyPs 
+Import-Module PlatyPs
 
 # Get the Module versions
 Install-Module Configuration -RequiredVersion 1.3.0 -Scope CurrentUser -Force
@@ -20,7 +20,7 @@ catch {
     Write-Error "Failed to Install Pester $($_)"
 }
 
-# Install Latest version of pester as well 
+# Install Latest version of pester as well
 try {
     Write-Output "Installing Latest Pester"
     Install-Module Pester  -Scope CurrentUser -Force -SkipPublisherCheck
@@ -33,7 +33,7 @@ catch {
 # Install dbatools
 try {
     Write-Output "Installing PSFramework"
-    Install-Module PSFramework  -RequiredVersion $PsFrameworkVersion  -Scope CurrentUser -Force 
+    Install-Module PSFramework  -RequiredVersion $PsFrameworkVersion  -Scope CurrentUser -Force
     Write-Output "Installed PSFramework"
 
 }
@@ -43,7 +43,7 @@ catch {
 # Install dbachecks
 try {
     Write-Output "Installing dbatools"
-    Install-Module dbatools  -RequiredVersion $dbatoolsVersion  -Scope CurrentUser -Force 
+    Install-Module dbatools  -RequiredVersion $dbatoolsVersion  -Scope CurrentUser -Force
     Write-Output "Installed dbatools"
 
 }
@@ -55,7 +55,7 @@ catch {
 try {
     Write-Output "Adding local folder to PSModulePath"
     $ENV:PSModulePath = $ENV:PSModulePath + ";$pwd"
-    Write-Output "Added local folder to PSModulePath"    
+    Write-Output "Added local folder to PSModulePath"
     $ENV:PSModulePath.Split(';')
 }
 catch {
@@ -76,13 +76,10 @@ catch {
     catch {
         Write-Error "Failed to Install dbachecks $($_)"
     }
-  
 }
 
 
 $ProjectRoot = Get-Location
-$ModuleName = 'dbachecks'
-$BuildDate = Get-Date -uFormat '%Y-%m-%d'
 $ReleaseNotes = ".\RELEASE.md"
 $ChangeLog = "$ProjectRoot\docs\ChangeLog.md"
 

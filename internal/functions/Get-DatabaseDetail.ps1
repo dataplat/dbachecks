@@ -38,7 +38,7 @@ from sys.databases d
                         $db | Add-Member -Force -MemberType NoteProperty -Name SqlInstance -Value $server.DomainInstanceName
                         $db | Add-Member -Force -MemberType NoteProperty -Name SqlVersion -Value $server.VersionMajor
                     }
-                    
+
                     $script:results.Add($instance, $dbs)
                 }
 

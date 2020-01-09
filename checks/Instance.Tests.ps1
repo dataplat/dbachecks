@@ -6,7 +6,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 # Gather the instances we know are not contactable
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 
-# Get all the tags in use in this run 
+# Get all the tags in use in this run
 $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
 
 @(Get-Instance).ForEach{
@@ -88,7 +88,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, $filename {
-        $starttype = Get-DbcConfigValue policy.instance.sqlenginestart 
+        $starttype = Get-DbcConfigValue policy.instance.sqlenginestart
         $state = Get-DbcConfigValue policy.instance.sqlenginestate
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Engine Service on $psitem" {
@@ -370,8 +370,6 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
         $BuildBehind = Get-DbcConfigValue policy.build.behind
         $Date = Get-Date
-
-
         if ($NotContactable -contains $psitem) {
             Context "Checking that build is still supportedby Microsoft for $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -395,6 +393,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
 
     Describe "SA Login Renamed" -Tags SaRenamed, DISA, CIS, Medium, $filename {
         if ($NotContactable -contains $psitem) {
@@ -743,7 +742,6 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
         $MaxDop = Get-DbcConfigValue policy.instancemaxdop.maxdop
         $ExcludeInstance = Get-DbcConfigValue policy.instancemaxdop.excludeinstance
-
         if ($NotContactable -contains $psitem) {
             Context "Testing Instance MaxDop Value on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -945,7 +943,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Remote Access on $psitem" {
                 It "The Remote Access should be disabled on $psitem" -Skip:$skip {
-                    Assert-RemoteAccess -AllInstanceInfo $AllInstanceInfo 
+                    Assert-RemoteAccess -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
@@ -963,7 +961,78 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Latest Build on $psitem" {
                 It "The Latest Build of SQL should be installed on $psitem" -Skip:$skip {
-                    Assert-LatestBuild -AllInstanceInfo $AllInstanceInfo 
+                    Assert-LatestBuild -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Login BUILTIN Administrators cannot exist" -Tags BuiltInAdmin, CIS, Medium, $filename {
+        if ($NotContactable -contains $psitem) {
+            Context "Checking that a login named BUILTIN\Administrators does not exist on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking that a login named BUILTIN\Administrators does not exist on $psitem" {
+                $skip = Get-DbcConfigValue skip.security.builtinadmin
+                It "BUILTIN\Administrators login does not exist on $psitem" -Skip:$skip {
+                    Assert-BuiltInAdmin -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+    Describe "Local Windows Groups Not Have SQL Logins" -Tags LocalWindowsGroup, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.localwindowsgroup
+        if ($NotContactable -contains $psitem) {
+            Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
+                It "Local Windows groups should not SQL Logins on $psitem" -Skip:$skip {
+                    Assert-LocalWindowsGroup -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Failed Login Auditing" -Tags LoginAuditFailed, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.loginauditlevelfailed
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if failed login auditing is in place on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if failed login auditing is in place on $psitem" {
+                It "The failed login auditing should be set on $psitem" -Skip:$skip {
+                    Assert-LoginAuditFailed -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Successful Login Auditing" -Tags LoginAuditSuccessful, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.loginauditlevelsuccessful
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if successful and failed login auditing is in place on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if successful and failed login auditing is in place on $psitem" {
+                It "The successful and failed auditng should be set on $psitem" -Skip:$skip {
+                    Assert-LoginAuditSuccessful -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
@@ -982,7 +1051,6 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
         else {
             # cant check agent on container - hmm does this actually work with instance nered to check
             if (-not $IsLinux -and ($InstanceSMO.HostPlatform -ne 'Linux')) {
-                        
                 Context "Testing SQL Browser Service on $psitem" {
                     if (-not $IsLinux) {
                         $Services = Get-DbaService -ComputerName $psitem

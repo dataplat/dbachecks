@@ -1,3 +1,6 @@
+[cmdletbinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingInvokeExpression', '', Justification='because rightnow I cant be bothered to look at it')]
+Param()
 $testSettingsDefinition = '
 # config needed for testing
 Set-PSFConfig -Module dbachecks -Name testing.samplesettingforunittest.a -Value "DefaultValueA" -Initialize -Description "This setting is only to validate Reset-DbcConfig"
@@ -10,7 +13,7 @@ Invoke-Expression $testSettingsDefinition
 
 Describe "Testing Reset-DbcConfig" {
     InModuleScope -Module dbachecks {
-        Mock Invoke-ConfigurationScript { 
+        Mock Invoke-ConfigurationScript {
             Invoke-Expression '
 
             # config needed for testing
@@ -60,8 +63,8 @@ Describe "Testing Reset-DbcConfig" {
         Mock Get-DbcConfig {
             param([string]$Name = "*")
             process {
-                $results = [PSFramework.Configuration.ConfigurationHost]::Configurations.Values | 
-                    Where-Object { ($_.Name.startswith("testing.samplesettingforunittest.")) -and ($_.Name -like $Name) -and ($_.Module -like "dbachecks") } | 
+                $results = [PSFramework.Configuration.ConfigurationHost]::Configurations.Values |
+                    Where-Object { ($_.Name.startswith("testing.samplesettingforunittest.")) -and ($_.Name -like $Name) -and ($_.Module -like "dbachecks") } |
                     Sort-Object Module, Name
                 return $results | Select-Object Name, Value, Description
             }

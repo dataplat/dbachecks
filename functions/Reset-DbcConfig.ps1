@@ -11,8 +11,8 @@ This can be used to get the dbachecks back to default state of configuration, or
 .PARAMETER Name
 Name of the configuration key.
 
-.EXAMPLE 
-Reset-DbcConfig 
+.EXAMPLE
+Reset-DbcConfig
 
 Resets all the configuration values for dbachecks.
 
@@ -32,7 +32,7 @@ function Reset-DbcConfig {
         [Parameter(Mandatory = $false)]
         [string[]]$Name
     )
-    process { 
+    process {
         if (!$Name) {
             # no name provided, get all known dbachecks settings
             $resolvedName = (Get-DbcConfig).Name
@@ -41,7 +41,7 @@ function Reset-DbcConfig {
             # wildcard is used, get only the matching settings
             $resolvedName = (Get-DbcConfig).Name | Where-Object { $psitem -like $Name }
         }
-        else { 
+        else {
             $resolvedName = $Name
         }
 
@@ -50,8 +50,8 @@ function Reset-DbcConfig {
             if (-not (Get-DbcConfig -Name $localName)) {
                 Stop-PSFFunction -FunctionName Reset-DbcConfig -Message "Setting named $localName does not exist. Use Get-DbcCheck to get the list of supported settings."
             }
-            else { 
-                Write-PSFMessage -FunctionName Reset-DbcConfig -Message "resetting $localName" 
+            else {
+                Write-PSFMessage -FunctionName Reset-DbcConfig -Message "resetting $localName"
                 Unregister-PSFConfig -Module dbachecks -Name $localName
                 [PSFramework.Configuration.ConfigurationHost]::Configurations.Remove("dbachecks.$localName") | Out-Null
             }
@@ -62,7 +62,7 @@ function Reset-DbcConfig {
 
         # display the new values
         @($resolvedName).ForEach{
-            Get-DbcConfig -Name $psitem 
+            Get-DbcConfig -Name $psitem
         }
     }
 }

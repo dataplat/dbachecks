@@ -31,17 +31,17 @@ Using this switch turns this "nice by default" feature off and enables you to ca
 .EXAMPLE
 Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sqlcluster
 
-Sets the SQL Instances which will be checked by default using Invoke-DbcCheck 
+Sets the SQL Instances which will be checked by default using Invoke-DbcCheck
 to sql2016, sql2017, sqlcluster
 
 .EXAMPLE
-Set-DbcConfig -Name policy.validdbowner.name -Value 'TheBeard\sqldbowner' 
+Set-DbcConfig -Name policy.validdbowner.name -Value 'TheBeard\sqldbowner'
 
 Sets the value of the configuration for the expected database owners to
 TheBeard\sqldbowner
 
 .EXAMPLE
-Set-DbcConfig -Name policy.database.status.excludereadonly -Value 'TheBeard' 
+Set-DbcConfig -Name policy.database.status.excludereadonly -Value 'TheBeard'
 
 Sets the value of the configuration for databases that are expected to be readonly
 to TheBeard
@@ -49,8 +49,8 @@ to TheBeard
 .EXAMPLE
 Set-DbcConfig -Name agent.validjobowner.name -Value 'TheBeard\SQLJobOwner' -Append
 
-Adds 'TheBeard\SQLJobOwner' to the value of the configuration for accounts that 
-are expected to be owners of SQL Agent Jobs 
+Adds 'TheBeard\SQLJobOwner' to the value of the configuration for accounts that
+are expected to be owners of SQL Agent Jobs
 
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Set-DbcConfig/
@@ -100,12 +100,11 @@ function Set-DbcConfig {
         }
 
         $Name = $Name.ToLower()
-        if ($PSCmdlet.ShouldProcess("$Name" , "Setting the configuration to $NewValue on")) {
+        if ($PSCmdlet.ShouldProcess("$name" , "Setting the value to $NewValue on ")) {
             Set-PSFConfig -Module dbachecks -Name $name -Value $NewValue
         }
-        
         try {
-            if (-not $Temporary) { 
+            if (-not $Temporary) {
                 if ($PSCmdlet.ShouldProcess("$name" , "Registering PSFConfig ")) {
                     Register-PSFConfig -FullName dbachecks.$name -EnableException -WarningAction SilentlyContinue
                 }
@@ -115,9 +114,9 @@ function Set-DbcConfig {
             if ($PSCmdlet.ShouldProcess("$Value" , "Setting PSFConfig $name ")) {
                 Set-PSFConfig -Module dbachecks -Name $name -Value ($Value -join ", ")
             }
-            if (-not $Temporary) { 
+            if (-not $Temporary) {
                 if ($PSCmdlet.ShouldProcess("$name" , "Registering PSFConfig ")) {
-                    Register-PSFConfig -FullName dbachecks.$name 
+                    Register-PSFConfig -FullName dbachecks.$name
                 }
             }
         }
@@ -128,7 +127,6 @@ function Set-DbcConfig {
                 Set-Variable -Scope 1 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $value }
             }
         }
-
         Get-DbcConfig -Name $name
     }
 }

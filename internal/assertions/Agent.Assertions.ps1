@@ -15,6 +15,8 @@ function Assert-JobHistoryRowsDisabled {
 }
 
 function Assert-JobHistoryRows {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
+    [CmdletBinding()]
     param (
         $AgentServer,
         $minimumJobHistoryRows
@@ -32,6 +34,8 @@ function Assert-JobHistoryRowsPerJob {
 
 
 function Assert-LongRunningJobs {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
+    [CmdletBinding()]
     Param($runningjob,$runningjobpercentage)
     [math]::Round($runningjob.Diff/$runningjob.AvgSec * 100) | Should -BeLessThan $runningjobpercentage -Because "The current running job $($runningjob.JobName) has been running for $($runningjob.Diff) seconds longer than the average run time. This is more than the $runningjobpercentage % specified as the maximum"
 }

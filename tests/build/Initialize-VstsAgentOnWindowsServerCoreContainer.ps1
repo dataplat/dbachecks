@@ -13,25 +13,25 @@
 
 <#
 .SYNOPSIS
-    This script creates ACI container instance(s) which run the Azure DevOps (formerly VSTS) Agent, alongside with the requested 
+    This script creates ACI container instance(s) which run the Azure DevOps (formerly VSTS) Agent, alongside with the requested
     PowerShell modules, json2hcl and Terraform to enable Azure resource build automation from Azure DevOps CI/CD pipelines.
 .DESCRIPTION
-    This script is used as a wrapper of the container configuration script 
-    ("Install-VstsAgentOnWindowsServerCoreContainer.ps1") to create ACI container instance(s) which run 
-    the Azure DevOps Agent, alongside with the requested PowerShell modules, json2hcl and Terraform to enable Azure resource build 
+    This script is used as a wrapper of the container configuration script
+    ("Install-VstsAgentOnWindowsServerCoreContainer.ps1") to create ACI container instance(s) which run
+    the Azure DevOps Agent, alongside with the requested PowerShell modules, json2hcl and Terraform to enable Azure resource build
     automation from Azure DevOps CI/CD pipelines.
-    
+
     It copies the container configuration script to a publicly available storage container of the requested
     Storage Account, it creates a new Resource Group (if one doesn't exist with the provided name), removes
     any pre-existing ACI containers with the same name, within the same Resource Group, then creates new ACI
     container instance(s) based on the provided names and invokes the container configuration script inside the
     container(s).
-    
+
     This script is designed and tested to be run from Azure Cloud Shell.
-    Prerequisites: 
+    Prerequisites:
     - Azure Subscription, with an existing Storage Account
     - You need to have **admin rights** :
-    - to create a storage container within the already existing Storage Account *- OR -*  you need to have 
+    - to create a storage container within the already existing Storage Account *- OR -*  you need to have
       a storage container which has its public access type configured to the type of "Blob",
     - to create a new Resource Group *- OR -*  an existing Resource Group for the Azure Container Instances,
     - to create resources in the selected Resource Group.
@@ -106,7 +106,10 @@
     Author:         Mate Barabas
     Creation Date:  2018-08-29
 #>
-
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+[CmdletBinding()]
 param(
 
     [Parameter(Mandatory = $true,
@@ -133,7 +136,7 @@ param(
         HelpMessage = "Amount of memory in GBs.")]
     [ValidateNotNullOrEmpty()]
     [int]$MemoryInGB = 1,
-    
+
     [Parameter(Mandatory = $false,
         HelpMessage = "Number of CPU cores.")]
     [ValidateNotNullOrEmpty()]
@@ -158,7 +161,7 @@ param(
         HelpMessage = "Name of the storage container to upload the scriptfile to be invoked by this wrapper.")]
     [ValidateNotNullOrEmpty()]
     [string]$StorageContainerName = "publicvstsscript",
-    
+
     [Parameter(Mandatory = $false,
         HelpMessage = "Publicly available URL of the internal script file to be invoked by this wrapper. This can be used optionally, instead of defining the Storage Account name. You need to make the internal script available on this URL as a prerequisite.")]
     [ValidateNotNullOrEmpty()]
@@ -168,7 +171,7 @@ param(
         HelpMessage = "Name of the script file to invoke by this wrapper.")]
     [ValidateNotNullOrEmpty()]
     [string]$ScriptFileName = "Install-VstsAgentOnWindowsServerCoreContainer.ps1",
-    
+
     [Parameter(Mandatory = $false,
         HelpMessage = "Path to the file - if script not running in same directory")]
     [ValidateNotNullOrEmpty()]
@@ -222,9 +225,9 @@ param(
 )
 
 #region Functions
-function Set-AzureContext
-{
-
+function Set-AzureContext {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+    [CmdletBinding()]
     param (
 
         [Parameter(Mandatory = $false)][string]$SubscriptionName
@@ -232,43 +235,37 @@ function Set-AzureContext
     )
 
     # Select the desired Subscription based on the Subscription name provided
-    if ($SubscriptionName)
-    {
+    if ($SubscriptionName) {
         $Subscription = (Get-AzureRmSubscription | Where-Object { $_.Name -eq $SubscriptionName })
-            
-        if (-not $Subscription)
-        {
+
+        if (-not $Subscription) {
             Write-Error "There's no Subscription available with the provided name."
             return
         }
-        else
-        {
+        else {
             $SubscriptionId = $Subscription.Id
             Select-AzureRmSubscription -SubscriptionId $SubscriptionId | Out-Null
             Write-Output "The following subscription was selected: ""$SubscriptionName"""
         }
     }
     # If no Subscription name was provided select the active Subscription based on the existing context
-    else
-    {
+    else {
         $SubscriptionName = (Get-AzureRmContext).Subscription.Name
         $Subscription = (Get-AzureRmSubscription | Where-Object { $_.Name -eq $SubscriptionName })
         Write-Output "The following subscription was selected: ""$SubscriptionName"""
     }
 
-    if ($Subscription.Count -gt 1)
-    {
+    if ($Subscription.Count -gt 1) {
         Write-Error "You have more then 1 Subscription with the same name. Exiting..."
         return
     }
 }
 
-if(-not $StorageAccountResourceGroupName){
+if (-not $StorageAccountResourceGroupName) {
     $StorageAccountResourceGroupName = $ResourceGroupName
 }
 
-function Copy-ScriptToStorageAccount
-{
+function Copy-ScriptToStorageAccount {
 
     param (
 
@@ -280,14 +277,13 @@ function Copy-ScriptToStorageAccount
     )
 
     # Check if the Install-VstsAgentOnWindowsServerCoreContainer.ps1 script exists within the same folder
-    if (-not (Get-Item -Path "$ScriptFilePath\$ScriptFileName" -ErrorAction SilentlyContinue))
-    {
+    if (-not (Get-Item -Path "$ScriptFilePath\$ScriptFileName" -ErrorAction SilentlyContinue)) {
         Write-Error "The script to be uploaded to the Storage Account ($ScriptFilePath\$ScriptFileName) does not exist in the same folder. Make sure that it is copied to the same folder along with the Initialize-VstsAgentOnWindowsServerCoreContainer.ps1 script. Exiting..."
-        
+
         break
     }
 
-    if(-not (Get-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -ErrorAction SilentlyContinue)){
+    if (-not (Get-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -ErrorAction SilentlyContinue)) {
         New-AzureRmStorageAccount -ResourceGroupName $StorageAccountResourceGroupName -Name $StorageAccountName -Location "West Europe" -SkuName "Standard_GRS"
     }
 
@@ -301,19 +297,16 @@ function Copy-ScriptToStorageAccount
 
     # Checking if the container exists, creating if it doesn't
     $StorageContainer = Get-AzureStorageContainer -Context $ctx -Name $StorageContainerName -ErrorAction SilentlyContinue
-    if (-not $StorageContainer)
-    {
+    if (-not $StorageContainer) {
         Write-Output "Storage container ""$StorageContainerName"" does not exist in the ""$StorageAccountName"" Storage Account. Creating storage container with public access..."
         New-AzureStorageContainer -Context $ctx -Name $StorageContainerName -Permission Blob | Out-Null
         Write-Output "Wait 10 seconds..."
         Start-Sleep -Seconds 10
     }
-    else
-    {
+    else {
         Write-Output "Storage container ""$StorageContainerName"" exists in the ""$StorageAccountName"" Storage Account."
         $PublicAccess = (Get-AzureStorageContainerAcl -Name $StorageContainerName -Context $ctx).PublicAccess
-        if ($PublicAccess -ne "Blob")
-        {
+        if ($PublicAccess -ne "Blob") {
             Write-Output "Public Access was configured to $PublicAccess. Resetting it to ""Blob"" (public access)."
             Set-AzureStorageContainerAcl -Name $StorageContainerName -Permission Blob
             Write-Output "Wait 10 seconds..."
@@ -323,8 +316,7 @@ function Copy-ScriptToStorageAccount
 
     # Check if container creation was successful
     $StorageContainer = Get-AzureStorageContainer -Context $ctx -Name $StorageContainerName -ErrorAction SilentlyContinue
-    if (-not $StorageContainer)
-    {
+    if (-not $StorageContainer) {
         Write-Error "Storage container ($StorageContainerName) could not be created in the $StorageAccountName Storage Account. Exiting..."
         break
     }
@@ -335,47 +327,42 @@ function Copy-ScriptToStorageAccount
 
     # Checking success
     $Blob = Get-AzureStorageBlob -Context $ctx -Container $StorageContainerName -Blob $ScriptFileName -ErrorAction SilentlyContinue
-    if ($Blob)
-    {
+    if ($Blob) {
         Write-Output "The script file ($ScriptFileName) was successfully uploaded to the ""$StorageContainerName"" container of the ""$StorageAccountName"" Storage Account in the ""$StorageAccountResourceGroupName"" Resource Group."
     }
-    else
-    {
+    else {
         Write-Error "The script file ($ScriptFileName) could not be uploaded to the ""$StorageContainerName"" container of the ""$StorageAccountName"" Storage Account in the ""$StorageAccountResourceGroupName"" Resource Group. Exiting..."
         break
     }
 
 }
 
-function New-Container
-{
+function New-Container {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $false)][string]$AcrPassword,
         [Parameter(Mandatory = $true)][string]$ContainerImage
     )
 
-    # Create & Install containers        
+    # Create & Install containers
 
-    if ($StorageAccountName) #if you want to upload the internal script to a Storage Account
-    {
+    if ($StorageAccountName) { #if you want to upload the internal script to a Storage Account
         $ScriptURL = "https://$StorageAccountName.blob.core.windows.net/$StorageContainerName/$ScriptFileName"
     }
-    else # if you want to use the internal script from a public location (e.g. GitHub)
-    {
+    else { # if you want to use the internal script from a public location (e.g. GitHub)
         $ScriptURL = $ScriptPublicUrl
     }
 
-    foreach ($Name in $ContainerName)
-    {
+    foreach ($Name in $ContainerName) {
 
         $CanCreateContainerWithProvidedName = $true
         $ExistingContainer = Get-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName -Name $Name -ErrorAction SilentlyContinue
-        if ($ExistingContainer)
-        {
+        if ($ExistingContainer) {
             Write-Warning "ACI container with the requested name ($Name) already exists in the given Resource Group ($ResourceGroupName)."
             $CanCreateContainerWithProvidedName = $false
-            if ($ReplaceExistingContainer.IsPresent)
-            {
+            if ($ReplaceExistingContainer.IsPresent) {
                 Write-Warning "Deleting the existing container instance ($Name)..."
                 Remove-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName -Name $Name -Confirm:$false
                 Write-Warning "Unregistering existing container instance ($Name) from Agent pool ($PoolName)..."
@@ -386,39 +373,32 @@ function New-Container
                 Write-Output "Waiting 10 seconds..."
                 Start-Sleep -Seconds 10
             }
-            else
-            {
+            else {
                 Write-Output "Existing container with the name of $Name is being kept."
             }
         }
-        if ($CanCreateContainerWithProvidedName)
-        {
+        if ($CanCreateContainerWithProvidedName) {
             $CreateAtLeastOneContainer = $true
             Write-Output "Creating ACI container ($Name) with the image of $ContainerImage..."
             Write-Output "Instantiating a container can take a few minutes, depending on the image size and whether or not the container image is cached in the ACI platform."
 
-            if ($RequiredPowerShellModules.Count -gt 1)
-            {
+            if ($RequiredPowerShellModules.Count -gt 1) {
                 $RequiredPowerShellModules = $RequiredPowerShellModules -join ","
             }
 
-            if ($AcrPassword)
-            {
+            if ($AcrPassword) {
                 $SecPasswd = ConvertTo-SecureString $AcrPassword -AsPlainText -Force
                 $RegistryName = $ContainerImage.Split(".")[0]
                 $MyCred = New-Object System.Management.Automation.PSCredential ($RegistryName, $SecPasswd)
-                    
-                if ($PSVersionTable.PSEdition -eq "Core")
-                {
+
+                if ($PSVersionTable.PSEdition -eq "Core") {
                     # The AZ CLI has to be used, as the required -Command parameter is not available in the core version of the related AzureRM PowerShell module in Azure Cloud Shell.
                     # When running in Cloud Shell, login is not required (has already happened)
-                    if ($null -ne $env:ACC_CLOUD)
-                    {
+                    if ($null -ne $env:ACC_CLOUD) {
                         az container create --resource-group $ResourceGroupName --name $Name --image $ContainerImage --registry-password $AcrPassword --location $Location --os-type Windows --cpu $Cpu --memory $MemoryInGB --restart-policy Always --command-line "powershell Start-Sleep -Seconds 20; Invoke-WebRequest -Uri $ScriptURL -OutFile $ScriptFileName -UseBasicParsing; & .\\$ScriptFileName -VSTSAccountName $VSTSAccountName -PATToken $PATToken -AgentNamePrefix $Name -PoolName $PoolName -InstallPowerShellCore $InstallPowerShellCore -InstallAzureCli $InstallAzureCli -UseChocolatey $UseChocolatey -RequiredPowerShellModules $RequiredPowerShellModules" --subscription $SubscriptionName --output none
                     }
                 }
-                elseif ($PSVersionTable.PSEdition -eq "Desktop")
-                {
+                elseif ($PSVersionTable.PSEdition -eq "Desktop") {
                     # Alternative option, using AzureRM PowerShell commandlet (this doesn't work in Azure Cloud Shell, as the -Command parameter is not available in the core version of this cmdlet)
                     New-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName `
                         -Name $Name `
@@ -431,25 +411,20 @@ function New-Container
                         -RegistryCredential $MyCred `
                         -Command "powershell Start-Sleep -Seconds 20; Invoke-WebRequest -Uri $ScriptURL -OutFile $ScriptFileName -UseBasicParsing; & .\$ScriptFileName -VSTSAccountName $VSTSAccountName -PATToken $PATToken -AgentNamePrefix $Name -PoolName $PoolName -RequiredPowerShellModules $RequiredPowerShellModules -InstallAzureCli $InstallAzureCli -UseChocolatey $UseChocolatey -InstallPowerShellCore $InstallPowerShellCore" | Out-null
                 }
-                else 
-                {
+                else {
                     Write-Error "PowerShell version could not be defined. Exiting..."
                     return
                 }
             }
-            else 
-            {
-                if ($PSVersionTable.PSEdition -eq "Core")
-                {
+            else {
+                if ($PSVersionTable.PSEdition -eq "Core") {
                     # The AZ CLI has to be used, as the required -Command parameter is note available in the core version of the related AzureRM PowerShell module in Azure Cloud Shell.
                     # When running in Cloud Shell, login is not required (has already happened)
-                    if ($null -ne $env:ACC_CLOUD)
-                    {
+                    if ($null -ne $env:ACC_CLOUD) {
                         az container create --resource-group $ResourceGroupName --name $Name --image $ContainerImage --location $Location --os-type Windows --cpu $Cpu --memory $MemoryInGB --restart-policy Always --command-line "powershell Start-Sleep -Seconds 20; Invoke-WebRequest -Uri $ScriptURL -OutFile $ScriptFileName -UseBasicParsing; & .\\$ScriptFileName -VSTSAccountName $VSTSAccountName -PATToken $PATToken -AgentNamePrefix $Name -PoolName $PoolName -RequiredPowerShellModules $RequiredPowerShellModules -InstallAzureCli $InstallAzureCli -UseChocolatey $UseChocolatey -InstallPowerShellCore $InstallPowerShellCore" --subscription $SubscriptionName --output none
                     }
                 }
-                elseif ($PSVersionTable.PSEdition -eq "Desktop")
-                {
+                elseif ($PSVersionTable.PSEdition -eq "Desktop") {
                     # Alternative option, using AzureRM PowerShell commandlet (this doesn't work in Azure Cloud Shell, as the -Command parameter is not available in the core version of this cmdlet)
                     New-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName `
                         -Name $Name `
@@ -461,56 +436,44 @@ function New-Container
                         -RestartPolicy Always `
                         -Command "powershell Start-Sleep -Seconds 20; Invoke-WebRequest -Uri $ScriptURL -OutFile $ScriptFileName -UseBasicParsing; & .\$ScriptFileName -VSTSAccountName $VSTSAccountName -PATToken $PATToken -AgentNamePrefix $Name -PoolName $PoolName -RequiredPowerShellModules $RequiredPowerShellModules -InstallAzureCli $InstallAzureCli -UseChocolatey $UseChocolatey -InstallPowerShellCore $InstallPowerShellCore" | Out-null
                 }
-                else 
-                {
+                else {
                     Write-Error "PowerShell version could not be defined. Exiting..."
                     return
                 }
             }
         }
-        else
-        {
+        else {
             Write-Warning "ACI container could not be created, as there's another container instance with the same name in the same Resource Group. If you want to remove the existing intance first, run the script again by using the -ReplaceExistingContainer switch."
         }
     }
 
-    if ($CreateAtLeastOneContainer)
-    {
+    if ($CreateAtLeastOneContainer) {
         Write-Output "ACI container creation tasks have been submitted. When using a cached image, it usually takes about 10 minutes to fully provision a container."
         Write-Output "New ACI container(s) are being built..."
 
         # Periodically check if all containers have been configured
         $ConfiguredContainers = @()
         $NotificationTracker = @{ }
-        while ($ConfiguredContainers.Count -ne $ContainerName.Count)
-        {
+        while ($ConfiguredContainers.Count -ne $ContainerName.Count) {
             Start-Sleep -Seconds 10
-            foreach ($Name in $ContainerName)
-            {
-                if ($ConfiguredContainers -notcontains $Name)
-                {
+            foreach ($Name in $ContainerName) {
+                if ($ConfiguredContainers -notcontains $Name) {
                     $LogEntries = Get-AzureRmContainerInstanceLog -ResourceGroupName $ResourceGroupName -ContainerGroupName $Name -ErrorAction SilentlyContinue
                     $RestartCount = (Get-AzureRmContainerGroup -ResourceGroupName $ResourceGroupName -Name $Name).Containers.restartcount
-                        
                     # Show restart counts, avoid repeating the same entry
-                    if ($RestartCount -gt 0)
-                    {
+                    if ($RestartCount -gt 0) {
                         $Key = "$Name-$RestartCount"
-                        if ($NotificationTracker[$Key] -ne "MessageAlreadyShown")
-                        {
+                        if ($NotificationTracker[$Key] -ne "MessageAlreadyShown") {
                             Write-Output "The creation of the ACI container ""$Name"" was restarted $RestartCount time(s). Note that a few retries are acceptable, however each iteration increases the overall creation time."
                             $NotificationTracker.Add($Key, "MessageAlreadyShown")
                         }
-                            
                     }
 
                     # Trigger on success
-                    if ($LogEntries)
-                    {
+                    if ($LogEntries) {
                         # Check if the last line of the log is "Container successfully configured."
                         $Success = $LogEntries.Split("`n")[-4] -eq "Container successfully configured." # Do NOT change this value, as the wrapper script is triggered based on this.
-                        if ($Success)
-                        {
+                        if ($Success) {
                             $ConfiguredContainers += $Name
                             Write-Output "ACI container ""$Name"" successfully configured"
                         }
@@ -520,30 +483,26 @@ function New-Container
         }
 
         # Print results
-        if ($ConfiguredContainers.Count -eq $ContainerName.Count)
-        {
+        if ($ConfiguredContainers.Count -eq $ContainerName.Count) {
             Write-Output "All requested containers have been successfully deployed and configured."
             Write-Output "Check if VSTS agents have been registered under the requested Agent Pool on the VSTS portal."
             $TimeSpan = (New-TimeSpan -Start $StartDate -End (Get-Date))
             Write-Output "Finished at $(Get-Date)"
             Write-Output "It took $($TimeSpan.Minutes) minutes and $($TimeSpan.Seconds) seconds to initialize the requested containers."
-            if ($ContainerDeletetionWasRequired)
-            {
+            if ($ContainerDeletetionWasRequired) {
                 Write-Warning "One or more containers have been deleted. "
             }
         }
     }
-    else
-    {
+    else {
         Write-Output "No ACI containers have been created, as there were conflicts with existing intances and the -ReplaceExistingContainer was not used."
     }
 }
 
-function Get-LatestCachedImageVersion
-{
-    # This function returns the name of the latest version of the 
+function Get-LatestCachedImageVersion {
+    # This function returns the name of the latest version of the
     # microsoft/windowsservercore image that is cached in the ACI platform
-    # This is needed, because Microsoft no longer uses the ":latest" tag on their images 
+    # This is needed, because Microsoft no longer uses the ":latest" tag on their images
     # See more details here: https://techcommunity.microsoft.com/t5/Containers/Removing-the-latest-Tag-An-Update-on-MCR/ba-p/393045
 
     # Authenticate to invoke Azure REST API
@@ -567,15 +526,16 @@ function Get-LatestCachedImageVersion
     return $LatestCachedImage
 }
 
-function Remove-AzureDevOpsAgentFromPool
-{
+function Remove-AzureDevOpsAgentFromPool {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+    [CmdletBinding()]
     Param(
         [string]$PatToken, #Personal access token
         [string]$AzureDevOpsAccountName, #Azure DevOps account name
         [string]$AgentPoolName, #Azure DevOps Agent pool name
         [array]$ContainerName  #Azure DevOps Agent pool name
     )
-        
+
     $base64AuthInfo = [System.Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$($PatToken)"))
     $Header = @{Authorization = ("Basic $base64AuthInfo") }
 
@@ -586,46 +546,37 @@ function Remove-AzureDevOpsAgentFromPool
     $AgentPool = $result.value | Where-Object { $_.Name -eq "$AgentPoolName" }
     $AgentPoolId = $AgentPool.id
 
-    if (-not $AgentPoolId)
-    {
+    if (-not $AgentPoolId) {
         Write-Error "The Agent Pool ($AgentPoolName) doesn't exist!"
     }
-    else
-    {
+    else {
         # Get Agents
         Write-Output "Getting Agents from Pool..."
         $uri = "https://dev.azure.com/$AzureDevOpsAccountName/_apis/distributedtask/pools/$AgentPoolId/agents?includeCapabilities=false&includeAssignedRequest=true"
         $result = Invoke-RestMethod -Uri $uri -Method GET -ContentType "application/json" -Headers $Header
         $Agents = $result.value
 
-        if (-not $Agents)
-        {
+        if (-not $Agents) {
             Write-Output "There are no Agents in this Agent Pool"
         }
-        else
-        {
+        else {
             Write-Output "The following agents were found:"
-            foreach ($Agent in $Agents)
-            {
+            foreach ($Agent in $Agents) {
                 $AgentName = $Agent.name
                 $AgentStatus = $Agent.status
                 Write-Output "$AgentName ($AgentStatus)"
             }
 
             # Delete Agent(s) from Pool
-            foreach ($Name in $ContainerName)
-            {
+            foreach ($Name in $ContainerName) {
                 Write-Output "Attempting to remove any Agent(s) that belonged to this ACI container: $Name..."
-                foreach ($Agent in $Agents)
-                {
+                foreach ($Agent in $Agents) {
                     $AgentName = $Agent.name
 
-                    if ($AgentName -match "^$Name-")
-                    {
+                    if ($AgentName -match "^$Name-") {
                         # Delete Agent
                         $AgentIds = $Agent.id
-                        foreach ($AgentId in $AgentIds)
-                        {
+                        foreach ($AgentId in $AgentIds) {
                             Write-Output "Deleting Agent ($AgentName) - (Agent ID: $AgentId)..."
                             $uri = "https://dev.azure.com/$AzureDevOpsAccountName/_apis/distributedtask/pools/$AgentPoolId/agents/$($AgentId)?api-version=5.0"
                             $result = Invoke-RestMethod -Uri $uri -Method DELETE -ContentType "application/json" -Headers $Header
@@ -635,13 +586,11 @@ function Remove-AzureDevOpsAgentFromPool
                             $uri = "https://dev.azure.com/$AzureDevOpsAccountName/_apis/distributedtask/pools/$AgentPoolId/agents?includeCapabilities=false&includeAssignedRequest=true"
                             $result = Invoke-RestMethod -Uri $uri -Method GET -ContentType "application/json" -Headers $Header
                             $AgentStillThere = $result.value.id -contains $AgentId
-                            if ($AgentStillThere)
-                            {
+                            if ($AgentStillThere) {
                                 Write-Warning "Agent ($AgentName) could not be deleted. Don't forget to clean your Agent pool in Azure Devops (remove any agents that were created in a previous iteration and are now offline)!"
                             }
-                            else
-                            {
-                                Write-Output "Agent ($AgentName) successfully deleted."    
+                            else {
+                                Write-Output "Agent ($AgentName) successfully deleted."
                             }
                         }
                     }
@@ -661,8 +610,7 @@ Write-Output "Started at $StartDate..."
 # Login to Azure and select Subscription
 Set-AzureContext -SubscriptionName $SubscriptionName
 
-if ($StorageAccountName)
-{
+if ($StorageAccountName) {
     # Upload the configuration script to a Storage Account
     Copy-ScriptToStorageAccount -StorageAccountResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName -StorageContainerName $StorageContainerName -ScriptFileName $ScriptFileName
 }
@@ -679,8 +627,7 @@ if (-not (Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction Silentl
 #>
 Write-Output "Ready For creating containers"
 # Create containers
-if (-not $ContainerImage)
-{
+if (-not $ContainerImage) {
     $ContainerImage = Get-LatestCachedImageVersion
     Write-Output "Container Image = $ContainerImage"
 }

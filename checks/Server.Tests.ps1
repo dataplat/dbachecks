@@ -14,7 +14,7 @@ Return
         Context "Testing Server Power Plan Configuration on $psitem" {
             It "PowerPlan is High Performance on $psitem" {
                 Assert-PowerPlan -AllServerInfo $AllServerInfo
-            }       
+            }
         }
     }
     Describe "SPNs" -Tags SPN, $filename {
@@ -33,7 +33,7 @@ Return
         Context "Testing Disk Space on $psitem" {
             @($AllServerInfo.DiskSpace).ForEach{
                 It "$($psitem.Name) with $($psitem.PercentFree)% free should be at least $free% free on $($psitem.ComputerName)" {
-                    Assert-DiskSpace -Disk $psitem 
+                    Assert-DiskSpace -Disk $psitem
                 }
             }
         }
