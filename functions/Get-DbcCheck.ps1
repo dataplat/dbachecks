@@ -14,11 +14,6 @@
     .PARAMETER Group
         To be able to filter by group
 
-    .PARAMETER EnableException
-        By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
-        This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
-        Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
-
     .EXAMPLE
         Get-DbcCheck
 
@@ -37,8 +32,7 @@ function Get-DbcCheck {
     param (
         [string]$Tag,
         [string]$Pattern,
-        [string]$Group,
-        [switch]$EnableException
+        [string]$Group
     )
 
     process {
@@ -53,11 +47,9 @@ function Get-DbcCheck {
             }
             else {
                 $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                    $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                        $psitem | Where-Object {
-                            $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -like $Pattern
-                        } | Select-Object -Last 1
-                    }
+                    $psitem | Where-Object {
+                        $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -like $Pattern
+                    } | Select-Object -Last 1
                 }
             }
         }
@@ -68,10 +60,10 @@ function Get-DbcCheck {
             $output = @($output).ForEach{
                 $psitem | Where-Object {
                     $_.Group -eq $Group
-                } 
+                }
             }
         }
-        if($Tag){
+        if ($Tag) {
             $output = @($output).ForEach{
                 $psitem | Where-Object {
                     $_.AllTags -match $Tag
