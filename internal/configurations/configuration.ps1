@@ -28,11 +28,9 @@ Set-PSFConfig -Module dbachecks -Name app.wincredential -Value $null -Initialize
 if($IsLinux){
     Set-PSFConfig -Module dbachecks -Name app.localapp -Value "$home\dbachecks" -Initialize -Description "Persisted files live here"
     Set-PSFConfig -Module dbachecks -Name app.maildirectory -Value "$home\dbachecks\dbachecks.mail" -Initialize -Description "Files for mail are stored here"
-    
 }else{
     Set-PSFConfig -Module dbachecks -Name app.localapp -Value "$env:localappdata\dbachecks" -Initialize -Description "Persisted files live here"
     Set-PSFConfig -Module dbachecks -Name app.maildirectory -Value "$env:localappdata\dbachecks\dbachecks.mail" -Initialize -Description "Files for mail are stored here"
-    
 }
 Set-PSFConfig -Module dbachecks -Name app.cluster -Value $null -Initialize -Description "One host name for each cluster for the HADR checks"
 
@@ -239,12 +237,17 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.remoteaccessdisabled -Valida
 Set-PSFConfig -Module dbachecks -Name skip.instance.scanforstartupproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip the scan for startup procedures disabled check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool -Value $false -Initialize -Description "Skip the scan the latest build of SQL Server check"
 Set-PSFConfig -Module dbachecks -Name skip.security.sadisabled -Validation bool -Value $true -Initialize -Description "Skip the check for if the sa login is disabled"
-Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip teh check for a login named sa does not exist"
+Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip the check for a login named sa does not exist"
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.engineserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.agentserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.fulltextserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
-
+Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelfailed -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records failed logins"
+Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelsuccessful -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records successful and failed logins"
+Set-PSFConfig -Module dbachecks -Name skip.security.localwindowsgroup -Validation bool -Value $true -Initialize -Description "Skips the scan for if local windows groups have SQL Logins"
+Set-PSFConfig -Module dbachecks -Name skip.security.publicrolepermission -Validation bool -Value $true -Initialize -Description "Skips the scan for if the public server role has permissions"
+Set-PSFConfig -Module dbachecks -Name skip.security.builtinadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for BUILTIN\Administrators login"
+Set-PSFConfig -Module dbachecks -Name skip.security.guestuserconnect -Validation bool -Value $true -Initialize -Description "Skips the scan for guest user have CONNECT permission"
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"

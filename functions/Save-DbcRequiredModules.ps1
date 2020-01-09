@@ -23,6 +23,7 @@ https://dbachecks.readthedocs.io/en/latest/functions/Save-DbcRequiredModules/
 
 #>
 function Save-DbcRequiredModules {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
     [CmdletBinding()]
     param (
         [Parameter (Mandatory)]

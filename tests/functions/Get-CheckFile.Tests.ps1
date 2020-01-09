@@ -1,11 +1,10 @@
-$commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Remove-Module dbachecks -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\dbachecks.psd1"
-Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
+
 . "$PSScriptRoot/../../internal/functions/Get-CheckFile.ps1"
 
 Describe "Testing Get-CheckFile function" {
-    Mock Get-ChildItem { 
+    Mock Get-ChildItem {
         return @(
             @{ Name = "One.Tests.ps1"; FullName = "C:\Checks\One.Tests.ps1" },
             @{ Name = "Two.Tests.ps1"; FullName = "C:\Checks\Two.Tests.ps1" },
@@ -15,7 +14,7 @@ Describe "Testing Get-CheckFile function" {
 
     Mock Get-Content {
         return "
-# some comments to start with 
+# some comments to start with
 
 Describe `"First fake check`" -Tags FirstCheck {
     Context `"Some context`" {

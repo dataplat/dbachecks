@@ -1,6 +1,8 @@
+[cmdletbinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', '', Justification='stupid implicit aliasing')]
+Param()
 # load all of the assertion functions
 . /../internal/assertions/Database.Assertions.ps1
-
 Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions, DatabaseAssertions {
     Context "Testing Get-Database" {
         It "Should have a Instance parameter" {

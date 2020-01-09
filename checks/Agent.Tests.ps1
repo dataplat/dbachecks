@@ -48,7 +48,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     else {
                         # cant check agent on container - hmm does this actually work with instance nered to check
                         if (-not $IsLinux -and ($InstanceSMO.HostPlatform -ne 'Linux')) {
-                                
+
                             Context "Testing SQL Agent is running on $psitem" {
                                 @(Get-DbaService -ComputerName $psitem -Type Agent).ForEach{
                                     It "SQL Agent should be running on $($psitem.ComputerName)" {
@@ -83,7 +83,6 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                     }
                     else {
-                            
                         Context "Testing DBA Operators exists on $psitem" {
                             $operatorname = Get-DbcConfigValue agent.dbaoperatorname
                             $operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
@@ -186,7 +185,6 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                     }
                     else {
-                           
                         Context "Testing job owners on $psitem" {
                             @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
                                 It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
@@ -202,7 +200,6 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     $messageid = Get-DbcConfigValue agent.alert.messageid
                     $AgentAlertJob = Get-DbcConfigValue agent.alert.Job
                     $AgentAlertNotification = Get-DbcConfigValue agent.alert.Notification
-                    
                     if ($NotContactable -contains $psitem) {
                         Context "Testing Agent Alerts Severity exists on $psitem" {
                             It "Can't Connect to $Psitem" {
@@ -268,7 +265,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                             }
                         }
                     }
-                    else {    
+                    else {
                         Context "Testing job history configuration on $psitem" {
                             [int]$minimumJobHistoryRows = Get-DbcConfigValue agent.history.maximumhistoryrows
                             [int]$minimumJobHistoryRowsPerJob = Get-DbcConfigValue agent.history.maximumjobhistoryrows
@@ -289,31 +286,31 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                                 }
                             }
                         }
-                    }      
+                    }
                 }
                 Describe "Long Running Agent Jobs" -Tags LongRunningJob, $filename {
                     $skip = Get-DbcConfigValue skip.agent.longrunningjobs
                     $runningjobpercentage = Get-DbcConfigValue agent.longrunningjob.percentage
                     if (-not $skip) {
-                        $query = "SELECT 
-        JobName, 
+                        $query = "SELECT
+        JobName,
         AvgSec,
         start_execution_date as StartDate,
         RunningSeconds,
-        RunningSeconds - AvgSec AS Diff 
+        RunningSeconds - AvgSec AS Diff
         FROM
         (
         SELECT
-         j.name AS JobName, 
+         j.name AS JobName,
          start_execution_date,
-         AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' 
+         AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000'
             + CONVERT(VARCHAR(6),jh.run_duration),6),5,0,':'),3,0,':'))) AS AvgSec,
             ja.start_execution_date as startdate,
         DATEDIFF(second, ja.start_execution_date, GetDate()) AS RunningSeconds
-        FROM msdb.dbo.sysjobactivity ja 
-        JOIN msdb.dbo.sysjobs j 
+        FROM msdb.dbo.sysjobactivity ja
+        JOIN msdb.dbo.sysjobs j
         ON ja.job_id = j.job_id
-        JOIN msdb.dbo.sysjobhistory jh 
+        JOIN msdb.dbo.sysjobhistory jh
         ON jh.job_id = j.job_id
         WHERE start_execution_date is not null
         AND stop_execution_date is null
@@ -329,14 +326,14 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                             }
                         }
                     }
-                    else {    
+                    else {
                         Context "Testing long running jobs on $psitem" {
                             foreach ($runningjob in $runningjobs | Where-Object { $_.AvgSec -ne 0 }) {
                                 It "Running job $($runningjob.JobName) duration should not be more than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
                                     Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
                                 }
                             }
-                        }   
+                        }
                     }
                 }
                 Describe "Last Agent Job Run" -Tags LastJobRunTime, $filename {
@@ -351,7 +348,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         j.job_id,
                         j.name AS JobName,
                         jh.run_duration AS Duration
-                        FROM msdb.dbo.sysjobs j 
+                        FROM msdb.dbo.sysjobs j
                         INNER JOIN
                             (
                                 SELECT job_id, instance_id = MAX(instance_id)
@@ -364,19 +361,19 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                             ON jh.job_id = h.job_id
                             AND jh.instance_id = h.instance_id
                         ) AS lrt
-                        
+
                         IF OBJECT_ID('tempdb..#dbachecksAverageRunTime') IS NOT NULL DROP Table #dbachecksAverageRunTime
                         SELECT * INTO #dbachecksAverageRunTime
                         FROM
                         (
-                        SELECT 
+                        SELECT
                         job_id,
                         AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' + CONVERT(VARCHAR(6),run_duration),6),5,0,':'),3,0,':'))) AS AvgSec
                         FROM msdb.dbo.sysjobhistory hist
                         GROUP BY job_id
                         ) as art
-                        
-                        SELECT 
+
+                        SELECT
                         JobName,
                         Duration,
                         AvgSec,
@@ -384,19 +381,19 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         FROM #dbachecksLastRunTime lastrun
                         JOIN #dbachecksAverageRunTime avgrun
                         ON lastrun.job_id = avgrun.job_id
-                        
+
                         DROP Table #dbachecksLastRunTime
                         DROP Table #dbachecksAverageRunTime"
                         $lastagentjobruns = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
                     }
-                    else {    
+                    else {
                         Context "Testing last job run time on $psitem" {
                             foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
                                 It "Job $($lastagentjobrun.JobName) last run duration should be not be greater than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
                                     Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
                                 }
                             }
-                        }  
+                        }
                     }
                 }
             }

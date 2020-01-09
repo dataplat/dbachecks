@@ -31,7 +31,7 @@ https://dbachecks.readthedocs.io/en/latest/functions/Start-DbcPowerBi/
 
 #>
 function Start-DbcPowerBi {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [string]$Path = "$script:ModuleRoot\bin\dbachecks.pbix",
         [switch]$EnableException
@@ -57,13 +57,17 @@ function Start-DbcPowerBi {
                 $newpath = "$script:localapp\dbachecks.pbix"
                 #if ((Test-Path -Path $newpath)) { # Would be nice if we could tell if it needed to be replaced or not
                 #I suppose we could use dbachecks versioning and wintemp?
-                Copy-Item -Path $Path -Destination $newpath -Force -ErrorAction SilentlyContinue
-                $Path = $newpath
+                if ($PSCmdlet.ShouldProcess("$newpath" , "Copying the file $path to ")) {
+                    Copy-Item -Path $Path -Destination $newpath -Force -ErrorAction SilentlyContinue
+                    $Path = $newpath
+                }
             }
 
             try {
                 Write-PSFMessage -Level Output -Message "Launching the dbachecks dashboard. This may take a moment."
-                Invoke-Item -Path $path
+                if ($PSCmdlet.ShouldProcess("$path" , "Starting PowerBi Desktop with file ")) {
+                    Invoke-Item -Path $path
+                }
             }
             catch {
                 Stop-PSFFunction -Message "Failure" -ErrorRecord $_
