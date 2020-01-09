@@ -7,7 +7,7 @@ Sets configuration values for specific checks.
 
 ```
 Set-DbcConfig [[-Name] <String>] [[-Value] <Object>] [[-Handler] <ScriptBlock>] [-Append] [-Temporary]
- [-EnableException] [<CommonParameters>]
+ [-EnableException] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -20,7 +20,7 @@ Changes configuration values which enable each check to have specific thresholds
 Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sqlcluster
 ```
 
-Sets the SQL Instances which will be checked by default using Invoke-DbcCheck 
+Sets the SQL Instances which will be checked by default using Invoke-DbcCheck
 to sql2016, sql2017, sqlcluster
 
 ### EXAMPLE 2
@@ -44,7 +44,7 @@ to TheBeard
 Set-DbcConfig -Name agent.validjobowner.name -Value 'TheBeard\SQLJobOwner' -Append
 ```
 
-Adds 'TheBeard\SQLJobOwner' to the value of the configuration for accounts that 
+Adds 'TheBeard\SQLJobOwner' to the value of the configuration for accounts that
 are expected to be owners of SQL Agent Jobs
 
 ## PARAMETERS
@@ -140,6 +140,37 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
