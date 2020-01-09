@@ -32,7 +32,7 @@
     PowerShellVersion      = '5.0'
 
     # Supported PSEditions
-    CompatiblePSEditions = 'Desktop', 'Core'
+    # CompatiblePSEditions = 'Desktop', 'Core' # Cant pu thtis in until a decision is made to make minimum version 5.1 :-(
 
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName     = ''
