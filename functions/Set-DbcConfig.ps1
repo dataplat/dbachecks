@@ -31,17 +31,17 @@ Using this switch turns this "nice by default" feature off and enables you to ca
 .EXAMPLE
 Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sqlcluster
 
-Sets the SQL Instances which will be checked by default using Invoke-DbcCheck 
+Sets the SQL Instances which will be checked by default using Invoke-DbcCheck
 to sql2016, sql2017, sqlcluster
 
 .EXAMPLE
-Set-DbcConfig -Name policy.validdbowner.name -Value 'TheBeard\sqldbowner' 
+Set-DbcConfig -Name policy.validdbowner.name -Value 'TheBeard\sqldbowner'
 
 Sets the value of the configuration for the expected database owners to
 TheBeard\sqldbowner
 
 .EXAMPLE
-Set-DbcConfig -Name policy.database.status.excludereadonly -Value 'TheBeard' 
+Set-DbcConfig -Name policy.database.status.excludereadonly -Value 'TheBeard'
 
 Sets the value of the configuration for databases that are expected to be readonly
 to TheBeard
@@ -49,8 +49,8 @@ to TheBeard
 .EXAMPLE
 Set-DbcConfig -Name agent.validjobowner.name -Value 'TheBeard\SQLJobOwner' -Append
 
-Adds 'TheBeard\SQLJobOwner' to the value of the configuration for accounts that 
-are expected to be owners of SQL Agent Jobs 
+Adds 'TheBeard\SQLJobOwner' to the value of the configuration for accounts that
+are expected to be owners of SQL Agent Jobs
 
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Set-DbcConfig/
