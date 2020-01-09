@@ -15,12 +15,12 @@
             )
             # You can specify commands to not check like this, which also will ignore its parameters:
             IgnoreCommands = @(
-             #   'Set-ClipBoard', # Because we explicitly check for OS before using in ADSNotebooks module
                 'It', # Because Pester!
                 'Should', # Because Pester!
                 'Context', # Because Pester!
                 'BeforeAll', # Because Pester!
                 'Describe' # Because Pester!
+                'Invoke-Pester' #Becasue Pester!
             )
         }
         PSUseCompatibleSyntax = @{
