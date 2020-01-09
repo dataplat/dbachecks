@@ -42,14 +42,14 @@ function Get-DbcCheck {
                 $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
                     $psitem | Where-Object {
                         $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -match $Pattern
-                    } | Select-Object -Last 1
+                    }
                 }
             }
             else {
                 $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
                     $psitem | Where-Object {
                         $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -like $Pattern
-                    } | Select-Object -Last 1
+                    }
                 }
             }
         }
