@@ -19,10 +19,12 @@
                 'Should', # Because Pester!
                 'Context', # Because Pester!
                 'BeforeAll', # Because Pester!
+                'AfterAll', # Because Pester!
                 'Describe' # Because Pester!
                 'Invoke-Pester' #Because Pester!
                 'InModuleScope' #Because Pester!
                 'Mock' #Because Pester!
+                'Assert-MockCalled' #Because Pester!
             )
         }
         PSUseCompatibleSyntax = @{
