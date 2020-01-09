@@ -6,7 +6,7 @@ $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 # Gather the instances we know are not contactable
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 
-# Get all the tags in use in this run 
+# Get all the tags in use in this run
 $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
 
 @(Get-Instance).ForEach{
@@ -88,7 +88,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, $filename {
-        $starttype = Get-DbcConfigValue policy.instance.sqlenginestart 
+        $starttype = Get-DbcConfigValue policy.instance.sqlenginestart
         $state = Get-DbcConfigValue policy.instance.sqlenginestate
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Engine Service on $psitem" {
@@ -920,7 +920,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Remote Access on $psitem" {
                 It "The Remote Access should be disabled on $psitem" -Skip:$skip {
-                    Assert-RemoteAccess -AllInstanceInfo $AllInstanceInfo 
+                    Assert-RemoteAccess -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
@@ -938,7 +938,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Latest Build on $psitem" {
                 It "The Latest Build of SQL should be installed on $psitem" -Skip:$skip {
-                    Assert-LatestBuild -AllInstanceInfo $AllInstanceInfo 
+                    Assert-LatestBuild -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
@@ -973,7 +973,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Checking that local Windows groups do not have SQL Logins on $psitem" {
                 It "Local Windows groups should not SQL Logins on $psitem" -Skip:$skip {
-                    Assert-LocalWindowsGroup -AllInstanceInfo $AllInstanceInfo 
+                    Assert-LocalWindowsGroup -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
@@ -991,7 +991,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing if failed login auditing is in place on $psitem" {
                 It "The failed login auditing should be set on $psitem" -Skip:$skip {
-                    Assert-LoginAuditFailed -AllInstanceInfo $AllInstanceInfo 
+                    Assert-LoginAuditFailed -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
@@ -1009,7 +1009,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing if successful and failed login auditing is in place on $psitem" {
                 It "The successful and failed auditng should be set on $psitem" -Skip:$skip {
-                    Assert-LoginAuditSuccessful -AllInstanceInfo $AllInstanceInfo 
+                    Assert-LoginAuditSuccessful -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
