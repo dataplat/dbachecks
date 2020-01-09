@@ -1,7 +1,7 @@
 <#
 This file is used to hold the Assertions for the Instance.Tests
 
-When adding new checks or improving existing ones - 
+When adding new checks or improving existing ones -
 
     - Ensure your branch is up to date with the development branch
     - In the Instance.Assertions.ps1 - Add a New code block in the switch using the unique tag name
@@ -24,7 +24,7 @@ When adding new checks or improving existing ones -
                         }
                     }
                 }
-                # the else matches the catch block 
+                # the else matches the catch block
                 else {
                     $There = $false
                     $MaxDump = [pscustomobject] @{
@@ -32,7 +32,7 @@ When adding new checks or improving existing ones -
                     }
                 }
             }
-    
+
     - Create an Assertion for the Check
 
     Name must start Assert
@@ -72,7 +72,7 @@ When adding new checks or improving existing ones -
     - In the tests\checks\InstanceChecks.Tests.ps1 file add tests for the assertions by mocking passing and failing tests following the code in the file
     - In a NEW session - checkout your branch of dbachecks
         cd to the root of the repo
-        import the module with 
+        import the module with
             ipmo .\dbachecks.psd1
         Run the Pester tests
 
@@ -91,7 +91,7 @@ function Get-AllInstanceInfo {
     Param($Instance, $Tags, $There)
     # Using there so that if the instance is not contactable, no point carrying on with gathering more information
     switch ($tags) {
-        'ErrorLog' { 
+        'ErrorLog' {
             if ($There) {
                 try {
                     $logWindow = Get-DbcConfigValue -Name policy.errorlog.warningwindow
@@ -110,17 +110,17 @@ function Get-AllInstanceInfo {
                             LogDate     = $psitem.LogDate
                             ProcessInfo = $Psitem.ProcessInfo
                             Text        = $Psitem.Text
-                        } | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) } 
+                        } | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) }
                     }
                 }
                 catch {
-                    $There = $false        
+                    $There = $false
                     $ErrorLog = [PSCustomObject]@{
                         LogDate      = 'Do not know the Date'
                         ProcessInfo  = 'Do not know the Process'
                         Text         = 'Do not know the Test'
                         InstanceName = 'An Error occurred ' + $Instance
-                    } 
+                    }
                 }
             }
             else {
@@ -130,7 +130,7 @@ function Get-AllInstanceInfo {
                     ProcessInfo  = 'Do not know the Process'
                     Text         = 'Do not know the Test'
                     InstanceName = 'An Error occurred ' + $Instance
-                } 
+                }
             }
         }
         'DefaultTrace' {
@@ -293,12 +293,11 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-
         'SaDisabled' {
             if ($There) {
                 try {
                     #This needs to be done in query just in case the account had already been renamed
-                    $login = Get-DbaLogin -SqlInstance $server | Where-Object Id -eq 1 
+                    $login = Get-DbaLogin -SqlInstance $server | Where-Object Id -eq 1
                     $SaDisabled = [pscustomobject] @{
                         Disabled = $login.IsDisabled
                     }
@@ -317,7 +316,6 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-
         'SaExist' {
             if ($There) {
                 try {
@@ -347,7 +345,6 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-
         'SqlEngineServiceAccount' {
             if ($There) {
                 try {
@@ -357,7 +354,7 @@ function Get-AllInstanceInfo {
                     }
                     $SqlEngineService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type Engine -ErrorAction SilentlyContinue
                     $EngineService = [pscustomobject] @{
-                        State     = $SqlEngineService.State 
+                        State     = $SqlEngineService.State
                         StartType = $SqlEngineService.StartMode
                     }
                 }
@@ -392,7 +389,7 @@ function Get-AllInstanceInfo {
                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
                         "
                     $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
-                    Write-Host $results.RowCount
+                    Write-Output $results.RowCount
                     $PublicRolePermission = [pscustomobject] @{
                         Count = $results.RowCount
                     }
@@ -411,7 +408,6 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-
         'BuiltInAdmin' {
             if ($There) {
                 try {
@@ -470,9 +466,6 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-
-        
-
         'LoginAuditFailed' {
             if ($There) {
                 try {
