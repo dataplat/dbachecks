@@ -17,7 +17,7 @@
     Removes "$env:windir\temp\dbachecks\*.json"
 .EXAMPLE
     Clear-DbcPowerBiDataSource -Environment Production
-    
+
     Removes "$env:windir\temp\dbachecks\*Production*.json"
 
 .LINK
