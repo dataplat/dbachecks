@@ -10,7 +10,7 @@ $ExcludedDatabases += $ExcludeDatabase
     if ($NotContactable -notcontains $psitem) {
         $Instance = $psitem
         try {
-            $InstanceSMO = $connectioncheck = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+            $InstanceSMO = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
         }
         catch {
             $NotContactable += $Instance
@@ -916,10 +916,9 @@ $ExcludedDatabases += $ExcludeDatabase
     }
 
     Describe "Database Exists" -Tags DatabaseExists, $filename {
-        $Excludedbs = $ExcludedDatabases
         $expected = Get-DbcConfigValue database.exists
         if ($Database) {$expected += $Database}
-        $expected = $expected.where{$psitem -notin $ExcludeDatabase}
+        $expected = $expected.where{$psitem -notin $ExcludedDatabases}
         if ($NotContactable -contains $psitem) {
             Context "Database exists on $psitem" {
                 It "Can't Connect to $Psitem" {
