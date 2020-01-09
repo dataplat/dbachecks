@@ -457,6 +457,30 @@
     },
     {
         "UniqueTag": "AsymmetricKeySize",
-        "Description": "Tests that Asymmetric Key Sizes are at least 2048 in non-system databases."
+        "Description": "Tests that Asymmetric Key Sizes are at least 2048 in non-system databases."v
+    },
+    {
+        "UniqueTag": "LoginAuditFailed",
+        "Description": "Tests that server level logins are recorded for failed logins."
+    },
+    {
+        "UniqueTag": "LoginAuditSuccessful",
+        "Description": "Tests that server level logins are recorded for successful and failed logins."
+    },   
+    {
+        "UniqueTag": "LocalWindowsGroup",
+        "Description": "Tests that no local Windows group has has a SQL Login."
+    },
+    {
+        "UniqueTag": "PublicRolePermission",
+        "Description": "Tests that server public role does not have any permissions."
+    },
+    {
+        "UniqueTag": "GuestUserConnect",
+        "Description": "Tests that guest user does not have CONNECT permission."
+    },
+    {
+        "UniqueTag": "BuiltInAdmin",
+        "Description": "Tests to see if the BUILTIN\\Administrator login exist."
     }
  ]

@@ -102,7 +102,10 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityBuiltinadmin <Object>]
+ [-ConfigSkipSecurityContainedbautoclose <Object>] [-ConfigSkipSecurityGuestuserconnect <Object>]
+ [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
+ [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
  [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
  [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
@@ -206,7 +209,10 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityBuiltinadmin <Object>]
+ [-ConfigSkipSecurityContainedbautoclose <Object>] [-ConfigSkipSecurityGuestuserconnect <Object>]
+ [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
+ [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
  [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
  [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
@@ -3376,8 +3382,98 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigSkipSecurityBuiltinadmin
+{{ Fill ConfigSkipSecurityBuiltinadmin Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigSkipSecurityContainedbautoclose
 {{ Fill ConfigSkipSecurityContainedbautoclose Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityGuestuserconnect
+{{ Fill ConfigSkipSecurityGuestuserconnect Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityLocalwindowsgroup
+{{ Fill ConfigSkipSecurityLocalwindowsgroup Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityLoginauditlevelfailed
+{{ Fill ConfigSkipSecurityLoginauditlevelfailed Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityLoginauditlevelsuccessful
+{{ Fill ConfigSkipSecurityLoginauditlevelsuccessful Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityPublicrolepermission
+{{ Fill ConfigSkipSecurityPublicrolepermission Description }}
 
 ```yaml
 Type: Object

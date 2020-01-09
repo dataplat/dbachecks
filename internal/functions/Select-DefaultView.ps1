@@ -22,7 +22,7 @@
     process {
 
         #if ($null -eq $InputObject) { return }
-        
+
         if ($TypeName) {
             $InputObject.PSObject.TypeNames.Insert(0, "dbachecks.$TypeName")
         }

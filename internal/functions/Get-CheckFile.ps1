@@ -5,16 +5,16 @@ function Get-CheckFile {
         [Parameter(Mandatory=$true)]
         [String[]]$Check
     )
-    
+
     $script:selectedFiles = New-Object System.Collections.Generic.List[String]
 
-    if ($Check.Count -gt 0) { 
+    if ($Check.Count -gt 0) {
         # specific checks were requested. find them.
         @(Get-ChildItem -Path "$Repo\*.Tests.ps1").ForEach{
             $script:checksFile = $psitem.FullName
-            
+
             if ($Check -contains ($PSItem.Name -replace ".Tests.ps1", "")) {
-                # file matches by name 
+                # file matches by name
                 if (!($script:selectedFiles -contains $script:checksFile)) {
                     $script:selectedFiles.Add($script:checksFile)
                 }
