@@ -42,7 +42,7 @@ function Get-CheckInformation {
         @($Check).ForEach{
             if($GroupChecks -contains $psitem){
     ## BUT - This falls flat when you use a tag for a number of Checks that is not a group (like CIS) in that case all you get in $CheckInfo is CIS and not the relevant unique tags
-                @(Get-DbcCheck -Pattern $psitem).ForEach{
+                @(Get-DbcCheck -Tag $psitem).ForEach{
                     $CheckInfo += $psitem.UniqueTag
                 }
             }
