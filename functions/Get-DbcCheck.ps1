@@ -47,17 +47,17 @@ function Get-DbcCheck {
             if ($Pattern -notmatch '\*') {
                 $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
                     $psitem | Where-Object {
-                        $_.Group -match $Pattern -or $_.Description -match $Pattern -or
-                        $_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern -or $_.Type -match $Pattern
-                    } | Select -Last 1
+                        $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -match $Pattern
+                    } | Select-Object -Last 1
                 }
             }
             else {
                 $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                    $psitem | Where-Object {
-                        $_.Group -match $Pattern -or $_.Description -match $Pattern -or
-                        $_.UniqueTag -match $Pattern -or $_.AllTags -match $Pattern -or $_.Type -match $Pattern
-                    } | Select -Last 1
+                    $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
+                        $psitem | Where-Object {
+                            $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -like $Pattern
+                        } | Select-Object -Last 1
+                    }
                 }
             }
         }
