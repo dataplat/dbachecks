@@ -28,6 +28,7 @@ Describe "PSScriptAnalyzer rule-sets" -Tag Build , ScriptAnalyzer {
 
     foreach ( $Script in $scripts )
     {
+       if (-not (Test-Path "$ModuleBase\$script")){continue}
         Context "Checking PSScriptAnalyzer on Script '$script'" {
 
             foreach ( $rule in $rules )
