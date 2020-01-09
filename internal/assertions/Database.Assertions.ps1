@@ -62,6 +62,8 @@ function Assert-DatabaseDuplicateIndex {
 }
 
 function Assert-DatabaseExists {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
+    [CmdletBinding()]
     Param (
         [string]$Instance,
         [string]$ExpectedDB
