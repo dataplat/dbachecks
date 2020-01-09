@@ -57,8 +57,7 @@ https://dbachecks.readthedocs.io/en/latest/functions/Set-DbcConfig/
 
 #>
 function Set-DbcConfig {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
-    [CmdletBinding(DefaultParameterSetName = "FullName")]
+    [CmdletBinding(DefaultParameterSetName = "FullName", SupportsShouldProcess)]
     param (
         [string]$Name,
         [AllowNull()]
@@ -101,8 +100,9 @@ function Set-DbcConfig {
         }
 
         $Name = $Name.ToLower()
-
-        Set-PSFConfig -Module dbachecks -Name $name -Value $NewValue
+        if ($PSCmdlet.ShouldProcess("$name" , "Setting the value to $NewValue on ")) {
+            Set-PSFConfig -Module dbachecks -Name $name -Value $NewValue
+        }
         try {
             if (-not $Temporary) { Register-PSFConfig -FullName dbachecks.$name -EnableException -WarningAction SilentlyContinue }
         }

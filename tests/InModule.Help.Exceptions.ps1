@@ -1,4 +1,8 @@
-﻿$global:FunctionHelpTestExceptions = @(
+﻿[cmdletbinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='Because scoping is hard')]
+Param()
+
+$global:FunctionHelpTestExceptions = @(
     "TabExpansion2"
 )
 
