@@ -391,7 +391,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing page verify on $psitem" {
                 switch ($version) {
                     8 {
-                        It "Page verify is not available on SQL 2000" {
+                        It "Database Page verify is not available on SQL 2000 on $psitem" {
                             $true | Should -BeTrue
                         }
                     }
@@ -835,7 +835,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing database is not in PseudoSimple recovery model on $psitem" {
                 @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'tempdb' -and $psitem.Name -ne 'model' -and $psitem.Status -ne 'Offline' -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
                     if (-not($psitem.RecoveryModel -eq "Simple")) {
-                        It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaDbRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" }
+                        It "Database $($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaDbRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" }
                     }
                 }
             }
@@ -998,7 +998,7 @@ $ExcludedDatabases += $ExcludeDatabase
             $instance = $Psitem
             Context "Testing Guest user has CONNECT permission on $psitem" {
                 @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
-                    It "Guest user should return no CONNECT permissions in $($psitem.Name) on $Instance" -Skip:$skip {
+                    It "Database Guest user should return no CONNECT permissions in $($psitem.Name) on $Instance" -Skip:$skip {
                         Assert-GuestUserConnect -Instance $instance -Database $($psitem.Name)
                     }
                 }
