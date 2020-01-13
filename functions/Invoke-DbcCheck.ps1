@@ -54,7 +54,7 @@ To suppress the host output, use the Quiet parameter.
 The path to the exported dbachecks config file.
 
 .PARAMETER OutputFormat
-The format of output. Currently, only NUnitXML is supported. 
+The format of output. Currently, only NUnitXML is supported.
 
 .PARAMETER Strict
 Makes Pending and Skipped tests to Failed tests. Useful for continuous integration where you need to make sure all tests passed.
@@ -66,9 +66,9 @@ In the unlikely event that you'd like to run all checks, specify -AllChecks. The
 The parameter Quiet is deprecated since Pester v. 4.0 and will be deleted in the next major version of Pester. Please use the parameter Show with value 'None' instead.
 
 .PARAMETER Show
-Customizes the output Pester writes to the screen. 
+Customizes the output Pester writes to the screen.
 
-Available options are 
+Available options are
 None
 Default
 Passed
@@ -133,13 +133,13 @@ Runs all of the checks tagged Backup against the sql2016 instance
 .EXAMPLE
 Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster -SqlCredential (Get-Credential sqladmin)
 
-Runs the Recovery model check against the SQL instances sql2017, sqlcluster 
+Runs the Recovery model check against the SQL instances sql2017, sqlcluster
 using the sqladmin SQL login with the password provided interactively
 
 .EXAMPLE
 Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink -ConfigFile \\share\repo\prod.json
 
-Runs all of the checks tagged Database except for the AutoShrink check against 
+Runs all of the checks tagged Database except for the AutoShrink check against
 the SQL Instances set in the config under app.sqlinstance
 
 Imports configuration file, \\share\repo\prod.json, prior to executing checks.
@@ -163,7 +163,7 @@ Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary
 
 Start-DbcPowerBi
 
-Runs the Suspect Page and Last Backup checks against the SQL Instances set in 
+Runs the Suspect Page and Last Backup checks against the SQL Instances set in
 the config under app.sqlinstance only showing the summary of the results of the
 checks. It then updates the source json for the XML which is stored at
 C:\Windows\temp\dbachecks\ and then opens the PowerBi report in PowerBi Desktop
@@ -180,6 +180,8 @@ about_Pester
 #>
 
 function Invoke-DbcCheck {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='Because scoping is hard')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='Because its set to the global var')]
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
         [Alias('Path', 'relative_path')]
@@ -245,7 +247,7 @@ function Invoke-DbcCheck {
             }
             $null = Import-DbcConfig -Path $ConfigFile -WarningAction SilentlyContinue -Temporary
         }
-        
+
         $config = Get-PSFConfig -Module dbachecks
         foreach ($key in $PSBoundParameters.Keys | Where-Object { $_ -like "Config*" }) {
             if ($item = $config | Where-Object { "Config$($_.Name.Replace('.', ''))" -eq $key }) {
@@ -351,7 +353,7 @@ function Invoke-DbcCheck {
             Write-PSFMessage -Level Warning -Message "$ExcludedDatabases databases will be skipped for all checks"
         }
 
-        # Then we'll need a generic param passer that doesn't require global params 
+        # Then we'll need a generic param passer that doesn't require global params
         # cuz global params are hard
 
         $finishedAllTheChecks = $false
@@ -366,7 +368,7 @@ function Invoke-DbcCheck {
                     }
 
                     if ($Check.Count -gt 0) {
-                        # specific checks were listed. find the necessary script files. 
+                        # specific checks were listed. find the necessary script files.
                         $PSBoundParameters['Script'] = (Get-CheckFile -Repo $repo -Check $check)
                     }
 

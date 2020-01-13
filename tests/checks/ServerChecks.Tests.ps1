@@ -1,3 +1,6 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingComputerNameHardcoded", "")]
+[CmdletBinding()]
+param ()
 # load all of the assertion functions
 (Get-ChildItem $PSScriptRoot/../../internal/assertions/).ForEach{. $Psitem.FullName}
 
@@ -64,9 +67,9 @@ Describe "Checking ServerChecks.Tests" {
                         'Name'           = 'P:\'
                         'Server'         = 'DummyServer'
                     }
-                )  
+                )
             }
-            
+
             $DiskAllocationObjects = Test-DbaDiskAllocation -ComputerName Dummy
             $DiskAllocationObjects.ForEach{
                 Assert-DiskAllocationUnit -DiskAllocationObject $PSItem
@@ -116,9 +119,9 @@ Describe "Checking ServerChecks.Tests" {
                         'Name'           = 'P:\'
                         'Server'         = 'DummyServer'
                     }
-                )  
+                )
             }
-            $DiskAllocationObjects = Test-DbaDiskAllocation -ComputerName Dummy            
+            $DiskAllocationObjects = Test-DbaDiskAllocation -ComputerName Dummy
             {Assert-DiskAllocationUnit -DiskAllocationObject $DiskAllocationObjects[4] } | should -Throw -ExpectedMessage "Expected `$true, because SQL Server performance will be better when accessing data from a disk that is formatted with 64Kb block allocation unit, but got `$false."
         }
     }
@@ -239,7 +242,7 @@ Describe "Checking ServerChecks.Tests" {
                     '__SERVER'                       = 'SourceServer'
                     '__SUPERCLASS'                   = $Null
                 }
-            )          
+            )
         }
 
         Mock Test-DbaDiskAllocation {
@@ -285,7 +288,6 @@ Describe "Checking ServerChecks.Tests" {
                     'Server'         = 'DummyServer'
                 }
             )
-            
         }
 
         Mock Test-DbaPowerPlan {
@@ -311,7 +313,6 @@ Describe "Checking ServerChecks.Tests" {
                 'isBestPractice'       = $True
                 'RecommendedPowerPlan' = 'High performance'
             }
-            
         }
 
         Mock Test-DbaSpn {
@@ -597,7 +598,7 @@ Describe "Checking ServerChecks.Tests" {
         }
 
         $tags = 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'InstanceConnection'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should get the right results for PingComputer" {
             $serverInfo.PingComputer.Count | Should -Be 3
@@ -638,7 +639,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {Throw}
 
         $tags = 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'InstanceConnection'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should get the right results for PingComputer" {
             $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the function should return for no server"
@@ -658,14 +659,14 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'Dont know the SPN'
         }
         It "Should get the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy'
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
         }
     }
 
     # There is probably a way of using test cases for this and making it dynamic
-    # Some bearded fellow wrote about it!! 
+    # Some bearded fellow wrote about it!!
     # https://sqldbawithabeard.com/2017/07/06/writing-dynamic-and-random-tests-cases-for-pester/
     # But right now I cant see it so this will do
 
@@ -694,7 +695,6 @@ Describe "Checking ServerChecks.Tests" {
                 'isBestPractice'       = $True
                 'RecommendedPowerPlan' = 'High performance'
             }
-            
         }
 
         Mock Test-Connection {}
@@ -706,7 +706,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {}
 
         $tags = 'PowerPlan'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -762,7 +762,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {}
 
         $tags = 'PowerPlan'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -780,7 +780,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskSpace | Should -BeNullOrEmpty
         }
     }
-    
+
     Context "Testing Get-AllServerInfo for Tags PingComputer with a server that exists" {
 
         Mock Test-Connection {
@@ -899,7 +899,7 @@ Describe "Checking ServerChecks.Tests" {
                     '__SERVER'                       = 'SourceServer'
                     '__SUPERCLASS'                   = $Null
                 }
-            )          
+            )
         }
 
         Mock Test-DbaDiskAllocation {}
@@ -909,7 +909,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {}
 
         $tags = 'PingComputer'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have the right  results for PingComputer" {
             $serverInfo.PingComputer.Count | Should -Be 3
@@ -969,13 +969,12 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {}
 
         $tags = 'PingComputer'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should get the right results for PingComputer" {
             $serverInfo.PingComputer.Count | Should -Be -1 -Because "This is what the function should return for no server"
             $serverInfo.PingComputer[0].Address | Should -BeNullOrEmpty -Because "This is what the function should return for no server"
             $serverInfo.PingComputer[0].ResponseTime  | Should -Be 50000000  -Because "This is what the function should return for no server"
-      
         }
         It "Should have no results for DiskAllocationUnit" {
             $serverInfo.DiskAllocation | Should -BeNullOrEmpty
@@ -1038,7 +1037,6 @@ Describe "Checking ServerChecks.Tests" {
                     'Server'         = 'DummyServer'
                 }
             )
-            
         }
 
         Mock Test-DbaSpn {}
@@ -1046,7 +1044,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {}
 
         $tags = 'DiskAllocationUnit'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -1104,7 +1102,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {}
 
         $tags = 'DiskAllocationUnit'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -1124,7 +1122,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskSpace | Should -BeNullOrEmpty
         }
     }
-    
+
     Context "Testing Get-AllServerInfo for Tags SPN with a server that exists" {
 
         Mock Test-Connection { }
@@ -1194,13 +1192,12 @@ Describe "Checking ServerChecks.Tests" {
                     'Warning'                = 'None'
                 }
             )
-
         }
 
         Mock Get-DbaDiskSpace {}
 
         $tags = 'SPN'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -1228,7 +1225,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.SPNs[0].ComputerName | Should -Be 'DummyServer'
             $serverInfo.SPNs[0].Error | Should -Be 'SPN missing'
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'MSSQLSvc/DummyServer'
-       
+
             $assertMockParams = @{
                 'CommandName' = 'Test-DbaSPN'
                 'Times'       = 1
@@ -1259,7 +1256,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {}
 
         $tags = 'SPN'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -1278,7 +1275,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskSpace | Should -BeNullOrEmpty
         }
     }
-    
+
     Context "Testing Get-AllServerInfo for Tags DiskCapacity with a server that exists" {
 
         Mock Test-Connection { }
@@ -1503,9 +1500,8 @@ Describe "Checking ServerChecks.Tests" {
 
         }
 
-
         $tags = 'DiskCapacity'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -1563,7 +1559,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {Throw}
 
         $tags = 'DiskCapacity'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -1578,12 +1574,12 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.SPNs| Should -BeNullOrEmpty
         }
         It "Should have the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy'
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
         }
     }
-    
+
     Context "Testing Get-AllServerInfo for Tags DiskCapacity,SPN,DiskAllocationUnit with a server that exists" {
 
         Mock Test-Connection { }
@@ -1631,7 +1627,6 @@ Describe "Checking ServerChecks.Tests" {
                     'Server'         = 'DummyServer'
                 }
             )
-            
         }
 
         Mock Test-DbaSpn {
@@ -1918,7 +1913,7 @@ Describe "Checking ServerChecks.Tests" {
 
 
         $tags = 'DiskCapacity', 'SPN', 'DiskAllocationUnit'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -1960,7 +1955,7 @@ Describe "Checking ServerChecks.Tests" {
         Mock Get-DbaDiskSpace {Throw}
 
         $tags = 'DiskCapacity', 'SPN', 'DiskAllocationUnit'
-        
+
         $ServerInfo = Get-AllServerInfo -ComputerName Dummy -Tags $tags
         It "Should have no results for PingComputer" {
             $serverInfo.PingComputer| Should -BeNullOrEmpty
@@ -1978,7 +1973,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.SPNs[0].RequiredSPN | Should -Be 'Dont know the SPN'
         }
         It "Should have the right results for DiskCapacity" {
-            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy' 
+            $serverInfo.DiskSpace.ComputerName| Should -Be 'An Error occurred Dummy'
             $serverInfo.DiskSpace.Name | Should -Be 'Do not know the Name'
             $serverInfo.DiskSpace.PercentFree | Should -Be -1
         }

@@ -1,85 +1,11 @@
-﻿<#
-    .SYNOPSIS
-        Lists all checks, tags and unique identifiers
 
-    .DESCRIPTION
-        Lists all checks, tags and unique identifiers
 
-    .PARAMETER Tag
-        The tag to return information about
 
-    .PARAMETER Pattern
-        May be any string, supports wildcards.
-
-    .PARAMETER Group
-        To be able to filter by group
-
-    .EXAMPLE
-        Get-DbcCheck
-
-        Retrieves all of the available checks
-
-    .EXAMPLE
-        Get-DbcCheck backups
-
-        Retrieves all of the available tags that match backups
-
-    .LINK
-    https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcCheck/
-#>
-function Get-DbcCheck {
-    [CmdletBinding()]
-    param (
-        [string]$Tag,
-        [string]$Pattern,
-        [string]$Group
-    )
-
-    process {
-        $script:localapp = Get-DbcConfigValue -Name app.localapp
-        if ($Pattern) {
-            if ($Pattern -notmatch '\*') {
-                $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                    $psitem | Where-Object {
-                        $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -match $Pattern
-                    }
-                }
-            }
-            else {
-                $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                    $psitem | Where-Object {
-                        $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -like $Pattern
-                    }
-                }
-            }
-        }
-        else {
-            $output = Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json
-        }
-        if ($Group) {
-            $output = @($output).ForEach{
-                $psitem | Where-Object {
-                    $_.Group -eq $Group
-                }
-            }
-        }
-        if ($Tag) {
-            $output = @($output).ForEach{
-                $psitem | Where-Object {
-                    $_.AllTags -match $Tag
-                }
-            }
-        }
-        @($output).ForEach{
-            Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags', 'Config', 'Description'
-        }
-    }
-}
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQURizfAcUyrJgW1yagIwfUgjWN
-# T/CgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQURIsqjzNuCvaywTsb60Hh+CAY
+# Y4qgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -139,11 +65,11 @@ function Get-DbcCheck {
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSjPN5/Y3UZYSj4+/7FOPpb2JQo
-# NjANBgkqhkiG9w0BAQEFAASCAQAS2Ec1yYd53ZZZbbuF0b40/c4x44/OUZMeSQND
-# LuWPpDVWIoXNCKrLPsifRW370hALYczFjX60b8/AyDsQn9jo4fKMf1bLiH+9xrnI
-# jRk3oyxGvesd1GL2sosNuzHCey2ltCvFwLw4RuTGQavQJsKi+sL3Slh+plV84DPQ
-# c65bZk7rgCVOV52BccxW6H5nYAvOgX9Tkf9tzwAwyPzyglpaLUyBt6pU3OO7TkwH
-# jNOWPugmSrjq5h0Og19/0xTxtAT9oji0ItxpDVnk/zOxWja4BrbraeTlq0fTgA67
-# vDRh0ZpiGzew5TaVBaxzcq1T9lbFlvrcQDYRAv9k0KOmBbQE
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTFUYzHsE17PItd1Khf0qg2Dqat
+# 9jANBgkqhkiG9w0BAQEFAASCAQAPdXXxD4YAvhd8nAB7d7SWo7VQrWSjvcJRaLFk
+# iuH9VepbSVt1kv2FGKtnKalps+vdeELzRXZRnAuBRfN5wv6UDaD8dCAhiEK0IIf2
+# NIGvdGS9h0NXE72y/Hvu43Pxt/IP561v6Fg/9XDkpiWixjlNxxeviFjz3xvRBUH6
+# Fy2qndHhkUy7bsk9L9VJNxdvgq9ntGik+wo0InpBs2u4WxlDKaDWAUJWWit3F3CA
+# /l7L8r0YPyx1SDJy7vp3doHfwDBXyFFXtgF1feB4jXPtoOIkTxw91Ocsoz1/3mcR
+# meUXyjJ6SaZAha9WiiVvgbwbKy+ulVMff77Rn4DEKjpntovl
 # SIG # End signature block

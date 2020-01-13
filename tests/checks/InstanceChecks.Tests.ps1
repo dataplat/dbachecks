@@ -633,9 +633,8 @@ InModuleScope dbachecks {
         Mock Get-DbcConfigValue { } -ParameterFilter { $Name -and $Name -eq 'policy.errorlog.warningwindow' }
         Context "Checking Get-AllInstanceInfo" {
             Mock Get-ErrorLogEntry { }
-    
+
             It "Should return the correct results for ErrorLog Entries when there are no severities" {
-           
                 (Get-AllInstanceInfo -Instance Dummy -Tags ErrorLog -There $true).ErrorLog | Should -BeNullOrEmpty -Because "We need no entries when we have no sev 17 to 24 errors"
             }
 
@@ -660,18 +659,18 @@ InModuleScope dbachecks {
                 Mock Get-DbaSpConfigure { [pscustomobject]@{
                         ConfiguredValue = 0
                     } }
-           
+
                 (Get-AllInstanceInfo -Instance Dummy -Tags DefaultTrace -There $true).DefaultTrace.ConfiguredValue | Should -Be 0 -Because "We need to return zero when default trace is not enabled"
             }
         }
         Context "Checking ErrorLog Entries" {
-           
+
             It "Should pass the test successfully when there are no Severity Errors" {
                 # Mock for success
                 Mock Get-AllInstanceInfo { }
                 Assert-ErrorLogEntry -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when there are Severity Errors" {
                 # MOck for failing test
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -695,7 +694,7 @@ InModuleScope dbachecks {
 
                 Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when cross db ownership chaining is enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -709,7 +708,7 @@ InModuleScope dbachecks {
         }
 
         Context "Checking Default Trace Entries" {
-           
+
             It "Should pass the test successfully when default trace is enabled" {
                 # Mock for success
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -719,7 +718,7 @@ InModuleScope dbachecks {
                     } }
                 Assert-DefaultTrace -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when when default trace is disabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -732,7 +731,7 @@ InModuleScope dbachecks {
             }
         }
         Context "Checking OLE Automation Procedures Entries" {
-           
+
             It "Should pass the test successfully when OLE Automation Procedures is disabled" {
                 # Mock for success
                 # This should pass when the configured value for OleAutomationProcedures enabled is 0 (ie disabled)
@@ -744,7 +743,7 @@ InModuleScope dbachecks {
                 }
                 Assert-OLEAutomationProcedures -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when when OLE Automation Procedures is enabled" {
                 # Mock for failing test
                 # This should pass when the configured value for OleAutomationProcedures enabled is 1 (ie enabled)
@@ -758,7 +757,7 @@ InModuleScope dbachecks {
             }
         }
         Context "Checking Remote Access Entries" {
-           
+
             It "Should pass the test successfully when remote access is disabled" {
                 # Mock for success
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -769,7 +768,7 @@ InModuleScope dbachecks {
                 }
                 Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when remote access is enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -778,12 +777,12 @@ InModuleScope dbachecks {
                         }
                     }
                 }
-                
+
                 { Assert-RemoteAccess -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected 0, because we expected Remote Access to be disabled, but got 1."
             }
         }
         Context "Checking Scan For Startup Procedures Entries" {
-           
+
             It "Should pass the test successfully when scan for startup procedures is disabled" {
                 # Mock for success
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -794,7 +793,7 @@ InModuleScope dbachecks {
                 }
                 Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when scan for startup procedures is enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -815,7 +814,7 @@ InModuleScope dbachecks {
                     } }
                 Assert-CrossDBOwnershipChaining -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when cross db ownership chaining is enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -827,7 +826,7 @@ InModuleScope dbachecks {
             }
         }
         Context "Checking Max Dump Entries" {
-           
+
             It "Should pass the test successfully when the number of dumps is less than config" {
                 # Mock for success
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -839,7 +838,7 @@ InModuleScope dbachecks {
                 $maxdumps = 1
                 Assert-MaxDump  -AllInstanceInfo (Get-AllInstanceInfo)  -maxdumps $maxdumps
             }
-            
+
             It "Should fail the test successfully when the number of dumps is more than config" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {
@@ -854,7 +853,7 @@ InModuleScope dbachecks {
             }
         }
         Context "Checking Latest Build of SQL Server" {
-           
+
             It "Should pass the test successfully when scan for latest build of SQL passes" {
                 # Mock for success
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -865,7 +864,7 @@ InModuleScope dbachecks {
                 }
                 Assert-LatestBuild -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when scan for latest build of SQL fails" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -877,7 +876,7 @@ InModuleScope dbachecks {
             }
         }
         Context "Checking SQL Engine" {
-           
+
             It "Should pass the test successfully when the sql engine is running and the config is set to running" {
                 # Mock for success
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -889,7 +888,7 @@ InModuleScope dbachecks {
                 }
                 Assert-EngineState  -AllInstanceInfo (Get-AllInstanceInfo) -state 'Running'
             }
-            
+
             It "Should fail the test successfully successfully when the sql engine is stopped and the config is set to running" {
                 # Mock for failure
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -912,7 +911,7 @@ InModuleScope dbachecks {
                 }
                 Assert-EngineState  -AllInstanceInfo (Get-AllInstanceInfo) -state 'Running'
             }
-            
+
             It "Should fail the test successfully successfully when the sql engine is running and the config is set to stopped" {
                 # Mock for failure
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -936,7 +935,7 @@ InModuleScope dbachecks {
                 }
                 Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Automatic'
             }
-            
+
             It "Should fail the test successfully when the sql engine is set to Manual and the config is set to Automatic and it is not a cluster" {
                 # Mock for failure
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -970,7 +969,7 @@ InModuleScope dbachecks {
                 }
                 Assert-EngineStartType  -AllInstanceInfo (Get-AllInstanceInfo) -StartType 'Manual'
             }
-            
+
             It "Should fail the test successfully when the sql engine is set to Automatic and the config is set to Manual and it is not a cluster" {
                 # Mock for failure
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
@@ -1061,7 +1060,7 @@ InModuleScope dbachecks {
             }
         }
         Context "Checking sa login disabled" {
-           
+
             It "Should pass the test successfully when the original sa account is disabled" {
                 # Mock for success
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
@@ -1072,7 +1071,7 @@ InModuleScope dbachecks {
             }
                 Assert-SaDisabled -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when the original sa account is enabled" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
@@ -1084,7 +1083,7 @@ InModuleScope dbachecks {
             }
         }
         Context "Checking no sa login exist" {
-           
+
             It "Should pass the test successfully when no sa login exist" {
                 # Mock for success
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
@@ -1095,7 +1094,7 @@ InModuleScope dbachecks {
             }
                 Assert-SaExist -AllInstanceInfo (Get-AllInstanceInfo)
             }
-            
+
             It "Should fail the test successfully when a sa login doesn't exist" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{

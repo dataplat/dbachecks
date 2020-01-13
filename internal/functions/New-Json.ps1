@@ -9,7 +9,7 @@ function New-Json {
     foreach ($repo in $repos) {
         $repofiles += (Get-ChildItem "$repo\*.Tests.ps1")
     }
-    
+
     $tokens = $null
     $errors = $null
     foreach ($file in $repofiles) {
@@ -32,19 +32,19 @@ function New-Json {
                 Write-Verbose "$Filename does not have the correct value at the top so we will add it"
                 $filecontent = @"
     `$filename = `$MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-    
+
 "@
                 $filecontent = $filecontent + $Check
                 if ($PSCmdlet.ShouldProcess("$($File.Name)" , "Adding the filename variable to the file")) {
                     $Check = $null
                     Set-Content -Path $file -Value $filecontent
-                    Write-Verbose "Getting Content of File again"                    
+                    Write-Verbose "Getting Content of File again"
                     $Check = Get-Content $file -Raw
                 }
 
             }
 
-            ## Parse the file with AST 
+            ## Parse the file with AST
             $CheckFileAST = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors)
 
             #Check that the tags are set correctly otherwise the json doesnt get properly created
@@ -62,25 +62,25 @@ function New-Json {
                         Set-Content $file -Value $Check
                         $Check = $null
                     }
-                  #  Write-Verbose "Getting Content of File again"                    
+                  #  Write-Verbose "Getting Content of File again"
                     $Check = Get-Content $file -Raw
 
                 }
             }
         }
 
-        ## Parse the file with AST 
+        ## Parse the file with AST
         $CheckFileAST = [Management.Automation.Language.Parser]::ParseInput($check, [ref]$tokens, [ref]$errors)
-                    
+
         ## New code uses a Computer Name loop to speed up execution so need to find that as well
         $ComputerNameForEach = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
-                param ($ast) 
+                param ($ast)
                 $ast -is [System.Management.Automation.Language.InvokeMemberExpressionAst] -and $ast.expression.Subexpression.Extent.Text -eq 'Get-ComputerName'
             }, $true).Extent
 
         ## New code uses a Computer Name loop to speed up execution so need to find that as well
         $InstanceNameForEach = $CheckFileAST.FindAll([Func[Management.Automation.Language.Ast, bool]] {
-                param ($ast) 
+                param ($ast)
                 $ast -is [System.Management.Automation.Language.InvokeMemberExpressionAst] -and $ast.expression.Subexpression.Extent.Text -eq 'Get-Instance'
             }, $true).Extent
 
@@ -91,13 +91,13 @@ function New-Json {
                 $ast.CommandElements -and
                 $ast.CommandElements[0].Value -eq 'Describe'
             }, $true)
-    
+
         @($describes).ForEach{
             $groups += $filename
             $Describe = $_.CommandElements.Where{$PSItem.StaticType.name -eq 'string'}[1]
             $title = $Describe.Value
-            $Tags = $PSItem.CommandElements.Where{$PSItem.StaticType.name -eq 'Object[]' -and $psitem.Value -eq $null}.Extent.Text.ToString().Replace(', $filename', '')
-            # CHoose the type            
+            $Tags = $PSItem.CommandElements.Where{$PSItem.StaticType.name -eq 'Object[]' -and $null -eq $psitem.Value}.Extent.Text.ToString().Replace(', $filename', '')
+            # CHoose the type
             if ($Describe.Parent -match "Get-Instance") {
                 $type = "Sqlinstance"
             }
@@ -135,47 +135,47 @@ function New-Json {
                     {$Tags.Contains('SystemFull')} {
                         $config = 'ola.JobName.SystemFull ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.systemfull)
-                    }                
+                    }
                     {$Tags.Contains('UserFull')} {
                         $config = 'ola.JobName.UserFull ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userfull)
-                    }                
+                    }
                     {$Tags.Contains('UserDiff')} {
                         $config = 'ola.JobName.UserDiff ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userdiff)
-                    }                
+                    }
                     {$Tags.Contains('UserLog')} {
                         $config = 'ola.JobName.UserLog ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userlog)
-                    }                
+                    }
                     {$Tags.Contains('CommandLog')} {
                         $config = 'ola.JobName.CommandLogCleanup ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.commandlogcleanup)
-                    }                
+                    }
                     {$Tags.Contains('SystemIntegrityCheck')} {
                         $config = 'ola.JobName.SystemIntegrity ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.systemintegrity)
-                    }                
+                    }
                     {$Tags.Contains('UserIntegrityCheck')} {
                         $config = 'ola.JobName.UserIntegrity ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userintegrity)
-                    }                
+                    }
                     {$Tags.Contains('UserIndexOptimize')} {
                         $config = 'ola.JobName.UserIndex ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.userindex)
-                    }                
+                    }
                     {$Tags.Contains('OutputFileCleanup')} {
                         $config = 'ola.JobName.OutputFileCleanup ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.outputfilecleanup)
-                    }                
+                    }
                     {$Tags.Contains('DeleteBackupHistory')} {
                         $config = 'ola.JobName.DeleteBackupHistory ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.deletebackuphistory)
-                    }                
+                    }
                     {$Tags.Contains('PurgeJobHistory')} {
                         $config = 'ola.JobName.PurgeBackupHistory ' + $config
                         $title = 'Ola - ' + (Get-DbcConfigValue -Name ola.jobname.purgebackuphistory)
-                    }                
+                    }
                     Default {}
                 }
             }
@@ -215,7 +215,7 @@ function New-Json {
     }
 
 }
-    
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
