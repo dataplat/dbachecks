@@ -361,7 +361,7 @@ function Get-AllInstanceInfo {
                 catch {
                     $There = $false
                     $EngineService = [pscustomobject] @{
-                        State     = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'	                        
+                        State     = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
                         StartType = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
                     }
                 }
@@ -516,7 +516,7 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     $results = Get-DbaHideInstance -SqlInstance $Instance
-                    
+
                     $HideInstance = [pscustomobject] @{
                         HideInstance = $results.HideInstance
                    }
