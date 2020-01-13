@@ -1026,7 +1026,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking the Hide an Instance of SQL Server Database Engine property on $psitem" {
-                It "The Hide an Instance of SQL Server Database Engine property on SQL Server instance $psitem"  {
+                It "The Hide an Instance of SQL Server Database Engine property on SQL Server instance $psitem" -Skip:$skip {
                     Assert-HideInstance -AllInstanceInfo $AllInstanceInfo 
                 }
             }
