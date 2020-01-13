@@ -1,8 +1,11 @@
+[cmdletbinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='Because they are used just doesnt see them')]
+Param()
 $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Remove-Module dbachecks -ErrorAction SilentlyContinue
 Remove-Module dbatools  -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\dbachecks.psd1"
-Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
+
 . "$PSScriptRoot/../../internal/functions/Get-DatabaseDetail.ps1"
 
 Describe "Integration testing of $commandname" -Tags SqlIntegrationTests,IntegrationTests, Integration {
@@ -32,7 +35,7 @@ Describe "Integration testing of $commandname" -Tags SqlIntegrationTests,Integra
             It "Execution of Get-DatabaseDetail should not throw exceptions" {
                 { Get-DatabaseDetail -SqlInstance $psitem } | Should -Not -Throw -Because "we expect data not exceptions"
             }
-  
+
             It "Get-DatabaseDetail should return at least the system databases" {
                 $script:databases.Count | Should -BeGreaterOrEqual 4 -Because "we expect at least to have the system databases on any instance"
             }
@@ -49,7 +52,7 @@ Describe "Integration testing of $commandname" -Tags SqlIntegrationTests,Integra
                 if ($expectedProperties[$property] -eq $null) {
                     continue
                 }
-                
+
                 It "$property property should be of type $($expectedProperties[$property].ToString())" {
                     $script:databases."$property".ForEach{
                         $psitem | Should -BeOfType ($expectedProperties[$property])

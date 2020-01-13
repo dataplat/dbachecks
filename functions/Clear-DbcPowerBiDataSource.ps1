@@ -13,9 +13,11 @@
     Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 .EXAMPLE
     Clear-DbcPowerBiDataSource
+
     Removes "$env:windir\temp\dbachecks\*.json"
 .EXAMPLE
     Clear-DbcPowerBiDataSource -Environment Production
+
     Removes "$env:windir\temp\dbachecks\*Production*.json"
 
 .LINK

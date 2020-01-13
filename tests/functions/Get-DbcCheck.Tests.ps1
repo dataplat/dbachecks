@@ -1,21 +1,21 @@
-﻿$commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-Remove-Module dbachecks -ErrorAction SilentlyContinue
+﻿Remove-Module dbachecks -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\dbachecks.psd1"
-Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 . "$PSScriptRoot\..\constants.ps1"
 
-Describe "$commandname Integration Tests" -Tags IntegrationTests, Integration {
-    Context "Command executes properly and returns proper info" {
-        (Get-DbcCheck).ForEach{
-            It "$($psitem.Description) returns a unique tag" {
-                $psitem.UniqueTag | Should Not Be $null
-            }
-            It "$($psitem.Description) should have a group" {
-                $psitem.Group | Should Not Be $null
-            }
+Describe "Testing Get-DbCCheck" -Tag Get-DbCCheck, Unittest {
+    Context "Input" {
+        It "Should have a Tag Parameter"{
+        (Get-Command Get-DbCCheck).Parameters['Tag'] | Should -Not -BeNullOrEmpty -Because 'We are using this parameter'
+        }
+        It "Should have a Pattern Parameter"{
+        (Get-Command Get-DbCCheck).Parameters['Pattern'] | Should -Not -BeNullOrEmpty -Because 'We are using this parameter'
+        }
+        It "Should have a Group Parameter"{
+        (Get-Command Get-DbCCheck).Parameters['Group'] | Should -Not -BeNullOrEmpty -Because 'We are using this parameter'
         }
     }
 }
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

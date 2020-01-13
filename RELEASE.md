@@ -1,3 +1,17 @@
+## Date 8th January 2020
+Thank you Tracey tboggiano
+    New CIS Check Guest Account connect permissions #725
+    New CIS Check BuiltIn Admins login #726
+    New CIS Check public role permissions #729
+    New CIS Check local windows groups do not have logins #731
+    Update sa login check #730
+    
+Thank you Rob
+    Added Tag parameter to Get-DbcCheck
+    Updated tests to work with PowerShell 7
+
+##Latest
+
 ## Date 22nd December
 Thank you Tracey tboggiano
     Two New CIS Checks Contained databases should be auto-closed #721
@@ -5,8 +19,6 @@ Thank you Tracey tboggiano
     
 Thank you Rob
     Fix bug in Agent Tests #723
-
-##Latest
 
 ## Date 28th November
 Thank you Tracey tboggiano

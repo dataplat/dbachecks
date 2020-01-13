@@ -20,6 +20,7 @@ https://dbachecks.readthedocs.io/en/latest/functions/Update-DbcRequiredModules/
 
 #>
 function Update-DbcRequiredModules {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
     param (
         [switch]$EnableException

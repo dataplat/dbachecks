@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-Converts Pester results and exports file in required format for launching the 
-Power BI command. **You will need refresh* the Power BI dashboard every time to 
+Converts Pester results and exports file in required format for launching the
+Power BI command. **You will need refresh* the Power BI dashboard every time to
 see the new results.
 
 .DESCRIPTION
-Converts Pester results and exports file in required format for launching the 
-Power BI command. **You will need refresh* the Power BI dashboard every time to 
+Converts Pester results and exports file in required format for launching the
+Power BI command. **You will need refresh* the Power BI dashboard every time to
 see the new results.
 
 Basically, it does this:
@@ -36,7 +36,7 @@ This avoids overwhelming you with "sea of red" exceptions, but is inconvenient b
 Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
 .EXAMPLE
-Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource 
+Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus -Show None -PassThru | Update-DbcPowerBiDataSource
 
 Runs the DatabaseStatus checks against $Instance then saves to json to $env:windir\temp\dbachecks\dbachecks_1_DatabaseStatus.json
 
@@ -71,7 +71,7 @@ Start-DbcPowerBi -Path \\nas\projects\dbachecks.json
 
 Runs tests, saves to json to \\nas\projects\dbachecks.json
 Opens the PowerBi using that file
-then you'll have to change your data source in Power BI because by default it 
+then you'll have to change your data source in Power BI because by default it
 points to C:\Windows\Temp (limitation of Power BI)
 
 .EXAMPLE
@@ -84,7 +84,7 @@ otherwise the json file will be overwritten
 
 Sets the custom check repository to \\SharedPath\CustomPesterChecks
 Runs the DatabaseStatus checks and custom checks with the CustomCheckTag against $Instance then saves all the results
-to json to \\SharedPath\CheckResults.json -Name CustomCheckResults 
+to json to \\SharedPath\CheckResults.json -Name CustomCheckResults
 
 
 .EXAMPLE
@@ -158,7 +158,7 @@ function Update-DbcPowerBiDataSource {
                 $tagnames = $InputObject.TagFilter[0..3] -join "_"
                 $basename = "$basename`_" + $tagnames + ".json"
             }
-        }  
+        }
 
         if ($basename.EndsWith('.json')) {}
         else {

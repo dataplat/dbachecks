@@ -1,85 +1,66 @@
-﻿<#
-    .SYNOPSIS
-        Lists all checks, tags and unique identifiers
+$packages = get-package
+if ($packages.Name  -contains "PSScriptAnalyzer") {
+    #PSScriptAnalyzer is installed on the system
+} else {
+    Write-Output "Installing latest version of PSScriptAnalyzer"
 
-    .DESCRIPTION
-        Lists all checks, tags and unique identifiers
+    #install PSScriptAnalyzer
+    Install-Package PSScriptAnalyzer -Force -Scope CurrentUser
+}
+$script:ModuleName = 'dbachecks'
+# Removes all versions of the module from the session before importing
+Get-Module $ModuleName | Remove-Module
+$ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
+$FunctionHelpTestExceptions = Get-Content -Path "$ModuleBase\Help.Exceptions.ps1"
+# For tests in .\Tests subdirectory
+if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
+    $ModuleBase = Split-Path $ModuleBase -Parent
+}
+Import-Module $ModuleBase\$ModuleName.psd1 -PassThru -ErrorAction Stop | Out-Null
+Describe "PSScriptAnalyzer rule-sets" -Tag Build , ScriptAnalyzer {
 
-    .PARAMETER Tag
-        The tag to return information about
+    $Rules = Get-ScriptAnalyzerRule
+    $scripts = Get-ChildItem $ModuleBase -Include *.ps1, *.psm1, *.psd1 -Recurse | Where-Object fullname -notmatch 'classes'
+    # Get last commit that was merged from master
+    $lastCommit = git log --grep="Updated Version Number and docs from master" -1  --format='%H'
+    # Get the files that have been altered in since the last merge from master
+    $scripts= git diff --name-only $lastCommit HEAD | Where-Object {$psitem.EndsWith('ps1')}
 
-    .PARAMETER Pattern
-        May be any string, supports wildcards.
+    foreach ( $Script in $scripts )
+    {
+       if (-not (Test-Path "$ModuleBase\$script")){continue}
+        Context "Checking PSScriptAnalyzer on Script '$script'" {
 
-    .PARAMETER Group
-        To be able to filter by group
-
-    .EXAMPLE
-        Get-DbcCheck
-
-        Retrieves all of the available checks
-
-    .EXAMPLE
-        Get-DbcCheck backups
-
-        Retrieves all of the available tags that match backups
-
-    .LINK
-    https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcCheck/
-#>
-function Get-DbcCheck {
-    [CmdletBinding()]
-    param (
-        [string]$Tag,
-        [string]$Pattern,
-        [string]$Group
-    )
-
-    process {
-        $script:localapp = Get-DbcConfigValue -Name app.localapp
-        if ($Pattern) {
-            if ($Pattern -notmatch '\*') {
-                $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                    $psitem | Where-Object {
-                        $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -match $Pattern
-                    }
+            foreach ( $rule in $rules )
+            {
+                                # Skip all rules that are on the exclusions list
+                if ($FunctionHelpTestExceptions -contains $rule.RuleName) { continue }
+                It "The Script Analyzer Rule [$rule] Should not fail" {
+                    $rulefailures = Invoke-ScriptAnalyzer -Path "$ModuleBase\$script" -IncludeRule $rule.RuleName -Settings $ModuleBase\PSScriptAnalyzerSettings.psd1
+                    $message = ($rulefailures | Select-Object Message -Unique).Message
+                    $lines = $rulefailures.Line -join ','
+                    $rulefailures.Count | Should -Be 0 -Because "Script Analyzer says the rules have been broken on lines $lines with Message '$message' Check in VSCode Problems tab or Run Invoke-ScriptAnalyzer -Script $ModuleBase\$script -Settings $ModuleBase\PSScriptAnalyzerSettings.psd1"
                 }
             }
-            else {
-                $output = @(Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json).ForEach{
-                    $psitem | Where-Object {
-                        $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -like $Pattern
-                    }
-                }
-            }
-        }
-        else {
-            $output = Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json
-        }
-        if ($Group) {
-            $output = @($output).ForEach{
-                $psitem | Where-Object {
-                    $_.Group -eq $Group
-                }
-            }
-        }
-        if ($Tag) {
-            $output = @($output).ForEach{
-                $psitem | Where-Object {
-                    $_.AllTags -match $Tag
-                }
-            }
-        }
-        @($output).ForEach{
-            Select-DefaultView -InputObject $psitem -TypeName Check -Property 'Group', 'Type', 'UniqueTag', 'AllTags', 'Config', 'Description'
         }
     }
 }
+
+
+Describe "General project validation: $moduleName" -Tags Build {
+    BeforeAll {
+        Get-Module $ModuleName | Remove-Module
+    }
+    It "Module '$moduleName' can import cleanly" {
+        {Import-Module $ModuleBase\$ModuleName.psd1 -force } | Should Not Throw
+    }
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQURizfAcUyrJgW1yagIwfUgjWN
-# T/CgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxwL6BlbCJrUPKh9/064YSyLQ
+# bH6gggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -139,11 +120,11 @@ function Get-DbcCheck {
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSjPN5/Y3UZYSj4+/7FOPpb2JQo
-# NjANBgkqhkiG9w0BAQEFAASCAQAS2Ec1yYd53ZZZbbuF0b40/c4x44/OUZMeSQND
-# LuWPpDVWIoXNCKrLPsifRW370hALYczFjX60b8/AyDsQn9jo4fKMf1bLiH+9xrnI
-# jRk3oyxGvesd1GL2sosNuzHCey2ltCvFwLw4RuTGQavQJsKi+sL3Slh+plV84DPQ
-# c65bZk7rgCVOV52BccxW6H5nYAvOgX9Tkf9tzwAwyPzyglpaLUyBt6pU3OO7TkwH
-# jNOWPugmSrjq5h0Og19/0xTxtAT9oji0ItxpDVnk/zOxWja4BrbraeTlq0fTgA67
-# vDRh0ZpiGzew5TaVBaxzcq1T9lbFlvrcQDYRAv9k0KOmBbQE
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTyAuclgIYUbsmTj2tRBEmsq+b5
+# fDANBgkqhkiG9w0BAQEFAASCAQB8n0L9j9FDdOLpm+9ydGQ7GwDoJNHKMn8xBpqm
+# HPfgeDJM6BRq1l6FErFjOqd7iDh2fFn+5OAii9WrYRq3gOl4dmwiTS0pKPo4xeq5
+# +jWt12+CRtWjFKfQW3XPLsVi7cmKivVLdSzzU6Uu59V42sCARQSIDyJ4ggiV1TLh
+# baZduC65AZhvauATaLUfId0zKOih5f3RXtLoNqUgXYhyZNlHzWUXJ48mXiBMz4nu
+# Q2nmbpYhfBx8bmapW5p9VFj3bcTUR9hvLQNRH2/+7NA7UQJ89szX3oQS29P1tcuC
+# Qp9Kwel0cjYJrSqmvEa7kS3VDAKjzBuarTlr1L/M1MNGPrKN
 # SIG # End signature block

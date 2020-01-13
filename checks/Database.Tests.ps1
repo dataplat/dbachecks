@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-. $PSScriptRoot/../internal/assertions/Database.Assertions.ps1 
+. $PSScriptRoot/../internal/assertions/Database.Assertions.ps1
 
 
 [array]$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
@@ -9,8 +9,8 @@ $ExcludedDatabases += $ExcludeDatabase
 @(Get-Instance).ForEach{
     if ($NotContactable -notcontains $psitem) {
         $Instance = $psitem
-        try {  
-            $InstanceSMO = $connectioncheck = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+        try {
+            $InstanceSMO = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
         }
         catch {
             $NotContactable += $Instance
@@ -20,19 +20,19 @@ $ExcludedDatabases += $ExcludeDatabase
                 $NotContactable += $Instance
             }
             else {
-                $Version = $InstanceSMO.VersionMajor 
+                $Version = $InstanceSMO.VersionMajor
             }
         }
     }
 
-    Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable 
+    Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
     Describe "Database Collation" -Tags DatabaseCollation, High, $filename {
         $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
         $exclude = "ReportingServer", "ReportingServerTempDB"
         $exclude += $Wrongcollation
         $exclude += $ExcludedDatabases
-  
+
         if ($NotContactable -contains $psitem) {
             Context "Testing database collation on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -135,11 +135,11 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
     }
-        
+
     Describe "Valid Database Owner" -Tags ValidDatabaseOwner, Medium, $filename {
         [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
         [string[]]$exclude = Get-DbcConfigValue policy.validdbowner.excludedb
-        $exclude += $ExcludedDatabases 
+        $exclude += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing Database Owners on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -161,7 +161,7 @@ $ExcludedDatabases += $ExcludeDatabase
     Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, Medium, $filename {
         [string[]]$targetowner = Get-DbcConfigValue policy.invaliddbowner.name
         [string[]]$exclude = Get-DbcConfigValue policy.invaliddbowner.excludedb
-        $exclude += $ExcludedDatabases 
+        $exclude += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing Database Owners on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -170,7 +170,7 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
         else {
-            Context "Testing Database Owners on $psitem" { 
+            Context "Testing Database Owners on $psitem" {
                 @($InstanceSMO.Databases.Where{if ($database) {$_.Name -in $database}else {$_.Name -notin $exclude}}).ForEach{
                     It "Database $($psitem.Name) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.Parent.Name)" {
                         $psitem.Owner | Should -Not -BeIn $TargetOwner -Because "The database owner was one specified as incorrect"
@@ -256,7 +256,7 @@ $ExcludedDatabases += $ExcludeDatabase
             $recoverymodel = Get-DbcConfigValue policy.recoverymodel.type
             Context "Testing Recovery Model on $psitem" {
                 $exclude = Get-DbcConfigValue policy.recoverymodel.excludedb
-                $exclude += $ExcludedDatabases 
+                $exclude += $ExcludedDatabases
                 @(Get-DbaDbRecoveryModel -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
                     It "$($psitem.Name) should be set to $recoverymodel on $($psitem.SqlInstance)" {
                         $psitem.RecoveryModel | Should -Be $recoverymodel -Because "You expect this recovery model"
@@ -373,10 +373,10 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing page verify on $psitem" {
                 switch ($version) {
-                    8 {                         
+                    8 {
                         It "Page verify is not available on SQL 2000" {
                             $true | Should -BeTrue
-                        } 
+                        }
                     }
                     9 {
                         $InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}.ForEach{
@@ -388,7 +388,7 @@ $ExcludedDatabases += $ExcludeDatabase
                             else {
                                 It "Page verify is not available on tempdb on SQL 2005" {
                                     $true | Should -BeTrue
-                                } 
+                                }
                             }
                         }
                     }
@@ -540,7 +540,7 @@ $ExcludedDatabases += $ExcludeDatabase
     Describe "Log File Count Checks" -Tags LogfileCount, Medium, $filename {
         $LogFileCountTest = Get-DbcConfigValue skip.database.logfilecounttest
         $LogFileCount = Get-DbcConfigValue policy.database.logfilecount
-        If (-not $LogFileCountTest) {   
+        If (-not $LogFileCountTest) {
             if ($NotContactable -contains $psitem) {
                 Context "Testing Log File count for $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -593,7 +593,7 @@ $ExcludedDatabases += $ExcludeDatabase
     Describe "Future File Growth" -Tags FutureFileGrowth, Low, $filename {
         $threshold = Get-DbcConfigValue policy.database.filegrowthfreespacethreshold
         [string[]]$exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
-        $exclude += $ExcludedDatabases 
+        $exclude += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing for files likely to grow soon on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -649,7 +649,7 @@ $ExcludedDatabases += $ExcludeDatabase
     Describe "Certificate Expiration" -Tags CertificateExpiration, High, $filename {
         $CertificateWarning = Get-DbcConfigValue policy.certificateexpiration.warningwindow
         [string[]]$exclude = Get-DbcConfigValue policy.certificateexpiration.excludedb
-        $exclude += $ExcludedDatabases 
+        $exclude += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Checking that encryption certificates have not expired on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -735,7 +735,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $datafilegrowthtype = Get-DbcConfigValue policy.database.filegrowthtype
         $datafilegrowthvalue = Get-DbcConfigValue policy.database.filegrowthvalue
         $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
-        $exclude += $ExcludedDatabases 
+        $exclude += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing datafile growth type on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -817,7 +817,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing database is not in PseudoSimple recovery model on $psitem" {
                 @($InstanceSMO.Databases.Where{$psitem.Name -ne 'tempdb' -and $psitem.Name -ne 'model' -and $psitem.Status -ne 'Offline' -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     if (-not($psitem.RecoveryModel -eq "Simple")) {
-                        It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaDbRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" } 
+                        It "$($psitem.Name) has PseudoSimple recovery model equal false on $($psitem.Parent.Name)" { (Test-DbaDbRecoveryModel -SqlInstance $psitem.Parent -Database $psitem.Name).ActualRecoveryModel -eq "SIMPLE" | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode" }
                     }
                 }
             }
@@ -871,7 +871,7 @@ $ExcludedDatabases += $ExcludeDatabase
     Describe "Database MaxDop" -Tags MaxDopDatabase, MaxDop, Low, $filename {
         $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
         [string[]]$exclude = Get-DbcConfigValue policy.database.maxdopexcludedb
-        $exclude += $ExcludedDatabases 
+        $exclude += $ExcludedDatabases
         if ($exclude) {Write-Warning "Excluded $exclude from testing"}
         if ($NotContactable -contains $psitem) {
             Context "Database MaxDop setting is correct on $psitem" {
@@ -895,7 +895,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $ExcludeReadOnly = Get-DbcConfigValue policy.database.status.excludereadonly
         $ExcludeOffline = Get-DbcConfigValue policy.database.status.excludeoffline
         $ExcludeRestoring = Get-DbcConfigValue policy.database.status.excluderestoring
-  
+
         if ($NotContactable -contains $psitem) {
             Context "Database status is correct on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -916,10 +916,9 @@ $ExcludedDatabases += $ExcludeDatabase
     }
 
     Describe "Database Exists" -Tags DatabaseExists, $filename {
-        $Excludedbs = $ExcludedDatabases
         $expected = Get-DbcConfigValue database.exists
         if ($Database) {$expected += $Database}
-        $expected = $expected.where{$psitem -notin $ExcludeDatabase}
+        $expected = $expected.where{$psitem -notin $ExcludedDatabases}
         if ($NotContactable -contains $psitem) {
             Context "Database exists on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -962,7 +961,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $skip = Get-DbcConfigValue skip.security.clrassembliessafe
         if ($NotContactable -contains $psitem) {
             Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
-                It "Can't Connect to $Psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
                     $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
@@ -978,6 +977,30 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
      }
+
+    Describe "Guest User" -Tags GuestUserConnect, Security, CIS, Medium, $filename {
+        $exclude = "master", "tempdb", "msdb"
+        $ExcludedDatabases += $exclude
+        $skip = Get-DbcConfigValue skip.security.guestuserconnect
+
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Guest user has CONNECT permission on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            $instance = $Psitem
+            Context "Testing Guest user has CONNECT permission on $psitem" {
+                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                    It "Guest user should return no CONNECT permissions in $($psitem.Name) on $Instance" -Skip:$skip {
+                        Assert-GuestUserConnect -Instance $instance -Database $($psitem.Name)
+                    }
+                }
+            }
+        }
+    }
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 

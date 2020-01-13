@@ -5,13 +5,15 @@ It ensures the test database exists and the test instnace.
 
 #>
 function Set-DatabaseForIntegrationTesting {
-    param (
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "","","", "Because it isnt changing state")]
+    [CmdletBinding()]
+    Param (
         [DbaInstanceParameter]$SqlInstance,
         [string]$DatabaseName
     )
     process {
         $db = Get-DbaDatabase -SqlInstance $SqlInstance -SqlCredential $sqlcredential -Database $DatabaseName
-        if ($db -eq $null) {
+        if ($null -eq $db) {
             $server = Connect-DbaInstance -SqlInstance $SqlInstance -SqlCredential $sqlcredential
             $server.Query("create database $DatabaseName")
         }
