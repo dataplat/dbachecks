@@ -384,33 +384,23 @@ function Get-AllInstanceInfo {
         'HideInstance' {
             if ($There) {
                 try {
-                    $query = "
-                        DECLARE @getValue INT;
-        
-                        EXEC master.sys.xp_instance_regread
-                            @rootkey = N'HKEY_LOCAL_MACHINE',
-                            @key = N'SOFTWARE\Microsoft\Microsoft SQL Server\MSSQLServer\SuperSocketNetLib',
-                            @value_name = N'HideInstance',
-                            @value = @getValue OUTPUT;
-        
-                        SELECT @getValue as Value;
-                    "
-                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+                    $results = Get-DbaHideInstance -SqlInstance $Instance 
+                    
                     $HideInstance = [pscustomobject] @{
-                        Value = $results.Value
+                        HideInstance = $results.HideInstance
                    }
                 }
                 catch {
                     $There = $false
                     $HideInstance = [pscustomobject] @{
-                        Value  = StartType = 'We Could not Connect to $Instance'
+                        HideInstance  = StartType = 'We Could not Connect to $Instance'
                     }
                 }
             }
             else {
                 $There = $false
                 $HideInstance = [pscustomobject] @{
-                    Value  = 'We Could not Connect to $Instance'
+                    HideInstance  = 'We Could not Connect to $Instance'
                 }
             }
         }
@@ -622,7 +612,7 @@ function Assert-SaExist {
 
 function Assert-HideInstance {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.HideInstance.Value | Should -Be 1 -Because "We expected the hide instance proptety to be set to YES (1)"
+    $AllInstanceInfo.HideInstance.HideInstance | Should -Be $true -Because "We expected the hide instance proptety to be set to $true"
 }
 
 # SIG # Begin signature block
