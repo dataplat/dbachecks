@@ -515,7 +515,7 @@ function Get-AllInstanceInfo {
         'HideInstance' {
             if ($There) {
                 try {
-                    $results = Get-DbaHideInstance -SqlInstance $Instance 
+                    $results = Get-DbaHideInstance -SqlInstance $Instance
                     
                     $HideInstance = [pscustomobject] @{
                         HideInstance = $results.HideInstance
