@@ -1026,8 +1026,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing to see if the public role has access to the SQL Agent proxies on $psitem" {
-                It "The public role should not have access to the SQL Agent Proxies on $psitem" {
-                    Assert-SqlAgentProxiesNoPublicRole -AllInstanceInfo $AllInstanceInfo 
+                It "The public role should not have access to the SQL Agent Proxies on $psitem" -Skip:$skip {
+                    Assert-SqlAgentProxiesNoPublicRole -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
