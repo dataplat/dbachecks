@@ -7,11 +7,11 @@ function Import-ModuleFile {
         [string]
         $Path
     )
-    
+
     if ($doDotSource) { . $Path }
-    else { 
+    else {
         try {
-            $ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($Path))), $null, $null) 
+            $ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($Path))), $null, $null)
         }
         catch {
             Write-Warning "Failed to import $Path"

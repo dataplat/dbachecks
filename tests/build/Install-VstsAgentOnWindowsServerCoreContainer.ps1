@@ -57,7 +57,17 @@
     Creation Date:  2018-08-23
     References:     The Install-VstsAgent function is a slightly modified version of the provisioning script available as part of Azure DevTest Labs (available in August 2018).
 #>
-
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUsernameAndPasswordParams", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseCompatibleCommands", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWMICmdlet", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidTrailingWhiteSpace", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
+[CmdletBinding()]
 param (
 
     [Parameter(Mandatory = $true,
@@ -409,7 +419,11 @@ function Install-PowerShellCore
 }
 
 function Install-ChocoVstsAgent
-{     
+{
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUsernameAndPasswordParams", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
     # Downloads the Visual Studio Online Build Agent, installs on the new machine, registers with the Visual
     # Studio Online account, and adds to the specified build agent pool
     [CmdletBinding()]
@@ -904,6 +918,10 @@ function Install-VstsAgent
 
     function Get-AgentPackage
     {
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUsernameAndPasswordParams", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
         [CmdletBinding()]
         param(
             [string] $VstsAccount,
@@ -1002,6 +1020,11 @@ function Install-VstsAgent
 
     function Set-MachineForAutologon
     {
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUsernameAndPasswordParams", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+[cmdletbinding()]
         param(
             $Config
         )
@@ -1323,7 +1346,7 @@ if ($UseChocolatey -eq $true)
 }
 else
 {
-    Install-VstsAgent -vstsAccount $VSTSAccountName -vstsUserPassword $PATToken  -agentName $AgentName -poolName $PoolName -windowsLogonAccount "NT AUTHORITY\NetworkService" -driveLetter "C" -runAsAutoLogon:$false    
+    Install-VstsAgent -vstsAccount $VSTSAccountName -vstsUserPassword $PATToken  -agentName $AgentName -poolName $PoolName -windowsLogonAccount "NT AUTHORITY\NetworkService" -driveLetter "C" -runAsAutoLogon:$false
 }
 
 $AgentInstallEnd = Get-Date

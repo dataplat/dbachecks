@@ -1,5 +1,7 @@
-Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
-<#	
+[cmdletbinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='Because scoping is hard')]
+Param()
+<#
     .NOTES
         ===========================================================================
         Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2016 v5.2.119
@@ -19,10 +21,10 @@ $ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # This should stop people making breaking changes to the tests without first altering the test
 Remove-Module dbachecks -Force -ErrorAction SilentlyContinue
-Import-Module $ModuleBase\..\dbachecks.psd1 
+Import-Module $ModuleBase\..\dbachecks.psd1
 
 $includedNames = (Get-ChildItem "$PSScriptRoot\..\functions" | Where-Object Name -like "*.ps1" ).BaseName
-$commands = Get-Command -Module (Get-Module dbachecks) -CommandType Cmdlet, Function, Workflow | Where-Object Name -in $includedNames
+$commands = Get-Command -Module (Get-Module dbachecks) -CommandType Cmdlet, Function | Where-Object Name -in $includedNames
 
 ## When testing help, remember that help is cached at the beginning of each session.
 ## To test, restart session.
@@ -30,10 +32,10 @@ $commands = Get-Command -Module (Get-Module dbachecks) -CommandType Cmdlet, Func
 
 foreach ($command in $commands) {
     $commandName = $command.Name
-    
+
     # Skip all functions that are on the exclusions list
     if ($global:FunctionHelpTestExceptions -contains $commandName) { continue }
-    
+
     # The module-qualified command fails on Microsoft.PowerShell.Archive cmdlets
     $Help = Get-Help $commandName -ErrorAction SilentlyContinue
     $testhelperrors = 0
@@ -85,9 +87,9 @@ foreach ($command in $commands) {
         $testparamsall = 0
         $testparamserrors = 0
         Context "Test parameter help for $commandName" {
-            
+
             $Common = 'Debug', 'ErrorAction', 'ErrorVariable', 'InformationAction', 'InformationVariable', 'OutBuffer', 'OutVariable', 'PipelineVariable', 'Verbose', 'WarningAction', 'WarningVariable', 'Confirm', 'WhatIf'
-            
+
             $parameters = $command.ParameterSets.Parameters | Where-Object {$psitem.IsDynamic -eq $false} | Sort-Object -Property Name -Unique | Where-Object Name -notin $common
             $parameterNames = $parameters.Name
             $HelpParameterNames = ($Help.Parameters.Parameter | Sort-Object -Unique | Where-Object Name -notin $common).Name
@@ -95,7 +97,7 @@ foreach ($command in $commands) {
                 $parameterName = $parameter.Name
                 $parameterHelp = $Help.parameters.parameter | Where-Object Name -EQ $parameterName
 
-                $testparamsall += 1 
+                $testparamsall += 1
                 if ([String]::IsNullOrEmpty($parameterHelp.Description.Text)) {
                     # Should -Be a description for every parameter
                     It "gets help for parameter: $parameterName : in $commandName" {
@@ -117,7 +119,7 @@ foreach ($command in $commands) {
                 if ($HelpTestSkipParameterType[$commandName] -contains $parameterName) { continue }
 
                 $codeType = $parameter.ParameterType.Name
-                
+
                 $testparamsall += 1
                 if ($parameter.ParameterType.IsEnum) {
                     # Enumerations often have issues with the typename not being reliably available

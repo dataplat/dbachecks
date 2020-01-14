@@ -1,7 +1,6 @@
 ﻿$commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 Remove-Module dbachecks -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\dbachecks.psd1"
-Write-Host -Object "Running $PSCommandpath" -ForegroundColor Cyan
 . "$PSScriptRoot\..\constants.ps1"
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
@@ -12,9 +11,9 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         AfterAll {
             Remove-Item "$script:localapp\config.json" -ErrorAction SilentlyContinue
         }
-        
+
         Export-DbcConfig *>$null
-        
+
         It "output a file" {
             (Get-ChildItem "$script:localapp\config.json") -ne $null | Should -BeTrue
         }

@@ -15,7 +15,7 @@ Register-PSFTeppArgumentCompleter -Command Get-DbcConfig -Parameter Name -Name c
 Register-PSFTeppArgumentCompleter -Command Get-DbcConfigValue -Parameter Name -Name confignames
 Register-PSFTeppArgumentCompleter -Command Set-DbcConfig -Parameter Name -Name confignames
 Register-PSFTeppArgumentCompleter -Command Get-DbcTagCollection -Parameter Name -Name tags
-Register-PSFTeppArgumentCompleter -Command Set-DbcConfig -Parameter Value -Name policy.database.filegrowthtype 
+Register-PSFTeppArgumentCompleter -Command Set-DbcConfig -Parameter Value -Name policy.database.filegrowthtype
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

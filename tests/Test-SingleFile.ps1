@@ -22,7 +22,7 @@ else
     $functionFile = $FileToTest
 }
 
-Invoke-Pester -Script $testFile -ExcludeTag Integration -CodeCoverage $functionFile -CodeCoverageOutputFile "$PSScriptRoot\cov.xml" 
+Invoke-Pester -Script $testFile -ExcludeTag Integration -CodeCoverage $functionFile -CodeCoverageOutputFile "$PSScriptRoot\cov.xml"
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

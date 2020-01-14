@@ -1,5 +1,5 @@
 function Invoke-ConfigurationScript {
-    <# 
+    <#
     .SYNOPSIS
     Invokes the configurations/configuration.ps1 script
 

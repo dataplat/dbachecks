@@ -102,7 +102,10 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityBuiltinadmin <Object>]
+ [-ConfigSkipSecurityContainedbautoclose <Object>] [-ConfigSkipSecurityGuestuserconnect <Object>]
+ [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
+ [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
  [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
  [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
@@ -206,7 +209,10 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityBuiltinadmin <Object>]
+ [-ConfigSkipSecurityContainedbautoclose <Object>] [-ConfigSkipSecurityGuestuserconnect <Object>]
+ [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
+ [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
  [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
  [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
  [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
@@ -232,7 +238,7 @@ Runs all of the checks tagged Backup against the sql2016 instance
 Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster -SqlCredential (Get-Credential sqladmin)
 ```
 
-Runs the Recovery model check against the SQL instances sql2017, sqlcluster 
+Runs the Recovery model check against the SQL instances sql2017, sqlcluster
 using the sqladmin SQL login with the password provided interactively
 
 ### EXAMPLE 3
@@ -240,7 +246,7 @@ using the sqladmin SQL login with the password provided interactively
 Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink -ConfigFile \\share\repo\prod.json
 ```
 
-Runs all of the checks tagged Database except for the AutoShrink check against 
+Runs all of the checks tagged Database except for the AutoShrink check against
 the SQL Instances set in the config under app.sqlinstance
 
 Imports configuration file, \\\\share\repo\prod.json, prior to executing checks.
@@ -269,7 +275,7 @@ Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary
 
 Start-DbcPowerBi
 
-Runs the Suspect Page and Last Backup checks against the SQL Instances set in 
+Runs the Suspect Page and Last Backup checks against the SQL Instances set in
 the config under app.sqlinstance only showing the summary of the results of the
 checks.
 It then updates the source json for the XML which is stored at
@@ -664,9 +670,9 @@ Accept wildcard characters: False
 ```
 
 ### -Show
-Customizes the output Pester writes to the screen. 
+Customizes the output Pester writes to the screen.
 
-Available options are 
+Available options are
 None
 Default
 Passed
@@ -3376,8 +3382,98 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigSkipSecurityBuiltinadmin
+{{ Fill ConfigSkipSecurityBuiltinadmin Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigSkipSecurityContainedbautoclose
 {{ Fill ConfigSkipSecurityContainedbautoclose Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityGuestuserconnect
+{{ Fill ConfigSkipSecurityGuestuserconnect Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityLocalwindowsgroup
+{{ Fill ConfigSkipSecurityLocalwindowsgroup Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityLoginauditlevelfailed
+{{ Fill ConfigSkipSecurityLoginauditlevelfailed Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityLoginauditlevelsuccessful
+{{ Fill ConfigSkipSecurityLoginauditlevelsuccessful Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityPublicrolepermission
+{{ Fill ConfigSkipSecurityPublicrolepermission Description }}
 
 ```yaml
 Type: Object
