@@ -70,6 +70,9 @@ Return
                 if($Psitem.Name -in $excludedisks){
                     $exclude = $true
                 }
+                else {
+                    $exclude = $false
+                }
                 It "$($Psitem.Name) Should be set to 64kb on $computerName" -Skip:$exclude {
                     Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
                 }
