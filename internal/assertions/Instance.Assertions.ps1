@@ -511,6 +511,27 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+        'WindowsAuthenticationMode' {
+            if ($There) {
+                try {
+                    $WindowsAuthenticationMode = [pscustomobject] @{
+                        Mode = $instance.LoginMode
+                    }
+                }
+                catch {
+                    $There = $false
+                    $WindowsAuthenticationMode = [pscustomobject] @{
+                        Mode = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $WindowsAuthenticationMode = [pscustomobject] @{
+                    Mode = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default { }
     }
     [PSCustomObject]@{
@@ -530,6 +551,7 @@ function Get-AllInstanceInfo {
         LocalWindowsGroup                = $LocalWindowsGroup
         BuiltInAdmin                     = $BuiltInAdmin
         PublicRolePermission             = $PublicRolePermission
+        WindowsAuthenticationMode        = $WindowsAuthenticationMode
     }
 }
 
@@ -745,7 +767,12 @@ function Assert-LoginAuditSuccessful {
 
 function Assert-LoginAuditFailed {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected expected the audit level to be set to capture failed logins"
+    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected the audit level to be set to capture failed logins"
+}
+
+function Assert-WindowsAuthenticationMode {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.WindowsAuthenticationMode.Mode | Should -Be "Integrated" -Because "We expected Windows authenication only to to be set to Integrated"
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

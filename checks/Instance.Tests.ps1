@@ -1014,6 +1014,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Windows Authentication Mode" -Tags WindowsAuthenticationMode, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.windowsauthenticationmode
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if windows authentication mode only is enabled on  on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if windows authentication mode only is enabled on $psitem" {
+                It "The windows authentication mode only should be enabled on on $psitem" -Skip:$skip {
+                    Assert-WindowsAuthenticationMode -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
