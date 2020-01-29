@@ -237,7 +237,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.remoteaccessdisabled -Valida
 Set-PSFConfig -Module dbachecks -Name skip.instance.scanforstartupproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip the scan for startup procedures disabled check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool -Value $false -Initialize -Description "Skip the scan the latest build of SQL Server check"
 Set-PSFConfig -Module dbachecks -Name skip.security.sadisabled -Validation bool -Value $true -Initialize -Description "Skip the check for if the sa login is disabled"
-Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip the check for a login named sa does not exist"
+Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value -Initialize -Description "Skip the check for a login named sa does not exist"
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelfailed -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelsuccessful -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records successful and failed logins"

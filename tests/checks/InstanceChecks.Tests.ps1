@@ -1102,7 +1102,7 @@ InModuleScope dbachecks {
                         Exist = $true
                         }
                     }}
-                {Assert-SaExist -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$false, because We expected no login to exist with the name sa, but got `$true."
+                {Assert-SaExist -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected no login to exist with the name sa, but got 1."
             }
         }
     }
