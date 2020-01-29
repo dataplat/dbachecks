@@ -500,7 +500,7 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     $LoginCheckPolicy = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance $instance -ExcludeSystemLogin| Where-Object { $_.PasswordPolicyEnforced -eq "OFF" -and $_.LoginType -eq "SqlLogin" }).Count
+                        Count = @(Get-DbaLogin -SQLInstance $instance -ExcludeSystemLogin| Where-Object { $_.PasswordPolicyEnforced -eq "OFF" -and $_.LoginType -eq "SqlLogin" -and $_.IsDisabled -eq $false}).Count
                     }
                 }
                 catch {

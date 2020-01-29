@@ -1026,7 +1026,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing if the CHECK_POLICY is enabled on all logins on $psitem" {
-                It "All logins should have the CHECK_POLICY option set to ON on $psitem" {
+                It "All logins should have the CHECK_POLICY option set to ON on $psitem" -Skip:$skip {
                     Assert-LoginCheckPolicy -AllInstanceInfo $AllInstanceInfo
                 }
             }
