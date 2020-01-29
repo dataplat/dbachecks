@@ -570,7 +570,7 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     $LoginMustChange = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance . -Type SQL | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $_.LastLogin -eq $null }).Count
+                        Count = @(Get-DbaLogin -SQLInstance . -Type SQL | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_.LastLogin }).Count
                     }
                 }
                 catch {
