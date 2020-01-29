@@ -540,8 +540,7 @@ function Get-AllInstanceInfo {
                     Count = 'We Could not Connect to $Instance'
                 }
             }
-        }
-        
+        }        
         'LoginPasswordExpiration' {
             if ($There) {
                 try {
@@ -565,7 +564,6 @@ function Get-AllInstanceInfo {
                 }
             }
         }
-        
         'LoginMustChange' {
             if ($There) {
                 try {
