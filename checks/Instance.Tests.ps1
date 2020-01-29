@@ -1036,16 +1036,34 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     Describe "Login Password Expiration" -Tags LoginPasswordExpiration, Security, CIS, Medium, $filename {
         $skip = Get-DbcConfigValue skip.security.LoginPasswordExpiration
         if ($NotContactable -contains $psitem) {
-            Context "Testing if the login password expiratin is enabeld for sql logins in the sysadmin role $psitem" {
+            Context "Testing if the login password expiration is enabled for sql logins in the sysadmin role $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
                     $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            Context "Testing if the login password expiratin is enabeld for sql logins in the sysadmin role on $psitem" {
+            Context "Testing if the login password expiration is enabled for sql logins in the sysadmin role on $psitem" {
                 It "All sql logins should have the password expiration option set to ON in the sysadmin role on $psitem" -Skip:$skip {
                     Assert-LoginPasswordExpiration -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Login Must Change" -Tags LoginMustChange, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.LoginMustChange
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if the new SQL logins that have not logged have to change their password when they log in on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if the new SQL logins that have not logged have to change their password when they log in on $psitem" {
+                It "All new sql logins should have the have to change their password when they log in for the first time on $psitem" {
+                    Assert-LoginMustChange -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }

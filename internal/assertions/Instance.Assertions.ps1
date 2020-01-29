@@ -500,7 +500,7 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     $LoginCheckPolicy = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance $instance -ExcludeSystemLogin| Where-Object { $_.PasswordPolicyEnforced -eq "OFF" -and $_.LoginType -eq "SqlLogin" -and $_.IsDisabled -eq $false}).Count
+                        Count = @(Get-DbaLogin -SQLInstance $instance -Type SQL | Where-Object { $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false}).Count
                     }
                 }
                 catch {
@@ -521,8 +521,10 @@ function Get-AllInstanceInfo {
         'LoginPasswordExpiration' {
             if ($There) {
                 try {
+                    $role = GetDbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
+
                     $LoginPasswordExpiration = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance $instance -ExcludeSystemLogin| Where-Object { $_.PasswordPolicyEnforced -eq $false -and $_.LoginType -eq "SqlLogin" -and $_.IsDisabled -eq $false}).Count
+                        Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.PasswordExpirationEnabled -eq $false -and $_.IsDisabled -eq $false}).Count
                     }
                 }
                 catch {
@@ -540,6 +542,52 @@ function Get-AllInstanceInfo {
             }
         }
         
+        'LoginPasswordExpiration' {
+            if ($There) {
+                try {
+                    $role = GetDbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
+
+                    $LoginMustChange = [pscustomobject] @{
+                        Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.IsMustChange -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_LastLogin }).Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginMustChange = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginMustChange = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        
+        'LoginMustChange' {
+            if ($There) {
+                try {
+                    $LoginMustChange = [pscustomobject] @{
+                        Count = @(Get-DbaLogin -SQLInstance . -Type SQL | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $_.LastLogin -eq $null }).Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginMustChange = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginMustChange = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
         Default { }
     }
     [PSCustomObject]@{
@@ -561,6 +609,7 @@ function Get-AllInstanceInfo {
         PublicRolePermission             = $PublicRolePermission
         LoginCheckPolicy                 = $LoginCheckPolicy
         LoginPasswordExpiration          = $LoginPasswordExpiration
+        LoginMustChange                  = $LoginMustChange
     }
 }
 
@@ -788,6 +837,12 @@ function Assert-LoginPasswordExpiration {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LoginPasswordExpiration.Count | Should -Be 0 -Because "We expected the password expiration policy to set on all sql logins in the sysadmin role"
 }
+
+function Assert-LoginMustChange {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LoginMustChange.Count | Should -Be 0 -Because "We expected the all the new sql logins to have change the password on first login"
+}
+
 
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
