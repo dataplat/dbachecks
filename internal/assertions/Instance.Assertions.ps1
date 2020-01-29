@@ -319,16 +319,8 @@ function Get-AllInstanceInfo {
         'SaExist' {
             if ($There) {
                 try {
-                    $results = Get-DbaLogin -SqlInstance $Instance -Login sa
-                    if ($null -eq $results.Name) {
-                        $Exist = $false
-                    }
-                    else {
-                        $Exist = $true
-                    }
-
                     $SaExist = [pscustomobject] @{
-                        Exist = $Exist
+                        Exist = @(Get-DbaLogin -SqlInstance $Instance -Login sa).Count
                     }
                 }
                 catch {
@@ -389,7 +381,7 @@ function Get-AllInstanceInfo {
                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
                         "
                     $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
-                    Write-Output $results.RowCount
+
                     $PublicRolePermission = [pscustomobject] @{
                         Count = $results.RowCount
                     }
@@ -411,16 +403,8 @@ function Get-AllInstanceInfo {
         'BuiltInAdmin' {
             if ($There) {
                 try {
-                    $results = Get-DbaLogin -SqlInstance $Instance -Login "BUILTIN\Administrators"
-                    if ($null -eq $results.Name) {
-                        $Exist = $false
-                    }
-                    else {
-                        $Exist = $true
-                    }
-
                     $BuiltInAdmin = [pscustomobject] @{
-                        Exist = $Exist
+                        Exist = @(Get-DbaLogin -SqlInstance $Instance -Login "BUILTIN\Administrators").Count
                     }
                 }
                 catch {
@@ -511,6 +495,30 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        'LoginCheckPolicy' {
+            if ($There) {
+                try {
+                    $LoginCheckPolicy = [pscustomobject] @{
+                        Count = @(Get-DbaLogin -SQLInstance $instance -ExcludeSystemLogin| Where-Object { $_.PasswordPolicyEnforced -eq "OFF" -and $_.LoginType -eq "SqlLogin" }).Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginCheckPolicy = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginCheckPolicy = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+
         Default { }
     }
     [PSCustomObject]@{
@@ -530,6 +538,7 @@ function Get-AllInstanceInfo {
         LocalWindowsGroup                = $LocalWindowsGroup
         BuiltInAdmin                     = $BuiltInAdmin
         PublicRolePermission             = $PublicRolePermission
+        LoginCheckPolicy                 = $LoginCheckPolicy
     }
 }
 
@@ -656,7 +665,7 @@ function Assert-TraceFlag {
 function Assert-NotTraceFlag {
     Param(
         [string]$SQLInstance,
-        [int[]]$NotExpectedTraceFlag
+        [int[]]$NotExpectedTraceFlagA
     )
 
     if ($null -eq $NotExpectedTraceFlag) {
@@ -722,7 +731,7 @@ function Assert-SaDisabled {
 
 function Assert-SaExist {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+    $AllInstanceInfo.SaExist.Exist | Should -Be 0 -Because "We expected no login to exist with the name sa"
 }
 
 function Assert-LocalWindowsGroup {
@@ -735,7 +744,7 @@ function Assert-PublicRolePermission {
 }
 function Assert-BuiltInAdmin {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be $false -Because "We expected no login to exist with the name BUILTIN\Administrators"
+    $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be 0 -Because "We expected no login to exist with the name BUILTIN\Administrators"
 }
 
 function Assert-LoginAuditSuccessful {
@@ -745,8 +754,14 @@ function Assert-LoginAuditSuccessful {
 
 function Assert-LoginAuditFailed {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected expected the audit level to be set to capture failed logins"
+    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected the audit level to be set to capture failed logins"
 }
+
+function Assert-LoginCheckPolicy {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LoginCheckPolicy.Count | Should -Be 0 -Because "We expected the CHECK_POLICY for the all logins to be enabled"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
