@@ -540,7 +540,7 @@ function Get-AllInstanceInfo {
                     Count = 'We Could not Connect to $Instance'
                 }
             }
-        }        
+        }
         'LoginPasswordExpiration' {
             if ($There) {
                 try {
@@ -734,7 +734,7 @@ function Assert-TraceFlag {
 function Assert-NotTraceFlag {
     Param(
         [string]$SQLInstance,
-        [int[]]$NotExpectedTraceFlagA
+        [int[]]$NotExpectedTraceFlag
     )
 
     if ($null -eq $NotExpectedTraceFlag) {
