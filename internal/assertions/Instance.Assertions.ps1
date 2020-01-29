@@ -518,7 +518,28 @@ function Get-AllInstanceInfo {
             }
         }
 
-
+        'LoginPasswordExpiration' {
+            if ($There) {
+                try {
+                    $LoginPasswordExpiration = [pscustomobject] @{
+                        Count = @(Get-DbaLogin -SQLInstance $instance -ExcludeSystemLogin| Where-Object { $_.PasswordPolicyEnforced -eq $false -and $_.LoginType -eq "SqlLogin" -and $_.IsDisabled -eq $false}).Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginPasswordExpiration = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginPasswordExpiration = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        
         Default { }
     }
     [PSCustomObject]@{
@@ -539,6 +560,7 @@ function Get-AllInstanceInfo {
         BuiltInAdmin                     = $BuiltInAdmin
         PublicRolePermission             = $PublicRolePermission
         LoginCheckPolicy                 = $LoginCheckPolicy
+        LoginPasswordExpiration          = $LoginPasswordExpiration
     }
 }
 
@@ -760,6 +782,11 @@ function Assert-LoginAuditFailed {
 function Assert-LoginCheckPolicy {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LoginCheckPolicy.Count | Should -Be 0 -Because "We expected the CHECK_POLICY for the all logins to be enabled"
+}
+
+function Assert-LoginPasswordExpiration {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LoginPasswordExpiration.Count | Should -Be 0 -Because "We expected the password expiration policy to set on all sql logins in the sysadmin role"
 }
 
 # SIG # Begin signature block
