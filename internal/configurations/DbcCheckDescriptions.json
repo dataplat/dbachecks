@@ -482,5 +482,9 @@
     {
         "UniqueTag": "LoginPasswordExpiration",
         "Description": "Tests to see if password expiration policy is set for sql logins in sysadmin role."
+    },
+    {
+        "UniqueTag": "LoginMustChange",
+        "Description": "Tests to see if password must change is enabled for new logins."
     }
  ]
