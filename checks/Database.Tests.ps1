@@ -969,7 +969,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing contained database to see if sql authenticated users exist on $psitem" {
                 @($InstanceSMO.Databases.Where{$psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "$($psitem.Name) on $($psitem.Parent.Name) should have no sql authenticated users" {
+                    It "$($psitem.Name) on $($psitem.Parent.Name) should have no sql authenticated users" -Skip:$skip  {
                         Assert-ContainedDBSQLAuth -Instance $instance -Database $($psitem.Name)
                     }
                 }
