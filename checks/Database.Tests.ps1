@@ -980,6 +980,29 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
     }
+
+    Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
+        $exclude = "master", "tempdb"
+        $ExcludedDatabases += $exclude
+ 
+        if ($NotContactable -contains $psitem) {
+            Context "Testing to see if Query Store is enabled on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            $instance = $Psitem
+            Context "Testing to see if Query Store is enabled on $psitem" {
+                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                    It "Query Store be enabled in $($psitem.Name) on $Instance" {
+                        Assert-QueryStoreEnabled -Instance $instance -Database $($psitem.Name)
+                    }
+                }
+            }
+        }
+    }
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 

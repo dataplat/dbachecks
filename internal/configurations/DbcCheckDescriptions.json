@@ -474,5 +474,9 @@
     {
         "UniqueTag": "BuiltInAdmin",
         "Description": "Tests to see if the BUILTIN\\Administrator login exist."
+    },
+    {
+        "UniqueTag": "QueryStoreEnabled",
+        "Description": "Tests to see Query Store is enabled on each database."
     }
  ]
