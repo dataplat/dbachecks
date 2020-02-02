@@ -984,7 +984,7 @@ $ExcludedDatabases += $ExcludeDatabase
     Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
         $exclude = "master", "tempdb"
         $ExcludedDatabases += $exclude
- 
+        
         if ($NotContactable -contains $psitem) {
             Context "Testing to see if Query Store is enabled on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
