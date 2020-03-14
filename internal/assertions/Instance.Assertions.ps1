@@ -524,7 +524,7 @@ function Get-AllInstanceInfo {
                 catch {
                     $There = $false
                     $HideInstance = [pscustomobject] @{
-                        HideInstance  = StartType = 'We Could not Connect to $Instance'
+                        HideInstance  = 'We Could not Connect to $Instance'
                     }
                 }
             }
