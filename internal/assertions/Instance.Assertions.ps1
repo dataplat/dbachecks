@@ -536,7 +536,7 @@ function Get-AllInstanceInfo {
                         CredentialIdentity = $null
                     }
                 }
-            } 
+            }
             else {
                 $There = $false
                 $SqlAgentProxiesWithPublicRole = [pscustomobject] @{
