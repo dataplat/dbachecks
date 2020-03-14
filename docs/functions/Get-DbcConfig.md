@@ -11,23 +11,21 @@ Get-DbcConfig [[-Name] <String>] [-EnableException] [<CommonParameters>]
 
 ## DESCRIPTION
 Retrieves configuration elements by name.
-
 Can be used to search the existing configuration list.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-DbcConfig Lists.SqlServers
+Get-DbcConfig app.sqlinstance
 ```
 
-Retrieves the configuration element for the key "Lists.SqlServers"
+Retrieves the configuration element for the configuration app.sqlinstance
 
 ## PARAMETERS
 
 ### -Name
 Default: "*"
-
 The name of the configuration element(s) to retrieve.
 May be any string, supports wildcards.
 
