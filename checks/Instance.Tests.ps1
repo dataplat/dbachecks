@@ -1014,6 +1014,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Hide Instance" -Tags HideInstance, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.hideinstance
+        if ($NotContactable -contains $psitem) {
+            Context "Checking the Hide an Instance of SQL Server Database Engine property on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Checking the Hide an Instance of SQL Server Database Engine property on $psitem" {
+                It "The Hide an Instance of SQL Server Database Engine property on SQL Server instance $psitem" -Skip:$skip {
+                    Assert-HideInstance -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
@@ -1060,16 +1078,11 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
 
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
-
-
-
-
-
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUVoPVIlYpUqnHOVhYhX6JCQnU
-# ZUWgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUmS1kli9zTmqa0emx33hMujcX
+# NZmgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -1129,29 +1142,11 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQY/UyyFNReMHHbXG9PUklWOG1v
-# AzANBgkqhkiG9w0BAQEFAASCAQBY1yL4MQt2oT6a+aMidW3pi3RwSoahwM1nFXQr
-# oD8qufrrt3uR7EnluQDcHN07OGmEUMHdlMLt23NIqapc/f4YBvFlgRdcvzWCPfWq
-# nq8a4Sslfi4x0g2UHIBYmstvKy1H3ztY/EGg/mrCXA+pGrCpJZsHjkQte8A7FSwR
-# 9HEskbH5U6xQfiDIYSEC5O9D3FwbcqvT9VSqfF99NCLTa+B0U8uLGOCWAy6C6TyZ
-# XpRwwzeN4Im4cOv2LHmUWVtFnQZ8m0wEBHyd4dLtfZF6NElf7x+IEttWFuzFvPw5
-# 7ewR/pDi9COKaRNg9lpaEO9DLHiJ7F7DJsihxaW9+GwqFYRU
-# SIG # End signature block
-# 0RXILHwlKXaoHV0cLToaxO8wYdd+C2D9wz0PxK+L/e8q3yBVN7Dh9tGSdQ9RtG6l
-# jlriXiSBThCk7j9xjmMOE0ut119EefM2FAaK95xGTlz/kLEbBw6RFfu6r7VRwo0k
-# riTGxycqoSkoGjpxKAI8LpGjwCUR4pwUR6F6aGivm6dcIFzZcbEMj7uo+MUSaJ/P
-# QMtARKUT8OZkDCUIQjKyNookAv4vcn4c10lFluhZHen6dGRrsutmQ9qzsIzV6Q3d
-# 9gEgzpkxYz0IGhizgZtPxpMQBvwHgfqL2vmCSfdibqFT+hKUGIUukpHqaGxEMrJm
-# oecYpJpkUe8xggIoMIICJAIBATCBhjByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMM
-# RGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQD
-# EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
-# dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
-# AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQY/UyyFNReMHHbXG9PUklWOG1v
-# AzANBgkqhkiG9w0BAQEFAASCAQBY1yL4MQt2oT6a+aMidW3pi3RwSoahwM1nFXQr
-# oD8qufrrt3uR7EnluQDcHN07OGmEUMHdlMLt23NIqapc/f4YBvFlgRdcvzWCPfWq
-# nq8a4Sslfi4x0g2UHIBYmstvKy1H3ztY/EGg/mrCXA+pGrCpJZsHjkQte8A7FSwR
-# 9HEskbH5U6xQfiDIYSEC5O9D3FwbcqvT9VSqfF99NCLTa+B0U8uLGOCWAy6C6TyZ
-# XpRwwzeN4Im4cOv2LHmUWVtFnQZ8m0wEBHyd4dLtfZF6NElf7x+IEttWFuzFvPw5
-# 7ewR/pDi9COKaRNg9lpaEO9DLHiJ7F7DJsihxaW9+GwqFYRU
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRFj6CDx+A0D/eNqeLjL2A2UShB
+# AjANBgkqhkiG9w0BAQEFAASCAQAJcmjtfhrP4YGXsOFT/WxvY4ab4ijK55qq0zOa
+# Cxc9kuOcZ6bqS9MynPJU24IuX7DejEGeJHQNYr4I6CXKcCqK1MtZtRB3q/cwn9sy
+# O0mQ8YMpXaTAII/paOaScOxrzz245vgY7amxVPkbhMFvSpH8/I1lD8isBpgi1FAb
+# ixOJJyWYfpuKzmKJBxxaZYHDYCw+rZe8aJvXE2ZOYQlzI09fuZfD8eXzyVM/CRA1
+# 3zFiBBk1sNjkF6ZgzVb6aDbatPJkVHh2a5/2B+ZlcEsMm3h2JupJm2olNhSazJ1M
+# pI/EaVX701H01l+V7E6kPLfQnYXjbVMopKFlYalj5/isnxFZ
 # SIG # End signature block

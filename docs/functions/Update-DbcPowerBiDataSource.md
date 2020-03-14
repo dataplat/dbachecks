@@ -1,9 +1,9 @@
 # Update-DbcPowerBiDataSource
 
 ## SYNOPSIS
-Converts Pester results and exports file in required format for launching the 
+Converts Pester results and exports file in required format for launching the
 Power BI command.
-**You will need refresh* the Power BI dashboard every time to 
+**You will need refresh* the Power BI dashboard every time to
 see the new results.
 
 ## SYNTAX
@@ -14,9 +14,9 @@ Update-DbcPowerBiDataSource [-InputObject] <PSObject> [[-Path] <String>] [[-File
 ```
 
 ## DESCRIPTION
-Converts Pester results and exports file in required format for launching the 
+Converts Pester results and exports file in required format for launching the
 Power BI command.
-**You will need refresh* the Power BI dashboard every time to 
+**You will need refresh* the Power BI dashboard every time to
 see the new results.
 
 Basically, it does this:
@@ -75,7 +75,7 @@ Start-DbcPowerBi -Path \\\\nas\projects\dbachecks.json
 
 Runs tests, saves to json to \\\\nas\projects\dbachecks.json
 Opens the PowerBi using that file
-then you'll have to change your data source in Power BI because by default it 
+then you'll have to change your data source in Power BI because by default it
 points to C:\Windows\Temp (limitation of Power BI)
 
 ### EXAMPLE 8
