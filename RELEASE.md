@@ -1,6 +1,7 @@
-## Date 8th January 2020
+## Date 14th March 2020
 Thank you Tracey tboggiano
     New CIS Check Hide Instance #728
+    New CIS Check Symmetric Key #732
 
 ##Latest
 
