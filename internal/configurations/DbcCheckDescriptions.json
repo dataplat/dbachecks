@@ -452,6 +452,10 @@
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
     },
     {
+        "UniqueTag": "HideInstance",
+        "Description": "Tests that each hide instance is set to YES for the instance."
+    },
+    {
         "UniqueTag": "LoginAuditFailed",
         "Description": "Tests that server level logins are recorded for failed logins."
     },
