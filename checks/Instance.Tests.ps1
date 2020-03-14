@@ -1015,6 +1015,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
     }
 
+    Describe "SqlAgentProxiesNoPublicRole" -Tags SqlAgentProxiesNoPublicRole, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.sqlagentproxiesnopublicrole
+        if ($NotContactable -contains $psitem) {
+            Context "Testing to see if the public role has access to the SQL Agent proxies on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing to see if the public role has access to the SQL Agent proxies on $psitem" {
+                It "The public role should not have access to the SQL Agent Proxies on $psitem" -Skip:$skip {
+                    Assert-SqlAgentProxiesNoPublicRole -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
     Describe "Hide Instance" -Tags HideInstance, Security, CIS, Medium, $filename {
         $skip = Get-DbcConfigValue skip.security.hideinstance
         if ($NotContactable -contains $psitem) {

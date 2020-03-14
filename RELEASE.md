@@ -2,6 +2,7 @@
 Thank you Tracey tboggiano
     New CIS Check Hide Instance #728
     New CIS Check Symmetric Key #732
+    New CIS Check Agent Proxy not have access to public Role #732
 
 ##Latest
 

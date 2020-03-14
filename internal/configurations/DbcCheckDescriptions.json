@@ -452,7 +452,10 @@
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
     },
     {
-        "UniqueTag": "SymmetricKeyEncryptionLevel",
+        "UniqueTag": "SqlAgentProxiesNoPublicRole",
+        "Description": "Tests that the public role does not have access to SQL Agent Proxies."
+    },
+    {    "UniqueTag": "SymmetricKeyEncryptionLevel",
         "Description": "Tests that Symmetric Key Encryption Level is at least AES_128 in non-system databases."
     },
     {
