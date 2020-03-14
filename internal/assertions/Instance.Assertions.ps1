@@ -518,11 +518,11 @@ function Get-AllInstanceInfo {
                     $SqlAgentProxiesWithPublicRole = @()
 
                     Get-DbaAgentProxy -SqlInstance $Instance | ForEach-Object {
-                        if($psitem.EnumMsdbRoles().Name -contains 'public'){
+                        if ($psitem.EnumMsdbRoles().Name -contains 'public') {
                             $SqlAgentProxyWithPublicRole = [pscustomobject] @{
-                                Name =  $psitem.Name
-                                CredentialName =  $psitem.CredentialName
-                                CredentialIdentity =  $psitem.CredentialIdentity
+                                Name               = $psitem.Name
+                                CredentialName     = $psitem.CredentialName
+                                CredentialIdentity = $psitem.CredentialIdentity
                             }
                             $SqlAgentProxiesWithPublicRole += $SqlAgentProxyWithPublicRole
                         }
@@ -531,22 +531,44 @@ function Get-AllInstanceInfo {
                 catch {
                     $There = $false
                     $SqlAgentProxiesWithPublicRole = [pscustomobject] @{
-                        Name = 'We Could not Connect to $Instance'
-                        CredentialName = $null
+                        Name               = 'We Could not Connect to $Instance'
+                        CredentialName     = $null
                         CredentialIdentity = $null
+                    }
+                }
+            } 
+            else {
+                $There = $false
+                $SqlAgentProxiesWithPublicRole = [pscustomobject] @{
+                    Name               = 'We Could not Connect to $Instance'
+                    CredentialName     = $null
+                    CredentialIdentity = $null
+                }
+            }
+        }
+        'HideInstance' {
+            if ($There) {
+                try {
+                    $results = Get-DbaHideInstance -SqlInstance $Instance
+
+                    $HideInstance = [pscustomobject] @{
+                        HideInstance = $results.HideInstance
+                    }
+                }
+                catch {
+                    $There = $false
+                    $HideInstance = [pscustomobject] @{
+                        HideInstance = 'We Could not Connect to $Instance'
                     }
                 }
             }
             else {
                 $There = $false
-                $SqlAgentProxiesWithPublicRole = [pscustomobject] @{
-                    Name = 'We Could not Connect to $Instance'
-                    CredentialName = $null
-                    CredentialIdentity = $null
+                $HideInstance = [pscustomobject] @{
+                    HideInstance = 'We Could not Connect to $Instance'
                 }
             }
         }
-
         Default { }
     }
     [PSCustomObject]@{
@@ -562,6 +584,7 @@ function Get-AllInstanceInfo {
         SaDisabled                       = $SaDisabled
         EngineService                    = $EngineService
         SqlAgentProxiesWithPublicRole    = $SqlAgentProxiesWithPublicRole
+        HideInstance                     = $HideInstance
         LoginAuditFailed                 = $LoginAuditFailed
         LoginAuditSuccessful             = $LoginAuditSuccessful
         LocalWindowsGroup                = $LocalWindowsGroup
@@ -765,6 +788,10 @@ function Assert-SaExist {
 function Assert-SqlAgentProxiesNoPublicRole {
     Param($AllInstanceInfo)
     $AllInstanceInfo.SqlAgentProxiesWithPublicRole | Should -BeNull -Because "We expected the public role to not have access to any SQL Agent proxies"
+}
+function Assert-HideInstance {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.HideInstance.HideInstance | Should -Be $true -Because "We expected the hide instance proptety to be set to $true"
 }
 
 function Assert-LocalWindowsGroup {

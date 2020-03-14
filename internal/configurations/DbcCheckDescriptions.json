@@ -169,7 +169,7 @@
     },
     {
         "UniqueTag": "ClusterHealth",
-        "Description": "Runs a suite of tests against an Availability Group on a Windows cluster to ensure that everything is as it should be. Tests cluster resources are online, cluster nodes are up, at least one IP Address for the AG listener is available, that each replica and listener are pingable (listener ping check can be skipped), can be connected to via T-SQL, have the correct domain name and TCP port, that each replica is synchronised/ing, is connected, is not in an unknown state, each database is synchronised/ing, failover ready and joined to the domain and that the Always On Health Extended Event sessions are running and set to auto-start"
+        "Description": "Runs a suite of tests against an Availability Group on a Windows cluster to ensure that everything is as it should be. Tests cluster resources are online, cluster nodes are up, at least one IP Address for the AG listener is available, that each replica and listener are pingable (listener ping check can be skipped), can be connected to via T-SQL, have the correct domain name and TCP port, that each replica is synchronized/ing, is connected, is not in an unknown state, each database is synchronized/ing, failover ready and joined to the domain and that the Always On Health Extended Event sessions are running and set to auto-start"
     },
     {
         "UniqueTag": "SqlEngineServiceAccount",
@@ -455,6 +455,17 @@
         "UniqueTag": "SqlAgentProxiesNoPublicRole",
         "Description": "Tests that the public role does not have access to SQL Agent Proxies."
     },
+    {    "UniqueTag": "SymmetricKeyEncryptionLevel",
+        "Description": "Tests that Symmetric Key Encryption Level is at least AES_128 in non-system databases."
+    },
+    {
+        "UniqueTag": "AsymmetricKeySize",
+        "Description": "Tests that Asymmetric Key Sizes are at least 2048 in non-system databases."
+    },
+    {
+        "UniqueTag": "HideInstance",
+        "Description": "Tests that each hide instance is set to YES for the instance."
+    },
     {
         "UniqueTag": "LoginAuditFailed",
         "Description": "Tests that server level logins are recorded for failed logins."
@@ -462,7 +473,7 @@
     {
         "UniqueTag": "LoginAuditSuccessful",
         "Description": "Tests that server level logins are recorded for successful and failed logins."
-    },   
+    },
     {
         "UniqueTag": "LocalWindowsGroup",
         "Description": "Tests that no local Windows group has has a SQL Login."
@@ -479,4 +490,4 @@
         "UniqueTag": "BuiltInAdmin",
         "Description": "Tests to see if the BUILTIN\\Administrator login exist."
     }
- ]
+]

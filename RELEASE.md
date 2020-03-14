@@ -1,3 +1,10 @@
+## Date 14th March 2020
+Thank you Tracey tboggiano
+    New CIS Check Hide Instance #728
+    New CIS Check Symmetric Key #732
+
+##Latest
+
 ## Date 8th January 2020
 Thank you Tracey tboggiano
     New CIS Check Guest Account connect permissions #725
@@ -9,8 +16,6 @@ Thank you Tracey tboggiano
 Thank you Rob
     Added Tag parameter to Get-DbcCheck
     Updated tests to work with PowerShell 7
-
-##Latest
 
 ## Date 22nd December
 Thank you Tracey tboggiano
