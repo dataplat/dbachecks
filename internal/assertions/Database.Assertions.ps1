@@ -81,6 +81,22 @@ function Assert-GuestUserConnect {
     $guestperms.Count | Should -Be 0 -Because "We expect the guest user in $Database on $Instance to not have CONNECT permissions"
 }
 
+function Assert-AsymmetricKeySize {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    @(Get-DbaDbEncryption -SqlInstance $Instance -Database $Database | Where-Object {$_.Encryption -eq "Symmetric Key" -and $_.KeyLength -LT 2048}).Count | Should -Be 0 -Because "Symmetric keys should have a key length greater than or equal to 2048"
+}
+
+function Assert-SymmetricKeyEncryptionLevel {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    @(Get-DbaDbEncryption -SqlInstance $Instance -Database $Database | Where-Object {$_.Encryption -eq "Asymmetric Key" -and $_.EncryptionAlgrothim -notin "AES_128","AES_192","AES_256"}).Count  | Should -Be 0 -Because "Asymmetric keys should have an encryption algrothim of at least AES_128"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
