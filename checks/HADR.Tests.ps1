@@ -44,7 +44,12 @@ function Get-ClusterObject {
 # needs the failover cluster module
 if (-not (Get-Module FailoverClusters)) {
     try {
-        Import-Module FailoverClusters -ErrorAction Stop
+        if($IsCoreCLR){
+            Stop-PSFFunction -Message "FailoverClusters module cannot be loaded in PowerShell Core unfortunately" -ErrorRecord $psitem
+        return
+        }else{
+            Import-Module FailoverClusters -ErrorAction Stop
+        }
     }
     catch {
         Stop-PSFFunction -Message "FailoverClusters module could not load - Please install the Failover Cluster module using Windows Features " -ErrorRecord $psitem
@@ -125,7 +130,18 @@ foreach ($clustervm in $clusters) {
 
             Context "Cluster Connectivity for Availability Group $($AG.Name) on $clustername" {
                 @($AG.AvailabilityGroupListeners).ForEach{
-                    $results = Test-DbaConnection -sqlinstance $_.Name
+                    try{
+                        $results = Test-DbaConnection -sqlinstance $_.Name
+                    }
+                    Catch{
+                        $results = [PSCustomObject]@{
+                            IsPingable = $false
+                            ConnectSuccess  = $false
+                            DomainName  = $false
+                            TCPPort  = $false
+                        }
+                    }
+                    
                     It "Listener $($results.SqlInstance) should be pingable" -skip:$skiplistener {
                         $results.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
                     }
@@ -206,7 +222,7 @@ foreach ($clustervm in $clusters) {
                             $psitem.IsFailoverReady | Should -BeFalse -Because 'The database on the asynchronous secondary replica should be ready to failover'
                         }
                         It "Database $($psitem.DatabaseName) should be joined on the secondary replica $($psitem.Replica)" {
-                            $psitem.IsJoined | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be joined to the availaility group'
+                            $psitem.IsJoined | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be joined to the availability group'
                         }
                         It "Database $($psitem.DatabaseName) should not be suspended on the secondary replica $($psitem.Replica)" {
                             $psitem.IsSuspended | Should -Be  $False -Because 'The database on the asynchronous secondary replica should not be suspended'
