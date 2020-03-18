@@ -141,7 +141,7 @@ foreach ($clustervm in $clusters) {
                             TCPPort  = $false
                         }
                     }
-                    
+
                     It "Listener $($results.SqlInstance) should be pingable" -skip:$skiplistener {
                         $results.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
                     }
