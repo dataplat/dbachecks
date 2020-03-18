@@ -1,10 +1,14 @@
+## Date 18th March 2020
+Thank you Tracey tboggiano
+    New CIS user-defined CLRs to be set to SAFE_ACCESS#734
+
+##Latest
+
 ## Date 14th March 2020
 Thank you Tracey tboggiano
     New CIS Check Hide Instance #728
     New CIS Check Symmetric Key #732
     New CIS Check Agent Proxy not have access to public Role #732
-
-##Latest
 
 ## Date 8th January 2020
 Thank you Tracey tboggiano
