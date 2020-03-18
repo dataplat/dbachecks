@@ -228,7 +228,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validati
 Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
-Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (expecially useful for Azure and AWS)"
+Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
 Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
@@ -244,6 +244,7 @@ Set-PSFConfig -Module dbachecks -Name skip.security.symmetrickeyencryptionlevel 
 Set-PSFConfig -Module dbachecks -Name skip.security.asymmetrickeysize -Validation bool -Value $true -Initialize -Description "Skips the test for the size of the Assymetric Key sizes being above 2048 in non-system databases"
 Set-PSFConfig -Module dbachecks -Name skip.security.hideinstance -Validation bool -Value $true -Initialize -Description "Skips the scan for if hide instance is set to YES on the instance"
 
+Set-PSFConfig -Module dbachecks -Name skip.security.clrassembliessafe -Validation bool -Value $true -Initialize -Description "Skips the scan for CLR Assemblies set to SAFE_ACCESS"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelfailed -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelsuccessful -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records successful and failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.localwindowsgroup -Validation bool -Value $true -Initialize -Description "Skips the scan for if local windows groups have SQL Logins"
