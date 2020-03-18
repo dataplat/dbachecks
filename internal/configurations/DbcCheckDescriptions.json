@@ -467,6 +467,10 @@
         "Description": "Tests that each hide instance is set to YES for the instance."
     },
     {
+        "UniqueTag": "CLRAssembliesSafe",
+        "Description": "Tests that CLR assembly permissions are set to SAFE_ACCESS."
+    },
+    {
         "UniqueTag": "LoginAuditFailed",
         "Description": "Tests that server level logins are recorded for failed logins."
     },
