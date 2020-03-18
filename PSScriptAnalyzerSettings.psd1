@@ -16,7 +16,7 @@
             # You can specify commands to not check like this, which also will ignore its parameters:
             IgnoreCommands = @(
                 'It', # Because Pester!
-                'Should', # Because Pester!
+                #'Should', # Because Pester!
                 'Context', # Because Pester!
                 'BeforeAll', # Because Pester!
                 'AfterAll', # Because Pester!
