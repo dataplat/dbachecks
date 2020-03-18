@@ -25,6 +25,7 @@
                 'InModuleScope' #Because Pester!
                 'Mock' #Because Pester!
                 'Assert-MockCalled' #Because Pester!
+                'Get-LocalGroupMember' # Because we handle it
             )
         }
         PSUseCompatibleSyntax = @{

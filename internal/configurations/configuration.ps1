@@ -245,6 +245,9 @@ Set-PSFConfig -Module dbachecks -Name skip.security.asymmetrickeysize -Validatio
 Set-PSFConfig -Module dbachecks -Name skip.security.hideinstance -Validation bool -Value $true -Initialize -Description "Skips the scan for if hide instance is set to YES on the instance"
 
 Set-PSFConfig -Module dbachecks -Name skip.security.clrassembliessafe -Validation bool -Value $true -Initialize -Description "Skips the scan for CLR Assemblies set to SAFE_ACCESS"
+Set-PSFConfig -Module dbachecks -Name skip.security.engineserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Engine account is a local administrator"
+Set-PSFConfig -Module dbachecks -Name skip.security.agentserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Agent account is a local administrator"
+Set-PSFConfig -Module dbachecks -Name skip.security.fulltextserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Full Text account is a local administrator"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelfailed -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelsuccessful -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records successful and failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.localwindowsgroup -Validation bool -Value $true -Initialize -Description "Skips the scan for if local windows groups have SQL Logins"
