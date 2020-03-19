@@ -1059,6 +1059,9 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
+            if($IsCoreCLR){
+                $Skip = $true
+            }
             Context "Testing whether SQL Engine account is a local administrator on $psitem" {
                 It "The SQL Engine service account should not be a local administrator on $psitem" -Skip:$skip {
                     Assert-EngineServiceAdmin -AllInstanceInfo $AllInstanceInfo
@@ -1077,6 +1080,9 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
+            if($IsCoreCLR){
+                $Skip = $true
+            }
             Context "Testing whether SQL Agent account is a local administrator on $psitem" {
                 It "The SQL Agent service account should not be a local administrator on $psitem" -Skip:$skip {
                     Assert-AgentServiceAdmin -AllInstanceInfo $AllInstanceInfo
@@ -1095,6 +1101,9 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
+            if($IsCoreCLR){
+                $Skip = $true
+            }
             Context "Testing whether SQL Full Text account is a local administrator on  $psitem" {
                 It "The SQL Full Text service account should not be a local administrator on $psitem" -Skip:$skip {
                     Assert-FullTextServiceAdmin -AllInstanceInfo $AllInstanceInfo
