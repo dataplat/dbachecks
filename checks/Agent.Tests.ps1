@@ -133,7 +133,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         Context "Testing database mail profile is set on $psitem" {
                             $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
                             It "database mail profile on $psitem is $databasemailprofile" {
-                                (Connect-DbaInstance -SqlInstance $psitem).JobServer.DatabaseMailProfile | Should -Be $databasemailprofile -Because 'The database mail profile is required to send emails'
+                                (Get-DbaDbMailProfile -SqlInstance $InstanceSMO).Name | Should -Be $databasemailprofile -Because 'The database mail profile is required to send emails'
                             }
                         }
                     }
@@ -328,9 +328,16 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     }
                     else {
                         Context "Testing long running jobs on $psitem" {
-                            foreach ($runningjob in $runningjobs | Where-Object { $_.AvgSec -ne 0 }) {
-                                It "Running job $($runningjob.JobName) duration should not be more than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
-                                    Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
+                            if ($runningjobs) {
+                                foreach ($runningjob in $runningjobs | Where-Object { $_.AvgSec -ne 0 }) {
+                                    It "Running job $($runningjob.JobName) duration should not be more than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
+                                        Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
+                                    }
+                                }
+                            }
+                            else {
+                                It "There are no running jobs currently on $psitem" -Skip:$skip {
+                                    $True | SHould -BeTrue
                                 }
                             }
                         }
@@ -385,13 +392,18 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         DROP Table #dbachecksLastRunTime
                         DROP Table #dbachecksAverageRunTime"
                         $lastagentjobruns = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
-                    }
-                    else {
                         Context "Testing last job run time on $psitem" {
                             foreach ($lastagentjobrun in $lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }) {
                                 It "Job $($lastagentjobrun.JobName) last run duration should be not be greater than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
                                     Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
                                 }
+                            }
+                        }
+                    }
+                    else {
+                        Context "Testing last job run time on $psitem" {
+                            It "Job average run time on $psitem" -Skip {
+                                Assert-LastJobRun -lastagentjobrun $lastagentjobrun -runningjobpercentage $runningjobpercentage
                             }
                         }
                     }
