@@ -264,7 +264,7 @@ Set-PSFConfig -Module dbachecks -Name agent.validjobowner.name -Value "sa" -Init
 Set-PSFConfig -Module dbachecks -Name agent.alert.messageid -Value @('823', '824', '825') -Initialize -Description "Agent alert messageid to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
 Set-PSFConfig -Module dbachecks -Name agent.alert.severity -Value @('16', '17', '18', '19', '20', '21', '22', '23', '24', '25') -Initialize -Description "Agent alert severity to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
 Set-PSFConfig -Module dbachecks -Name agent.alert.job -Value $false -Initialize -Description "Should we check for an agent job for the Agent Alert checks?"
-Set-PSFConfig -Module dbachecks -Name agent.alert.notification -Value $true -Initialize -Description "Agent alert notification"
+Set-PSFConfig -Module dbachecks -Name agent.alert.notification -Value $true -Initialize -Description "Should we check for a notification for the Agent Alert checks?"
 Set-PSFConfig -Module dbachecks -Name agent.history.maximumhistoryrows -Value 1000 -Initialize -Description "Maximum job history log size (in rows). The value -1 means disabled"
 Set-PSFConfig -Module dbachecks -Name agent.history.maximumjobhistoryrows -Value 100 -Initialize -Description "Maximum job history row per job. When the property is disabled the value is 0."
 Set-PSFConfig -Module dbachecks -Name agent.failedjob.excludecancelled -Value $false -Initialize -Description "Exclude agent jobs with a status of cancelled"
