@@ -5,6 +5,8 @@ Thank you Tracey tboggiano
 
 Thank you Rob
     Getting service accounts tests to pass if no service
+    Made long running jobs check work as expected
+    Improved Database Mail check
 
 ##Latest
 
