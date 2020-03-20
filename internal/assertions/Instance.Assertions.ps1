@@ -590,6 +590,18 @@ function Get-AllInstanceInfo {
                             Exist = $localAdmins.Name.Contains($SqlEngineService.StartName)
                         }
                     }
+                    catch [System.Exception] {
+                        if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = $false
+                            }
+                        }
+                        else {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = 'Some sort of failure'
+                            }
+                        }
+                    }
                     catch {
                         $There = $false
                         $EngineServiceAdmin = [pscustomobject] @{
@@ -626,6 +638,18 @@ function Get-AllInstanceInfo {
                             Exist = $localAdmins.Name.Contains($SqlAgentService.StartName)
                         }
                     }
+                    catch [System.Exception] {
+                        if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = $false
+                            }
+                        }
+                        else {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = 'Some sort of failure'
+                            }
+                        }
+                    }
                     catch {
                         $There = $false
                         $AgentServiceAdmin = [pscustomobject] @{
@@ -655,17 +679,28 @@ function Get-AllInstanceInfo {
                         if ($null -eq $InstanceName) {
                             $InstanceName = 'MSSQLSERVER'
                         }
-                        $SqlFullTextService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type FullText -ErrorAction SilentlyContinue
+                        $SqlFullTextService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type FullText -ErrorAction SilentlyContinue -WarningAction SilentlyContinue -WarningVariable WarVar
                         $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
-
                         $FullTextServiceAdmin = [pscustomobject] @{
                             Exist = $localAdmins.Name.Contains($SqlFullTextService.StartName)
+                        }
+                    }
+                    catch [System.Exception] {
+                        if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = $false
+                            }
+                        }
+                        else {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = 'Some sort of failure'
+                            }
                         }
                     }
                     catch {
                         $There = $false
                         $FullTextServiceAdmin = [pscustomobject] @{
-                            Exist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                            Exist = "We Could not Connect to $Instance $ComputerName , $InstanceName from catch"
                         }
                     }
                 }
