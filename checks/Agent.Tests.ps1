@@ -200,6 +200,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                     $messageid = Get-DbcConfigValue agent.alert.messageid
                     $AgentAlertJob = Get-DbcConfigValue agent.alert.Job
                     $AgentAlertNotification = Get-DbcConfigValue agent.alert.Notification
+                    $skip = Get-DbcConfigValue skip.agent.alert
                     if ($NotContactable -contains $psitem) {
                         Context "Testing Agent Alerts Severity exists on $psitem" {
                             It "Can't Connect to $Psitem" {
@@ -216,19 +217,19 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         $alerts = Get-DbaAgentAlert -SqlInstance $psitem
                         Context "Testing Agent Alerts Severity exists on $psitem" {
                             ForEach ($sev in $severity) {
-                                It "$psitem should have Severity $sev Alert" {
+                                It "$psitem should have Severity $sev Alert" -Skip:$skip{
                                     ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
                                 }
-                                It "$psitem should have Severity $sev Alert enabled" {
+                                It "$psitem should have Severity $sev Alert enabled" -Skip:$skip{
                                     ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Configured alerts should be enabled"
                                 }
                                 if ($AgentAlertJob) {
-                                    It "$psitem should have Jobname for Severity $sev Alert" {
+                                    It "$psitem should have Jobname for Severity $sev Alert" -Skip:$skip{
                                         ($alerts.Where{ $psitem.Severity -eq $sev }).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
                                     }
                                 }
                                 if ($AgentAlertNotification) {
-                                    It "$psitem should have notification for Severity $sev Alert" {
+                                    It "$psitem should have notification for Severity $sev Alert" -Skip:$skip{
                                         ($alerts.Where{ $psitem.Severity -eq $sev }).HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -be $true -Because "Should notify by Agent notifications"
                                     }
                                 }
