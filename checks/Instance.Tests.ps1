@@ -1157,8 +1157,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
-            Context "Testing if the new SQL logins that have not logged have to change their password when they log in on $psitem" -Skip:$skip {
-                It "All new sql logins should have the have to change their password when they log in for the first time on $psitem" {
+            Context "Testing if the new SQL logins that have not logged have to change their password when they log in on $psitem"{
+                It "All new sql logins should have the have to change their password when they log in for the first time on $psitem"  -Skip:$skip  {
                     Assert-LoginMustChange -AllInstanceInfo $AllInstanceInfo
                 }
             }
