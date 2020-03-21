@@ -11,6 +11,7 @@ Thank you Rob
 
 Thank you mikedavem
     Fixed bug in disk allocation check exclusions
+    Added multiple ags to the HADR check #742
 
 ##Latest
 
