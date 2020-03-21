@@ -505,5 +505,17 @@
     {
         "UniqueTag": "BuiltInAdmin",
         "Description": "Tests to see if the BUILTIN\\Administrator login exist."
+    },
+    {
+        "UniqueTag": "LoginCheckPolicy",
+        "Description": "Tests to see if CHECK_POLICY property is set for all logins."
+    },
+    {
+        "UniqueTag": "LoginPasswordExpiration",
+        "Description": "Tests to see if password expiration policy is set for sql logins in sysadmin role."
+    },
+    {
+        "UniqueTag": "LoginMustChange",
+        "Description": "Tests to see if password must change is enabled for new logins."
     }
 ]
