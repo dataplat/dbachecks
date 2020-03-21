@@ -169,7 +169,7 @@
     },
     {
         "UniqueTag": "ClusterHealth",
-        "Description": "Runs a suite of tests against an Availability Group on a Windows cluster to ensure that everything is as it should be. Tests cluster resources are online, cluster nodes are up, at least one IP Address for the AG listener is available, that each replica and listener are pingable (listener ping check can be skipped), can be connected to via T-SQL, have the correct domain name and TCP port, that each replica is synchronised/ing, is connected, is not in an unknown state, each database is synchronised/ing, failover ready and joined to the domain and that the Always On Health Extended Event sessions are running and set to auto-start"
+        "Description": "Runs a suite of tests against an Availability Group on a Windows cluster to ensure that everything is as it should be. Tests cluster resources are online, cluster nodes are up, at least one IP Address for the AG listener is available, that each replica and listener are pingable (listener ping check can be skipped), can be connected to via T-SQL, have the correct domain name and TCP port, that each replica is synchronized/ing, is connected, is not in an unknown state, each database is synchronized/ing, failover ready and joined to the domain and that the Always On Health Extended Event sessions are running and set to auto-start"
     },
     {
         "UniqueTag": "SqlEngineServiceAccount",
@@ -452,13 +452,44 @@
         "Description": "Tests that each contained database has AUTO CLOSE disabled."
     },
     {
+        "UniqueTag": "SqlAgentProxiesNoPublicRole",
+        "Description": "Tests that the public role does not have access to SQL Agent Proxies."
+    },
+    {    "UniqueTag": "SymmetricKeyEncryptionLevel",
+        "Description": "Tests that Symmetric Key Encryption Level is at least AES_128 in non-system databases."
+    },
+    {
+        "UniqueTag": "AsymmetricKeySize",
+        "Description": "Tests that Asymmetric Key Sizes are at least 2048 in non-system databases."
+    },
+    {
+        "UniqueTag": "HideInstance",
+        "Description": "Tests that each hide instance is set to YES for the instance."
+    },
+    {
+        "UniqueTag": "CLRAssembliesSafe",
+        "Description": "Tests that CLR assembly permissions are set to SAFE_ACCESS."
+    },
+    {
+        "UniqueTag": "EngineServiceAdmin",
+        "Description": "Tests that the SQL Engine service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "AgentServiceAdmin",
+        "Description": "Tests that the SQL Agent service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "FullTextServiceAdmin",
+        "Description": "Tests that the SQL Full Text service account is not a local administrator."
+    },
+    {
         "UniqueTag": "LoginAuditFailed",
         "Description": "Tests that server level logins are recorded for failed logins."
     },
     {
         "UniqueTag": "LoginAuditSuccessful",
         "Description": "Tests that server level logins are recorded for successful and failed logins."
-    },   
+    },
     {
         "UniqueTag": "LocalWindowsGroup",
         "Description": "Tests that no local Windows group has has a SQL Login."
@@ -474,5 +505,17 @@
     {
         "UniqueTag": "BuiltInAdmin",
         "Description": "Tests to see if the BUILTIN\\Administrator login exist."
+    },
+    {
+        "UniqueTag": "LoginCheckPolicy",
+        "Description": "Tests to see if CHECK_POLICY property is set for all logins."
+    },
+    {
+        "UniqueTag": "LoginPasswordExpiration",
+        "Description": "Tests to see if password expiration policy is set for sql logins in sysadmin role."
+    },
+    {
+        "UniqueTag": "LoginMustChange",
+        "Description": "Tests to see if password must change is enabled for new logins."
     }
- ]
+]
