@@ -723,7 +723,7 @@ function Get-AllInstanceInfo {
         'LoginPasswordExpiration' {
             if ($There) {
                 try {
-                    $role = GetDbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
+                    $role = Get-DbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
 
                     $LoginPasswordExpiration = [pscustomobject] @{
                         Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.PasswordExpirationEnabled -eq $false -and $_.IsDisabled -eq $false}).Count
@@ -746,7 +746,7 @@ function Get-AllInstanceInfo {
         'LoginMustChange' {
             if ($There) {
                 try {
-                    $role = GetDbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
+                    $role = Get-DbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
 
                     $LoginMustChange = [pscustomobject] @{
                         Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.IsMustChange -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_LastLogin }).Count
