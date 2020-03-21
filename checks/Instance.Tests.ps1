@@ -216,7 +216,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Context "Testing Default Log File Path on $psitem" {
                 It "Default Log File Path on $psitem" {
                     $diskLog = Get-DbaInstanceProperty -SqlInstance $psitem | Where-Object Name -eq DefaultLog
-                    $diskLog.Value.substring(0, 1) | Should -Not -Be "C" -Because 'Dafault Log file path should not be your C:\ drive'
+                    $diskLog.Value.substring(0, 1) | Should -Not -Be "C" -Because 'Default Log file path should not be your C:\ drive'
                 }
             }
         }
@@ -373,14 +373,14 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
 
         if ($NotContactable -contains $psitem) {
-            Context "Checking that build is still supportedby Microsoft for $psitem" {
+            Context "Checking that build is still supported by Microsoft for $psitem" {
                 It "Can't Connect to $Psitem" {
                     $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            Context "Checking that build is still supportedby Microsoft for $psitem" {
+            Context "Checking that build is still supported by Microsoft for $psitem" {
                 if ($BuildBehind) {
                     It "$psitem is not behind the latest build by more than $BuildBehind" {
                         Assert-InstanceSupportedBuild -Instance $psitem -BuildBehind $BuildBehind -Date $Date
@@ -1008,13 +1008,12 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing if successful and failed login auditing is in place on $psitem" {
-                It "The successful and failed auditng should be set on $psitem" -Skip:$skip {
+                It "The successful and failed auditing should be set on $psitem" -Skip:$skip {
                     Assert-LoginAuditSuccessful -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
     }
-
     Describe "SqlAgentProxiesNoPublicRole" -Tags SqlAgentProxiesNoPublicRole, Security, CIS, Medium, $filename {
         $skip = Get-DbcConfigValue skip.security.sqlagentproxiesnopublicrole
         if ($NotContactable -contains $psitem) {
@@ -1050,6 +1049,68 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+    Describe "SQL Engine Service Admin" -Tags EngineServiceAdmin, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.EngineServiceAdmin
+        if ($NotContactable -contains $psitem) {
+            Context "Testing whether SQL Engine account is a local administrator on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            if($IsCoreCLR){
+                $Skip = $true
+            }
+            Context "Testing whether SQL Engine account is a local administrator on $psitem" {
+                It "The SQL Engine service account should not be a local administrator on $psitem" -Skip:$skip {
+                    Assert-EngineServiceAdmin -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "SQL Agent Service Admin" -Tags AgentServiceAdmin, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.AgentServiceAdmin
+        if ($NotContactable -contains $psitem) {
+            Context "Testing whether SQL Agent account is a local administrator on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            if($IsCoreCLR){
+                $Skip = $true
+            }
+            Context "Testing whether SQL Agent account is a local administrator on $psitem" {
+                It "The SQL Agent service account should not be a local administrator on $psitem" -Skip:$skip {
+                    Assert-AgentServiceAdmin -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "SQL Full Text Service Admin" -Tags FullTextServiceAdmin, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.FullTextServiceAdmin
+        if ($NotContactable -contains $psitem) {
+            Context "Testing whether SQL Full Text account is a local administrator on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            if($IsCoreCLR){
+                $Skip = $true
+            }
+            Context "Testing whether SQL Full Text account is a local administrator on  $psitem" {
+                It "The SQL Full Text service account should not be a local administrator on $psitem" -Skip:$skip {
+                    Assert-FullTextServiceAdmin -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
@@ -1067,7 +1128,7 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
                     $Services = Get-DbaService -ComputerName $psitem
                     if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
                         It "SQL browser service on $psitem should be Stopped as only one instance is installed" {
-                            $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
+                            $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'Unless there are multiple instances you dont need the browser service'
                         }
                     }
                 }
@@ -1076,11 +1137,11 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
                         $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'You need the browser service with multiple instances' }
                 }
                 if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                    It "SQL browser service startmode should be Disabled on $psitem as only one instance is installed" {
-                        $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' }
+                    It "SQL browser service start mode should be Disabled on $psitem as only one instance is installed" {
+                        $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multiple instances you dont need the browser service' }
                 }
                 else {
-                    It "SQL browser service startmode should be Automatic on $psitem as multiple instances are installed" {
+                    It "SQL browser service start mode should be Automatic on $psitem as multiple instances are installed" {
                         $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
                     }
                 }

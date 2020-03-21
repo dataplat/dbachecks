@@ -245,12 +245,17 @@ Set-PSFConfig -Module dbachecks -Name skip.security.asymmetrickeysize -Validatio
 Set-PSFConfig -Module dbachecks -Name skip.security.hideinstance -Validation bool -Value $true -Initialize -Description "Skips the scan for if hide instance is set to YES on the instance"
 
 Set-PSFConfig -Module dbachecks -Name skip.security.clrassembliessafe -Validation bool -Value $true -Initialize -Description "Skips the scan for CLR Assemblies set to SAFE_ACCESS"
+Set-PSFConfig -Module dbachecks -Name skip.security.engineserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Engine account is a local administrator"
+Set-PSFConfig -Module dbachecks -Name skip.security.agentserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Agent account is a local administrator"
+Set-PSFConfig -Module dbachecks -Name skip.security.fulltextserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Full Text account is a local administrator"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelfailed -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelsuccessful -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records successful and failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.localwindowsgroup -Validation bool -Value $true -Initialize -Description "Skips the scan for if local windows groups have SQL Logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.publicrolepermission -Validation bool -Value $true -Initialize -Description "Skips the scan for if the public server role has permissions"
 Set-PSFConfig -Module dbachecks -Name skip.security.builtinadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for BUILTIN\Administrators login"
 Set-PSFConfig -Module dbachecks -Name skip.security.guestuserconnect -Validation bool -Value $true -Initialize -Description "Skips the scan for guest user have CONNECT permission"
+Set-PSFConfig -Module dbachecks -Name skip.agent.alert -Validation bool -Value $false -Initialize -Description "Skips the agent alerts checks"
+
 
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
@@ -259,9 +264,9 @@ Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initi
 Set-PSFConfig -Module dbachecks -Name agent.databasemailprofile -Value $null -Initialize -Description "Name of the Database Mail Profile in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.validjobowner.name -Value "sa" -Initialize -Description "Agent job owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name agent.alert.messageid -Value @('823', '824', '825') -Initialize -Description "Agent alert messageid to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
-Set-PSFConfig -Module dbachecks -Name agent.alert.Severity -Value @('16', '17', '18', '19', '20', '21', '22', '23', '24', '25') -Initialize -Description "Agent alert severity to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
-Set-PSFConfig -Module dbachecks -Name agent.alert.Job -Value $false -Initialize -Description "Agent alert job notification. Ex job to write to eventlog for SCOM monitoring"
-Set-PSFConfig -Module dbachecks -Name agent.alert.Notification -Value $true -Initialize -Description "Agent alert notification"
+Set-PSFConfig -Module dbachecks -Name agent.alert.severity -Value @('16', '17', '18', '19', '20', '21', '22', '23', '24', '25') -Initialize -Description "Agent alert severity to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
+Set-PSFConfig -Module dbachecks -Name agent.alert.job -Value $false -Initialize -Description "Should we check for an agent job for the Agent Alert checks?"
+Set-PSFConfig -Module dbachecks -Name agent.alert.notification -Value $true -Initialize -Description "Should we check for a notification for the Agent Alert checks?"
 Set-PSFConfig -Module dbachecks -Name agent.history.maximumhistoryrows -Value 1000 -Initialize -Description "Maximum job history log size (in rows). The value -1 means disabled"
 Set-PSFConfig -Module dbachecks -Name agent.history.maximumjobhistoryrows -Value 100 -Initialize -Description "Maximum job history row per job. When the property is disabled the value is 0."
 Set-PSFConfig -Module dbachecks -Name agent.failedjob.excludecancelled -Value $false -Initialize -Description "Exclude agent jobs with a status of cancelled"
