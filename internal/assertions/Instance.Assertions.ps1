@@ -8,7 +8,7 @@ When adding new checks or improving existing ones -
 
                 'MemoryDump' {  # This is the unique tag
                 if ($There) {  ## we need $There to save trying to gather information from later checks for an instance that is not contactable
-                    ## Then a try catch to gather the required information for the assertion and set a variable to a customobject
+                    ## Then a try catch to gather the required information for the assertion and set a variable to a custom object
                     try {
                         $MaxDump = [pscustomobject] @{
                             # Warning Action removes dbatools output for version too low from test results
@@ -97,7 +97,7 @@ function Get-AllInstanceInfo {
                     $logWindow = Get-DbcConfigValue -Name policy.errorlog.warningwindow
                     # so that it can be mocked
                     function Get-ErrorLogEntry {
-                        # get the number of the first error log that was created after the logwindow config
+                        # get the number of the first error log that was created after the log window config
                         $OldestErrorLogNumber = ($InstanceSMO.EnumErrorLogs() | Where-Object { $psitem.CreateDate -gt (Get-Date).AddDays( - $LogWindow) } | Sort-Object ArchiveNo -Descending | Select-Object -First 1).ArchiveNo + 1
                         # Get the Error Log entries for each one
                         (0..$OldestErrorLogNumber).ForEach{
@@ -740,7 +740,7 @@ function Assert-BuiltInAdmin {
 
 function Assert-LoginAuditSuccessful {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.LoginAuditSuccessful.AuditLevel | Should -Be "All" -Because "We exepcted the audit level to be set to capture all logins (successfull and failed)"
+    $AllInstanceInfo.LoginAuditSuccessful.AuditLevel | Should -Be "All" -Because "We expected the audit level to be set to capture all logins (successful and failed)"
 }
 
 function Assert-LoginAuditFailed {
