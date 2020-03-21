@@ -64,12 +64,12 @@ Return
 
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, Medium, $filename {
         if($IsCoreCLR){
-            Context "Testing disk allocation unit on $psitem" { 
+            Context "Testing disk allocation unit on $psitem" {
                 It "Can't run this check on Core on $psitem" -Skip {
                     $true | Should -BeTrue
                 }
             }
-        } 
+        }
         else {
             Context "Testing disk allocation unit on $psitem" {
                 $computerName = $psitem
