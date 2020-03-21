@@ -11,11 +11,11 @@ function Get-ClusterObject {
     # Don't think you can use the cluster name here it won't run remotely
     try {
         $ErrorActionPreference = 'Stop'
-        $return.Cluster = (Get-Cluster -Name $clustervm)
-        $return.Nodes = (Get-ClusterNode -Cluster $clustervm)
-        $return.Resources = (Get-ClusterResource -Cluster $clustervm)
-        $return.Network = (Get-ClusterNetwork -Cluster $clustervm)
-        $return.Groups = (Get-ClusterGroup -Cluster $clustervm)
+        $return.Cluster = (Get-Cluster -Name $ClusterVM)
+        $return.Nodes = (Get-ClusterNode -Cluster $ClusterVM)
+        $return.Resources = (Get-ClusterResource -Cluster $ClusterVM)
+        $return.Network = (Get-ClusterNetwork -Cluster $ClusterVM)
+        $return.Groups = (Get-ClusterGroup -Cluster $ClusterVM)
         $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
     }
     catch {
@@ -30,12 +30,33 @@ function Get-ClusterObject {
     #Add all the AGs
     foreach ($Ag in $return.AGs) {
         try {
-            $return.AvailabilityGroups[$AG.Name] = Get-DbaAvailabilityGroup -SqlInstance $Ag.OwnerNode.Name -AvailabilityGroup $AG.Name
+            # Because several replicas can be on the same cluster node,
+            # cluster node can appear several times, then we want to
+            # avoid duplicate detection of replicas
+            If ($PreviousClusterNode -ne $AGResource.OwnerNode.Name) {
+                $PreviousClusterNode = $AGResource.OwnerNode.Name
+                # We get cluster node owner first ...
+                # We need then for each owner to find out the corresponding replicas => SQL Instance Name + Port
+                $Replicas = Find-DbaInstance -ComputerName $AGResource.OwnerNode.Name
+            }
+
+            # Finally for each replica detected (SQL Server + Port)
+            # We try to find the corresponding AG(s) info
+            foreach ($replica in $Replicas){
+                $AGs = Get-DbaAvailabilityGroup -SqlInstance "$($replica.ComputerName),$($replica.Port)"
+
+                foreach ($AG in $AGs){
+                    If ($AG.AvailabilityGroup -eq $AGResource.Name) {
+                        $return.AvailabilityGroups[$AGResource.Name] = $AG
+                    }
+                }
+            }
         }
         catch {
             $return = $null
         }
     }
+
     Return $return
 }
 
@@ -66,15 +87,19 @@ else {
 
 # Grab some values
 $clusters = Get-DbcConfigValue app.cluster
-$skiplistener = Get-DbcConfigValue skip.hadr.listener.pingcheck
+$skipaglistenerping = Get-DbcConfigValue skip.hadr.listener.pingcheck
+# $skipaglistenertcpport = Get-DbcConfigValue skip.hadr.listener.tcpport # to stop the pester failing
+$skipreplicatcpport = Get-DbcConfigValue skip.hadr.replica.tcpport
 $domainname = Get-DbcConfigValue domain.name
-$tcpport = Get-DbcConfigValue policy.hadr.tcpport
+# $agtcpport = Get-DbcConfigValue policy.hadr.agtcpport # to stop the pester failing
+$sqltcpport = Get-DbcConfigValue policy.hadr.tcpport
 
 #Check for Cluster config value
 if ($clusters.Count -eq 0) {
     Write-Warning "No Clusters to look at. Please use Set-DbcConfig -Name app.cluster to add clusters for checking"
     break
 }
+
 
 foreach ($clustervm in $clusters) {
     try {
@@ -87,7 +112,7 @@ foreach ($clustervm in $clusters) {
     }
 
     Describe "Cluster $clustername Health using Node $clustervm" -Tags ClusterHealth, $filename {
-        $return = @(Get-ClusterObject -Clustervm $clustervm)
+        $return = @(Get-ClusterObject -ClusterVM $clustervm)
 
         Context "Cluster nodes for $clustername" {
             @($return.Nodes).ForEach{
@@ -118,11 +143,14 @@ foreach ($clustervm in $clusters) {
             }
         }
 
-        Context "HADR status for $clustername" {
-            @($return.Nodes).ForEach{
-                It "HADR should be enabled on the node $($psitem.Name)" {
+        $AGs = $return.AGs.Name
+        foreach ($AGName in $AGs) {
+            $AG = @($return.AvailabilityGroups[$AGName])
+
+            Context "HADR status for $($AG.SqlInstance) on $clustername" {
+                It "HADR should be enabled on the replica $($AG.SqlInstance)" {
                     try {
-                        $HADREnabled = (Get-DbaAgHadr -SqlInstance $psitem.Name -WarningAction SilentlyContinue).IsHadrEnabled
+                        $HADREnabled = (Get-DbaAgHadr -SqlInstance $AG.SqlInstance -WarningAction SilentlyContinue).IsHadrEnabled
                     }
                     catch {
                         $HADREnabled = $false
@@ -130,10 +158,6 @@ foreach ($clustervm in $clusters) {
                     $HADREnabled | Should -BeTrue -Because 'All of the nodes should have HADR enabled'
                 }
             }
-        }
-        $Ags = $return.AGs.Name
-        foreach ($Name in $Ags) {
-            $Ag = @($return.AvailabilityGroups[$Name])
 
             Context "Cluster Connectivity for Availability Group $($AG.Name) on $clustername" {
                 @($AG.AvailabilityGroupListeners).ForEach{
@@ -149,7 +173,7 @@ foreach ($clustervm in $clusters) {
                         }
                     }
 
-                    It "Listener $($results.SqlInstance) should be pingable" -skip:$skiplistener {
+                    It "Listener $($results.SqlInstance) should be pingable" -skip:$skipaglistenerping {
                         $results.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
                     }
                     It "Listener $($results.SqlInstance) should be able to connect with SQL" {
@@ -158,9 +182,7 @@ foreach ($clustervm in $clusters) {
                     It "Listener $($results.SqlInstance) domain name should be $domainname" {
                         $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
                     }
-                    It "Listener $($results.SqlInstance) TCP port should be in $tcpport" {
-                        $results.TCPPort | Should -BeIn $tcpport -Because "We expect the TCP Port to be in $tcpport"
-                    }
+
                 }
 
                 @($AG.AvailabilityReplicas).ForEach{
@@ -174,8 +196,13 @@ foreach ($clustervm in $clusters) {
                     It "Replica $($results.SqlInstance) domain name should be $domainname" {
                         $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
                     }
-                    It "Replica $($results.SqlInstance) TCP port should be in $tcpport" {
-                        $results.TCPPort | Should -BeIn $tcpport -Because "We expect the TCP Port to be in $tcpport"
+
+                    # Consolidated environments with multi-instances / AG replicas
+                    # In this case we cannot configure the same tcpport than those used for AG listeners
+                    # TCP port conflict
+                    # Adding exclusion for these scenarios
+                    It "Replica $($results.SqlInstance) TCP port should be in $tcpport" -Skip:$skipreplicatcpport {
+                        $results.TCPPort | Should -BeIn $sqltcpport -Because "We expect the TCP Port to be in $sqltcpport"
                     }
                 }
             }
@@ -237,11 +264,10 @@ foreach ($clustervm in $clusters) {
                     }
                 }
             }
-        }
-        @($return.Nodes).ForEach{
-            Context "Always On extended event status for replica $($psitem.Name) on $clustername" {
+
+            Context "Always On extended event status for replica $($AG.SqlInstance) on $clustername" {
                 try {
-                    $Xevents = Get-DbaXEsession -SqlInstance $psitem.Name -WarningAction SilentlyContinue
+                    $Xevents = Get-DbaXEsession -SqlInstance $AG.SqlInstance -WarningAction SilentlyContinue
                 }
                 catch {
                     $Xevents = 'FailedToConnect'
@@ -249,10 +275,10 @@ foreach ($clustervm in $clusters) {
                 It "Replica $($psitem.Name) should have an extended event session called AlwaysOn_health" {
                     $Xevents.Name | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
                 }
-                It "Replica $($psitem.Name) Always On Health extended event session should be running" {
+                It "Replica $($AG.SqlInstance) Always On Health extended event session should be running" {
                     $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.Status | Should -Be 'Running' -Because 'The extended event session will enable you to troubleshoot errors'
                 }
-                It "Replica $($psitem.Name) Always On Health extended event session should be set to auto start" {
+                It "Replica $($AG.SqlInstance) Always On Health extended event session should be set to auto start" {
                     $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.AutoStart | Should -BeTrue  -Because 'The extended event session will enable you to troubleshoot errors'
                 }
             }

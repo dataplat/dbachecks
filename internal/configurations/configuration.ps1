@@ -112,7 +112,9 @@ Set-PSFConfig -Module dbachecks -Name policy.connection.pingmaxms -Value 10 -Ini
 Set-PSFConfig -Module dbachecks -Name policy.connection.pingcount -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
 
 #HADR
-Set-PSFConfig -Module dbachecks -Name policy.hadr.tcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.agtcpport -Value "" -Initialize -Description "The TCPPort for the HADR listener check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.tcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR replica check"
+
 
 #Dump Files
 Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize -Description "Maximum number of expected dumps"
@@ -228,6 +230,9 @@ Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validati
 Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
+Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
+Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR AG Listener TCP port number (If port number is not standard across the entire AG architecture)"
+Set-PSFConfig -Module dbachecks -Name skip.hadr.replica.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR Replica TCP port number (If port number is not standard across the entire AG architecture)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
 Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
