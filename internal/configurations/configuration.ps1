@@ -243,7 +243,6 @@ Set-PSFConfig -Module dbachecks -Name skip.security.sqlagentproxiesnopublicrole 
 Set-PSFConfig -Module dbachecks -Name skip.security.symmetrickeyencryptionlevel -Validation bool -Value $true -Initialize -Description "Skips the test for if the Symmetric Encryption is at least AES_128 or higher in non-system databases"
 Set-PSFConfig -Module dbachecks -Name skip.security.asymmetrickeysize -Validation bool -Value $true -Initialize -Description "Skips the test for the size of the Assymetric Key sizes being above 2048 in non-system databases"
 Set-PSFConfig -Module dbachecks -Name skip.security.hideinstance -Validation bool -Value $true -Initialize -Description "Skips the scan for if hide instance is set to YES on the instance"
-
 Set-PSFConfig -Module dbachecks -Name skip.security.clrassembliessafe -Validation bool -Value $true -Initialize -Description "Skips the scan for CLR Assemblies set to SAFE_ACCESS"
 Set-PSFConfig -Module dbachecks -Name skip.security.engineserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Engine account is a local administrator"
 Set-PSFConfig -Module dbachecks -Name skip.security.agentserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Agent account is a local administrator"
@@ -255,8 +254,9 @@ Set-PSFConfig -Module dbachecks -Name skip.security.publicrolepermission -Valida
 Set-PSFConfig -Module dbachecks -Name skip.security.builtinadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for BUILTIN\Administrators login"
 Set-PSFConfig -Module dbachecks -Name skip.security.guestuserconnect -Validation bool -Value $true -Initialize -Description "Skips the scan for guest user have CONNECT permission"
 Set-PSFConfig -Module dbachecks -Name skip.agent.alert -Validation bool -Value $false -Initialize -Description "Skips the agent alerts checks"
-
-
+Set-PSFConfig -Module dbachecks -Name skip.security.LoginCheckPolicy -Validation bool -Value $true -Initialize -Description "Skips the scan for CHECK_POLICY on for all logins"
+Set-PSFConfig -Module dbachecks -Name skip.security.LoginPasswordExpiration -Validation bool -Value $true -Initialize -Description "Skips the scan for password expiration on for all logins in sysadmin role"
+Set-PSFConfig -Module dbachecks -Name skip.security.LoginMustChange -Validation bool -Value $true -Initialize -Description "Skips the scan for new logins must have password change turned on"
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"

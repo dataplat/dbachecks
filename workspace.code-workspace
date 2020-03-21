@@ -2,6 +2,12 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "C:\\Github\\dbadisa"
+		},
+		{
+			"path": "C:\\Github\\dbatools"
 		}
 	],
 	"settings": {

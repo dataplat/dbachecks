@@ -984,7 +984,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing if failed login auditing is in place on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -1002,7 +1002,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing if successful and failed login auditing is in place on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -1019,7 +1019,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Testing to see if the public role has access to the SQL Agent proxies on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -1037,7 +1037,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         if ($NotContactable -contains $psitem) {
             Context "Checking the Hide an Instance of SQL Server Database Engine property on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
-                    $false	|  Should -BeTrue -Because "The instance should be available to be connected to!"
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
@@ -1059,7 +1059,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
-            if($IsCoreCLR){
+            if ($IsCoreCLR) {
                 $Skip = $true
             }
             Context "Testing whether SQL Engine account is a local administrator on $psitem" {
@@ -1080,7 +1080,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
-            if($IsCoreCLR){
+            if ($IsCoreCLR) {
                 $Skip = $true
             }
             Context "Testing whether SQL Agent account is a local administrator on $psitem" {
@@ -1101,12 +1101,65 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
-            if($IsCoreCLR){
+            if ($IsCoreCLR) {
                 $Skip = $true
             }
             Context "Testing whether SQL Full Text account is a local administrator on  $psitem" {
                 It "The SQL Full Text service account should not be a local administrator on $psitem" -Skip:$skip {
                     Assert-FullTextServiceAdmin -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+    Describe "Login Check Policy" -Tags LoginCheckPolicy, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.LoginCheckPolicy
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if the CHECK_POLICY is enabled on all logins on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if the CHECK_POLICY is enabled on all logins on $psitem" {
+                It "All logins should have the CHECK_POLICY option set to ON on $psitem" -Skip:$skip {
+                    Assert-LoginCheckPolicy -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Login Password Expiration" -Tags LoginPasswordExpiration, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.LoginPasswordExpiration
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if the login password expiration is enabled for sql logins in the sysadmin role $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if the login password expiration is enabled for sql logins in the sysadmin role on $psitem" {
+                It "All sql logins should have the password expiration option set to ON in the sysadmin role on $psitem" -Skip:$skip {
+                    Assert-LoginPasswordExpiration -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Login Must Change" -Tags LoginMustChange, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.LoginMustChange
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if the new SQL logins that have not logged have to change their password when they log in on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if the new SQL logins that have not logged have to change their password when they log in on $psitem" -Skip:$skip {
+                It "All new sql logins should have the have to change their password when they log in for the first time on $psitem" {
+                    Assert-LoginMustChange -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }
