@@ -237,19 +237,19 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                         Context "Testing Agent Alerts MessageID exists on $psitem" {
                             ForEach ($mid in $messageid) {
-                                It "$psitem should have Message_ID $mid Alert" {
+                                It "$psitem should have Message_ID $mid Alert" -Skip:$skip{
                                     ($alerts.Where{ $psitem.messageid -eq $mid }) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
                                 }
-                                It "$psitem should have Message_ID $mid Alert enabled" {
+                                It "$psitem should have Message_ID $mid Alert enabled" -Skip:$skip{
                                     ($alerts.Where{ $psitem.messageid -eq $mid }) | Should -be $true -Because "Configured alerts should be enabled"
                                 }
                                 if ($AgentAlertJob) {
-                                    It "$psitem should have Job name for Message_ID $mid Alert" {
+                                    It "$psitem should have Job name for Message_ID $mid Alert" -Skip:$skip {
                                         ($alerts.Where{ $psitem.messageid -eq $mid }).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
                                     }
                                 }
                                 if ($AgentAlertNotification) {
-                                    It "$psitem should have notification for Message_ID $mid Alert" {
+                                    It "$psitem should have notification for Message_ID $mid Alert" -Skip:$skip {
                                         ($alerts.Where{ $psitem.messageid -eq $mid }).HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -be $true -Because "Should notify by Agent notifications"
                                     }
                                 }
