@@ -88,10 +88,10 @@ else {
 # Grab some values
 $clusters = Get-DbcConfigValue app.cluster
 $skipaglistenerping = Get-DbcConfigValue skip.hadr.listener.pingcheck
-$skipaglistenertcpport = Get-DbcConfigValue skip.hadr.listener.tcpport
+# $skipaglistenertcpport = Get-DbcConfigValue skip.hadr.listener.tcpport # to stop the pester failing
 $skipreplicatcpport = Get-DbcConfigValue skip.hadr.replica.tcpport
 $domainname = Get-DbcConfigValue domain.name
-$agtcpport = Get-DbcConfigValue policy.hadr.agtcpport
+# $agtcpport = Get-DbcConfigValue policy.hadr.agtcpport # to stop the pester failing
 $sqltcpport = Get-DbcConfigValue policy.hadr.tcpport
 
 #Check for Cluster config value
