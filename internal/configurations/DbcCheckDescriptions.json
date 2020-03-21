@@ -467,6 +467,22 @@
         "Description": "Tests that each hide instance is set to YES for the instance."
     },
     {
+        "UniqueTag": "CLRAssembliesSafe",
+        "Description": "Tests that CLR assembly permissions are set to SAFE_ACCESS."
+    },
+    {
+        "UniqueTag": "EngineServiceAdmin",
+        "Description": "Tests that the SQL Engine service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "AgentServiceAdmin",
+        "Description": "Tests that the SQL Agent service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "FullTextServiceAdmin",
+        "Description": "Tests that the SQL Full Text service account is not a local administrator."
+    },
+    {
         "UniqueTag": "LoginAuditFailed",
         "Description": "Tests that server level logins are recorded for failed logins."
     },
@@ -489,5 +505,17 @@
     {
         "UniqueTag": "BuiltInAdmin",
         "Description": "Tests to see if the BUILTIN\\Administrator login exist."
+    },
+    {
+        "UniqueTag": "LoginCheckPolicy",
+        "Description": "Tests to see if CHECK_POLICY property is set for all logins."
+    },
+    {
+        "UniqueTag": "LoginPasswordExpiration",
+        "Description": "Tests to see if password expiration policy is set for sql logins in sysadmin role."
+    },
+    {
+        "UniqueTag": "LoginMustChange",
+        "Description": "Tests to see if password must change is enabled for new logins."
     }
 ]

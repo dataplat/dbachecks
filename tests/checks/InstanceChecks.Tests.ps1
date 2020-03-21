@@ -1088,7 +1088,7 @@ InModuleScope dbachecks {
                 # Mock for success
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
                     SaExist = [PSCustomObject]@{
-                        Exist = $false
+                        Exist = 0
                     }
                 }
             }
@@ -1099,10 +1099,10 @@ InModuleScope dbachecks {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo {[PSCustomObject]@{
                     SaExist = [PSCustomObject]@{
-                        Exist = $true
+                        Exist = 1
                         }
                     }}
-                {Assert-SaExist -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected `$false, because We expected no login to exist with the name sa, but got `$true."
+                {Assert-SaExist -AllInstanceInfo (Get-AllInstanceInfo)} | Should -Throw -ExpectedMessage "Expected 0, because We expected no login to exist with the name sa, but got 1."
             }
         }
     }

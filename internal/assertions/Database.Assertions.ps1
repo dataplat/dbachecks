@@ -81,6 +81,14 @@ function Assert-GuestUserConnect {
     $guestperms.Count | Should -Be 0 -Because "We expect the guest user in $Database on $Instance to not have CONNECT permissions"
 }
 
+function Assert-CLRAssembliesSafe {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    @(Get-DbaDbEncryption -SqlInstance $Instance -Database $Database | Where-Object {$_.Encryption -eq "Symmetric Key" -and $_.KeyLength -LT 2048}).Count | Should -Be 0 -Because "Symmetric keys should have a key length greater than or equal to 2048"
+}
+
 function Assert-AsymmetricKeySize {
     Param (
         [string]$Instance,
