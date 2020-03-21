@@ -7,6 +7,10 @@ Thank you Rob
     Getting service accounts tests to pass if no service
     Made long running jobs check work as expected
     Improved Database Mail check
+    Made sure disk allocations dont run on Core
+
+Thank you mikedavem
+    Fixed bug in disk allocation check exclusions
 
 ##Latest
 
