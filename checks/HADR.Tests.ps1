@@ -7,7 +7,7 @@ function Get-ClusterObject {
         [string]$ClusterVM
     )
 
-    [pscustomobject]$return = @{}
+    [pscustomobject]$return = @{ }
     # Don't think you can use the cluster name here it won't run remotely
     try {
         $ErrorActionPreference = 'Stop'
@@ -26,7 +26,7 @@ function Get-ClusterObject {
         $return.Groups = 'FailedToConnect'
         $return.AGs = 'FailedToConnect'
     }
-    $return.AvailabilityGroups = @{}
+    $return.AvailabilityGroups = @{ }
     #Add all the AGs
     foreach ($Ag in $return.AGs) {
         try {
@@ -44,15 +44,22 @@ function Get-ClusterObject {
 # needs the failover cluster module
 if (-not (Get-Module FailoverClusters)) {
     try {
-        if($IsCoreCLR){
+        if ($IsCoreCLR) {
             Stop-PSFFunction -Message "FailoverClusters module cannot be loaded in PowerShell Core unfortunately" -ErrorRecord $psitem
-        return
-        }else{
+            return
+        }
+        else {
             Import-Module FailoverClusters -ErrorAction Stop
         }
     }
     catch {
         Stop-PSFFunction -Message "FailoverClusters module could not load - Please install the Failover Cluster module using Windows Features " -ErrorRecord $psitem
+        return
+    }
+}
+else {
+    if ($IsCoreCLR) {
+        Stop-PSFFunction -Message "FailoverClusters module cannot be loaded in PowerShell Core unfortunately" -ErrorRecord $psitem
         return
     }
 }
@@ -70,11 +77,11 @@ if ($clusters.Count -eq 0) {
 }
 
 foreach ($clustervm in $clusters) {
-    try{
-    # pick the name here for the output - we cant use it as we are accessing remotely
-    $clustername = (Get-Cluster -Name $clustervm -ErrorAction Stop).Name
+    try {
+        # pick the name here for the output - we cant use it as we are accessing remotely
+        $clustername = (Get-Cluster -Name $clustervm -ErrorAction Stop).Name
     }
-    catch{
+    catch {
         # so that we dont get the error and Get-ClusterObject fills it as FailedtoConnect
         $clustername = $clustervm
     }
@@ -97,9 +104,9 @@ foreach ($clustervm in $clusters) {
                 }
             }
             # Get the resources where IP Address is owned by AG and group by AG
-            @($return.Resources.Where{$_.ResourceType -eq 'IP Address' -and $_.OwnerGroup -in $return.AGs} | Group-Object -Property OwnerGroup).ForEach{
+            @($return.Resources.Where{ $_.ResourceType -eq 'IP Address' -and $_.OwnerGroup -in $return.AGs } | Group-Object -Property OwnerGroup).ForEach{
                 It "One of the IP Addresses for Availability Group $($Psitem.Name) Should be online" {
-                    $psitem.Group.Where{$_.State -eq 'Online'}.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
+                    $psitem.Group.Where{ $_.State -eq 'Online' }.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
                 }
             }
         }
@@ -130,15 +137,15 @@ foreach ($clustervm in $clusters) {
 
             Context "Cluster Connectivity for Availability Group $($AG.Name) on $clustername" {
                 @($AG.AvailabilityGroupListeners).ForEach{
-                    try{
+                    try {
                         $results = Test-DbaConnection -sqlinstance $_.Name
                     }
-                    Catch{
+                    Catch {
                         $results = [PSCustomObject]@{
-                            IsPingable = $false
-                            ConnectSuccess  = $false
-                            DomainName  = $false
-                            TCPPort  = $false
+                            IsPingable     = $false
+                            ConnectSuccess = $false
+                            DomainName     = $false
+                            TCPPort        = $false
                         }
                     }
 
@@ -197,7 +204,7 @@ foreach ($clustervm in $clusters) {
             }
 
             Context "Database availability group status for $($AG.Name) on $clustername" {
-                @($ag.AvailabilityReplicas.Where{$_.AvailabilityMode -eq 'SynchronousCommit' }).ForEach{
+                @($ag.AvailabilityReplicas.Where{ $_.AvailabilityMode -eq 'SynchronousCommit' }).ForEach{
                     @(Get-DbaAgDatabase -SqlInstance $psitem.Name -AvailabilityGroup $Ag.Name).ForEach{
                         It "Database $($psitem.DatabaseName) should be synchronised on the replica $($psitem.Replica)" {
                             $psitem.SynchronizationState | Should -Be 'Synchronized'  -Because 'The database on the synchronous replica should be synchronised'
@@ -213,7 +220,7 @@ foreach ($clustervm in $clusters) {
                         }
                     }
                 }
-                @($ag.AvailabilityReplicas.Where{$_.AvailabilityMode -eq 'AsynchronousCommit' }).ForEach{
+                @($ag.AvailabilityReplicas.Where{ $_.AvailabilityMode -eq 'AsynchronousCommit' }).ForEach{
                     @(Get-DbaAgDatabase -SqlInstance $PSItem.Name -AvailabilityGroup $Ag.Name).ForEach{
                         It "Database $($psitem.DatabaseName) should be synchronising on the secondary as it is Async" {
                             $psitem.SynchronizationState | Should -Be 'Synchronizing' -Because 'The database on the asynchronous secondary replica should be synchronising'
@@ -240,7 +247,7 @@ foreach ($clustervm in $clusters) {
                     $Xevents = 'FailedToConnect'
                 }
                 It "Replica $($psitem.Name) should have an extended event session called AlwaysOn_health" {
-                    $Xevents.Name  | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
+                    $Xevents.Name | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
                 }
                 It "Replica $($psitem.Name) Always On Health extended event session should be running" {
                     $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.Status | Should -Be 'Running' -Because 'The extended event session will enable you to troubleshoot errors'
