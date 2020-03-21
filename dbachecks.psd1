@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.2.24'
+    ModuleVersion          = '1.2.25'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -134,17 +134,11 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 8th January 2020
+## Date 14th March 2020
 Thank you Tracey tboggiano
-    New CIS Check Guest Account connect permissions #725
-    New CIS Check BuiltIn Admins login #726
-    New CIS Check public role permissions #729
-    New CIS Check local windows groups do not have logins #731
-    Update sa login check #730
-
-Thank you Rob
-    Added Tag parameter to Get-DbcCheck
-    Updated tests to work with PowerShell 7
+            New CIS Check Hide Instance #728
+            New CIS Check Symmetric Key #732
+            New CIS Check Agent Proxy not have access to public Role #732
 
 ##Latest
 

@@ -102,14 +102,17 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityBuiltinadmin <Object>]
- [-ConfigSkipSecurityContainedbautoclose <Object>] [-ConfigSkipSecurityGuestuserconnect <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityAsymmetrickeysize <Object>]
+ [-ConfigSkipSecurityBuiltinadmin <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
+ [-ConfigSkipSecurityGuestuserconnect <Object>] [-ConfigSkipSecurityHideinstance <Object>]
  [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
  [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
  [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
- [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
- [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
- [-ConfigSkipTempdbfilesonc <Object>] [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
+ [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
+ [-ConfigSkipSecuritySymmetrickeyencryptionlevel <Object>] [-ConfigSkipTempdb1118 <Object>]
+ [-ConfigSkipTempdbfilecount <Object>] [-ConfigSkipTempdbfilegrowthpercent <Object>]
+ [-ConfigSkipTempdbfilesizemax <Object>] [-ConfigSkipTempdbfilesonc <Object>]
+ [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
 ```
 
 ### NewOutputSet
@@ -209,14 +212,17 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityBuiltinadmin <Object>]
- [-ConfigSkipSecurityContainedbautoclose <Object>] [-ConfigSkipSecurityGuestuserconnect <Object>]
+ [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityAsymmetrickeysize <Object>]
+ [-ConfigSkipSecurityBuiltinadmin <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
+ [-ConfigSkipSecurityGuestuserconnect <Object>] [-ConfigSkipSecurityHideinstance <Object>]
  [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
  [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
  [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
- [-ConfigSkipTempdb1118 <Object>] [-ConfigSkipTempdbfilecount <Object>]
- [-ConfigSkipTempdbfilegrowthpercent <Object>] [-ConfigSkipTempdbfilesizemax <Object>]
- [-ConfigSkipTempdbfilesonc <Object>] [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
+ [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
+ [-ConfigSkipSecuritySymmetrickeyencryptionlevel <Object>] [-ConfigSkipTempdb1118 <Object>]
+ [-ConfigSkipTempdbfilecount <Object>] [-ConfigSkipTempdbfilegrowthpercent <Object>]
+ [-ConfigSkipTempdbfilesizemax <Object>] [-ConfigSkipTempdbfilesonc <Object>]
+ [-ConfigTestingIntegrationInstance <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -3382,6 +3388,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigSkipSecurityAsymmetrickeysize
+{{ Fill ConfigSkipSecurityAsymmetrickeysize Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigSkipSecurityBuiltinadmin
 {{ Fill ConfigSkipSecurityBuiltinadmin Description }}
 
@@ -3414,6 +3435,21 @@ Accept wildcard characters: False
 
 ### -ConfigSkipSecurityGuestuserconnect
 {{ Fill ConfigSkipSecurityGuestuserconnect Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityHideinstance
+{{ Fill ConfigSkipSecurityHideinstance Description }}
 
 ```yaml
 Type: Object
@@ -3504,6 +3540,36 @@ Accept wildcard characters: False
 
 ### -ConfigSkipSecuritySaexist
 {{ Fill ConfigSkipSecuritySaexist Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecuritySqlagentproxiesnopublicrole
+{{ Fill ConfigSkipSecuritySqlagentproxiesnopublicrole Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecuritySymmetrickeyencryptionlevel
+{{ Fill ConfigSkipSecuritySymmetrickeyencryptionlevel Description }}
 
 ```yaml
 Type: Object

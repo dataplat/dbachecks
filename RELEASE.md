@@ -1,3 +1,21 @@
+## Date 18th March 2020
+Thank you Tracey tboggiano
+    New CIS user-defined CLRs to be set to SAFE_ACCESS #734
+    CIS tests for if service accounts are local admins #736
+
+Thank you Rob
+    Getting service accounts tests to pass if no service
+    Made long running jobs check work as expected
+    Improved Database Mail check
+
+##Latest
+
+## Date 14th March 2020
+Thank you Tracey tboggiano
+    New CIS Check Hide Instance #728
+    New CIS Check Symmetric Key #732
+    New CIS Check Agent Proxy not have access to public Role #732
+
 ## Date 8th January 2020
 Thank you Tracey tboggiano
     New CIS Check Guest Account connect permissions #725
@@ -9,8 +27,6 @@ Thank you Tracey tboggiano
 Thank you Rob
     Added Tag parameter to Get-DbcCheck
     Updated tests to work with PowerShell 7
-
-##Latest
 
 ## Date 22nd December
 Thank you Tracey tboggiano
