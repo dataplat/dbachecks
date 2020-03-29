@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.2.25'
+    ModuleVersion          = '1.2.26'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -32,7 +32,7 @@
     PowerShellVersion      = '5.0'
 
     # Supported PSEditions
-    # CompatiblePSEditions = 'Desktop', 'Core' # Cant pu thtis in until a decision is made to make minimum version 5.1 :-(
+    CompatiblePSEditions = 'Desktop', 'Core' # Cant put this in until a decision is made to make minimum version 5.1 :-(
 
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName     = ''
@@ -103,7 +103,7 @@
 
     # Aliases to export from this module
     # Aliases are stored in dbachecks.psm1
-    AliasesToExport        = 'Update-Dbchecks'
+    AliasesToExport        = 'Update-Dbachecks'
 
     # List of all modules packaged with this module
     ModuleList             = @()
@@ -134,11 +134,20 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 14th March 2020
+## Date 18th March 2020
 Thank you Tracey tboggiano
-            New CIS Check Hide Instance #728
-            New CIS Check Symmetric Key #732
-            New CIS Check Agent Proxy not have access to public Role #732
+            New CIS user-defined CLRs to be set to SAFE_ACCESS #734
+            CIS tests for if service accounts are local admins #736
+
+Thank you Rob
+            Getting service accounts tests to pass if no service
+            Made long running jobs check work as expected
+            Improved Database Mail check
+            Made sure disk allocations dont run on Core
+
+Thank you mikedavem
+            Fixed bug in disk allocation check exclusions
+            Added multiple ags to the HADR check #742
 
 ##Latest
 

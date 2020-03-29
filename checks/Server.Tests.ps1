@@ -63,15 +63,27 @@ Return
     }
 
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, Medium, $filename {
-        Context "Testing disk allocation unit on $psitem" {
-            $computerName = $psitem
-            $excludedisks = Get-DbcConfigValue policy.server.excludeDiskAllocationUnit
-            @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
-                if($Psitem.Name -in $excludedisks){
-                    $exclude = $true
+        if($IsCoreCLR){
+            Context "Testing disk allocation unit on $psitem" {
+                It "Can't run this check on Core on $psitem" -Skip {
+                    $true | Should -BeTrue
                 }
-                It "$($Psitem.Name) Should be set to 64kb on $computerName" -Skip:$exclude {
-                    Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
+            }
+        }
+        else {
+            Context "Testing disk allocation unit on $psitem" {
+                $computerName = $psitem
+                $excludedisks = Get-DbcConfigValue policy.server.excludeDiskAllocationUnit
+                @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
+                    if($Psitem.Name -in $excludedisks){
+                        $exclude = $true
+                    }
+                    else {
+                        $exclude = $false
+                    }
+                    It "$($Psitem.Name) Should be set to 64kb on $computerName" -Skip:$exclude {
+                        Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
+                    }
                 }
             }
         }
