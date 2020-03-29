@@ -155,21 +155,21 @@ function Get-AllServerInfo {
         'NonStandardPort' {
             if ($There) {
                 try {
-                    $count = (Find-DbaInstance -ComputerName $ComputerNam -TCPPort 1433).Count
-                    $NonStandardPort = [pscustomobject] @{
+                    $count = (Find-DbaInstance -ComputerName $ComputerName -TCPPort 1433).Count
+                    $StandardPortCount = [pscustomobject] @{
                         Count = $count
                     }
                 }
                 catch {
                     $There = $false
-                    $NonStandardPort = [pscustomobject] @{
+                    $StandardPortCount = [pscustomobject] @{
                         Count = 'We Could not Connect to $Instance'
                     }
                 }
             }
             else {
                 $There = $false
-                $NonStandardPort = [pscustomobject] @{
+                $StandardPortCount = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
                 }
             }
@@ -182,7 +182,7 @@ function Get-AllServerInfo {
         DiskSpace      = $DiskSpace
         PingComputer   = $PingComputer
         DiskAllocation = $DiskAllocation
-        NonStandardPort = $NonStandardPort
+        StandardPortCount = $StandardPortCount
     }
 }
 
@@ -239,8 +239,8 @@ function Assert-Ping {
 }
 
 function Assert-NonStandardPort {
-    Param($NonStandardPort)
-    $NonStandardPort.count | Should -0 -Because "SQL Server should be configured not configured on the non standard port of 1433"
+    Param($AllServerInfo)
+    $AllServerInfo.StandardPortCount.count | Should -Be 0 -Because "SQL Server should be configured to not use the standard port of 1433"
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
