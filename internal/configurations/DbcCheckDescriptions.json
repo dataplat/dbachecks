@@ -517,5 +517,9 @@
     {
         "UniqueTag": "LoginMustChange",
         "Description": "Tests to see if password must change is enabled for new logins."
+    },
+    {
+        "UniqueTag": "NonStandardPorts",
+        "Description": "Tests to see SQL Server Instances are running on the default port of 1433."
     }
 ]
