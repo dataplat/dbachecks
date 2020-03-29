@@ -2,7 +2,8 @@
 Thank you @dstrait
     Fix variable for SaDisabled check #750
     Fix errant braces in SQL Browser Service Check #751
-
+    Fix PingComputer Check #752
+    
 Thank you Rob
     Some spellings!
 
