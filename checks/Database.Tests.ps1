@@ -1054,7 +1054,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing contained database to see if sql authenticated users exist on $psitem" {
                 @($InstanceSMO.Databases.Where{$psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    if($InstanceSMO.Version.Major -lt 13 ){$skip = $true}
+                    if($version -lt 13 ){$skip = $true}
                     It "$($psitem.Name) on $($psitem.Parent.Name) should have no sql authenticated users" -Skip:$skip  {
                         Assert-ContainedDBSQLAuth -Instance $InstanceSMO -Database $($psitem.Name)
                     }
@@ -1064,8 +1064,10 @@ $ExcludedDatabases += $ExcludeDatabase
      }
 
      Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
+        $QSExcludedDatabases = Get-DbcConfigValue database.querystore.excludedb
         $exclude = "master", "tempdb" ,"msdb"
         $ExcludedDatabases += $exclude
+        $QSExcludedDatabases += $ExcludedDatabases
         $Skip = ($InstanceSMO.Version.Major -ge 13 )
         if ($NotContactable -contains $psitem) {
             Context "Testing to see if Query Store is enabled on $psitem" {
@@ -1077,8 +1079,8 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing to see if Query Store is enabled on $psitem" {
-                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
-                    It "Query Store be enabled in $($psitem.Name) on $Instance" -Skip:($InstanceSMO.Version.Major -lt 13 ) {
+                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$QSExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                    It "Query Store be enabled in $($psitem.Name) on $Instance" -Skip:($version -lt 13 ) {
                         Assert-QueryStoreEnabled -Instance $InstanceSMO -Database $($psitem.Name)
                     }
                 }
