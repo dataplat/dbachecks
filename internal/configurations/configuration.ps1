@@ -259,14 +259,11 @@ Set-PSFConfig -Module dbachecks -Name skip.security.localwindowsgroup -Validatio
 Set-PSFConfig -Module dbachecks -Name skip.security.publicrolepermission -Validation bool -Value $true -Initialize -Description "Skips the scan for if the public server role has permissions"
 Set-PSFConfig -Module dbachecks -Name skip.security.builtinadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for BUILTIN\Administrators login"
 Set-PSFConfig -Module dbachecks -Name skip.security.guestuserconnect -Validation bool -Value $true -Initialize -Description "Skips the scan for guest user have CONNECT permission"
-<<<<<<< HEAD
 Set-PSFConfig -Module dbachecks -Name skip.security.ContainedDBSQLAuth -Validation bool -Value $true -Initialize -Description "Skips the scan for if a contained database as sql authenticated users"
-=======
 Set-PSFConfig -Module dbachecks -Name skip.agent.alert -Validation bool -Value $false -Initialize -Description "Skips the agent alerts checks"
 Set-PSFConfig -Module dbachecks -Name skip.security.LoginCheckPolicy -Validation bool -Value $true -Initialize -Description "Skips the scan for CHECK_POLICY on for all logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.LoginPasswordExpiration -Validation bool -Value $true -Initialize -Description "Skips the scan for password expiration on for all logins in sysadmin role"
 Set-PSFConfig -Module dbachecks -Name skip.security.LoginMustChange -Validation bool -Value $true -Initialize -Description "Skips the scan for new logins must have password change turned on"
->>>>>>> development
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"

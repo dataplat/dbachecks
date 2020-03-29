@@ -117,5 +117,5 @@ function Assert-ContainedDBSQLAuth {
         [string]$Instance,
         [string]$Database
     )
-    @(Get-DbaDbUser -SQLInstance $Instance -Database $Database | Where-Object {$_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true}).Count | Should -Be 0 -Because "We expect there to be no sql authenicated users in contained database $Database on $Instance"
+    @(Get-DbaDbUser -SQLInstance $Instance -Database $Database | Where-Object {$_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true}).Count | Should -Be 0 -Because "We expect there to be no sql authenticated users in contained database $Database on $Instance"
 }

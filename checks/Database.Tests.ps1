@@ -1026,14 +1026,14 @@ $ExcludedDatabases += $ExcludeDatabase
         $skip = Get-DbcConfigValue skip.security.symmetrickeyencryptionlevel
         $ExcludedDatabases += "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
-            Context "Testing Symmetric Key Encruption Level at least AES_128 or higher on $psitem" -Skip:$skip {
+            Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" -Skip:$skip {
                 It "Can't Connect to $Psitem" -Skip:$skip  {
                     $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            Context "Testing Symmetric Key Encruption Level at least AES_128 or higher on $psitem" {
+            Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
                 @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) Symmetric Key Encryption Level should have AES_128 or higher" -Skip:$skip  {
                         Assert-SymmetricKeyEncryptionLevel -Instance $instance -Database $psitem
@@ -1061,11 +1061,11 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
      }
-    
+
      Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
         $exclude = "master", "tempdb"
         $ExcludedDatabases += $exclude
-    
+
         if ($NotContactable -contains $psitem) {
             Context "Testing to see if Query Store is enabled on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
