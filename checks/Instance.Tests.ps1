@@ -1016,7 +1016,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 }
 
-Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
+Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, CIS, High, $filename {
     @(Get-ComputerName).ForEach{
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Browser Service on $psitem" {
@@ -1029,28 +1029,31 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
             Context "Testing SQL Browser Service on $psitem" {
                 if (-not $IsLinux) {
                     $Services = Get-DbaService -ComputerName $psitem
-                    if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                        It "SQL browser service on $psitem should be Stopped as only one instance is installed" {
-                            $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
+                    $Instances = Find-DbaInstance -ComputerName $psitem -TCPPort 1433
+
+                    if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1 -and $Instances.Count -eq 1) {
+                        It "SQL browser service on $psitem should be Running as only one instance is installed and is running on port 1433" {
+                            $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'Unless there are multple instances you dont need the browser service or you not running on port 1433'
+                        }
+                    }
+                    else {
+                        It "SQL browser service on $psitem should be Stopped as multiple instances are installed or you have one instance not running on port 1433" {
+                            $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'You need the browser service with multiple instances' }
+                    }
+
+                    if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1 -and $Instances.Count -eq 1) {
+                        It "SQL browser service startmode should be Disabled on $psitem as only one instance is installed and is running port 1433" {
+                            $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service or you not running on the deault port of 1433' }
+                    }
+                    else {
+                        It "SQL browser service startmode should be Automatic on $psitem as multiple instances are installed or you are not running on the default port of 1433" {
+                            $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
                         }
                     }
                 }
                 else {
-                    It "SQL browser service on $psitem should be Running as multiple instances are installed" {
-                        $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'You need the browser service with multiple instances' }
-                }
-                if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                    It "SQL browser service startmode should be Disabled on $psitem as only one instance is installed" {
-                        $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service' }
-                }
-                else {
-                    It "SQL browser service startmode should be Automatic on $psitem as multiple instances are installed" {
-                        $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
+                    It "Running on Linux so can't check Services on $Psitem" -skip {
                     }
-                }
-            }
-            else {
-                It "Running on Linux so can't check Services on $Psitem" -skip {
                 }
             }
         }
