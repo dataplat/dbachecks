@@ -1,5 +1,7 @@
 ## Date 29th March 2020
 
+UPDATED MINIMUM POWERSHELL VERSION
+
 Updated Required versions of Pester, dbatools and PSFramework modules
 
 Thank you @dstrait
