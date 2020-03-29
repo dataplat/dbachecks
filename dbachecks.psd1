@@ -32,7 +32,7 @@
     PowerShellVersion      = '5.0'
 
     # Supported PSEditions
-    # CompatiblePSEditions = 'Desktop', 'Core' # Cant pu thtis in until a decision is made to make minimum version 5.1 :-(
+    CompatiblePSEditions = 'Desktop', 'Core' # Cant put this in until a decision is made to make minimum version 5.1 :-(
 
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName     = ''
@@ -103,7 +103,7 @@
 
     # Aliases to export from this module
     # Aliases are stored in dbachecks.psm1
-    AliasesToExport        = 'Update-Dbchecks'
+    AliasesToExport        = 'Update-Dbachecks'
 
     # List of all modules packaged with this module
     ModuleList             = @()

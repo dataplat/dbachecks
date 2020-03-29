@@ -206,10 +206,10 @@ function Assert-Ping {
     $pingmsmax = Get-DbcConfigValue policy.connection.pingmaxms
     switch ($type) {
         Ping {
-            $AllServerInfo.PingComputer.Count | Should -Be $pingcount -Because "We expect the server to respond to ping"
+            ($AllServerInfo.PingComputer).Count | Should -Be $pingcount -Because "We expect the server to respond to ping"
         }
         Average {
-            ($AllServerInfo.PingComputer | Measure-Object -Property ResponseTime -Average).Average / $pingcount | Should -BeLessThan $pingmsmax -Because "We expect the server to respond within $pingmsmax"
+            ($AllServerInfo.PingComputer | Measure-Object -Property Latency -Average).Average / $pingcount | Should -BeLessThan $pingmsmax -Because "We expect the server to respond within $pingmsmax"
         }
         Default {}
     }
