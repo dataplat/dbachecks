@@ -297,7 +297,7 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     #This needs to be done in query just in case the account had already been renamed
-                    $login = Get-DbaLogin -SqlInstance $server | Where-Object Id -eq 1
+                    $login = Get-DbaLogin -SqlInstance $Instance | Where-Object Id -eq 1
                     $SaDisabled = [pscustomobject] @{
                         Disabled = $login.IsDisabled
                     }
