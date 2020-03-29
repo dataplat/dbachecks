@@ -1,6 +1,10 @@
 ## Date 29th March 2020
 Thank you @dstrait
     Fix variable for SaDisabled check #750
+    Fix errant braces in SQL Browser Service Check #751
+
+Thank you Rob
+    Some spellings!
 
 ##Latest
 
@@ -211,7 +215,7 @@ Improved error handling for HADR checks
 ## Date 28/08/2018
 Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
 Ensured the Database parameter checks only the specified Databases - Thank you @jpomfret
-Updated Set-DbcConifg to allow Append to append arrays to arrays closes #535
+Updated Set-DbcConfig to allow Append to append arrays to arrays closes #535
 Altered json filename creation to avoid max characters error
 Altered PowerBi to display information correctly with filename changes
 
@@ -233,7 +237,7 @@ Improved performance of the ErrorLog checks
 Removed Send-DbcSendMailMessage until it can be re-coded
 
 ## Date 13/08/2018
-Fixed #504 by enabling FileName parameter on Update-PowerBiDataSouce
+Fixed #504 by enabling FileName parameter on Update-PowerBiDataSource
 Added in new function to begin to reduce the number of calls to each instance
 Reduced required Pester version to 4.3.1
 Further PowerShell V4 improvements
