@@ -1,3 +1,9 @@
+## Date 29th March 2020
+Thank you @dstrait
+    Fix variable for SaDisabled check #750
+
+##Latest
+
 ## Date 18th March 2020
 Thank you Tracey tboggiano
     New CIS user-defined CLRs to be set to SAFE_ACCESS #734
@@ -12,8 +18,6 @@ Thank you Rob
 Thank you mikedavem
     Fixed bug in disk allocation check exclusions
     Added multiple ags to the HADR check #742
-
-##Latest
 
 ## Date 14th March 2020
 Thank you Tracey tboggiano
