@@ -1,4 +1,7 @@
 ## Date 29th March 2020
+
+Updated Required versions of Pester, dbatools and PSFramework modules
+
 Thank you @dstrait
     Fix variable for SaDisabled check #750
     Fix errant braces in SQL Browser Service Check #751
