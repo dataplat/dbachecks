@@ -1,3 +1,35 @@
+## Date 29th March 2020
+Thank you @dstrait
+    Fix variable for SaDisabled check #750
+    Fix errant braces in SQL Browser Service Check #751
+    Fix PingComputer Check #752
+    
+Thank you Rob
+    Some spellings!
+
+##Latest
+
+## Date 18th March 2020
+Thank you Tracey tboggiano
+    New CIS user-defined CLRs to be set to SAFE_ACCESS #734
+    CIS tests for if service accounts are local admins #736
+
+Thank you Rob
+    Getting service accounts tests to pass if no service
+    Made long running jobs check work as expected
+    Improved Database Mail check
+    Made sure disk allocations dont run on Core
+
+Thank you mikedavem
+    Fixed bug in disk allocation check exclusions
+    Added multiple ags to the HADR check #742
+
+## Date 14th March 2020
+Thank you Tracey tboggiano
+    New CIS Check Hide Instance #728
+    New CIS Check Symmetric Key #732
+    New CIS Check Agent Proxy not have access to public Role #732
+
 ## Date 8th January 2020
 Thank you Tracey tboggiano
     New CIS Check Guest Account connect permissions #725
@@ -9,8 +41,6 @@ Thank you Tracey tboggiano
 Thank you Rob
     Added Tag parameter to Get-DbcCheck
     Updated tests to work with PowerShell 7
-
-##Latest
 
 ## Date 22nd December
 Thank you Tracey tboggiano
@@ -186,7 +216,7 @@ Improved error handling for HADR checks
 ## Date 28/08/2018
 Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
 Ensured the Database parameter checks only the specified Databases - Thank you @jpomfret
-Updated Set-DbcConifg to allow Append to append arrays to arrays closes #535
+Updated Set-DbcConfig to allow Append to append arrays to arrays closes #535
 Altered json filename creation to avoid max characters error
 Altered PowerBi to display information correctly with filename changes
 
@@ -208,7 +238,7 @@ Improved performance of the ErrorLog checks
 Removed Send-DbcSendMailMessage until it can be re-coded
 
 ## Date 13/08/2018
-Fixed #504 by enabling FileName parameter on Update-PowerBiDataSouce
+Fixed #504 by enabling FileName parameter on Update-PowerBiDataSource
 Added in new function to begin to reduce the number of calls to each instance
 Reduced required Pester version to 4.3.1
 Further PowerShell V4 improvements
