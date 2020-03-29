@@ -90,9 +90,9 @@ Return
     }
 
     Describe "Non Standard Port" -Tags NonStandardPort, Medium, CIS, $filename {
-        $skipping = Get-DbcConfigValue skip.security.NonStandardPort
+        $skip = Get-DbcConfigValue skip.security.nonstandardport
         Context "Checking SQL Server ports on $psitem" {
-            It -skip:$skipping "No SQL Server Instances should be configured with port 1433 on $psitem" {
+            It  "No SQL Server Instances should be configured with port 1433 on $psitem" -skip:$skip {
                 Assert-NonStandardPort -AllServerInfo $AllServerInfo
             }
         }
