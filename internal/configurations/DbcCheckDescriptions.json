@@ -528,6 +528,6 @@
     },
     {
         "UniqueTag": "NonStandardPort",
-        "Description": "Tests to see SQL Server Instances are running on the default port of 1433."
+        "Description": "Tests to see if the SQL Server Instances are NOT running on the default port of 1433."
     }
 ]
