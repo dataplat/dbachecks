@@ -28,7 +28,7 @@ function Get-ClusterObject {
     }
     $return.AvailabilityGroups = @{ }
     #Add all the AGs
-    foreach ($Ag in $return.AGs) {
+    foreach ($AGResource in $return.AGs) {
         try {
             # Because several replicas can be on the same cluster node,
             # cluster node can appear several times, then we want to

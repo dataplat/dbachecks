@@ -1,10 +1,25 @@
+## Date 18th March 2020
+Thank you Tracey tboggiano
+    New CIS user-defined CLRs to be set to SAFE_ACCESS #734
+    CIS tests for if service accounts are local admins #736
+
+Thank you Rob
+    Getting service accounts tests to pass if no service
+    Made long running jobs check work as expected
+    Improved Database Mail check
+    Made sure disk allocations dont run on Core
+
+Thank you mikedavem
+    Fixed bug in disk allocation check exclusions
+    Added multiple ags to the HADR check #742
+
+##Latest
+
 ## Date 14th March 2020
 Thank you Tracey tboggiano
     New CIS Check Hide Instance #728
     New CIS Check Symmetric Key #732
     New CIS Check Agent Proxy not have access to public Role #732
-
-##Latest
 
 ## Date 8th January 2020
 Thank you Tracey tboggiano
