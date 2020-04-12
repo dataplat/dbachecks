@@ -68,9 +68,9 @@ function Write-DbcTable {
     $SqlInstanceSmo = Connect-DbaInstance -SqlInstance $SqlInstance -SqlCredential $SqlCredential
 
     if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Add or update the Configs tables in ")) {
-       Get-DbcCheck | Write-DbaDataTable -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable -Truncate
+       Get-DbcCheck | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable -Truncate
     }
     if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table in")) {
-       $InputObject | Write-DbaDataTable -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable -Truncate:$Truncate
+       $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable -Truncate:$Truncate
     }
 }
