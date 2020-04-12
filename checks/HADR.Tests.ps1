@@ -200,7 +200,7 @@ foreach ($clustervm in $clusters) {
                     # In this case we cannot configure the same tcpport than those used for AG listeners
                     # TCP port conflict
                     # Adding exclusion for these scenarios
-                    It "Replica $($results.SqlInstance) TCP port should be in $tcpport" -Skip:$skipreplicatcpport {
+                    It "TCP port should be in $tcpport on Replica $($results.SqlInstance)" -Skip:$skipreplicatcpport {
                         $results.TCPPort | Should -BeIn $sqltcpport -Because "We expect the TCP Port to be in $sqltcpport"
                     }
                 }
