@@ -68,21 +68,21 @@ function Write-DbcTable {
     $SqlInstanceSmo = Connect-DbaInstance -SqlInstance $SqlInstance -SqlCredential $SqlCredential
 
     if(Get-DbaDbTable -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks){
-        if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Update the Configs tables in ")) {
+        if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Update the dbachecksChecks tables ")) {
             Get-DbcCheck | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable -Truncate
          }
     }else{
-        if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Add the Configs tables in ")) {
+        if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Add the dbachecksChecks tables ")) {
             Get-DbcCheck | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable
          }
     }
     
     if(Get-DbaDbTable -SqlInstance $SqlInstanceSmo -Database $Database -Table $Table){
-        if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table in")) {
+        if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table ")) {
             $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable -Truncate:$Truncate
          }
     }else{
-        if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table in")) {
+        if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table ")) {
             $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable 
          }
     }
