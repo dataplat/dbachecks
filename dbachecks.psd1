@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.2.23'
+    ModuleVersion          = '1.2.29'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -29,10 +29,10 @@
     Description            = 'SQL Server Infrastructure validation Tests to ensure that your SQL Server estate is and continues to be compliant with your requirements'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion      = '5.0'
+    PowerShellVersion      = '5.1'
 
     # Supported PSEditions
-    # CompatiblePSEditions = 'Desktop', 'Core' # Cant pu thtis in until a decision is made to make minimum version 5.1 :-(
+    CompatiblePSEditions = 'Desktop', 'Core' # Cant put this in until a decision is made to make minimum version 5.1 :-(
 
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName     = ''
@@ -51,9 +51,9 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
-        @{ ModuleName = 'Pester'; ModuleVersion = '4.7.1' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.23' }
-        @{ ModuleName = 'PSFramework'; ModuleVersion = '1.0.0' }
+        @{ ModuleName = 'Pester'; ModuleVersion = '4.9.0' },
+        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.103' }
+        @{ ModuleName = 'PSFramework'; ModuleVersion = '1.1.59' }
     )
 
     # Assemblies that must be loaded prior to importing this module
@@ -106,7 +106,7 @@
 
     # Aliases to export from this module
     # Aliases are stored in dbachecks.psm1
-    AliasesToExport        = 'Update-Dbchecks'
+    AliasesToExport        = 'Update-Dbachecks'
 
     # List of all modules packaged with this module
     ModuleList             = @()
@@ -137,17 +137,26 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 8th January 2020
-Thank you Tracey tboggiano
-    New CIS Check Guest Account connect permissions #725
-    New CIS Check BuiltIn Admins login #726
-    New CIS Check public role permissions #729
-    New CIS Check local windows groups do not have logins #731
-    Update sa login check #730
+## Date 29th March 20
+UPDATED MINIMUM POWERSHELL VERSION
+
+Updated Required versions of Pester, dbatools and PSFramework modules
+
+Thank you @dstrait
+    Fix variable for SaDisabled check #750
+    Fix errant braces in SQL Browser Service Check #751
+    Fix PingComputer Check #752
+
+Thank you markaugust
+    Fix to ensure AG Name is in HADR checks #755
+
+Thank you Tracey Boggiano
+    Added Contained Database auth check and Query Store Enabled Checks #756
 
 Thank you Rob
-    Added Tag parameter to Get-DbcCheck
-    Updated tests to work with PowerShell 7
+    Added exclude database config for Query store checks
+    Version check for Query Store Checks
+    Some spellings!
 
 ##Latest
 

@@ -8,7 +8,7 @@ When adding new checks or improving existing ones -
 
                 'MemoryDump' {  # This is the unique tag
                 if ($There) {  ## we need $There to save trying to gather information from later checks for an instance that is not contactable
-                    ## Then a try catch to gather the required information for the assertion and set a variable to a customobject
+                    ## Then a try catch to gather the required information for the assertion and set a variable to a custom object
                     try {
                         $MaxDump = [pscustomobject] @{
                             # Warning Action removes dbatools output for version too low from test results
@@ -97,7 +97,7 @@ function Get-AllInstanceInfo {
                     $logWindow = Get-DbcConfigValue -Name policy.errorlog.warningwindow
                     # so that it can be mocked
                     function Get-ErrorLogEntry {
-                        # get the number of the first error log that was created after the logwindow config
+                        # get the number of the first error log that was created after the log window config
                         $OldestErrorLogNumber = ($InstanceSMO.EnumErrorLogs() | Where-Object { $psitem.CreateDate -gt (Get-Date).AddDays( - $LogWindow) } | Sort-Object ArchiveNo -Descending | Select-Object -First 1).ArchiveNo + 1
                         # Get the Error Log entries for each one
                         (0..$OldestErrorLogNumber).ForEach{
@@ -297,7 +297,7 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     #This needs to be done in query just in case the account had already been renamed
-                    $login = Get-DbaLogin -SqlInstance $server | Where-Object Id -eq 1
+                    $login = Get-DbaLogin -SqlInstance $Instance | Where-Object Id -eq 1
                     $SaDisabled = [pscustomobject] @{
                         Disabled = $login.IsDisabled
                     }
@@ -319,16 +319,8 @@ function Get-AllInstanceInfo {
         'SaExist' {
             if ($There) {
                 try {
-                    $results = Get-DbaLogin -SqlInstance $Instance -Login sa
-                    if ($null -eq $results.Name) {
-                        $Exist = $false
-                    }
-                    else {
-                        $Exist = $true
-                    }
-
                     $SaExist = [pscustomobject] @{
-                        Exist = $Exist
+                        Exist = @(Get-DbaLogin -SqlInstance $Instance -Login sa).Count
                     }
                 }
                 catch {
@@ -389,7 +381,7 @@ function Get-AllInstanceInfo {
                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
                         "
                     $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
-                    Write-Output $results.RowCount
+
                     $PublicRolePermission = [pscustomobject] @{
                         Count = $results.RowCount
                     }
@@ -411,16 +403,8 @@ function Get-AllInstanceInfo {
         'BuiltInAdmin' {
             if ($There) {
                 try {
-                    $results = Get-DbaLogin -SqlInstance $Instance -Login "BUILTIN\Administrators"
-                    if ($null -eq $results.Name) {
-                        $Exist = $false
-                    }
-                    else {
-                        $Exist = $true
-                    }
-
                     $BuiltInAdmin = [pscustomobject] @{
-                        Exist = $Exist
+                        Exist = @(Get-DbaLogin -SqlInstance $Instance -Login "BUILTIN\Administrators").Count
                     }
                 }
                 catch {
@@ -511,6 +495,278 @@ function Get-AllInstanceInfo {
                 }
             }
         }
+
+        'SqlAgentProxiesNoPublicRole' {
+            if ($There) {
+                try {
+                    $SqlAgentProxiesWithPublicRole = @()
+
+                    Get-DbaAgentProxy -SqlInstance $Instance | ForEach-Object {
+                        if ($psitem.EnumMsdbRoles().Name -contains 'public') {
+                            $SqlAgentProxyWithPublicRole = [pscustomobject] @{
+                                Name               = $psitem.Name
+                                CredentialName     = $psitem.CredentialName
+                                CredentialIdentity = $psitem.CredentialIdentity
+                            }
+                            $SqlAgentProxiesWithPublicRole += $SqlAgentProxyWithPublicRole
+                        }
+                    }
+                }
+                catch {
+                    $There = $false
+                    $SqlAgentProxiesWithPublicRole = [pscustomobject] @{
+                        Name               = 'We Could not Connect to $Instance'
+                        CredentialName     = $null
+                        CredentialIdentity = $null
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $SqlAgentProxiesWithPublicRole = [pscustomobject] @{
+                    Name               = 'We Could not Connect to $Instance'
+                    CredentialName     = $null
+                    CredentialIdentity = $null
+                }
+            }
+        }
+        'HideInstance' {
+            if ($There) {
+                try {
+                    $results = Get-DbaHideInstance -SqlInstance $Instance
+
+                    $HideInstance = [pscustomobject] @{
+                        HideInstance = $results.HideInstance
+                    }
+                }
+                catch {
+                    $There = $false
+                    $HideInstance = [pscustomobject] @{
+                        HideInstance = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $HideInstance = [pscustomobject] @{
+                    HideInstance = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'EngineServiceAdmin' {
+            if ($There) {
+                if ($IsLinux) {
+                    $EngineServiceAdmin = [pscustomobject] @{
+                        Exist = 'We Cant Check running on Linux'
+                    }
+                }
+                else {
+                    try {
+                        $ComputerName , $InstanceName = $Instance.Name.Split('\')
+                        if ($null -eq $InstanceName) {
+                            $InstanceName = 'MSSQLSERVER'
+                        }
+                        $SqlEngineService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type Engine -ErrorAction SilentlyContinue
+                        $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
+
+                        $EngineServiceAdmin = [pscustomobject] @{
+                            Exist = $localAdmins.Name.Contains($SqlEngineService.StartName)
+                        }
+                    }
+                    catch [System.Exception] {
+                        if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = $false
+                            }
+                        }
+                        else {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = 'Some sort of failure'
+                            }
+                        }
+                    }
+                    catch {
+                        $There = $false
+                        $EngineServiceAdmin = [pscustomobject] @{
+                            Exist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                        }
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $EngineServiceAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'AgentServiceAdmin' {
+            if ($There) {
+                if ($IsLinux) {
+                    $AgentServiceAdmin = [pscustomobject] @{
+                        Exist = 'We Cant Check running on Linux'
+                    }
+                }
+                else {
+                    try {
+                        $ComputerName , $InstanceName = $Instance.Name.Split('\')
+                        if ($null -eq $InstanceName) {
+                            $InstanceName = 'MSSQLSERVER'
+                        }
+                        $SqlAgentService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type Agent -ErrorAction SilentlyContinue
+                        $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
+
+                        $AgentServiceAdmin = [pscustomobject] @{
+                            Exist = $localAdmins.Name.Contains($SqlAgentService.StartName)
+                        }
+                    }
+                    catch [System.Exception] {
+                        if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = $false
+                            }
+                        }
+                        else {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = 'Some sort of failure'
+                            }
+                        }
+                    }
+                    catch {
+                        $There = $false
+                        $AgentServiceAdmin = [pscustomobject] @{
+                            Exist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                        }
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $AgentServiceAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'FullTextServiceAdmin' {
+            if ($There) {
+                if ($IsLinux) {
+                    $FullTextServiceAdmin = [pscustomobject] @{
+                        Exist = 'We Cant Check running on Linux'
+                    }
+                }
+                else {
+                    try {
+                        $ComputerName , $InstanceName = $Instance.Name.Split('\')
+                        if ($null -eq $InstanceName) {
+                            $InstanceName = 'MSSQLSERVER'
+                        }
+                        $SqlFullTextService = Get-DbaService -ComputerName $ComputerName -InstanceName $instanceName -Type FullText -ErrorAction SilentlyContinue -WarningAction SilentlyContinue -WarningVariable WarVar
+                        $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
+                        $FullTextServiceAdmin = [pscustomobject] @{
+                            Exist = $localAdmins.Name.Contains($SqlFullTextService.StartName)
+                        }
+                    }
+                    catch [System.Exception] {
+                        if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = $false
+                            }
+                        }
+                        else {
+                            $FullTextServiceAdmin = [pscustomobject] @{
+                                Exist = 'Some sort of failure'
+                            }
+                        }
+                    }
+                    catch {
+                        $There = $false
+                        $FullTextServiceAdmin = [pscustomobject] @{
+                            Exist = "We Could not Connect to $Instance $ComputerName , $InstanceName from catch"
+                        }
+                    }
+                }
+
+            }
+            else {
+                $There = $false
+                $FullTextServiceAdmin = [pscustomobject] @{
+                    Exist = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'LoginCheckPolicy' {
+            if ($There) {
+                try {
+                    $LoginCheckPolicy = [pscustomobject] @{
+                        Count = @(Get-DbaLogin -SQLInstance $instance -Type SQL | Where-Object { $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false}).Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginCheckPolicy = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginCheckPolicy = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'LoginPasswordExpiration' {
+            if ($There) {
+                try {
+                    $role = Get-DbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
+
+                    $LoginPasswordExpiration = [pscustomobject] @{
+                        Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.PasswordExpirationEnabled -eq $false -and $_.IsDisabled -eq $false}).Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginPasswordExpiration = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginPasswordExpiration = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+        'LoginMustChange' {
+            if ($There) {
+                try {
+                    $role = Get-DbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
+
+                    $LoginMustChange = [pscustomobject] @{
+                        Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.IsMustChange -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_LastLogin }).Count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $LoginMustChange = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $LoginMustChange = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
         Default { }
     }
     [PSCustomObject]@{
@@ -525,11 +781,19 @@ function Get-AllInstanceInfo {
         SaExist                          = $SaExist
         SaDisabled                       = $SaDisabled
         EngineService                    = $EngineService
-        LoginAuditFailed = $LoginAuditFailed
-        LoginAuditSuccessful = $LoginAuditSuccessful
+        SqlAgentProxiesWithPublicRole    = $SqlAgentProxiesWithPublicRole
+        HideInstance                     = $HideInstance
+        LoginAuditFailed                 = $LoginAuditFailed
+        LoginAuditSuccessful             = $LoginAuditSuccessful
+        EngineServiceAdmin               = $EngineServiceAdmin
+        AgentServiceAdmin                = $AgentServiceAdmin
+        FullTextServiceAdmin             = $FullTextServiceAdmin
         LocalWindowsGroup                = $LocalWindowsGroup
         BuiltInAdmin                     = $BuiltInAdmin
         PublicRolePermission             = $PublicRolePermission
+        LoginCheckPolicy                 = $LoginCheckPolicy
+        LoginPasswordExpiration          = $LoginPasswordExpiration
+        LoginMustChange                  = $LoginMustChange
     }
 }
 
@@ -722,7 +986,16 @@ function Assert-SaDisabled {
 
 function Assert-SaExist {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.SaExist.Exist | Should -Be $false -Because "We expected no login to exist with the name sa"
+    $AllInstanceInfo.SaExist.Exist | Should -Be 0 -Because "We expected no login to exist with the name sa"
+}
+
+function Assert-SqlAgentProxiesNoPublicRole {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.SqlAgentProxiesWithPublicRole | Should -BeNull -Because "We expected the public role to not have access to any SQL Agent proxies"
+}
+function Assert-HideInstance {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.HideInstance.HideInstance | Should -Be $true -Because "We expected the hide instance property to be set to $true"
 }
 
 function Assert-LocalWindowsGroup {
@@ -735,18 +1008,49 @@ function Assert-PublicRolePermission {
 }
 function Assert-BuiltInAdmin {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be $false -Because "We expected no login to exist with the name BUILTIN\Administrators"
+    $AllInstanceInfo.BuiltInAdmin.Exist | Should -Be 0 -Because "We expected no login to exist with the name BUILTIN\Administrators"
 }
 
 function Assert-LoginAuditSuccessful {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.LoginAuditSuccessful.AuditLevel | Should -Be "All" -Because "We exepcted the audit level to be set to capture all logins (successfull and failed)"
+    $AllInstanceInfo.LoginAuditSuccessful.AuditLevel | Should -Be "All" -Because "We expected the audit level to be set to capture all logins (successful and failed)"
 }
 
 function Assert-LoginAuditFailed {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected expected the audit level to be set to capture failed logins"
+    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected the audit level to be set to capture failed logins"
 }
+
+
+function Assert-AgentServiceAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.AgentServiceAdmin.Exist | Should -Be $false -Because "We expected the service account for the SQL Agent to not be a local administrator"
+}
+
+function Assert-EngineServiceAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.EngineServiceAdmin.Exist | Should -Be $false -Because "We expected the service account for the SQL Engine to not be a local administrator"
+}
+
+function Assert-FullTextServiceAdmin {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.FullTextServiceAdmin.Exist | Should -Be $false -Because "We expected the service account for the SQL Full Text to not be a local administrator"
+}
+function Assert-LoginCheckPolicy {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LoginCheckPolicy.Count | Should -Be 0 -Because "We expected the CHECK_POLICY for the all logins to be enabled"
+}
+
+function Assert-LoginPasswordExpiration {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LoginPasswordExpiration.Count | Should -Be 0 -Because "We expected the password expiration policy to set on all sql logins in the sysadmin role"
+}
+
+function Assert-LoginMustChange {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.LoginMustChange.Count | Should -Be 0 -Because "We expected the all the new sql logins to have change the password on first login"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

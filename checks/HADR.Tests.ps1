@@ -7,15 +7,15 @@ function Get-ClusterObject {
         [string]$ClusterVM
     )
 
-    [pscustomobject]$return = @{}
+    [pscustomobject]$return = @{ }
     # Don't think you can use the cluster name here it won't run remotely
     try {
         $ErrorActionPreference = 'Stop'
-        $return.Cluster = (Get-Cluster -Name $clustervm)
-        $return.Nodes = (Get-ClusterNode -Cluster $clustervm)
-        $return.Resources = (Get-ClusterResource -Cluster $clustervm)
-        $return.Network = (Get-ClusterNetwork -Cluster $clustervm)
-        $return.Groups = (Get-ClusterGroup -Cluster $clustervm)
+        $return.Cluster = (Get-Cluster -Name $ClusterVM)
+        $return.Nodes = (Get-ClusterNode -Cluster $ClusterVM)
+        $return.Resources = (Get-ClusterResource -Cluster $ClusterVM)
+        $return.Network = (Get-ClusterNetwork -Cluster $ClusterVM)
+        $return.Groups = (Get-ClusterGroup -Cluster $ClusterVM)
         $return.AGs = $return.Resources.Where{ $psitem.ResourceType -eq 'SQL Server Availability Group' }
     }
     catch {
@@ -26,16 +26,37 @@ function Get-ClusterObject {
         $return.Groups = 'FailedToConnect'
         $return.AGs = 'FailedToConnect'
     }
-    $return.AvailabilityGroups = @{}
+    $return.AvailabilityGroups = @{ }
     #Add all the AGs
-    foreach ($Ag in $return.AGs) {
+    foreach ($AGResource in $return.AGs) {
         try {
-            $return.AvailabilityGroups[$AG.Name] = Get-DbaAvailabilityGroup -SqlInstance $Ag.OwnerNode.Name -AvailabilityGroup $AG.Name
+            # Because several replicas can be on the same cluster node,
+            # cluster node can appear several times, then we want to
+            # avoid duplicate detection of replicas
+            If ($PreviousClusterNode -ne $AGResource.OwnerNode.Name) {
+                $PreviousClusterNode = $AGResource.OwnerNode.Name
+                # We get cluster node owner first ...
+                # We need then for each owner to find out the corresponding replicas => SQL Instance Name + Port
+                $Replicas = Find-DbaInstance -ComputerName $AGResource.OwnerNode.Name
+            }
+
+            # Finally for each replica detected (SQL Server + Port)
+            # We try to find the corresponding AG(s) info
+            foreach ($replica in $Replicas){
+                $AGs = Get-DbaAvailabilityGroup -SqlInstance "$($replica.ComputerName),$($replica.Port)"
+
+                foreach ($AG in $AGs){
+                    If ($AG.AvailabilityGroup -eq $AGResource.Name) {
+                        $return.AvailabilityGroups[$AGResource.Name] = $AG
+                    }
+                }
+            }
         }
         catch {
             $return = $null
         }
     }
+
     Return $return
 }
 
@@ -44,19 +65,34 @@ function Get-ClusterObject {
 # needs the failover cluster module
 if (-not (Get-Module FailoverClusters)) {
     try {
-        Import-Module FailoverClusters -ErrorAction Stop
+        if ($IsCoreCLR) {
+            Stop-PSFFunction -Message "FailoverClusters module cannot be loaded in PowerShell Core unfortunately" -ErrorRecord $psitem
+            return
+        }
+        else {
+            Import-Module FailoverClusters -ErrorAction Stop
+        }
     }
     catch {
         Stop-PSFFunction -Message "FailoverClusters module could not load - Please install the Failover Cluster module using Windows Features " -ErrorRecord $psitem
         return
     }
 }
+else {
+    if ($IsCoreCLR) {
+        Stop-PSFFunction -Message "FailoverClusters module cannot be loaded in PowerShell Core unfortunately" -ErrorRecord $psitem
+        return
+    }
+}
 
 # Grab some values
 $clusters = Get-DbcConfigValue app.cluster
-$skiplistener = Get-DbcConfigValue skip.hadr.listener.pingcheck
+$skipaglistenerping = Get-DbcConfigValue skip.hadr.listener.pingcheck
+# $skipaglistenertcpport = Get-DbcConfigValue skip.hadr.listener.tcpport # to stop the pester failing
+$skipreplicatcpport = Get-DbcConfigValue skip.hadr.replica.tcpport
 $domainname = Get-DbcConfigValue domain.name
-$tcpport = Get-DbcConfigValue policy.hadr.tcpport
+# $agtcpport = Get-DbcConfigValue policy.hadr.agtcpport # to stop the pester failing
+$sqltcpport = Get-DbcConfigValue policy.hadr.tcpport
 
 #Check for Cluster config value
 if ($clusters.Count -eq 0) {
@@ -64,18 +100,19 @@ if ($clusters.Count -eq 0) {
     break
 }
 
+
 foreach ($clustervm in $clusters) {
-    try{
-    # pick the name here for the output - we cant use it as we are accessing remotely
-    $clustername = (Get-Cluster -Name $clustervm -ErrorAction Stop).Name
+    try {
+        # pick the name here for the output - we cant use it as we are accessing remotely
+        $clustername = (Get-Cluster -Name $clustervm -ErrorAction Stop).Name
     }
-    catch{
+    catch {
         # so that we dont get the error and Get-ClusterObject fills it as FailedtoConnect
         $clustername = $clustervm
     }
 
     Describe "Cluster $clustername Health using Node $clustervm" -Tags ClusterHealth, $filename {
-        $return = @(Get-ClusterObject -Clustervm $clustervm)
+        $return = @(Get-ClusterObject -ClusterVM $clustervm)
 
         Context "Cluster nodes for $clustername" {
             @($return.Nodes).ForEach{
@@ -92,9 +129,9 @@ foreach ($clustervm in $clusters) {
                 }
             }
             # Get the resources where IP Address is owned by AG and group by AG
-            @($return.Resources.Where{$_.ResourceType -eq 'IP Address' -and $_.OwnerGroup -in $return.AGs} | Group-Object -Property OwnerGroup).ForEach{
+            @($return.Resources.Where{ $_.ResourceType -eq 'IP Address' -and $_.OwnerGroup -in $return.AGs } | Group-Object -Property OwnerGroup).ForEach{
                 It "One of the IP Addresses should be online for AvailabilityGroup $($Psitem.Name)" {
-                    $psitem.Group.Where{$_.State -eq 'Online'}.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
+                    $psitem.Group.Where{ $_.State -eq 'Online' }.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
                 }
             }
         }
@@ -106,11 +143,14 @@ foreach ($clustervm in $clusters) {
             }
         }
 
-        Context "HADR status for $clustername" {
-            @($return.Nodes).ForEach{
-                It "HADR should be enabled on the node $($psitem.Name)" {
+        $AGs = $return.AGs.Name
+        foreach ($AGName in $AGs) {
+            $AG = @($return.AvailabilityGroups[$AGName])
+
+            Context "HADR status for $($AG.SqlInstance) on $clustername" {
+                It "HADR should be enabled on the replica $($AG.SqlInstance)" {
                     try {
-                        $HADREnabled = (Get-DbaAgHadr -SqlInstance $psitem.Name -WarningAction SilentlyContinue).IsHadrEnabled
+                        $HADREnabled = (Get-DbaAgHadr -SqlInstance $AG.SqlInstance -WarningAction SilentlyContinue).IsHadrEnabled
                     }
                     catch {
                         $HADREnabled = $false
@@ -118,15 +158,22 @@ foreach ($clustervm in $clusters) {
                     $HADREnabled | Should -BeTrue -Because 'All of the nodes should have HADR enabled'
                 }
             }
-        }
-        $Ags = $return.AGs.Name
-        foreach ($Name in $Ags) {
-            $Ag = @($return.AvailabilityGroups[$Name])
 
             Context "Cluster Connectivity for Availability Group $($AG.Name) on $clustername" {
                 @($AG.AvailabilityGroupListeners).ForEach{
-                    $results = Test-DbaConnection -sqlinstance $_.Name
-                    It "Listener should be pingable on $($results.SqlInstance)" -skip:$skiplistener {
+                    try {
+                        $results = Test-DbaConnection -sqlinstance $_.Name
+                    }
+                    Catch {
+                        $results = [PSCustomObject]@{
+                            IsPingable     = $false
+                            ConnectSuccess = $false
+                            DomainName     = $false
+                            TCPPort        = $false
+                        }
+                    }
+
+                    It "Listener should be pingable for $($results.SqlInstance)" -skip:$skipaglistenerping {
                         $results.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
                     }
                     It "Listener should be connectable on $($results.SqlInstance)" {
@@ -134,9 +181,6 @@ foreach ($clustervm in $clusters) {
                     }
                     It "Listener domain name should be $domainname on $($results.SqlInstance)" {
                         $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
-                    }
-                    It "Listener TCP port should be in $tcpport on $($results.SqlInstance)" {
-                        $results.TCPPort | Should -BeIn $tcpport -Because "We expect the TCP Port to be in $tcpport"
                     }
                 }
 
@@ -151,8 +195,13 @@ foreach ($clustervm in $clusters) {
                     It "Replica domain name should be $domainname on Replica $($results.SqlInstance)" {
                         $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
                     }
-                    It "Replica TCP port should be in $tcpport on Replica $($results.SqlInstance)" {
-                        $results.TCPPort | Should -BeIn $tcpport -Because "We expect the TCP Port to be in $tcpport"
+
+                    # Consolidated environments with multi-instances / AG replicas
+                    # In this case we cannot configure the same tcpport than those used for AG listeners
+                    # TCP port conflict
+                    # Adding exclusion for these scenarios
+                    It "Replica $($results.SqlInstance) TCP port should be in $tcpport" -Skip:$skipreplicatcpport {
+                        $results.TCPPort | Should -BeIn $sqltcpport -Because "We expect the TCP Port to be in $sqltcpport"
                     }
                 }
             }
@@ -181,7 +230,7 @@ foreach ($clustervm in $clusters) {
             }
 
             Context "Database availability group status for $($AG.Name) on $clustername" {
-                @($ag.AvailabilityReplicas.Where{$_.AvailabilityMode -eq 'SynchronousCommit' }).ForEach{
+                @($ag.AvailabilityReplicas.Where{ $_.AvailabilityMode -eq 'SynchronousCommit' }).ForEach{
                     @(Get-DbaAgDatabase -SqlInstance $psitem.Name -AvailabilityGroup $Ag.Name).ForEach{
                         It "Database $($psitem.DatabaseName) should be synchronised on the replica $($psitem.Replica)" {
                             $psitem.SynchronizationState | Should -Be 'Synchronized'  -Because 'The database on the synchronous replica should be synchronised'
@@ -197,7 +246,7 @@ foreach ($clustervm in $clusters) {
                         }
                     }
                 }
-                @($ag.AvailabilityReplicas.Where{$_.AvailabilityMode -eq 'AsynchronousCommit' }).ForEach{
+                @($ag.AvailabilityReplicas.Where{ $_.AvailabilityMode -eq 'AsynchronousCommit' }).ForEach{
                     @(Get-DbaAgDatabase -SqlInstance $PSItem.Name -AvailabilityGroup $Ag.Name).ForEach{
                         It "Database $($psitem.DatabaseName) should be synchronising as it is Async on the secondary replica $($psitem.Replica)" {
                             $psitem.SynchronizationState | Should -Be 'Synchronizing' -Because 'The database on the asynchronous secondary replica should be synchronising'
@@ -206,7 +255,7 @@ foreach ($clustervm in $clusters) {
                             $psitem.IsFailoverReady | Should -BeFalse -Because 'The database on the asynchronous secondary replica should be ready to failover'
                         }
                         It "Database $($psitem.DatabaseName) should be joined on the secondary replica $($psitem.Replica)" {
-                            $psitem.IsJoined | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be joined to the availaility group'
+                            $psitem.IsJoined | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be joined to the availability group'
                         }
                         It "Database $($psitem.DatabaseName) should not be suspended on the secondary replica $($psitem.Replica)" {
                             $psitem.IsSuspended | Should -Be  $False -Because 'The database on the asynchronous secondary replica should not be suspended'
@@ -214,11 +263,10 @@ foreach ($clustervm in $clusters) {
                     }
                 }
             }
-        }
-        @($return.Nodes).ForEach{
-            Context "Always On extended event status for replica $($psitem.Name) on $clustername" {
+
+            Context "Always On extended event status for replica $($AG.SqlInstance) on $clustername" {
                 try {
-                    $Xevents = Get-DbaXEsession -SqlInstance $psitem.Name -WarningAction SilentlyContinue
+                    $Xevents = Get-DbaXEsession -SqlInstance $AG.SqlInstance -WarningAction SilentlyContinue
                 }
                 catch {
                     $Xevents = 'FailedToConnect'
