@@ -4,7 +4,7 @@ Takes the results of Invoke-DbcCheck, parses it and converts it to a datatable o
 
 .DESCRIPTION
 You need to run Invoke-DbcCheck with the PassThru parameter and this command will take the
-results and parse them creating a datatable object with column headings 
+results and parse them creating a datatable object with column headings
 Date Label Describe Context Name Database ComputerName Instance Result FailureMessage
 so that it can be written to a database with Write-DbcTable (or Write-DbaDataTable) or to
 a file with Set-DbcFile
@@ -21,17 +21,17 @@ Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcR
 Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check
 
 .EXAMPLE
-Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Write-DbcTable -SqlInstance sql2017n5 -Database tempdb -Table newdbachecks  
+Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Write-DbcTable -SqlInstance sql2017n5 -Database tempdb -Table newdbachecks
 
 Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and writes it to a table newdbachecks in tempdb on SQL2017N5 (NB Don't use tempdb!!)
 
 .EXAMPLE
 Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close.json -FileType Json
 
-Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to JSON and saves in C:\temp\dbachecks\Auto-close.json 
+Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to JSON and saves in C:\temp\dbachecks\Auto-close.json
 
 .NOTES
-Intial - RMS 28/12/2019
+Initial - RMS 28/12/2019
 #>
 function Convert-DbcResult {
     [OutputType([System.Data.DataTable])]
@@ -47,11 +47,11 @@ function Convert-DbcResult {
     if (-not $TestResults) {
         Write-PSFMessage "Uh-Oh - I'm really sorry - We don't have a Test Results Object" -Level Significant
         Write-PSFMessage "Did You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
-        Return '' 
+        Return ''
     }
     # Create DataTable Object
     $table = New-Object system.Data.DataTable Results
-    
+
     # Create Columns
     $col1 = New-Object system.Data.DataColumn Date, ([datetime])
     $col2 = New-Object system.Data.DataColumn Label, ([string])
@@ -64,8 +64,6 @@ function Convert-DbcResult {
     $col9 = New-Object system.Data.DataColumn Result, ([string])
     $col10 = New-Object system.Data.DataColumn FailureMessage, ([string])
 
-
-    
     #Add the Columns to the table
     $table.columns.add($col1)
     $table.columns.add($col2)
@@ -77,7 +75,7 @@ function Convert-DbcResult {
     $table.columns.add($col8)
     $table.columns.add($col9)
     $table.columns.add($col10)
-    
+
     Write-PSFMessage "Processing the test results" -Level Verbose
     $TestResults.TestResult.ForEach{
         $ContextSplit = ($PSitem.Context -split ' ')
@@ -91,13 +89,13 @@ function Convert-DbcResult {
         }
         $Date = Get-Date # -Format "yyyy-MM-dd"
         if ($Label) {
-    
+
         }
         else {
             $Label = 'NoLabel'
         }
         # Create a new Row
-        $row = $table.NewRow() 
+        $row = $table.NewRow()
         # Add values to new row
         $Row.Date = $Date
         $Row.Label = $Label
@@ -111,8 +109,7 @@ function Convert-DbcResult {
         $Row.FailureMessage = $PSitem.FailureMessage
         #Add new row to table
         $table.Rows.Add($row)
-        
-    }
-    Write-Output -NoEnumerate $table
-}
 
+    }
+    Write-Output -NoEnumerate -InputObject $table
+}
