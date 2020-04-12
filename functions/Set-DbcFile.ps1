@@ -10,13 +10,13 @@ Convert-DbcResult This command will write the results to a CSV, JSON or XML file
 The datatable created by Convert-DbcResult
 
 .PARAMETER FilePath
-Thedirectory for the file
+The directory for the file
 
 .PARAMETER FileName
-Thename of the file
+The name of the file
 
 .PARAMETER FileType
-Thetype of file -CSV,JSON,XML
+The type of file -CSV,JSON,XML
 
 .PARAMETER Append
 Add to an existing file or not
@@ -28,38 +28,39 @@ Overwrite Existing file
 $Date = Get-Date -Format "yyyy-MM-dd"
 Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close_$Date -FileType xml
 
-Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to xml and saves in C:\temp\dbachecks\Auto-close_DATE.xml 
+Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to xml and saves in C:\temp\dbachecks\Auto-close_DATE.xml
 
 .EXAMPLE
 Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close.xml -FileType xml
 
-Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to xml and saves in C:\temp\dbachecks\Auto-close.xml 
+Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to xml and saves in C:\temp\dbachecks\Auto-close.xml
 
 .EXAMPLE
 Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close.csv -FileType csv
 
-Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to csv and saves in C:\temp\dbachecks\Auto-close.csv 
+Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to csv and saves in C:\temp\dbachecks\Auto-close.csv
 
 .EXAMPLE
 Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close.json -FileType Json
 
-Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to JSON and saves in C:\temp\dbachecks\Auto-close.json 
+Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to JSON and saves in C:\temp\dbachecks\Auto-close.json
 
 .EXAMPLE
 Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close.json -FileType Json -Append
 
-Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to JSON and saves in C:\temp\dbachecks\Auto-close.json appending the results to the exisitng file
+Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to JSON and saves in C:\temp\dbachecks\Auto-close.json appending the results to the existing file
 
 .EXAMPLE
-Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close.json -FileType Json -Forec
+Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close.json -FileType Json -Force
 
-Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to JSON and saves in C:\temp\dbachecks\Auto-close.json overwriting the exisitng file
+Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to JSON and saves in C:\temp\dbachecks\Auto-close.json overwriting the existing file
 
 .NOTES
-Intial - RMS 28/12/2019
+Initial - RMS 28/12/2019
 #>
 function Set-DbcFile {
-    [CmdletBinding(SupportsShouldProcess, DefaultParametersetName = "Default")]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = "Default")]
+    [OutputType([string])]
     Param(
         # The pester results object
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Default')]
@@ -88,13 +89,13 @@ function Set-DbcFile {
         # Overwrite file
         [Parameter(Mandatory = $true, ParameterSetName = 'Force')]
         [switch]$Force
-    ) 
+    )
 
     Write-PSFMessage "Testing we have a Test Results object" -Level Verbose
     if(-not $InputObject){
         Write-PSFMessage "Uh-Oh - I'm really sorry - We don't have a Test Results Object" -Level Significant
         Write-PSFMessage "Did You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
-        Return '' 
+        Return ''
     }
     Write-PSFMessage "Testing we can access $FilePath" -Level Verbose
     If (Test-Path -Path $FilePath) {
@@ -102,7 +103,7 @@ function Set-DbcFile {
     }
     else {
         Write-PSFMessage "Uh-Oh - We cant access $FilePath - Please check that $Env:USERNAME has access" -Level Significant
-        Return '' 
+        Return ''
     }
     $File = "$FilePath\$FileName"
     Write-PSFMessage "Testing if $file exists" -Level Verbose
@@ -139,12 +140,11 @@ function Set-DbcFile {
 
     try {
         switch ($FileType) {
-            'CSV' { 
+            'CSV' {
                 $file = Add-Extension -FileType csv
                 if ($PSCmdlet.ShouldProcess("$File" , "Adding results to CSV")) {
-                    $InputObject  | Select-Object * -ExcludeProperty ItemArray, Table, RowError, RowState, HasErrors | Export-Csv -Path $File -NoTypeInformation -Append:$Append 
+                    $InputObject  | Select-Object * -ExcludeProperty ItemArray, Table, RowError, RowState, HasErrors | Export-Csv -Path $File -NoTypeInformation -Append:$Append
                 }
-                
             }
             'Json' {
                 $file = Add-Extension -FileType json
@@ -156,7 +156,7 @@ function Set-DbcFile {
             'Xml' {
                 $file = Add-Extension -FileType xml
                 if ($PSCmdlet.ShouldProcess("$File" , "Adding results to XML file ")) {
-                    $InputObject  | Select-Object * -ExcludeProperty ItemArray, Table, RowError, RowState, HasErrors | Export-Clixml -Path $File -Force:$force
+                    $InputObject  | Select-Object * -ExcludeProperty ItemArray, Table, RowError, RowState, HasErrors | Export-CliXml -Path $File -Force:$force
                 }
             }
         }
