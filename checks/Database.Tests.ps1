@@ -1039,7 +1039,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
                 @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "Database $($psitem.Name) on $($psitem.Parent.Name) Asymmetric Key Size should be at least 2048" -Skip:$skip {
+                    It "Database $($psitem.Name) Asymmetric Key Size should be at least 2048 on $($psitem.Parent.Name)" -Skip:$skip {
                         Assert-AsymmetricKeySize -Instance $instance -Database $psitem
                     }
                 }
@@ -1060,7 +1060,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
                 @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "Database $($psitem.Name) on $($psitem.Parent.Name) Symmetric Key Encryption Level should have AES_128 or higher" -Skip:$skip  {
+                    It "Database $($psitem.Name) Symmetric Key Encryption Level should have AES_128 or higher on $($psitem.Parent.Name)" -Skip:$skip  {
                         Assert-SymmetricKeyEncryptionLevel -Instance $instance -Database $psitem
                     }
                 }
@@ -1080,7 +1080,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing contained database to see if sql authenticated users exist on $psitem" {
                 @($InstanceSMO.Databases.Where{$psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     if($version -lt 13 ){$skip = $true}
-                    It "$($psitem.Name) on $($psitem.Parent.Name) should have no sql authenticated users" -Skip:$skip  {
+                    It "Database $($psitem.Name) should have no sql authenticated users on $($psitem.Parent.Name)" -Skip:$skip  {
                         Assert-ContainedDBSQLAuth -Instance $InstanceSMO -Database $($psitem.Name)
                     }
                 }
