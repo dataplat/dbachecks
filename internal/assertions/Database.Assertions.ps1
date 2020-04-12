@@ -112,6 +112,13 @@ function Assert-QueryStoreEnabled {
     )
     @(Get-DbaDbQueryStoreOption -SqlInstance $Instance -Database $Database | Where-Object {$_.ActualState -notin @("OFF", "ERROR") } ).Count  | Should -Be 1 -Because "We expect the Query Store to be enabled in $Database on $Instance"
 }
+function Assert-QueryStoreDisabled {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    @(Get-DbaDbQueryStoreOption -SqlInstance $Instance -Database $Database | Where-Object {$_.ActualState -notin @("ON", "ERROR") } ).Count  | Should -Be 1 -Because "We expect the Query Store to be disabled in $Database on $Instance"
+}
 function Assert-ContainedDBSQLAuth {
     Param (
         [string]$Instance,
