@@ -508,7 +508,11 @@
     },
     {
         "UniqueTag": "QueryStoreEnabled",
-        "Description": "Tests to see Query Store is enabled on each database."
+        "Description": "Tests to see Query Store is enabled on each database except those specified."
+    },
+    {
+        "UniqueTag": "QueryStoreDisabled",
+        "Description": "Tests to see Query Store is disabled on each database except those specified."
     },
     {
         "UniqueTag": "ContainedDBSQLAuth",
