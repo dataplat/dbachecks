@@ -995,7 +995,7 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
                 $instance = $psitem
                 @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "$($psitem.Name) on $($psitem.Parent.Name) user-defined CLR assemblies are set to SAFE_ACCESS" {
+                    It "Database $($psitem.Name) user-defined CLR assemblies are set to SAFE_ACCESS on $($psitem.Parent.Name)" {
                         Assert-CLRAssembliesSafe -Instance $instance -Database $psitem.Name
                     }
                 }
@@ -1039,7 +1039,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
                 @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "$($psitem.Name) on $($psitem.Parent.Name) Asymmetric Key Size should be at least 2048" -Skip:$skip {
+                    It "Database $($psitem.Name) on $($psitem.Parent.Name) Asymmetric Key Size should be at least 2048" -Skip:$skip {
                         Assert-AsymmetricKeySize -Instance $instance -Database $psitem
                     }
                 }
@@ -1060,7 +1060,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
                 @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "$($psitem.Name) on $($psitem.Parent.Name) Symmetric Key Encryption Level should have AES_128 or higher" -Skip:$skip  {
+                    It "Database $($psitem.Name) on $($psitem.Parent.Name) Symmetric Key Encryption Level should have AES_128 or higher" -Skip:$skip  {
                         Assert-SymmetricKeyEncryptionLevel -Instance $instance -Database $psitem
                     }
                 }
@@ -1105,7 +1105,7 @@ $ExcludedDatabases += $ExcludeDatabase
             $instance = $Psitem
             Context "Testing to see if Query Store is enabled on $psitem" {
                 @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$QSExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
-                    It "Query Store be enabled in $($psitem.Name) on $Instance" -Skip:($version -lt 13 ) {
+                    It "Database $($psitem.Name) should have Query Store enabled on $Instance" -Skip:($version -lt 13 ) {
                         Assert-QueryStoreEnabled -Instance $InstanceSMO -Database $($psitem.Name)
                     }
                 }
