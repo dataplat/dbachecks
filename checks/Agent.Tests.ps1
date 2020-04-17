@@ -317,6 +317,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
         ON jh.job_id = j.job_id
         WHERE start_execution_date is not null
         AND stop_execution_date is null
+        AND run_duration < 235959
         GROUP BY j.name,j.job_id,start_execution_date,stop_execution_date,ja.job_id
         ) AS t
         ORDER BY JobName;"
