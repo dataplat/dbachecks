@@ -88,6 +88,15 @@ Return
             }
         }
     }
+
+    Describe "Non Standard Port" -Tags NonStandardPort, Medium, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.nonstandardport
+        Context "Checking SQL Server ports on $psitem" {
+            It  "No SQL Server Instances should be configured with port 1433 on $psitem" -skip:$skip {
+                Assert-NonStandardPort -AllServerInfo $AllServerInfo
+            }
+        }
+    }
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

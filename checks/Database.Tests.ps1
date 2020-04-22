@@ -1020,20 +1020,20 @@ $ExcludedDatabases += $ExcludeDatabase
                 }
             }
         }
-     }
+    }
 
      Describe "SymmetricKeyEncryptionLevel" -Tags SymmetricKeyEncryptionLevel, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.symmetrickeyencryptionlevel
         $ExcludedDatabases += "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
-            Context "Testing Symmetric Key Encruption Level at least AES_128 or higher on $psitem" -Skip:$skip {
+            Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" -Skip:$skip {
                 It "Can't Connect to $Psitem" -Skip:$skip  {
                     $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
-            Context "Testing Symmetric Key Encruption Level at least AES_128 or higher on $psitem" {
+            Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
                 @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
                     It "$($psitem.Name) on $($psitem.Parent.Name) Symmetric Key Encryption Level should have AES_128 or higher" -Skip:$skip  {
                         Assert-SymmetricKeyEncryptionLevel -Instance $instance -Database $psitem
@@ -1042,17 +1042,60 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
      }
+     Describe "Contained Database SQL Authenticated Users" -Tags ContainedDBSQLAuth, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.ContainedDBSQLAuth
+        if ($NotContactable -contains $psitem) {
+            Context "Testing contained database to see if sql authenticated users exist on $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing contained database to see if sql authenticated users exist on $psitem" {
+                @($InstanceSMO.Databases.Where{$psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                    if($version -lt 13 ){$skip = $true}
+                    It "$($psitem.Name) on $($psitem.Parent.Name) should have no sql authenticated users" -Skip:$skip  {
+                        Assert-ContainedDBSQLAuth -Instance $InstanceSMO -Database $($psitem.Name)
+                    }
+                }
+            }
+        }
+     }
+
+     Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
+        $QSExcludedDatabases = Get-DbcConfigValue database.querystore.excludedb
+        $exclude = "master", "tempdb" ,"msdb"
+        $ExcludedDatabases += $exclude
+        $QSExcludedDatabases += $ExcludedDatabases
+        $Skip = ($InstanceSMO.Version.Major -ge 13 )
+        if ($NotContactable -contains $psitem) {
+            Context "Testing to see if Query Store is enabled on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            $instance = $Psitem
+            Context "Testing to see if Query Store is enabled on $psitem" {
+                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$QSExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                    It "Query Store be enabled in $($psitem.Name) on $Instance" -Skip:($version -lt 13 ) {
+                        Assert-QueryStoreEnabled -Instance $InstanceSMO -Database $($psitem.Name)
+                    }
+                }
+            }
+        }
+    }
 }
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
-
-
 
 
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUYL41IQtYnBAL7QMDnUlg0UAW
-# 3aygggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUtcxr55FjceUEjdUkewbSpjmy
+# jvGgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -1112,11 +1155,11 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBSUPoy0dA4hnawLjAcMS4/2Sh/4
-# oDANBgkqhkiG9w0BAQEFAASCAQCA6gxCfTdPJ25u1bu5XPerpd97EBVkeQA4nChs
-# D6iGorbN0FotZQGXCgsVVQCEef91mcyy4n3ML5yuB4BOkG9G58UneUpQHngeNieJ
-# yXp/ggMOOj0jg0kq2u2qCIch3n2j8/DJxM3jLO51NmbjUWeI6P1AKmn0v25wzLd3
-# 7JIEtu53sAMRrPzhzhPXO2vhnpBWQe19cHA6gc+CUwC7+WYYO6mhdxr1DLtVAhj+
-# mi5tePIlS3h37YsXfIAcBcloqG7wWnB6Om2lt/QomorzXCJvYEoLeUcEuyWdVSgg
-# aO/j4MvNTi1WRDPFqfal6z6IXnehNFuRX1wZgbPBVd83dvTk
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQnK7qKjRxJU+HyxAj3yGDpDNaE
+# nDANBgkqhkiG9w0BAQEFAASCAQB/bH2PVbDMyrw6q29akwgV4y2inQ3H5aEv+rbW
+# QNqXAAM6YQdao2jNULDso8l8SFAda7/rGwKPysHSW9T5ItOwAt3k421oegIW14lc
+# 1X1u2TVEm/iZ7hDxdVpwasIg4E3Dsk2GDBnBex3Kvtqa5KI6SHrkf+0hmPh6h/We
+# HcYi+7U3OJifW6LE6PNm2OlqV/+lf91JVMWUnnV7Lj5l3+TL4RCHLhiQeQcdYyND
+# Jzz3o3efcO44AHdgYr2/NUBMqKG7cNvg0kfcVEJu0P/bJXXlOFZAPjJS29QY+LjH
+# reo+UTxlzVPFc1/7eYaPj05afNA80nAKJ+I0fg2DXoQxj8gM
 # SIG # End signature block

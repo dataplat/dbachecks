@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.2.26'
+    ModuleVersion          = '1.2.29'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -29,7 +29,7 @@
     Description            = 'SQL Server Infrastructure validation Tests to ensure that your SQL Server estate is and continues to be compliant with your requirements'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion      = '5.0'
+    PowerShellVersion      = '5.1'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Desktop', 'Core' # Cant put this in until a decision is made to make minimum version 5.1 :-(
@@ -51,9 +51,9 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
-        @{ ModuleName = 'Pester'; ModuleVersion = '4.7.1' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.23' }
-        @{ ModuleName = 'PSFramework'; ModuleVersion = '1.0.0' }
+        @{ ModuleName = 'Pester'; ModuleVersion = '4.9.0' },
+        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.103' }
+        @{ ModuleName = 'PSFramework'; ModuleVersion = '1.1.59' }
     )
 
     # Assemblies that must be loaded prior to importing this module
@@ -134,20 +134,26 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 18th March 2020
-Thank you Tracey tboggiano
-            New CIS user-defined CLRs to be set to SAFE_ACCESS #734
-            CIS tests for if service accounts are local admins #736
+## Date 29th March 20
+UPDATED MINIMUM POWERSHELL VERSION
+
+Updated Required versions of Pester, dbatools and PSFramework modules
+
+Thank you @dstrait
+    Fix variable for SaDisabled check #750
+    Fix errant braces in SQL Browser Service Check #751
+    Fix PingComputer Check #752
+
+Thank you markaugust
+    Fix to ensure AG Name is in HADR checks #755
+
+Thank you Tracey Boggiano
+    Added Contained Database auth check and Query Store Enabled Checks #756
 
 Thank you Rob
-            Getting service accounts tests to pass if no service
-            Made long running jobs check work as expected
-            Improved Database Mail check
-            Made sure disk allocations dont run on Core
-
-Thank you mikedavem
-            Fixed bug in disk allocation check exclusions
-            Added multiple ags to the HADR check #742
+    Added exclude database config for Query store checks
+    Version check for Query Store Checks
+    Some spellings!
 
 ##Latest
 

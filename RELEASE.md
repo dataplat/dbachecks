@@ -1,10 +1,23 @@
 ## Date 29th March 2020
+
+UPDATED MINIMUM POWERSHELL VERSION
+
+Updated Required versions of Pester, dbatools and PSFramework modules
+
 Thank you @dstrait
     Fix variable for SaDisabled check #750
     Fix errant braces in SQL Browser Service Check #751
     Fix PingComputer Check #752
-    
+
+Thank you markaugust
+    Fix to ensure AG Name is in HADR checks #755
+
+Thank you Tracey Boggiano
+    Added Contained Database auth check and Query Store Enabled Checks #756
+
 Thank you Rob
+    Added exclude database config for Query store checks
+    Version check for Query Store Checks
     Some spellings!
 
 ##Latest

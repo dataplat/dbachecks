@@ -1,3 +1,27 @@
+## Date 29th March 2020
+
+UPDATED MINIMUM POWERSHELL VERSION
+
+Updated Required versions of Pester, dbatools and PSFramework modules
+
+Thank you @dstrait
+    Fix variable for SaDisabled check #750
+    Fix errant braces in SQL Browser Service Check #751
+    Fix PingComputer Check #752
+
+Thank you markaugust
+    Fix to ensure AG Name is in HADR checks #755
+
+Thank you Tracey Boggiano
+    Added Contained Database auth check and Query Store Enabled Checks #756
+
+Thank you Rob
+    Added exclude database config for Query store checks
+    Version check for Query Store Checks
+    Some spellings!
+
+##Latest
+
 ## Date 18th March 2020
 Thank you Tracey tboggiano
     New CIS user-defined CLRs to be set to SAFE_ACCESS #734
@@ -12,8 +36,6 @@ Thank you Rob
 Thank you mikedavem
     Fixed bug in disk allocation check exclusions
     Added multiple ags to the HADR check #742
-
-##Latest
 
 ## Date 14th March 2020
 Thank you Tracey tboggiano
@@ -207,7 +229,7 @@ Improved error handling for HADR checks
 ## Date 28/08/2018
 Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
 Ensured the Database parameter checks only the specified Databases - Thank you @jpomfret
-Updated Set-DbcConifg to allow Append to append arrays to arrays closes #535
+Updated Set-DbcConfig to allow Append to append arrays to arrays closes #535
 Altered json filename creation to avoid max characters error
 Altered PowerBi to display information correctly with filename changes
 
@@ -229,7 +251,7 @@ Improved performance of the ErrorLog checks
 Removed Send-DbcSendMailMessage until it can be re-coded
 
 ## Date 13/08/2018
-Fixed #504 by enabling FileName parameter on Update-PowerBiDataSouce
+Fixed #504 by enabling FileName parameter on Update-PowerBiDataSource
 Added in new function to begin to reduce the number of calls to each instance
 Reduced required Pester version to 4.3.1
 Further PowerShell V4 improvements

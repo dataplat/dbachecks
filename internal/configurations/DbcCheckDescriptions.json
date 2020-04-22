@@ -507,6 +507,14 @@
         "Description": "Tests to see if the BUILTIN\\Administrator login exist."
     },
     {
+        "UniqueTag": "QueryStoreEnabled",
+        "Description": "Tests to see Query Store is enabled on each database."
+    },
+    {
+        "UniqueTag": "ContainedDBSQLAuth",
+        "Description": "Tests to see a contained database contains sql authenticated users."
+    },
+    {
         "UniqueTag": "LoginCheckPolicy",
         "Description": "Tests to see if CHECK_POLICY property is set for all logins."
     },
@@ -517,5 +525,9 @@
     {
         "UniqueTag": "LoginMustChange",
         "Description": "Tests to see if password must change is enabled for new logins."
+    },
+    {
+        "UniqueTag": "NonStandardPort",
+        "Description": "Tests to see if the SQL Server Instances are NOT running on the default port of 1433."
     }
 ]

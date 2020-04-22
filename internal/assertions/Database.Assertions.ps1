@@ -105,11 +105,25 @@ function Assert-SymmetricKeyEncryptionLevel {
     @(Get-DbaDbEncryption -SqlInstance $Instance -Database $Database | Where-Object {$_.Encryption -eq "Asymmetric Key" -and $_.EncryptionAlgrothim -notin "AES_128","AES_192","AES_256"}).Count  | Should -Be 0 -Because "Asymmetric keys should have an encryption algrothim of at least AES_128"
 }
 
+function Assert-QueryStoreEnabled {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    @(Get-DbaDbQueryStoreOption -SqlInstance $Instance -Database $Database | Where-Object {$_.ActualState -notin @("OFF", "ERROR") } ).Count  | Should -Be 1 -Because "We expect the Query Store to be enabled in $Database on $Instance"
+}
+function Assert-ContainedDBSQLAuth {
+    Param (
+        [string]$Instance,
+        [string]$Database
+    )
+    @(Get-DbaDbUser -SQLInstance $Instance -Database $Database | Where-Object {$_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true}).Count | Should -Be 0 -Because "We expect there to be no sql authenticated users in contained database $Database on $Instance"
+}
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUx3LCZ1SGxxTFeWYe1ZNZCEew
-# qMGgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUWV5eEvZUineXnauPcBDvBW6K
+# wHygggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -169,11 +183,11 @@ function Assert-SymmetricKeyEncryptionLevel {
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBReOIvS28y+5MYW+6isqawoD4/4
-# zzANBgkqhkiG9w0BAQEFAASCAQAZJy1cA1RKim0p6SoqWqJG0p71RNn79JutwjwW
-# 9hba1LTx7GqsLBq4Pr/70mpCBjeVumZrzXRewUhd9TyQmCiHWLHZ6UF5n1VGuMhR
-# 9Tc3ifisYCMbiGrrwSVdYoQXFR1HLEDBXn1xNPfCrOpM1UoQpkq03lp6FFmXkeX4
-# lm2ZjYm72CM8EarzPWEwKc7AfyONT9UvKAiTIwXyBcYMriT6CqTWNTKN6BSS0rtK
-# QgIViL0cyDQLk4cSYn2uX8bqRbgj0+xbDJHm8qJPn3qlV9uTg2ciW1/ntsTnpg85
-# tZjzZnkJpKRV2voTyOwJypLmn6HzUfCEqxFUMUDfXzYgZpTi
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQw7LZnAhvpN+sY8bINEHrOjzii
+# mjANBgkqhkiG9w0BAQEFAASCAQBtnx2QeSl3A26bXXoAwf1wkKsetkHTJzjC642v
+# cbrVffim+MKWNRICLZx0KLyWe5bEdOadY1GgFEaYRPeaVCFMJopNL4uJfnJ1GoBw
+# zZrDQaSf5hUlrQvETMtoCnX8+65eJQECAkV87LsJckC5P8F2P+iC1uDbeKGVFw3C
+# ncii3LHqlzx0KuRk+Y6wYcIAjAACr2/tyXxdl1rCBG3xg8XJRssQ1NfVs6W50sBz
+# Ql42LSzBWaaCjcyGC8optFyIQd+5vJ2KiL8MuAjuOZvd5TvzY0MXOaLohlnz5qEP
+# V/1CKLtRyNRyQvxgrIQlGNe5Ei//V/v44mzD8in3dsL2cGZS
 # SIG # End signature block
