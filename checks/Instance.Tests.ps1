@@ -4,11 +4,11 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
     (Get-SqlInstance).ForEach{
         Context "Testing SQL Engine Service on $psitem" {
             @(Get-DbaSqlService -ComputerName $psitem -Type Engine).ForEach{
-                It "SQL Engine service account Should Be running on $($psitem.InstanceName)" {
+                It "SQL Engine service Should Be running on $($psitem.InstanceName)" {
                     $psitem.State | Should -Be "Running" -Because 'If the service is not running, the SQL Server will not be accessible'
                 }
-                It "SQL Engine service account should have a start mode of Automatic on $($psitem.InstanceName)" {
-                    $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessibl'
+                It "SQL Engine service should have a start mode of Automatic on $($psitem.InstanceName)" {
+                    $psitem.StartMode | Should -Be "Automatic" -Because 'If the server restarts, the SQL Server will not be accessible'
                 }
             }
         }
@@ -18,17 +18,17 @@ Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, $fi
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, $filename {
     (Get-ComputerName).ForEach{
         Context "Testing SQL Browser Service on $psitem" {
-            It "SQL browser service on $psitem Should Be Stopped unless multiple instances are installed" {
+            It "SQL Browser service on $psitem Should Be Stopped unless multiple instances are installed" {
                 if ((Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
-                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Stopped" -Because 'Unless there are multple instances you dont need the browser service'
+                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Stopped" -Because 'Unless there are multiple instances you dont need the SQL Browser service'
                 }
                 else {
-                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State| Should -Be "Running" -Because 'You need the browser service with multiple instances'
+                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State| Should -Be "Running" -Because 'You need the SQL Browser service with multiple instances'
                 }
             }
-            It "SQL browser service startmode Should Be Disabled on $psitem unless multiple instances are installed" {
+            It "SQL Browser service startmode Should Be Disabled on $psitem unless multiple instances are installed" {
                 if ((Get-DbaSqlService -ComputerName $psitem -Type Engine).Count -eq 1) {
-                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Disabled" -Because 'Unless there are multple instances you dont need the browser service'
+                    (Get-DbaSqlService -ComputerName $psitem -Type Browser).State | Should -Be "Disabled" -Because 'Unless there are multiple instances you dont need the SQL Browser service'
                 }
                 else {
                     (Get-DbaSqlService -ComputerName $psitem -Type Browser).StartMode| Should -Be "Automatic"
@@ -52,7 +52,7 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, $filename {
                 $TempDBTest[2].CurrentSetting | Should -Be $TempDBTest[2].Recommended -Because 'Auto growth type should not be percent'
             }
             It "should not have TempDB Files on the C Drive on $($TempDBTest[3].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFilesonC) {
-                $TempDBTest[3].CurrentSetting | Should -Be $TempDBTest[3].Recommended -Because 'You dot want the tempdb files on the same drive as the operating system'
+                $TempDBTest[3].CurrentSetting | Should -Be $TempDBTest[3].Recommended -Because 'You do not want the tempdb files on the same drive as the operating system'
             }
             It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue -Name skip.TempDbFileMaxSize) {
                 $TempDBTest[4].CurrentSetting | Should -Be $TempDBTest[4].Recommended -Because 'Tempdb files should be able to grow'
@@ -173,7 +173,7 @@ Describe "SQL Memory Dumps" -Tags MemoryDump, $filename {
 Describe "Supported Build" -Tags SupportedBuild, DISA, $filename {
     $BuildWarning = Get-DbcConfigValue -Name  policy.build.warningwindow
     (Get-SqlInstance).ForEach{
-        Context "Checking that build is still supportedby Microsoft for $psitem" {
+        Context "Checking that build is still supported by Microsoft for $psitem" {
             $results = Get-DbaSqlBuildReference -SqlInstance $psitem
             It "$($results.Build) on $psitem is still supported" {
                 $results.SupportedUntil  | Should -BeGreaterThan (Get-Date) -Because 'This build is now unsupported by Microsoft'
