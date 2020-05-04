@@ -19,7 +19,7 @@ The database to write the results
 The datatable from Convert-DbcResult
 
 .PARAMETER Table
-The name of the table for the results - will be created if it doesnt exist
+The name of the table for the results - will be created if it doesnt exist by default it will be CheckResults
 
 .PARAMETER Schema
 the schema for the table - defaults to dbo
@@ -50,39 +50,65 @@ function Write-DbcTable {
         # The pester results object
         [ValidateNotNull()]
         [object]$InputObject,
-        [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [string]$Table,
+        [string]$Table = 'CheckResults',
         [ValidateNotNullOrEmpty()]
         [string]$Schema = 'dbo',
         [switch]$Truncate
 
     )
     Write-PSFMessage "Testing we have a Test Results object" -Level Verbose
-    if(-not $InputObject){
+    if (-not $InputObject) {
         Write-PSFMessage "Uh-Oh - I'm really sorry - We don't have a Test Results Object" -Level Significant
         Write-PSFMessage "Did You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
         Return ''
     }
-
+    Write-PSFMessage "Connecting to $SqlInstance" -Level Verbose
     $SqlInstanceSmo = Connect-DbaInstance -SqlInstance $SqlInstance -SqlCredential $SqlCredential
 
-    if(Get-DbaDbTable -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks){
+    Write-PSFMessage "Checking for dbachecks table in $Database" -Level Verbose
+    if (Get-DbaDbTable -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks) {
         if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Update the dbachecksChecks tables ")) {
             Get-DbcCheck | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable -Truncate
-         }
-    }else{
+        }
+    }
+    else {
         if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Add the dbachecksChecks tables ")) {
             Get-DbcCheck | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable
-         }
+        }
     }
-    if(Get-DbaDbTable -SqlInstance $SqlInstanceSmo -Database $Database -Table $Table){
-        if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table ")) {
-            $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable -Truncate:$Truncate
-         }
-    }else{
-        if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table ")) {
-            $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable
-         }
+    Write-PSFMessage "Checking for $Table in $Database" -Level Verbose
+    if (Get-DbaDbTable -SqlInstance $SqlInstanceSmo -Database $Database -Table $Table) {
+        Write-PSFMessage "We have $table already - moving on." -Level Verbose
+    }
+    else {
+        if ($PSCmdlet.ShouldProcess("$schema.$database" , "Create a new table called $table ")) {
+            # If specified table does not exists, create with specific datatypes to avoid nvarchar(max)
+            $sqlTableCreation = @"
+ CREATE TABLE [$schema].[$table](
+     [Date] [datetime2](7) NOT NULL,
+     [Label] [nvarchar](255) NULL,
+     [Describe] [nvarchar](255) NULL,
+     [Context] [nvarchar](255) NULL,
+     [Name] [nvarchar](255) NULL,
+     [Database] [nvarchar](255) NULL,
+     [ComputerName] [nvarchar](255) NULL,
+     [Instance] [nvarchar](255) NULL,
+     [Result] [nvarchar](10) NULL,
+     [FailureMessage] [nvarchar](MAX) NULL
+ ) ON [PRIMARY]
+ GO
+
+ CREATE CLUSTERED INDEX CI_DATE ON [$schema].[$table]
+ (
+     [Date]
+ ) WITH (DATA_COMPRESSION = PAGE) ON [PRIMARY]
+ GO
+"@
+            Invoke-DbaQuery -SqlInstance $SqlInstanceSmo -Database $Database -Query $sqlTableCreation
+        }
+    }
+    if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table ")) {
+        $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable -Truncate:$Truncate
     }
 }
