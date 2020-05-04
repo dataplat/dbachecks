@@ -68,7 +68,7 @@ function Start-DbcPowerBi {
 
             if ($PSCmdlet.ShouldProcess("$newpath" , "Copying the file $path to ")) {
                 try {
-                    Copy-Item -Path $Path -Destination $newpath -Force 
+                    Copy-Item -Path $Path -Destination $newpath -Force
                     $Path = $newpath
                 }
                 catch {

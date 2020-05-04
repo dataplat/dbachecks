@@ -76,14 +76,13 @@ function Write-DbcTable {
             Get-DbcCheck | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable
          }
     }
-    
     if(Get-DbaDbTable -SqlInstance $SqlInstanceSmo -Database $Database -Table $Table){
         if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table ")) {
             $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable -Truncate:$Truncate
          }
     }else{
         if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table ")) {
-            $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable 
+            $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable
          }
     }
 }
