@@ -124,7 +124,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "VerifyOnly tests of last backups on $psitem" {
-                $DatabasesToCheck = ($InstanceSMO.Databases.Where{ $_.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).Name
+                $DatabasesToCheck = ($InstanceSMO.Databases.Where{ $_.IsAccessible -eq $true }.Where{ $_.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).Name
                 $BackUpVerify = $DatabasesToCheck.Foreach{
                     $BackupVerifySplat = @{
                         SqlInstance     = $InstanceSMO
