@@ -127,17 +127,18 @@ $ExcludedDatabases += $ExcludeDatabase
                 $DatabasesToCheck = ($InstanceSMO.Databases.Where{ $_.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).Name
                 $BackUpVerify = $DatabasesToCheck.Foreach{
                     $BackupVerifySplat = @{
-                        SqlInstance = $InstanceSMO
-                        Database = $psitem
-                        VerifyOnly = $true
+                        SqlInstance     = $InstanceSMO
+                        Database        = $psitem
+                        VerifyOnly      = $true
                         EnableException = $true
                     }
-                    try{
+                    try {
                         Test-DbaLastBackup @BackupVerifySplat
-                    }catch{
+                    }
+                    catch {
                         [pscustomobject]@{
                             $psitem.RestoreResult = $_.Exception.Message
-                            $psitem.FileExists = $_.Exception.Message
+                            $psitem.FileExists    = $_.Exception.Message
                         }
                     }
                 }
@@ -188,7 +189,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Database Owners on $psitem" {
-                @($InstanceSMO.Databases.Where{if ($database) {$_.Name -in $database}else {$_.Name -notin $exclude}}).ForEach{
+                @($InstanceSMO.Databases.Where{ if ($database) { $_.Name -in $database }else { $_.Name -notin $exclude } }).ForEach{
                     It "Database $($psitem.Name) - owner $($psitem.Owner) should Not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.Parent.Name)" {
                         $psitem.Owner | Should -Not -BeIn $TargetOwner -Because "The database owner was one specified as incorrect"
                     }
@@ -763,19 +764,22 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing datafile growth type on $psitem" {
-                @(Get-DbaDbFile -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude ).ForEach{
-                    if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
-                        It "Database $($psitem.Database) datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
-                            $psitem.GrowthType | Should -Be $datafilegrowthtype -Because "We expect a certain file growth type"
-                        }
-                        if ($datafilegrowthtype -eq "kb") {
-                            It "Database $($psitem.Database) datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                                $psitem.Growth * 8 | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain file growth value"
+                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
+                    $Files = Get-DbaDbFile -SqlInstance $InstanceSMO -Database $psitem.Name
+                    @($Files).ForEach{
+                        if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
+                            It "Database $($psitem.Database) datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have GrowthType set to $datafilegrowthtype on $($psitem.SqlInstance)" {
+                                $psitem.GrowthType | Should -Be $datafilegrowthtype -Because "We expect a certain file growth type"
                             }
-                        }
-                        else {
-                            It "Database $($psitem.Database) datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                                $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain fFile growth value"
+                            if ($datafilegrowthtype -eq "kb") {
+                                It "Database $($psitem.Database) datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
+                                    $psitem.Growth * 8 | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain file growth value"
+                                }
+                            }
+                            else {
+                                It "Database $($psitem.Database) datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
+                                    $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain fFile growth value"
+                                }
                             }
                         }
                     }
@@ -897,7 +901,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $MaxDopValue = Get-DbcConfigValue policy.database.maxdop
         [string[]]$exclude = Get-DbcConfigValue policy.database.maxdopexcludedb
         $exclude += $ExcludedDatabases
-        if ($exclude) {Write-Warning "Excluded $exclude from testing"}
+        if ($exclude) { Write-Warning "Excluded $exclude from testing" }
         if ($NotContactable -contains $psitem) {
             Context "Database MaxDop setting is correct on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -942,8 +946,8 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Database Exists" -Tags DatabaseExists, $filename {
         $expected = Get-DbcConfigValue database.exists
-        if ($Database) {$expected += $Database}
-        $expected = $expected.where{$psitem -notin $ExcludedDatabases}
+        if ($Database) { $expected += $Database }
+        $expected = $expected.where{ $psitem -notin $ExcludedDatabases }
         if ($NotContactable -contains $psitem) {
             Context "Database exists on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -980,9 +984,9 @@ $ExcludedDatabases += $ExcludeDatabase
                 }
             }
         }
-     }
+    }
 
-     Describe "CLR Assemblies SAFE_ACCESS" -Tags CLRAssembliesSafe, CIS, $filename {
+    Describe "CLR Assemblies SAFE_ACCESS" -Tags CLRAssembliesSafe, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.clrassembliessafe
         if ($NotContactable -contains $psitem) {
             Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
@@ -994,14 +998,14 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
                 $instance = $psitem
-                @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                @($InstanceSMO.Databases.Where{ ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
                     It "Database $($psitem.Name) user-defined CLR assemblies are set to SAFE_ACCESS on $($psitem.Parent.Name)" {
                         Assert-CLRAssembliesSafe -Instance $instance -Database $psitem.Name
                     }
                 }
             }
         }
-     }
+    }
 
     Describe "Guest User" -Tags GuestUserConnect, Security, CIS, Medium, $filename {
         $exclude = "master", "tempdb", "msdb"
@@ -1018,7 +1022,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing Guest user has CONNECT permission on $psitem" {
-                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
                     It "Database Guest user should return no CONNECT permissions in $($psitem.Name) on $Instance" -Skip:$skip {
                         Assert-GuestUserConnect -Instance $instance -Database $($psitem.Name)
                     }
@@ -1038,7 +1042,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
-                @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
+                @($InstanceSMO.Databases.Where{ ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
                     It "Database $($psitem.Name) Asymmetric Key Size should be at least 2048 on $($psitem.Parent.Name)" -Skip:$skip {
                         Assert-AsymmetricKeySize -Instance $instance -Database $psitem
                     }
@@ -1047,27 +1051,27 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-     Describe "SymmetricKeyEncryptionLevel" -Tags SymmetricKeyEncryptionLevel, CIS, $filename {
+    Describe "SymmetricKeyEncryptionLevel" -Tags SymmetricKeyEncryptionLevel, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.symmetrickeyencryptionlevel
         $ExcludedDatabases += "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
-            Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" -Skip:$skip {
-                It "Can't Connect to $Psitem" -Skip:$skip  {
+            Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
                     $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
             Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
-                @($InstanceSMO.Databases.Where{($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    It "Database $($psitem.Name) Symmetric Key Encryption Level should have AES_128 or higher on $($psitem.Parent.Name)" -Skip:$skip  {
+                @($InstanceSMO.Databases.Where{ ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
+                    It "Database $($psitem.Name) Symmetric Key Encryption Level should have AES_128 or higher on $($psitem.Parent.Name)" -Skip:$skip {
                         Assert-SymmetricKeyEncryptionLevel -Instance $instance -Database $psitem
                     }
                 }
             }
         }
-     }
-     Describe "Contained Database SQL Authenticated Users" -Tags ContainedDBSQLAuth, CIS, $filename {
+    }
+    Describe "Contained Database SQL Authenticated Users" -Tags ContainedDBSQLAuth, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.ContainedDBSQLAuth
         if ($NotContactable -contains $psitem) {
             Context "Testing contained database to see if sql authenticated users exist on $psitem" {
@@ -1078,19 +1082,19 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing contained database to see if sql authenticated users exist on $psitem" {
-                @($InstanceSMO.Databases.Where{$psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) {$PsItem.Name -in $Database}else {$ExcludedDatabases -notcontains $PsItem.Name}))}).ForEach{
-                    if($version -lt 13 ){$skip = $true}
-                    It "Database $($psitem.Name) should have no sql authenticated users on $($psitem.Parent.Name)" -Skip:$skip  {
+                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
+                    if ($version -lt 13 ) { $skip = $true }
+                    It "Database $($psitem.Name) should have no sql authenticated users on $($psitem.Parent.Name)" -Skip:$skip {
                         Assert-ContainedDBSQLAuth -Instance $InstanceSMO -Database $($psitem.Name)
                     }
                 }
             }
         }
-     }
+    }
 
-     Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
+    Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
         $QSExcludedDatabases = Get-DbcConfigValue database.querystoreenabled.excludedb
-        $exclude = "master", "tempdb" ,"msdb"
+        $exclude = "master", "tempdb" , "msdb"
         $ExcludedDatabases += $exclude
         $QSExcludedDatabases += $ExcludedDatabases
         $Skip = ($InstanceSMO.Version.Major -ge 13 )
@@ -1104,7 +1108,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing to see if Query Store is enabled on $psitem" {
-                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$QSExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $QSExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
                     It "Database $($psitem.Name) should have Query Store enabled on $Instance" -Skip:($version -lt 13 ) {
                         Assert-QueryStoreEnabled -Instance $InstanceSMO -Database $($psitem.Name)
                     }
@@ -1112,9 +1116,9 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
     }
-     Describe "Query Store Disabled" -Tags QueryStoreDisabled, Medium, $filename {
+    Describe "Query Store Disabled" -Tags QueryStoreDisabled, Medium, $filename {
         $QSExcludedDatabases = Get-DbcConfigValue database.querystoredisabled.excludedb
-        $exclude = "master", "tempdb" ,"msdb"
+        $exclude = "master", "tempdb" , "msdb"
         $ExcludedDatabases += $exclude
         $QSExcludedDatabases += $ExcludedDatabases
         $Skip = ($InstanceSMO.Version.Major -ge 13 )
@@ -1128,7 +1132,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing to see if Query Store is disabled on $psitem" {
-                @($InstanceSMO.Databases.Where{$(if ($Database) {$PsItem.Name -in $Database}else {$QSExcludedDatabases -notcontains $PsItem.Name})}).Foreach{
+                @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $QSExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
                     It "Database $($psitem.Name) should have Query Store disabled on $Instance" -Skip:($version -lt 13 ) {
                         Assert-QueryStoreDisabled -Instance $InstanceSMO -Database $($psitem.Name)
                     }
