@@ -10,10 +10,10 @@ jobs:
 
     runs-on: windows-latest
     steps:
-      
+    - name: Checkout code 
+      uses: actions/checkout@v2.1.0
 
     - name: Install and run Pester annoyingly on Windows PowerShell https://github.com/pester/Pester/issues/1295
-      uses: actions/checkout@v2.1.0
       
       run: |
         $manifest = Import-PowershellDataFile -Path .\dbachecks.psd1
@@ -34,7 +34,6 @@ jobs:
       shell: powershell
 
     - name: Install and run Pester on pwsh
-      uses: actions/checkout@v2.1.0
 
       run: |
         $manifest = Import-PowershellDataFile -Path .\dbachecks.psd1
