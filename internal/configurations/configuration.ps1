@@ -243,7 +243,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.oleautomationproceduresdisab
 Set-PSFConfig -Module dbachecks -Name skip.instance.remoteaccessdisabled -Validation bool -Value $false -Initialize -Description "Skip the remote access check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.scanforstartupproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip the scan for startup procedures disabled check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool -Value $false -Initialize -Description "Skip the scan the latest build of SQL Server check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.suspectpagelimit -Validation bool -Value $false -Initialize -Description "Skip the check for whether the suspect_pages table is nearing the row limit"
+Set-PSFConfig -Module dbachecks -Name skip.instance.suspectpagelimit -Validation bool -Value $false -Initialize -Description "Skip the check for whether the suspect_pages table is nearing the row limit of 1000"
 Set-PSFConfig -Module dbachecks -Name skip.security.sadisabled -Validation bool -Value $true -Initialize -Description "Skip the check for if the sa login is disabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip the check for a login named sa does not exist"
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
@@ -304,7 +304,7 @@ Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludedatabases -V
 Set-PSFConfig -Module dbachecks -Name testing.integration.instance -Value @("localhost") -Initialize -Description "Default SQL Server instances to be used by integration tests"
 
 # Suspect pages
-Set-PSFConfig -Module dbachecks -Name policy.suspectpages.threshold -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit"
+Set-PSFConfig -Module dbachecks -Name policy.suspectpages.threshold -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit of 1000"
 
 # Server
 Set-PSFConfig -Module dbachecks -Name policy.server.cpuprioritisation -Value $true -Initialize -Description "Shall we skip the CPU Prioritisation check"
