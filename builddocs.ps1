@@ -1,3 +1,4 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 
 Install-Module PlatyPs -Scope CurrentUser -Force
 Import-Module PlatyPs
 
