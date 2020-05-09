@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.2.29'
+    ModuleVersion          = '2.0.0'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -23,7 +23,7 @@
     CompanyName            = 'SQL Community Collaborative'
 
     # Copyright statement for this module
-    Copyright              = '(c) 2018. All rights reserved.'
+    Copyright              = '(c) 2020. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description            = 'SQL Server Infrastructure validation Tests to ensure that your SQL Server estate is and continues to be compliant with your requirements'
@@ -137,26 +137,35 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 29th March 20
-UPDATED MINIMUM POWERSHELL VERSION
+## Date 9th May 2020
+UPDATED TO VERSION 2
 
-Updated Required versions of Pester, dbatools and PSFramework modules
+New Commands
 
-Thank you @dstrait
-    Fix variable for SaDisabled check #750
-    Fix errant braces in SQL Browser Service Check #751
-    Fix PingComputer Check #752
+            Convert-DbcResult - To parse results and add Label, ComputerName, Instance and Database
+            Set-DbcFile - To save the parsed results to a file json, csv or xml
+            Write-DbcTable - to add results to a database
 
-Thank you markaugust
-    Fix to ensure AG Name is in HADR checks #755
+New Parameter
+            -FromDatabase on Star-DbcPowerBi - to open new Power Bi template file
 
-Thank you Tracey Boggiano
-    Added Contained Database auth check and Query Store Enabled Checks #756
+New PowerBi template file for reporting on results from the database
 
-Thank you Rob
-    Added exclude database config for Query store checks
-    Version check for Query Store Checks
-    Some spellings!
+Improved Spelling
+
+Updated Unit Tests for Checks to enabled results to be parsed
+
+Improved Check Titles
+
+Configuration for Max history days for Job duration
+
+Stop trying to check inaccessible databases for checks
+
+Improved Query Store checks
+
+Ensure long running agent jobs ignores durations longer than 24 hours
+
+Ignore jobs that never stop from the duration check
 
 ##Latest
 
