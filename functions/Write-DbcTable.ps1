@@ -19,10 +19,10 @@ The database to write the results
 The datatable from Convert-DbcResult
 
 .PARAMETER Table
-The name of the table for the results - will be created if it doesnt exist by default it will be CheckResults
+The name of the table for the results - will be created if it doesn't exist. By default it will be named CheckResults
 
 .PARAMETER Schema
-the schema for the table - defaults to dbo
+The schema for the table - defaults to dbo
 
 .PARAMETER Truncate
 Will truncate the existing table (if results go to a staging table for example)
