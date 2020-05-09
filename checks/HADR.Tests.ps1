@@ -116,7 +116,7 @@ foreach ($clustervm in $clusters) {
 
         Context "Cluster nodes for $clustername" {
             @($return.Nodes).ForEach{
-                It "Node $($psitem.Name) should be up" {
+                It "This node should be available - Node $($psitem.Name)" {
                     $psitem.State | Should -Be 'Up' -Because 'Every node in the cluster should be available'
                 }
             }
@@ -124,20 +124,20 @@ foreach ($clustervm in $clusters) {
         Context "Cluster resources for $clustername" {
             # Get the resources that are no IP Addresses with an owner of Availability Group
             $return.Resources.Where{ ( $_.ResourceType -in ($_.ResourceType -ne 'IP Address') ) -and ($_.OwnerGroup -in $Return.Ags) }.ForEach{
-                It "Resource $($psitem.Name) should be online" {
+                It "This resource should be online - Resource $($psitem.Name)" {
                     $psitem.State | Should -Be 'Online' -Because 'All of the cluster resources should be online'
                 }
             }
             # Get the resources where IP Address is owned by AG and group by AG
             @($return.Resources.Where{ $_.ResourceType -eq 'IP Address' -and $_.OwnerGroup -in $return.AGs } | Group-Object -Property OwnerGroup).ForEach{
-                It "One of the IP Addresses for Availability Group $($Psitem.Name) Should be online" {
+                It "One of the IP Addresses should be online for AvailabilityGroup $($Psitem.Name)" {
                     $psitem.Group.Where{ $_.State -eq 'Online' }.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
                 }
             }
         }
         Context "Cluster networks for $clustername" {
             @($return.Network).ForEach{
-                It "$($psitem.Name) should be up" {
+                It "The Network should be up - Network $($psitem.Name)" {
                     $psitem.State | Should -Be 'Up' -Because 'All of the CLuster Networks should be up'
                 }
             }
@@ -173,27 +173,26 @@ foreach ($clustervm in $clusters) {
                         }
                     }
 
-                    It "Listener $($results.SqlInstance) should be pingable" -skip:$skipaglistenerping {
+                    It "Listener should be pingable for $($results.SqlInstance)" -skip:$skipaglistenerping {
                         $results.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
                     }
-                    It "Listener $($results.SqlInstance) should be able to connect with SQL" {
+                    It "Listener should be connectable on $($results.SqlInstance)" {
                         $results.ConnectSuccess | Should -BeTrue -Because 'The listener should process SQL commands successfully'
                     }
-                    It "Listener $($results.SqlInstance) domain name should be $domainname" {
+                    It "Listener domain name should be $domainname on $($results.SqlInstance)" {
                         $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
                     }
-
                 }
 
                 @($AG.AvailabilityReplicas).ForEach{
                     $results = Test-DbaConnection -sqlinstance $PsItem.Name
-                    It "Replica $($results.SqlInstance) should be Pingable" {
+                    It "Replica should be Pingable for $($results.SqlInstance)" {
                         $results.IsPingable | Should -BeTrue -Because 'Each replica should be pingable'
                     }
-                    It "Replica $($results.SqlInstance) should be able to connect with SQL" {
+                    It "Should be able to connect with SQL on Replica $($results.SqlInstance)" {
                         $results.ConnectSuccess | Should -BeTrue -Because 'Each replica should be able to process SQL commands'
                     }
-                    It "Replica $($results.SqlInstance) domain name should be $domainname" {
+                    It "Replica domain name should be $domainname on Replica $($results.SqlInstance)" {
                         $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
                     }
 
@@ -201,7 +200,7 @@ foreach ($clustervm in $clusters) {
                     # In this case we cannot configure the same tcpport than those used for AG listeners
                     # TCP port conflict
                     # Adding exclusion for these scenarios
-                    It "Replica $($results.SqlInstance) TCP port should be in $tcpport" -Skip:$skipreplicatcpport {
+                    It "TCP port should be in $tcpport on Replica $($results.SqlInstance)" -Skip:$skipreplicatcpport {
                         $results.TCPPort | Should -BeIn $sqltcpport -Because "We expect the TCP Port to be in $sqltcpport"
                     }
                 }
@@ -209,22 +208,22 @@ foreach ($clustervm in $clusters) {
 
             Context "Availability group status for $($AG.Name) on $clustername" {
                 @($AG.AvailabilityReplicas).ForEach{
-                    It "$($psitem.Name) replica should not be in unknown availability mode" {
+                    It "The replica should not be in unknown availability mode for $($psitem.Name)" {
                         $psitem.AvailabilityMode | Should -Not -Be 'Unknown' -Because 'The replica should not be in unknown state'
                     }
                 }
                 @($AG.AvailabilityReplicas).Where{ $psitem.AvailabilityMode -eq 'SynchronousCommit' }.ForEach{
-                    It "$($psitem.Name) replica should be synchronised" {
+                    It "The replica should be synchronised $($psitem.Name)" {
                         $psitem.RollupSynchronizationState | Should -Be 'Synchronized' -Because 'The synchronous replica should be synchronised'
                     }
                 }
                 $AG.AvailabilityReplicas.Where{ $psitem.AvailabilityMode -eq 'ASynchronousCommit' }.ForEach{
-                    It "$($psitem.Name) replica should be synchronising" {
+                    It "The replica should be synchronising $($psitem.Name)" {
                         $psitem.RollupSynchronizationState | Should -Be 'Synchronizing' -Because 'The asynchronous replica should be synchronizing '
                     }
                 }
                 @($AG.AvailabilityReplicas).Where.ForEach{
-                    It "$($psitem.Name) replica should be connected" {
+                    It "The replica should be connected $($psitem.Name)" {
                         $psitem.ConnectionState | Should -Be 'Connected' -Because 'The replica should be connected'
                     }
                 }
@@ -249,7 +248,7 @@ foreach ($clustervm in $clusters) {
                 }
                 @($ag.AvailabilityReplicas.Where{ $_.AvailabilityMode -eq 'AsynchronousCommit' }).ForEach{
                     @(Get-DbaAgDatabase -SqlInstance $PSItem.Name -AvailabilityGroup $Ag.Name).ForEach{
-                        It "Database $($psitem.DatabaseName) should be synchronising on the secondary as it is Async" {
+                        It "Database $($psitem.DatabaseName) should be synchronising as it is Async on the secondary replica $($psitem.Replica)" {
                             $psitem.SynchronizationState | Should -Be 'Synchronizing' -Because 'The database on the asynchronous secondary replica should be synchronising'
                         }
                         It "Database $($psitem.DatabaseName) should not be failover ready on the secondary replica $($psitem.Replica)" {
@@ -272,88 +271,16 @@ foreach ($clustervm in $clusters) {
                 catch {
                     $Xevents = 'FailedToConnect'
                 }
-                It "Replica $($psitem.Name) should have an extended event session called AlwaysOn_health" {
-                    $Xevents.Name | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
+                It "There should be an extended event session called AlwaysOn_health on Replica $($psitem.Name)" {
+                    $Xevents.Name  | Should -Contain 'AlwaysOn_health' -Because 'The extended events session should exist'
                 }
-                It "Replica $($AG.SqlInstance) Always On Health extended event session should be running" {
+                It "The Always On Health extended event session should be running on Replica $($psitem.Name)" {
                     $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.Status | Should -Be 'Running' -Because 'The extended event session will enable you to troubleshoot errors'
                 }
-                It "Replica $($AG.SqlInstance) Always On Health extended event session should be set to auto start" {
+                It "The Always On Health extended event session should be set to auto start on Replica $($psitem.Name)" {
                     $Xevents.Where{ $_.Name -eq 'AlwaysOn_health' }.AutoStart | Should -BeTrue  -Because 'The extended event session will enable you to troubleshoot errors'
                 }
             }
         }
     }
 }
-# SIG # Begin signature block
-# MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUZghzF/X40NGvrsVYaBqx25oF
-# 9qWgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
-# AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
-# VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
-# c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
-# MzEyMDAwMFowVzELMAkGA1UEBhMCVVMxETAPBgNVBAgTCFZpcmdpbmlhMQ8wDQYD
-# VQQHEwZWaWVubmExETAPBgNVBAoTCGRiYXRvb2xzMREwDwYDVQQDEwhkYmF0b29s
-# czCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAI8ng7JxnekL0AO4qQgt
-# Kr6p3q3SNOPh+SUZH+SyY8EA2I3wR7BMoT7rnZNolTwGjUXn7bRC6vISWg16N202
-# 1RBWdTGW2rVPBVLF4HA46jle4hcpEVquXdj3yGYa99ko1w2FOWzLjKvtLqj4tzOh
-# K7wa/Gbmv0Si/FU6oOmctzYMI0QXtEG7lR1HsJT5kywwmgcjyuiN28iBIhT6man0
-# Ib6xKDv40PblKq5c9AFVldXUGVeBJbLhcEAA1nSPSLGdc7j4J2SulGISYY7ocuX3
-# tkv01te72Mv2KkqqpfkLEAQjXgtM0hlgwuc8/A4if+I0YtboCMkVQuwBpbR9/6ys
-# Z+sCAwEAAaOCAcUwggHBMB8GA1UdIwQYMBaAFFrEuXsqCqOl6nEDwGD5LfZldQ5Y
-# MB0GA1UdDgQWBBRcxSkFqeA3vvHU0aq2mVpFRSOdmjAOBgNVHQ8BAf8EBAMCB4Aw
-# EwYDVR0lBAwwCgYIKwYBBQUHAwMwdwYDVR0fBHAwbjA1oDOgMYYvaHR0cDovL2Ny
-# bDMuZGlnaWNlcnQuY29tL3NoYTItYXNzdXJlZC1jcy1nMS5jcmwwNaAzoDGGL2h0
-# dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9zaGEyLWFzc3VyZWQtY3MtZzEuY3JsMEwG
-# A1UdIARFMEMwNwYJYIZIAYb9bAMBMCowKAYIKwYBBQUHAgEWHGh0dHBzOi8vd3d3
-# LmRpZ2ljZXJ0LmNvbS9DUFMwCAYGZ4EMAQQBMIGEBggrBgEFBQcBAQR4MHYwJAYI
-# KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBOBggrBgEFBQcwAoZC
-# aHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0U0hBMkFzc3VyZWRJ
-# RENvZGVTaWduaW5nQ0EuY3J0MAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQELBQAD
-# ggEBANuBGTbzCRhgG0Th09J0m/qDqohWMx6ZOFKhMoKl8f/l6IwyDrkG48JBkWOA
-# QYXNAzvp3Ro7aGCNJKRAOcIjNKYef/PFRfFQvMe07nQIj78G8x0q44ZpOVCp9uVj
-# sLmIvsmF1dcYhOWs9BOG/Zp9augJUtlYpo4JW+iuZHCqjhKzIc74rEEiZd0hSm8M
-# asshvBUSB9e8do/7RhaKezvlciDaFBQvg5s0fICsEhULBRhoyVOiUKUcemprPiTD
-# xh3buBLuN0bBayjWmOMlkG1Z6i8DUvWlPGz9jiBT3ONBqxXfghXLL6n8PhfppBhn
-# daPQO8+SqF5rqrlyBPmRRaTz2GQwggUwMIIEGKADAgECAhAECRgbX9W7ZnVTQ7Vv
-# lVAIMA0GCSqGSIb3DQEBCwUAMGUxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdp
-# Q2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xJDAiBgNVBAMTG0Rp
-# Z2lDZXJ0IEFzc3VyZWQgSUQgUm9vdCBDQTAeFw0xMzEwMjIxMjAwMDBaFw0yODEw
-# MjIxMjAwMDBaMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMx
-# GTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNVBAMTKERpZ2lDZXJ0IFNI
-# QTIgQXNzdXJlZCBJRCBDb2RlIFNpZ25pbmcgQ0EwggEiMA0GCSqGSIb3DQEBAQUA
-# A4IBDwAwggEKAoIBAQD407Mcfw4Rr2d3B9MLMUkZz9D7RZmxOttE9X/lqJ3bMtdx
-# 6nadBS63j/qSQ8Cl+YnUNxnXtqrwnIal2CWsDnkoOn7p0WfTxvspJ8fTeyOU5JEj
-# lpB3gvmhhCNmElQzUHSxKCa7JGnCwlLyFGeKiUXULaGj6YgsIJWuHEqHCN8M9eJN
-# YBi+qsSyrnAxZjNxPqxwoqvOf+l8y5Kh5TsxHM/q8grkV7tKtel05iv+bMt+dDk2
-# DZDv5LVOpKnqagqrhPOsZ061xPeM0SAlI+sIZD5SlsHyDxL0xY4PwaLoLFH3c7y9
-# hbFig3NBggfkOItqcyDQD2RzPJ6fpjOp/RnfJZPRAgMBAAGjggHNMIIByTASBgNV
-# HRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBhjATBgNVHSUEDDAKBggrBgEF
-# BQcDAzB5BggrBgEFBQcBAQRtMGswJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRp
-# Z2ljZXJ0LmNvbTBDBggrBgEFBQcwAoY3aHR0cDovL2NhY2VydHMuZGlnaWNlcnQu
-# Y29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9vdENBLmNydDCBgQYDVR0fBHoweDA6oDig
-# NoY0aHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9v
-# dENBLmNybDA6oDigNoY0aHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0
-# QXNzdXJlZElEUm9vdENBLmNybDBPBgNVHSAESDBGMDgGCmCGSAGG/WwAAgQwKjAo
-# BggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAKBghghkgB
-# hv1sAzAdBgNVHQ4EFgQUWsS5eyoKo6XqcQPAYPkt9mV1DlgwHwYDVR0jBBgwFoAU
-# Reuir/SSy4IxLVGLp6chnfNtyA8wDQYJKoZIhvcNAQELBQADggEBAD7sDVoks/Mi
-# 0RXILHwlKXaoHV0cLToaxO8wYdd+C2D9wz0PxK+L/e8q3yBVN7Dh9tGSdQ9RtG6l
-# jlriXiSBThCk7j9xjmMOE0ut119EefM2FAaK95xGTlz/kLEbBw6RFfu6r7VRwo0k
-# riTGxycqoSkoGjpxKAI8LpGjwCUR4pwUR6F6aGivm6dcIFzZcbEMj7uo+MUSaJ/P
-# QMtARKUT8OZkDCUIQjKyNookAv4vcn4c10lFluhZHen6dGRrsutmQ9qzsIzV6Q3d
-# 9gEgzpkxYz0IGhizgZtPxpMQBvwHgfqL2vmCSfdibqFT+hKUGIUukpHqaGxEMrJm
-# oecYpJpkUe8xggIoMIICJAIBATCBhjByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMM
-# RGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQD
-# EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
-# dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
-# AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRVvHGgkzX4zIaUF9r37drpMuAD
-# uDANBgkqhkiG9w0BAQEFAASCAQBNpwJmApoJh/5EYTSvzk/cxtNseg1iIj5Q3Xug
-# g3akpOOdxDTOzV22azFSDn7/ojmaTXUTH41eXENltXSpyLb8W+I+QuF4JqJuo+9g
-# yWV9eUkd7bSoVweg3UDB50eu/kBTOWrIqj3Znf5SMQHUt2h5dXCk9SY5WcIjrTLQ
-# y0tOkAlYZ9xYFjI6SKayNM7zSQKVWh5xoymsGeSc9dZqfFy1mjralkrSX+/1Dfxz
-# jbgVLP2jkEDPoLbhalJOrBuG7Bn3MxEfsGBJBEcZdC6xUmIQy8gzG2aAyLHkR+0G
-# Mp0ASdr16LW2rvHHqcsIqJPf7QlgDXXqZ/Ee7X7NMtm+wl/E
-# SIG # End signature block

@@ -148,8 +148,8 @@ Set-PSFConfig -Module dbachecks -Name policy.database.maxdop -Value 0 -Initializ
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excludereadonly -Value @() -Initialize -Description "Database names that we expect to be readonly"
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excludeoffline -Value @() -Initialize -Description "Database names that we expect to be offline"
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -Value @() -Initialize -Description "Database names that we expect to be restoring"
-Set-PSFConfig -Module dbachecks -Name policy.database.querystoreenabled -Validation bool -Value "ON" -Initialize -Description "Query Store actual state should be set to ON"
-Set-PSFConfig -Module dbachecks -Name database.querystore.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store"
+Set-PSFConfig -Module dbachecks -Name database.querystoreenabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store enabled"
+Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store disabled"
 
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
