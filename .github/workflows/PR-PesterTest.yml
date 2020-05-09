@@ -10,9 +10,11 @@ jobs:
 
     runs-on: windows-latest
     steps:
-    - name: Checkout code - Install and run Pester annoyingly on Windows PowerShell https://github.com/pester/Pester/issues/1295
-      - uses: actions/checkout@v2.1.0
-        run: |
+    - name: Checkout code Install and run Pester annoyingly on Windows PowerShell https://github.com/pester/Pester/issues/1295
+      uses: actions/checkout@v2.1.0
+    
+    - run: |
+          pwd
           $manifest = Import-PowershellDataFile -Path .\dbachecks.psd1
           $PesterVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'Pester'}.ModuleVersion
           $PSFrameworkVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'PSFramework'}.ModuleVersion
@@ -28,4 +30,4 @@ jobs:
             Write-Warning "Some Tests Failed - See results above"
             [System.Environment]::Exit(1)
           }
-        shell: powershell
+      shell: powershell
