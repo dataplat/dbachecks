@@ -14,7 +14,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     if ($NotContactable -notcontains $psitem) {
         $Instance = $psitem
         try {
-            $InstanceSMO = Connect-DbaInstance	-SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+            $InstanceSMO = Connect-DbaInstance -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
         }
         catch {
             $NotContactable += $Instance
@@ -64,7 +64,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                         (Test-DbaConnectionAuthScheme -SqlInstance $Instance).authscheme | Should -Be $authscheme
                     }
                 }
-                It -Skip:$skipping "$psitem is pingable" {
+                It -Skip:$skipping "We should be able to ping host $psitem" {
                     $ping = New-Object System.Net.NetworkInformation.Ping
                     $timeout = 1000 #milliseconds
                     $reply = $ping.Send($InstanceSMO.ComputerName, $timeout)
@@ -72,7 +72,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                     $pingable | Should -BeTrue
 
                 }
-                It -Skip:$skipremote "$psitem Is PSRemoteable" {
+                It -Skip:$skipremote "We should be able to remote onto $psitem" {
                     #simple remoting check
                     try {
                         $null = Invoke-Command -ComputerName $InstanceSMO.ComputerName -ScriptBlock { Get-ChildItem } -ErrorAction Stop
@@ -168,7 +168,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Ad Hoc Workload Optimization on $psitem" {
-                It "$psitem Should be Optimize for Ad Hoc workloads" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
+                It "Should have Optimize for Ad Hoc workloads set correctly on $psitem" -Skip:((Get-Version -SQLInstance $psitem) -lt 10) {
                     @(Test-DbaOptimizeForAdHoc -SqlInstance $psitem).ForEach{
                         $psitem.CurrentOptimizeAdHoc | Should -Be $psitem.RecommendedOptimizeAdHoc -Because "optimize for ad hoc workloads is a recommended setting"
                     }
@@ -271,7 +271,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Linked Servers on $psitem" {
                 @(Test-DbaLinkedServerConnection -SqlInstance $psitem).ForEach{
-                    It "Linked Server $($psitem.LinkedServerName) on on $($psitem.SqlInstance) has connectivity" {
+                    It "Linked Server $($psitem.LinkedServerName) has connectivity on $($psitem.SqlInstance)" {
                         $psitem.Connectivity | Should -BeTrue -Because 'You need to be able to connect to your linked servers'
                     }
                 }
@@ -318,7 +318,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking for orphaned database files on $psitem" {
-                It "$psitem doesn't have orphan files" {
+                It "There should be zero orphaned database files on $psitem" {
                     @(Find-DbaOrphanedFile -SqlInstance $psitem).Count | Should -Be 0 -Because 'You dont want any orphaned files - Use Find-DbaOrphanedFile to locate them'
                 }
             }
@@ -336,11 +336,11 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing instance name matches Windows name for $psitem" {
                 if ($InstanceSMO.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance -like '*,*')) {
-                    It "$psitem doesn't require rename as it appears to be a local container" -Skip {
+                    It "We wont check this as it appears to be a local container - for $psitem" -Skip {
                     }
                 }
                 else {
-                    It "$psitem doesn't require rename" {
+                    It "Testing rename required for $psitem" {
                         (Test-DbaInstanceName -SqlInstance $psitem).RenameRequired | Should -BeFalse -Because 'SQL and Windows should agree on the server name'
                     }
                 }
@@ -370,8 +370,6 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         $BuildWarning = Get-DbcConfigValue policy.build.warningwindow
         $BuildBehind = Get-DbcConfigValue policy.build.behind
         $Date = Get-Date
-
-
         if ($NotContactable -contains $psitem) {
             Context "Checking that build is still supported by Microsoft for $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -382,21 +380,20 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Checking that build is still supported by Microsoft for $psitem" {
                 if ($BuildBehind) {
-                    It "$psitem is not behind the latest build by more than $BuildBehind" {
-                        Assert-InstanceSupportedBuild -Instance $psitem -BuildBehind $BuildBehind -Date $Date
+                    It "The build is not behind the latest build by more than $BuildBehind for $psitem" {
+                        Assert-InstanceSupportedBuild -Instance $InstanceSMO -BuildBehind $BuildBehind -Date $Date
                     }
                 }
-                It "$Instance's build is supported by Microsoft" {
-                    Assert-InstanceSupportedBuild -Instance $psitem -Date $Date
+                It "The build is supported by Microsoft for $psitem" {
+                    Assert-InstanceSupportedBuild -Instance $InstanceSMO -Date $Date
                 }
-                It "$Instance's build is supported by Microsoft within the warning window of $BuildWarning months" {
-                    Assert-InstanceSupportedBuild -Instance $psitem -BuildWarning $BuildWarning -Date $Date
+                It "The build is supported by Microsoft within the warning window of $BuildWarning months for $psitem" {
+                    Assert-InstanceSupportedBuild -Instance $InstanceSMO -BuildWarning $BuildWarning -Date $Date
                 }
-
-
             }
         }
     }
+
 
     Describe "SA Login Renamed" -Tags SaRenamed, DISA, CIS, Medium, $filename {
         if ($NotContactable -contains $psitem) {
@@ -471,71 +468,90 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
     Describe "XE Sessions That should be Stopped" -Tags XESessionStopped, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredstoppedsession
-        # no point running if we dont have something to check
-        if ($xesession) {
-            if ($NotContactable -contains $psitem) {
-                Context "Checking sessions on $psitem" {
-                    It "Can't Connect to $Psitem" {
-                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+        if ((Get-Version -SQLInstance $psitem) -gt 10) {
+            # no point running if we dont have something to check
+            if ($xesession) {
+                if ($NotContactable -contains $psitem) {
+                    Context "Checking sessions on $psitem" {
+                        It "Can't Connect to $Psitem" {
+                            $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                        }
                     }
                 }
-            }
-            else {
-                Context "Checking sessions on $psitem" {
-                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
-                    @($xesession).ForEach{
-                        It "Session $psitem should not be running on $Instance" {
-                            $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
+                else {
+                    Context "Checking sessions on $psitem" {
+                        $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
+                        @($xesession).ForEach{
+                            It "Session $psitem should not be running on $Instance" {
+                                $psitem | Should -Not -BeIn $runningsessions -Because "$psitem session should be stopped"
+                            }
                         }
                     }
                 }
             }
+            else {
+                Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredstoppedsession -Value to add some Extended Events session names to run this check"
+            }
         }
         else {
-            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredstoppedsession -Value to add some Extended Events session names to run this check"
+            Context "Checking sessions on $psitem" {
+                It "Version does not support XE sessions on $Instance" -skip {
+                    1 | Should -Be 3
+                }
+            }
         }
     }
 
     Describe "XE Sessions That should be Running" -Tags XESessionRunning, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
-        # no point running if we dont have something to check
-        if ($xesession) {
-            if ($NotContactable -contains $psitem) {
-                Context "Checking running sessions on $psitem" {
-                    It "Can't Connect to $Psitem" {
-                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+        if ((Get-Version -SQLInstance $psitem) -gt 10) {
+            # no point running if we dont have something to check
+            if ($xesession) {
+                if ($NotContactable -contains $psitem) {
+                    Context "Checking running sessions on $psitem" {
+                        It "Can't Connect to $Psitem" {
+                            $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                        }
                     }
                 }
-            }
-            else {
-                Context "Checking running sessions on $psitem" {
-                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
-                    @($xesession).ForEach{
-                        It "session $psitem should be running on $Instance" {
-                            $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
+                else {
+                    Context "Checking running sessions on $psitem" {
+                        $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
+                        @($xesession).ForEach{
+                            It "session $psitem should be running on $Instance" {
+                                $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
+                            }
                         }
                     }
                 }
             }
+            else {
+                Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value to add some Extended Events session names to run this check"
+            }
         }
         else {
-            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value to add some Extended Events session names to run this check"
+            Context "Checking running sessions on $psitem" {
+                It "Version does not support XE sessions on $Instance" -skip {
+                    1 | Should -Be 3
+                }
+            }
         }
     }
 
     Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
+        if ((Get-Version -SQLInstance $psitem) -gt 10) {
         # no point running if we dont have something to check
         if ($xesession) {
             if ($NotContactable -contains $psitem) {
-                Context "Checking sessions on $psitem" {
+                Context "Checking running sessions allowed on $psitem" {
                     It "Can't Connect to $Psitem" {
                         $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                     }
                 }
             }
             else {
-                Context "Checking sessions on $psitem" {
+                Context "Checking running sessions allowed on $psitem" {
                     @(Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.ForEach{
                         It "Session $($Psitem.Name) is allowed to be running on $Instance" {
                             $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
@@ -546,6 +562,14 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
+        }
+    }
+        else {
+            Context "Checking running sessions allowed on $psitem" {
+                It "Version does not support XE sessions on $Instance" -skip {
+                    1 | Should -Be 3
+                }
+            }
         }
     }
     Describe "OLE Automation" -Tags OLEAutomation, security, CIS, Medium, $filename {
@@ -718,7 +742,6 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         $UseRecommended = Get-DbcConfigValue policy.instancemaxdop.userecommended
         $MaxDop = Get-DbcConfigValue policy.instancemaxdop.maxdop
         $ExcludeInstance = Get-DbcConfigValue policy.instancemaxdop.excludeinstance
-
         if ($NotContactable -contains $psitem) {
             Context "Testing Instance MaxDop Value on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -1176,40 +1199,39 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
             }
         }
         else {
-            Context "Testing SQL Browser Service on $psitem" {
-                if (-not $IsLinux) {
-                    $Services = Get-DbaService -ComputerName $psitem
-                    if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                        It "SQL browser service on $psitem should be Stopped as only one instance is installed" {
-                            $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'Unless there are multiple instances you dont need the browser service'
+            # cant check agent on container - hmm does this actually work with instance need to check
+            if (-not $IsLinux -and ($InstanceSMO.HostPlatform -ne 'Linux')) {
+                Context "Testing SQL Browser Service on $psitem" {
+                    if (-not $IsLinux) {
+                        $Services = Get-DbaService -ComputerName $psitem
+                        if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
+                            It "SQL browser service should be Stopped as only one instance is installed on $psitem" {
+                                $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'Unless there are multiple instances you dont need the browser service'
+                            }
+                        }
+                        else {
+                            It "SQL browser service should be Running as multiple instances are installed on $psitem" {
+                                $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'You need the browser service with multiple instances' }
+                        }
+                        if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
+                            It "SQL browser service startmode should be Disabled as only one instance is installed on $psitem" {
+                                $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multiple instances you dont need the browser service' }
+                        }
+                        else {
+                            It "SQL browser service startmode should be Automatic as multiple instances are installed on $psitem" {
+                                $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
+                            }
                         }
                     }
                     else {
-                        It "SQL browser service on $psitem should be Running as multiple instances are installed" {
-                            $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'You need the browser service with multiple instances' }
-                    }
-
-                    if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                        It "SQL browser service startmode should be Disabled on $psitem as only one instance is installed" {
-                            $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multiple instances you dont need the browser service' }
-                    }
-                    else {
-                        It "SQL browser service startmode should be Automatic on $psitem as multiple instances are installed" {
-                            $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
+                        It "Running on Linux so can't check Services on $Psitem" -skip {
                         }
                     }
                 }
-                else {
-                    It "SQL browser service on $psitem should be Running as multiple instances are installed" {
-                        $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'You need the browser service with multiple instances' }
-                }
-                if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                    It "SQL browser service start mode should be Disabled on $psitem as only one instance is installed" {
-                        $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multiple instances you dont need the browser service' }
-                }
-                else {
-                    It "SQL browser service start mode should be Automatic on $psitem as multiple instances are installed" {
-                        $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
+            }
+            else {
+                Context "Testing SQL Browser Service on $psitem" {
+                    It "Running on Linux or connecting to container so can't check Services on $Psitem" -skip {
                     }
                 }
             }
@@ -1217,76 +1239,4 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
     }
 }
 
-
-# SIG # Begin signature block
-# MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUljjtyZomn9EpmYMdk2KvLAzY
-# SI2gggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
-# AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
-# VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
-# c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
-# MzEyMDAwMFowVzELMAkGA1UEBhMCVVMxETAPBgNVBAgTCFZpcmdpbmlhMQ8wDQYD
-# VQQHEwZWaWVubmExETAPBgNVBAoTCGRiYXRvb2xzMREwDwYDVQQDEwhkYmF0b29s
-# czCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAI8ng7JxnekL0AO4qQgt
-# Kr6p3q3SNOPh+SUZH+SyY8EA2I3wR7BMoT7rnZNolTwGjUXn7bRC6vISWg16N202
-# 1RBWdTGW2rVPBVLF4HA46jle4hcpEVquXdj3yGYa99ko1w2FOWzLjKvtLqj4tzOh
-# K7wa/Gbmv0Si/FU6oOmctzYMI0QXtEG7lR1HsJT5kywwmgcjyuiN28iBIhT6man0
-# Ib6xKDv40PblKq5c9AFVldXUGVeBJbLhcEAA1nSPSLGdc7j4J2SulGISYY7ocuX3
-# tkv01te72Mv2KkqqpfkLEAQjXgtM0hlgwuc8/A4if+I0YtboCMkVQuwBpbR9/6ys
-# Z+sCAwEAAaOCAcUwggHBMB8GA1UdIwQYMBaAFFrEuXsqCqOl6nEDwGD5LfZldQ5Y
-# MB0GA1UdDgQWBBRcxSkFqeA3vvHU0aq2mVpFRSOdmjAOBgNVHQ8BAf8EBAMCB4Aw
-# EwYDVR0lBAwwCgYIKwYBBQUHAwMwdwYDVR0fBHAwbjA1oDOgMYYvaHR0cDovL2Ny
-# bDMuZGlnaWNlcnQuY29tL3NoYTItYXNzdXJlZC1jcy1nMS5jcmwwNaAzoDGGL2h0
-# dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9zaGEyLWFzc3VyZWQtY3MtZzEuY3JsMEwG
-# A1UdIARFMEMwNwYJYIZIAYb9bAMBMCowKAYIKwYBBQUHAgEWHGh0dHBzOi8vd3d3
-# LmRpZ2ljZXJ0LmNvbS9DUFMwCAYGZ4EMAQQBMIGEBggrBgEFBQcBAQR4MHYwJAYI
-# KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBOBggrBgEFBQcwAoZC
-# aHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0U0hBMkFzc3VyZWRJ
-# RENvZGVTaWduaW5nQ0EuY3J0MAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQELBQAD
-# ggEBANuBGTbzCRhgG0Th09J0m/qDqohWMx6ZOFKhMoKl8f/l6IwyDrkG48JBkWOA
-# QYXNAzvp3Ro7aGCNJKRAOcIjNKYef/PFRfFQvMe07nQIj78G8x0q44ZpOVCp9uVj
-# sLmIvsmF1dcYhOWs9BOG/Zp9augJUtlYpo4JW+iuZHCqjhKzIc74rEEiZd0hSm8M
-# asshvBUSB9e8do/7RhaKezvlciDaFBQvg5s0fICsEhULBRhoyVOiUKUcemprPiTD
-# xh3buBLuN0bBayjWmOMlkG1Z6i8DUvWlPGz9jiBT3ONBqxXfghXLL6n8PhfppBhn
-# daPQO8+SqF5rqrlyBPmRRaTz2GQwggUwMIIEGKADAgECAhAECRgbX9W7ZnVTQ7Vv
-# lVAIMA0GCSqGSIb3DQEBCwUAMGUxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdp
-# Q2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xJDAiBgNVBAMTG0Rp
-# Z2lDZXJ0IEFzc3VyZWQgSUQgUm9vdCBDQTAeFw0xMzEwMjIxMjAwMDBaFw0yODEw
-# MjIxMjAwMDBaMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMx
-# GTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNVBAMTKERpZ2lDZXJ0IFNI
-# QTIgQXNzdXJlZCBJRCBDb2RlIFNpZ25pbmcgQ0EwggEiMA0GCSqGSIb3DQEBAQUA
-# A4IBDwAwggEKAoIBAQD407Mcfw4Rr2d3B9MLMUkZz9D7RZmxOttE9X/lqJ3bMtdx
-# 6nadBS63j/qSQ8Cl+YnUNxnXtqrwnIal2CWsDnkoOn7p0WfTxvspJ8fTeyOU5JEj
-# lpB3gvmhhCNmElQzUHSxKCa7JGnCwlLyFGeKiUXULaGj6YgsIJWuHEqHCN8M9eJN
-# YBi+qsSyrnAxZjNxPqxwoqvOf+l8y5Kh5TsxHM/q8grkV7tKtel05iv+bMt+dDk2
-# DZDv5LVOpKnqagqrhPOsZ061xPeM0SAlI+sIZD5SlsHyDxL0xY4PwaLoLFH3c7y9
-# hbFig3NBggfkOItqcyDQD2RzPJ6fpjOp/RnfJZPRAgMBAAGjggHNMIIByTASBgNV
-# HRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBhjATBgNVHSUEDDAKBggrBgEF
-# BQcDAzB5BggrBgEFBQcBAQRtMGswJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRp
-# Z2ljZXJ0LmNvbTBDBggrBgEFBQcwAoY3aHR0cDovL2NhY2VydHMuZGlnaWNlcnQu
-# Y29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9vdENBLmNydDCBgQYDVR0fBHoweDA6oDig
-# NoY0aHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9v
-# dENBLmNybDA6oDigNoY0aHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0
-# QXNzdXJlZElEUm9vdENBLmNybDBPBgNVHSAESDBGMDgGCmCGSAGG/WwAAgQwKjAo
-# BggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAKBghghkgB
-# hv1sAzAdBgNVHQ4EFgQUWsS5eyoKo6XqcQPAYPkt9mV1DlgwHwYDVR0jBBgwFoAU
-# Reuir/SSy4IxLVGLp6chnfNtyA8wDQYJKoZIhvcNAQELBQADggEBAD7sDVoks/Mi
-# 0RXILHwlKXaoHV0cLToaxO8wYdd+C2D9wz0PxK+L/e8q3yBVN7Dh9tGSdQ9RtG6l
-# jlriXiSBThCk7j9xjmMOE0ut119EefM2FAaK95xGTlz/kLEbBw6RFfu6r7VRwo0k
-# riTGxycqoSkoGjpxKAI8LpGjwCUR4pwUR6F6aGivm6dcIFzZcbEMj7uo+MUSaJ/P
-# QMtARKUT8OZkDCUIQjKyNookAv4vcn4c10lFluhZHen6dGRrsutmQ9qzsIzV6Q3d
-# 9gEgzpkxYz0IGhizgZtPxpMQBvwHgfqL2vmCSfdibqFT+hKUGIUukpHqaGxEMrJm
-# oecYpJpkUe8xggIoMIICJAIBATCBhjByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMM
-# RGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQD
-# EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
-# dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
-# AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRwMJYZn0zeCA5Te+02r+w21v4E
-# hDANBgkqhkiG9w0BAQEFAASCAQA7q2XfAWYjfDkrzKpqeGAthJGvrGptt2OXIKbH
-# QnjhmM7+Yg6VJ8UElOycC3mZbHwMDpS9qkY6cckTXqM19rekrIY4xGhIsSl4jLrG
-# 0HJlxNK0Cfb/d1lEzf84TRrL5gILYp9gL4RvxzpzdsMRP/0/izaGcioaH8E0KYsj
-# Y/6L7+a2Yy917qzaXSd11S3ytHb53EVJoIkn7gUvHdDWHS3ODqijgaos1dO9ikEA
-# 0DJfz5OCutDpGrSG8hMig1xr/flTGYHd0+UU7T2xA+FTu5JWBWyKdUmLGwiPaZwu
-# lhFnXBW9xuVaUhcVKMUT1DlcRj8yfenfydSJsVvNZkdhLZ7Y
-# SIG # End signature block
+Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
