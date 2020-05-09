@@ -1164,6 +1164,25 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Suspect Page Limit Nearing" -Tags SuspectPageLimit, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.instance.suspectpagelimit
+        $thresholdPercent = Get-DbcConfigValue policy.suspectpages.threshold
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if the suspect_pages table is nearing the limit of 1000 rows on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if the suspect_pages table is nearing the limit of 1000 rows on $psitem" {
+                It "The suspect_pages table in msdb shouldn't be nearing the limit of 1000 rows on $psitem" -Skip:$skip {
+                    (((Get-DbaSuspectPage -SqlInstance $psitem | Measure-Object).Count)/1000)*100 | Should -BeLessThan $thresholdPercent
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
