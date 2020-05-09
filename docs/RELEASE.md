@@ -1,3 +1,36 @@
+## Date 9th May 2020
+
+UPDATED TO VERSION 2
+
+New Commands
+
+    Convert-DbcResult - To parse results and add Label, ComputerName, Instance and Database
+    Set-DbcFile - To save the parsed results to a file json, csv or xml
+    Write-DbcTable - to add results to a database
+
+New Parameter 
+    -FromDatabase on Star-DbcPowerBi - to open new Power Bi template file
+
+New PowerBi template file for reporting on results from the database
+
+Improved Spelling
+
+Updated Unit Tests for Checks to enabled results to be parsed
+
+Improved Check Titles
+
+Configuration for Max history days for Job duration
+
+Stop trying to check inaccessible databases for checks
+
+Improved Query Store checks
+
+Ensure long running agent jobs ignores durations longer than 24 hours
+
+Ignore jobs that never stop from the duration check
+
+##Latest
+
 ## Date 29th March 2020
 
 UPDATED MINIMUM POWERSHELL VERSION

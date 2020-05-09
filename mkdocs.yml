@@ -9,6 +9,7 @@ pages:
   - Release Notes: RELEASE.md
   - Functions:
     - Clear-DbcPowerBiDataSource: functions/Clear-DbcPowerBiDataSource.md
+    - Convert-DbcResult: functions/Convert-DbcResult.md
     - Export-DbcConfig: functions/Export-DbcConfig.md
     - Get-DbcCheck: functions/Get-DbcCheck.md
     - Get-DbcConfig: functions/Get-DbcConfig.md
@@ -21,7 +22,9 @@ pages:
     - Reset-DbcConfig: functions/Reset-DbcConfig.md
     - Save-DbcRequiredModules: functions/Save-DbcRequiredModules.md
     - Set-DbcConfig: functions/Set-DbcConfig.md
+    - Set-DbcFile: functions/Set-DbcFile.md
     - Start-DbcPowerBi: functions/Start-DbcPowerBi.md
     - Update-DbcPowerBiDataSource: functions/Update-DbcPowerBiDataSource.md
     - Update-DbcRequiredModules: functions/Update-DbcRequiredModules.md
+    - Write-DbcTable: functions/Write-DbcTable.md
 
