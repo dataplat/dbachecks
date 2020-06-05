@@ -138,7 +138,7 @@ foreach ($clustervm in $clusters) {
         Context "Cluster networks for $clustername" {
             @($return.Network).ForEach{
                 It "The Network should be up - Network $($psitem.Name)" {
-                    $psitem.State | Should -Be 'Up' -Because 'All of the CLuster Networks should be up'
+                    $psitem.State | Should -Be 'Up' -Because 'All of the Cluster Networks should be up'
                 }
             }
         }
