@@ -3,7 +3,7 @@
 Resets values to defaults then sets values for CIS test.
 
 .DESCRIPTION
-Resets to default values then sets all CIS checks to defaults values that were different than normals values.  Then sets CIS 
+Resets to default values then sets all CIS checks to defaults values that were different than normals values.  Then sets CIS
 test that are set to skip by default to run.
 
 .PARAMETER EnableException
