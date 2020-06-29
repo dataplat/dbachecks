@@ -818,7 +818,8 @@ function Assert-OleAutomationProcedures {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
     [CmdletBinding()]
     Param($AllInstanceInfo)
-    $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
+    $value = Get-DbcConfigValue policy.OleAutomation
+    $AllInstanceInfo.OleAutomationProceduresDisabled.ConfiguredValue | Should -Be $value -Because "We expect the OLE Automation Procedures to be disabled"
 }
 function Assert-ScanForStartupProcedures {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
@@ -1049,6 +1050,11 @@ function Assert-LoginPasswordExpiration {
 function Assert-LoginMustChange {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LoginMustChange.Count | Should -Be 0 -Because "We expected the all the new sql logins to have change the password on first login"
+}
+
+function Assert-PublicPermission {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.PublicPermission.Count | Should -Be 0 -Because "We expected the public role to have no permissions for CIS compliance."
 }
 
 # SIG # Begin signature block

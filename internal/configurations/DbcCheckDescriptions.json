@@ -256,10 +256,6 @@
         "Description": "Tests that the specified (default blank) XE Sessions that are allowed to be running are running"
     },
     {
-        "UniqueTag": "OLEAutomation",
-        "Description": "Tests that OLE Automation is set to the specified (default false) setting"
-    },
-    {
         "UniqueTag": "WhoIsActiveInstalled",
         "Description": "Tests that sp_whoisactive is Installed by testing the specified (default master) database for the stored procedure"
     },
@@ -529,5 +525,9 @@
     {
         "UniqueTag": "NonStandardPort",
         "Description": "Tests to see if the SQL Server Instances are NOT running on the default port of 1433."
+    },
+    {
+        "UniqueTag": "PublicPermission",
+        "Description": "Tests to see if public role has extra permissions based on CIS requirements."
     }
 ]

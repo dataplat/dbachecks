@@ -548,24 +548,6 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
         }
     }
-    Describe "OLE Automation" -Tags OLEAutomation, security, CIS, Medium, $filename {
-        $OLEAutomation = Get-DbcConfigValue policy.oleautomation
-        if ($NotContactable -contains $psitem) {
-            Context "Testing OLE Automation on $psitem" {
-                It "Can't Connect to $Psitem" {
-                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
-                }
-            }
-        }
-        else {
-            Context "Testing OLE Automation on $psitem" {
-                It "OLE Automation is set to $OLEAutomation on $psitem" {
-                    (Get-DbaSpConfigure -SqlInstance $psitem -ConfigName 'OleAutomationProceduresEnabled').ConfiguredValue -eq 1 | Should -Be $OLEAutomation -Because 'OLE Automation can introduce additional security risks'
-                }
-            }
-        }
-    }
-
     Describe "sp_whoisactive is Installed" -Tags WhoIsActiveInstalled, Low, $filename {
         $db = Get-DbcConfigValue policy.whoisactive.database
         if ($NotContactable -contains $psitem) {
@@ -1160,6 +1142,24 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             Context "Testing if the new SQL logins that have not logged have to change their password when they log in on $psitem" {
                 It "All new sql logins should have the have to change their password when they log in for the first time on $psitem"  -Skip:$skip {
                     Assert-LoginMustChange -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Public Role Permissions" -Tags PublicPermission, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.PublicPermission
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if the public role permissions don't have permissions on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if the public role permissions don't have permissions  on $psitem" {
+                It "All permissions should be set to CIS standards on the public role on $psitem"  -Skip:$skip {
+                    Assert-PublicPermission -AllInstanceInfo $AllInstanceInfo
                 }
             }
         }

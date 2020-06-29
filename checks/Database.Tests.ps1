@@ -941,7 +941,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $skip = Get-DbcConfigValue skip.security.containedbautoclose
         if ($NotContactable -contains $psitem) {
             Context "Testing contained database auto close option on $psitem" {
-                It "Can't Connect to $Psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
                     $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }
