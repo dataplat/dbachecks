@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Resets values to defaults then sets values for CIS test.
+Sets values for CIS tests.
 
 .DESCRIPTION
 Resets to default values then sets all CIS checks to defaults values that were different than normals values.  Then sets CIS
@@ -19,18 +19,14 @@ Set-DbcCisConfig
 #>
 
 function Set-DbcCisConfig {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(DefaultParameterSetName = "FullName", SupportsShouldProcess)]
     Param ()
-    #Reset all configs to defaults
-    Reset-DbcConfig
 
-    #set CIS configs that differ from the defaults
+    #set CIS to what they need to be
     if ($PSCmdlet.ShouldProcess("$name" , "Setting the value to $NewValue on ")) {
-        # Two CIS tests that have different values from the default test originally written
         Set-DbcConfig -Name policy.security.databasemailenabled -Value $false
         Set-DbcConfig -Name policy.security.clrenabled -Value $false
 
-        # CIS Test set to skip by default
         Set-DbcConfig -Name skip.security.sadisabled -Value $false
         Set-DbcConfig -Name skip.security.saexist -Value $false
         Set-DbcConfig -Name skip.security.containedbautoclose -Value $false
