@@ -174,6 +174,28 @@ function Get-AllServerInfo {
                 }
             }
         }
+        'Protocols' {
+            if ($There) {
+                try {
+                    $count = ((Get-DbaInstanceProtocol -ComputerName $ComputerName) | Where-Object DisplayName -ne "TCP/IP" -and -IsEnable -eq $true).Count
+                    $Protocols = [pscustomobject] @{
+                        Count = count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $Protocols = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $Protocols = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
@@ -183,6 +205,7 @@ function Get-AllServerInfo {
         PingComputer   = $PingComputer
         DiskAllocation = $DiskAllocation
         StandardPortCount = $StandardPortCount
+        Protocols = $Protocols
     }
 }
 
@@ -241,6 +264,11 @@ function Assert-Ping {
 function Assert-NonStandardPort {
     Param($AllServerInfo)
     $AllServerInfo.StandardPortCount.count | Should -Be 0 -Because "SQL Server should be configured to not use the standard port of 1433"
+}
+
+function Assert-ServerProtocol {
+    Param($AllServerInfo)
+    $AllServerInfo.Protocols.Count | Should -Be 0 -Because "SQL Server should be configured to use only TCP/IP protocol"
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
