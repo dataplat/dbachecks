@@ -174,24 +174,24 @@ function Get-AllServerInfo {
                 }
             }
         }
-        'Protocols' {
+        'ProtocolCount' {
             if ($There) {
                 try {
-                    $count = ((Get-DbaInstanceProtocol -ComputerName $ComputerName) | Where-Object DisplayName -ne "TCP/IP" -and -IsEnable -eq $true).Count
-                    $Protocols = [pscustomobject] @{
-                        Count = count
+                    $count = (Get-DbaInstanceProtocol -ComputerName $ComputerName | Where-Object {$_.DiplayName -ne "TCP/IP" -and $_.IsEnabled -eq $true}).Count
+                    $ProtocolCount = [pscustomobject] @{
+                        Count = $count
                     }
                 }
                 catch {
                     $There = $false
-                    $Protocols = [pscustomobject] @{
+                    $ProtocolCount = [pscustomobject] @{
                         Count = 'We Could not Connect to $Instance'
                     }
                 }
             }
             else {
                 $There = $false
-                $Protocols = [pscustomobject] @{
+                $ProtocolCount = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
                 }
             }
@@ -205,7 +205,7 @@ function Get-AllServerInfo {
         PingComputer   = $PingComputer
         DiskAllocation = $DiskAllocation
         StandardPortCount = $StandardPortCount
-        Protocols = $Protocols
+        ProtocolCount = $ProtocolCount
     }
 }
 
@@ -268,7 +268,8 @@ function Assert-NonStandardPort {
 
 function Assert-ServerProtocol {
     Param($AllServerInfo)
-    $AllServerInfo.Protocols.Count | Should -Be 0 -Because "SQL Server should be configured to use only TCP/IP protocol"
+    Write-Host $AllServerInfo.ProtocolCount.Count
+    $AllServerInfo.ProtocolCount.Count | Should -Be 0 -Because "SQL Server should be configured to use only the TCP/IP protocol"
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

@@ -536,6 +536,6 @@
     },
     {
         "UniqueTag": "ServerProtocol",
-        "Description": "Tests to see if the SQL Server Instances are other protocols besides TCP/IP."
+        "Description": "Tests to see if the SQL Server Instances are running other protocols besides TCP/IP."
     }
 ]
