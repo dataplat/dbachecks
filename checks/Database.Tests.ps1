@@ -466,6 +466,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $maxfull = Get-DbcConfigValue policy.backup.fullmaxdays
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
+        $skipsecondaries = Get-DbcConfigValue skip.backup.secondaries
         if ($NotContactable -contains $psitem) {
             Context "Testing last full backups on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -475,8 +476,13 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing last full backups on $psitem" {
-                $InstanceSMO.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }.ForEach{
-                    $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                $InstanceSMO.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database } else { $ExcludedDatabases -notcontains $PsItem.Name }) }.ForEach{
+                    if ($psitem.AvailabilityGroupName) {
+                        $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
+                    } else {
+                        $agReplicaRole = $null
+                    }
+                    $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
                     It -Skip:$skip "Database $($psitem.Name) should have full backups less than $maxfull days old on $($psitem.Parent.Name)" {
                         $psitem.LastBackupDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddDays( - ($maxfull)) -Because "Taking regular backups is extraordinarily important"
                     }
@@ -490,6 +496,8 @@ $ExcludedDatabases += $ExcludeDatabase
             $maxdiff = Get-DbcConfigValue policy.backup.diffmaxhours
             $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
             $skipreadonly = Get-DbcConfigValue skip.backup.readonly
+            $skipsecondaries = Get-DbcConfigValue skip.backup.secondaries
+
             if ($NotContactable -contains $psitem) {
                 Context "Testing last diff backups on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -500,7 +508,12 @@ $ExcludedDatabases += $ExcludeDatabase
             else {
                 Context "Testing last diff backups on $psitem" {
                     @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
-                        $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                        if ($psitem.AvailabilityGroupName) {
+                            $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
+                        } else {
+                            $agReplicaRole = $null
+                        }
+                        $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
                         It -Skip:$skip "Database $($psitem.Name) diff backups should be less than $maxdiff hours old on $($psitem.Parent.Name)" {
                             $psitem.LastDifferentialBackupDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
                         }
@@ -514,6 +527,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $maxlog = Get-DbcConfigValue policy.backup.logmaxminutes
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
+        $skipsecondaries = Get-DbcConfigValue skip.backup.secondaries
         if ($NotContactable -contains $psitem) {
             Context "Testing last log backups on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -525,7 +539,12 @@ $ExcludedDatabases += $ExcludeDatabase
             Context "Testing last log backups on $psitem" {
                 @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
                     if ($psitem.RecoveryModel -ne "Simple") {
-                        $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                        if ($psitem.AvailabilityGroupName) {
+                            $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
+                        } else {
+                            $agReplicaRole = $null
+                        }
+                        $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
                         It -Skip:$skip  "Database $($psitem.Name) log backups should be less than $maxlog minutes old on $($psitem.Parent.Name)" {
                             $psitem.LastLogBackupDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
                         }

@@ -217,6 +217,7 @@ Set-PSFConfig -Module dbachecks -Name policy.build.behind -Value $null -Initiali
 Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
 Set-PSFConfig -Module dbachecks -Name skip.backup.readonly -Validation bool -Value $false -Initialize -Description "Check read-only databases for last backup"
+Set-PSFConfig -Module dbachecks -Name skip.backup.secondaries -Validation bool -Value $false -Initialize -Description "Check hadr secondary databases for last backup"
 Set-PSFConfig -Module dbachecks -Name skip.tempdb1118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 1118"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilecount -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Count"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
