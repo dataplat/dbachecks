@@ -202,6 +202,29 @@ function Get-AllInstanceInfo {
             }
         }
 
+        'SQLMailXPsDisabled' {
+            if ($There) {
+                try {
+                    $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'SqlMailXPsEnabled'
+                    $SQLMailXPsDisabled = [pscustomobject] @{
+                        ConfiguredValue = $SpConfig.ConfiguredValue
+                    }
+                }
+                catch {
+                    $There = $false
+                    $SQLMailXPsDisabled = [pscustomobject] @{
+                        ConfiguredValue = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $SQLMailXPsDisabled = [pscustomobject] @{
+                    ConfiguredValue = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
         'ScanForStartupProceduresDisabled' {
             if ($There) {
                 try {
@@ -794,6 +817,7 @@ function Get-AllInstanceInfo {
         LoginCheckPolicy                 = $LoginCheckPolicy
         LoginPasswordExpiration          = $LoginPasswordExpiration
         LoginMustChange                  = $LoginMustChange
+        SQLMailXPsDisabled               = $SQLMailXPsDisabled
     }
 }
 
@@ -1049,6 +1073,11 @@ function Assert-LoginPasswordExpiration {
 function Assert-LoginMustChange {
     Param($AllInstanceInfo)
     $AllInstanceInfo.LoginMustChange.Count | Should -Be 0 -Because "We expected the all the new sql logins to have change the password on first login"
+}
+
+function Assert-SQLMailXPsDisabled {
+    param ($AllInstanceInfo)
+    $AllInstanceInfo.SQLMailXPsDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Sql Mail XPs to be disabled"
 }
 
 # SIG # Begin signature block

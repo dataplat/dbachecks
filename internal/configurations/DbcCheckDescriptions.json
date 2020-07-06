@@ -533,5 +533,9 @@
     {
         "UniqueTag": "NonStandardPort",
         "Description": "Tests to see if the SQL Server Instances are NOT running on the default port of 1433."
-    }
+    },
+    {
+        "UniqueTag": "SQLMailXPsDisabled",
+        "Description": "Tests to see SQL Mail XPs are disabled."
+    }    
 ]
