@@ -61,15 +61,6 @@ Return
             }
         }
     }
-
-    Describe "Server Protocols" -Tags ServerProtocol, Medium, CIS, $filename {
-        $skip = Get-DbcConfigValue skip.security.serverprotocol
-        Context "Checking SQL Server protocols on $psitem" {
-            It  "All SQL Server Instances should be configured to run only TCP/IP protocol on $psitem" -skip:$skip {
-                Assert-ServerProtocol -AllServerInfo $AllServerInfo
-            }
-        }
-    }
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, Medium, $filename {
         if($IsCoreCLR){
             Context "Testing disk allocation unit on $psitem" {
@@ -102,6 +93,14 @@ Return
         Context "Checking SQL Server ports on $psitem" {
             It  "No SQL Server Instances should be configured with port 1433 on $psitem" -skip:$skip {
                 Assert-NonStandardPort -AllServerInfo $AllServerInfo
+            }
+        }
+    }
+    Describe "Server Protocols" -Tags ServerProtocol, Medium, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.serverprotocol
+        Context "Checking SQL Server protocols on $psitem" {
+            It  "All SQL Server Instances should be configured to run only TCP/IP protocol on $psitem" -skip:$skip {
+                Assert-ServerProtocol -AllServerInfo $AllServerInfo
             }
         }
     }
