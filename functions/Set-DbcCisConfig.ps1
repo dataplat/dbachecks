@@ -67,5 +67,6 @@ function Set-DbcCisConfig {
         Set-DbcConfig -Name skip.security.symmetrickeyencryptionlevel -Value $false
         Set-DbcConfig -Name skip.security.publicrolepermission -Value $false
         Set-DbcConfig -Name skip.security.serverprotocol -Value $false
+        Set-DbcConfig -Name skip.security.SQLMailXPsDisabled -Value $false
     }
 }
