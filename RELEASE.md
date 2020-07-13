@@ -1,3 +1,9 @@
+## Date July 13th 2020
+
+Thank you jpomfret Added skip.backup.readonly config  #777
+
+##Latest
+
 ## Date 9th May 2020
 
 UPDATED TO VERSION 2
