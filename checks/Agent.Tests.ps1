@@ -51,16 +51,16 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 
                             Context "Testing SQL Agent is running on $psitem" {
                                 @(Get-DbaService -ComputerName $psitem -Type Agent).ForEach{
-                                    It "SQL Agent should be running on $($psitem.InstanceName)" {
+                                    It "SQL Agent should be running for $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                         $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
                                     }
                                     if ($connectioncheck.IsClustered) {
-                                        It "SQL Agent service should have a start mode of Manual on FailOver Clustered Instance $($psitem.InstanceName)" {
+                                        It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                             $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
                                         }
                                     }
                                     else {
-                                        It "SQL Agent service should have a start mode of Automatic on standalone instance $($psitem.InstanceName)" {
+                                        It "SQL Agent service should have a start mode of Automatic for standalone instance $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                             $psitem.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
                                         }
                                     }
