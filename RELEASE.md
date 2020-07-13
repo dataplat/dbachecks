@@ -4,6 +4,7 @@ Thank you jpomfret Added skip.backup.readonly config  #777
 Thank you jpomfret typos  #771
 Thank you jpomfret Added MSDB suspect pages table check  #768
 Thank you markaugust Added instance name to Agent Service ACcount checks #766
+Thank you tboggiano fixed Agent Run time calculation #746
 
 ##Latest
 
