@@ -36,6 +36,10 @@
         "Description": "Tests that there are 0 Suspect Pages for the database"
     },
     {
+        "UniqueTag": "SuspectPageLimit",
+        "Description": "Tests that the suspect_pages table in msdb is not nearing the limit of 1000 rows"
+    },
+    {
         "UniqueTag": "TestLastBackup",
         "Description": "Restores the last backup of a database onto a specified (default blank so will use the same instance) restore instance and checks if the DBCC result was successful as well as the DBCC result. This can obviously take some time for large databases!"
     },
