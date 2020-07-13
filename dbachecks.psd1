@@ -140,6 +140,7 @@
 ## Date July 13th 2020
 
 Thank you jpomfret Added skip.backup.readonly config  #777
+Thank you jpomfret typos  #771
 
 ##Latest
 
