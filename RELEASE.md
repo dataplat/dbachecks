@@ -2,6 +2,7 @@
 
 Thank you jpomfret Added skip.backup.readonly config  #777
 Thank you jpomfret typos  #771
+Thank you jpomfret Added MSDB suspect pages table check  #768
 
 ##Latest
 
