@@ -360,7 +360,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         SELECT
                         j.job_id,
                         j.name AS JobName,
-                        jh.run_duration AS Duration
+                        DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' + CONVERT(VARCHAR(6),jh.run_duration),6),5,0,':'),3,0,':')) AS Duration
                         FROM msdb.dbo.sysjobs j
                         INNER JOIN
                             (
