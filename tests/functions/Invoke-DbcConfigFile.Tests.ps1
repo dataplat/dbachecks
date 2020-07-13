@@ -1,7 +1,7 @@
 ﻿$commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . "$PSScriptRoot\..\constants.ps1"
 
-Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
+Describe "$commandname Unit Tests" -Tags UnitTest {
     Context "Command executes properly and returns proper info" {
         BeforeAll {
             Remove-Item "$script:localapp\config.json" -ErrorAction SilentlyContinue
@@ -16,8 +16,8 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUOHETEywAqY4QawuJtrS0l3aQ
-# zvCgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU5hKAnOebIWwtzECQ3CmorRbt
+# KXigggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -77,11 +77,11 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQg9Ai3M2eQsVhmFpqKaa+utC6j
-# +jANBgkqhkiG9w0BAQEFAASCAQB4UOOpc+4SCGAfKHp60O3d0A7KdEkwQ0Ei7t0U
-# MSY9scriZTd+XOkVpwuODd72W/o9x7ad9tlON9ImZFpRirFQFMoDC66ZvnU9qok7
-# JoDNB9g5QXl1a940M+vYMRWYhDoQV7CVI1TpmXQ10PkDUuhbXsDTgRUTAiNuspqX
-# +lN0jee8tBE4Tf/eQj7q3Xp5EgTPl+7hF+JN7EzEemjmQc1w3S4n5jVIs2aA4xC5
-# +iAz1YQfqzPZXGmwuhljCDjdHk6H3JMQ29hWKUfZF+8rxGZJ1YH+YLsLX1561ypt
-# 98+/NW0xb0tZ/7bsmctL2u7vQvyN8IiJuPurTUCTznHrMCfj
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT35UDCYoBpRM1ICHlJK2uAj1MI
+# LTANBgkqhkiG9w0BAQEFAASCAQBIHsLcnRP0uEwIKtos80jeo9Y1H2gs6+ZKSJzO
+# 3rHvYtbB2EMZx4tYQMYMlRYCLWFKiZ+qbjpdhwjCYnug2+XcbIJWeJgR9+j4ZS2z
+# z2gFT0/C6j957AtDW00zBSta+A8bXAN5wjwpMbX+wvZpstkMC9svaowBpu2v0J2j
+# /e6JqdltHGfQi9jUmGIa4W7JpcmLoOhSpu17TlcUF+17G5VItM6EchBUsxmFH3DM
+# Zg48kQbZLeK88BKKdb8b9kMtm45OowXFVUDfeiUMDViZb1Nb96S2dqu2lttci6y5
+# 1iz2IziqcLMb3cird1mOEa+wfWmehRtdaupdJgtn9Cy0NHmr
 # SIG # End signature block

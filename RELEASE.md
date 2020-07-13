@@ -1,3 +1,90 @@
+## Date July 13th 2020
+
+Thank you jpomfret Added skip.backup.readonly config  #777
+Thank you jpomfret typos  #771
+Thank you jpomfret Added MSDB suspect pages table check  #768
+Thank you markaugust Added instance name to Agent Service ACcount checks #766
+
+##Latest
+
+## Date 9th May 2020
+
+UPDATED TO VERSION 2
+
+New Commands
+
+    Convert-DbcResult - To parse results and add Label, ComputerName, Instance and Database
+    Set-DbcFile - To save the parsed results to a file json, csv or xml
+    Write-DbcTable - to add results to a database
+
+New Parameter 
+    -FromDatabase on Star-DbcPowerBi - to open new Power Bi template file
+
+New PowerBi template file for reporting on results from the database
+
+Improved Spelling
+
+Updated Unit Tests for Checks to enabled results to be parsed
+
+Improved Check Titles
+
+Configuration for Max history days for Job duration
+
+Stop trying to check inaccessible databases for checks
+
+Improved Query Store checks
+
+Ensure long running agent jobs ignores durations longer than 24 hours
+
+Ignore jobs that never stop from the duration check
+
+##Latest
+
+## Date 29th March 2020
+
+UPDATED MINIMUM POWERSHELL VERSION
+
+Updated Required versions of Pester, dbatools and PSFramework modules
+
+Thank you @dstrait
+    Fix variable for SaDisabled check #750
+    Fix errant braces in SQL Browser Service Check #751
+    Fix PingComputer Check #752
+
+Thank you markaugust
+    Fix to ensure AG Name is in HADR checks #755
+
+Thank you Tracey Boggiano
+    Added Contained Database auth check and Query Store Enabled Checks #756
+
+Thank you Rob
+    Added exclude database config for Query store checks
+    Version check for Query Store Checks
+    Some spellings!
+
+##Latest
+
+## Date 18th March 2020
+Thank you Tracey tboggiano
+    New CIS user-defined CLRs to be set to SAFE_ACCESS #734
+    CIS tests for if service accounts are local admins #736
+
+Thank you Rob
+    Getting service accounts tests to pass if no service
+    Made long running jobs check work as expected
+    Improved Database Mail check
+    Made sure disk allocations dont run on Core
+
+Thank you mikedavem
+    Fixed bug in disk allocation check exclusions
+    Added multiple ags to the HADR check #742
+
+## Date 14th March 2020
+Thank you Tracey tboggiano
+    New CIS Check Hide Instance #728
+    New CIS Check Symmetric Key #732
+    New CIS Check Agent Proxy not have access to public Role #732
+
 ## Date 8th January 2020
 Thank you Tracey tboggiano
     New CIS Check Guest Account connect permissions #725
@@ -9,8 +96,6 @@ Thank you Tracey tboggiano
 Thank you Rob
     Added Tag parameter to Get-DbcCheck
     Updated tests to work with PowerShell 7
-
-##Latest
 
 ## Date 22nd December
 Thank you Tracey tboggiano
@@ -186,7 +271,7 @@ Improved error handling for HADR checks
 ## Date 28/08/2018
 Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
 Ensured the Database parameter checks only the specified Databases - Thank you @jpomfret
-Updated Set-DbcConifg to allow Append to append arrays to arrays closes #535
+Updated Set-DbcConfig to allow Append to append arrays to arrays closes #535
 Altered json filename creation to avoid max characters error
 Altered PowerBi to display information correctly with filename changes
 
@@ -208,7 +293,7 @@ Improved performance of the ErrorLog checks
 Removed Send-DbcSendMailMessage until it can be re-coded
 
 ## Date 13/08/2018
-Fixed #504 by enabling FileName parameter on Update-PowerBiDataSouce
+Fixed #504 by enabling FileName parameter on Update-PowerBiDataSource
 Added in new function to begin to reduce the number of calls to each instance
 Reduced required Pester version to 4.3.1
 Further PowerShell V4 improvements

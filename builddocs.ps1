@@ -1,3 +1,4 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 
 Install-Module PlatyPs -Scope CurrentUser -Force
 Import-Module PlatyPs
 
@@ -43,6 +44,7 @@ catch {
 # Install dbachecks
 try {
     Write-Output "Installing dbatools"
+    Write-Output "Install-Module dbatools  -RequiredVersion $dbatoolsVersion  -Scope CurrentUser -Force"
     Install-Module dbatools  -RequiredVersion $dbatoolsVersion  -Scope CurrentUser -Force
     Write-Output "Installed dbatools"
 

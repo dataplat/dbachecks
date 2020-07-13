@@ -5,7 +5,7 @@ Param()
 $commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . "$PSScriptRoot\..\constants.ps1"
 
-Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
+Describe "$commandname Unit Tests" -Tags UnitTest {
     Context "Command executes properly and returns proper info" {
         BeforeAll {
             $config = Get-DbcConfig -Name policy.dump.maxcount
@@ -22,8 +22,8 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU8Dq8uzmf+KpGLeYHcA6TlRo7
-# 5U+gggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUMXfFTmifTVD5Eg3faOsEEtqo
+# +cigggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -83,11 +83,11 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTACCECXCLaCwXKG2ysBolJJXiX
-# hzANBgkqhkiG9w0BAQEFAASCAQAsQNJSgOQHdTCfB4kyaITVbfurvyU1jYxH0rwj
-# lbVApppVFRWtAHSVn0aBa77EUWwsSKb8IulV6F08pUbJ8ixRI9qth2of3gA9i4pc
-# GORtFCpw94NpsfghXN9rYQKXRH55iKTXlF7SrqNdFL0SACUU12mmFPkLTl+Fl+SC
-# qihx3Q+xEu05kf3HWywYxzQN2Y1HtdZtj/QoyuN1FuiSzahALA0xL3iXAd65Zzfp
-# 7+x8gda7dfR2SINQ+cUIO7FN3JZMp+rdbHNdCXzT5QBm8qM0gZIVVzfcOLjNL7xy
-# OhFTEPcU/WbJLfKqdUKjmhg8Pm1F3wuxnl1Mu3ZONCPNsZDh
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBS7zyZiTlxogVd75omcLLLzMhst
+# OTANBgkqhkiG9w0BAQEFAASCAQBheoVEIkczFmUzxFlBCDktW1jVFsx4SFezYm/t
+# Ex9du3WxDalP5Q43Ymcuw3ajbWMTmkXVvt3ueE89LFP0dbf7d9PYTJTLaOB1wYJH
+# OaCVedX4Xmjf3DnS2WtKAHKcnlhZ/vrUS3Hpwdk+bh/B/JxHmz07y/yr6mgR7eeb
+# qSuN3xXPQJDmvc6iYCRy20N4WCnTsjr+fh40YeqeE3fL6F9fJfanqa/WA2JxKebj
+# 8ltnlt78MLB48FAYiTBF7ib2kotO6H0ZDpWwIYb6gxjHffpIjMoJsJyakR/AQ90C
+# LmYVm5h+MO5PogKBCDqPtR6RhQQkRmmI5zOtnBv0U4JF1n1N
 # SIG # End signature block
