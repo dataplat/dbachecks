@@ -1,0 +1,33 @@
+name: PR-Pester
+
+on:
+  pull_request:
+    branches:
+    - development
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    steps:
+    - name: Checkout code Install and run Pester annoyingly on Windows PowerShell https://github.com/pester/Pester/issues/1295
+      uses: actions/checkout@v2.1.0
+    
+    - run: |
+          pwd
+          $manifest = Import-PowershellDataFile -Path .\dbachecks.psd1
+          $PesterVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'Pester'}.ModuleVersion
+          $PSFrameworkVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'PSFramework'}.ModuleVersion
+          $dbatoolsVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'dbatools'}.ModuleVersion
+  
+          Install-Module Pester  -RequiredVersion $PesterVersion  -Force
+          Install-Module dbatools  -RequiredVersion $dbatoolsVersion  -Force
+          Install-Module PSFramework  -RequiredVersion $PsFrameworkVersion  -Force
+  
+          Import-Module .\dbachecks.psd1
+          $PesterResults = Invoke-Pester .\tests -ExcludeTag Integration -Show Fails -PassThru
+          If($PesterResults.FailedCount -ne 0){
+            Write-Warning "Some Tests Failed - See results above"
+            [System.Environment]::Exit(1)
+          }
+      shell: powershell

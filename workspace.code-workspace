@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "C:\\Github\\dbadisa"
+		},
+		{
+			"path": "C:\\Github\\dbatools"
+		}
+	],
+	"settings": {
+		"powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1"
+	}
+}

@@ -14,6 +14,7 @@
 					<TableColumnHeader/>
 					<TableColumnHeader/>
 					<TableColumnHeader/>
+					<TableColumnHeader/>
 				</TableHeaders>
 				<TableRowEntries>
 					<TableRowEntry>
@@ -25,13 +26,16 @@
 								<PropertyName>Type</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
-								<PropertyName>Description</PropertyName>
-							</TableColumnItem>
-							<TableColumnItem>
 								<PropertyName>UniqueTag</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>AllTags</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Config</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Description</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>

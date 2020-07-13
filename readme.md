@@ -1,10 +1,10 @@
 # dbachecks
 
-<img align="left" src="https://user-images.githubusercontent.com/8278033/34322840-ed09114e-e832-11e7-9670-9baa686ade71.png">
+<img align="left" src="https://user-images.githubusercontent.com/8278033/34322840-ed09114e-e832-11e7-9670-9baa686ade71.png">  
 
 dbachecks is a framework created by and for SQL Server pros who need to validate their environments. Basically, we all share similar checklists and mostly just the server names and RPO/RTO/etc change.
 
-This open source module allows us to crowdsource our checklists using [Pester](https://github.com/Pester/Pester) tests. Such checks include:
+This open source module allows us to crowd-source our checklists using [Pester](https://github.com/Pester/Pester) tests. Such checks include:
 
 * Backups are being performed
 * Identity columns are not about to max out
@@ -13,11 +13,47 @@ This open source module allows us to crowdsource our checklists using [Pester](h
 * Disk space is not about to run out
 * All enabled jobs have succeeded
 
-Have questions about development? Please visit our [Wiki](https://github.com/potatoqualitee/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
+## Interactive dbachecks PowerShell Notebooks for Azure Data Studio 
+
+You can find a set of interactive PowerShell Notebooks which will introduce you to all of the core concepts in Robs GitHub. There is a set of .NET interactive Jupyter Notebooks 
+
+https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/master/notebooks/dotNETNotebooks/dbachecks
+
+and a set of Jupyter Notebooks that will run in Azure Data Studio
+
+https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/master/notebooks/NotDotNet/dbachecks  
+
+Both will use a docker container to show you how dbachecks works.
+
+There is a zip file containing the Notebooks here
+
+https://github.com/SQLDBAWithABeard/Presentations/raw/master/Notebooks/dbachecks/Notebooks.zip
+
+Have questions about development? Please visit our [Wiki](https://github.com/sqlcollaborative/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
+
+## Build Status
+<table>
+  <tbody>
+    <tr>
+      <td><a href="https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=3&_a=completed" target="_blank"><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/3/badge"></a></td>
+      <td>Development Branch Build - Unit testing <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=3&_a=completed" target="_blank">Click Here</a></td>
+    </tr>
+    <tr>
+      <td><a href-"https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=2&_a=completed"><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/badge"></a></td>
+      <td>Master Branch Build - Module version update and Code Signing <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=2&_a=completed" target="_blank">Click Here</a></td>
+    </tr>
+        <tr>
+      <td><a href = "https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases"><img align="left" src="https://sqlcollaborative.vsrm.visualstudio.com/_apis/public/Release/badge/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/2"></a></td>
+          <td>Master Branch Release - Release to PowerShell Gallery <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases" target="_blank">Click Here</a></td>
+    </tr>
+  </tbody>
+</table> 
+
+Want to know how our CD process works? Read this [blog post](https://sqldbawithabeard.com/2018/05/01/version-update-code-signing-and-publishing-to-the-powershell-gallery-with-vsts/) and see how the team manage it
 
 ## Prerequisites
-
-* PowerShell 4+ is required.
+### Client requirements
+* PowerShell 5 + is required.
 * Automatic installation of the dependent modules will only be provided via the [PowerShell Gallery](https://www.powershellgallery.com).
 
 When you install from the Gallery, it'll auto-install:
@@ -44,6 +80,10 @@ Import-Module Pester -Force
 ````
 
 You may need to do the same thing for the PSFramework or dbatools modules also
+
+### SQL requirements
+
+dbachecks uses dbatools for most of it's data gathering so it supports SQL Versions from SQL 2000 to SQL vNext including SQL running on Linux. (dbachecks will not install on PowerShell Core yet so can not be run on a Linux client) Obviously some of the Services and disk space checks will not work against instances running on Linux as they are using gWindows API calls.
 
 ## Getting started
 
@@ -128,12 +168,12 @@ Start-DbcPowerBi
 
 ![image](https://user-images.githubusercontent.com/19521315/36527050-640d6c0a-17a8-11e8-9781-0aab0a8f8d48.png)
 
-The above report uses `Update-DbcPowerBiDataSource`'s `-Enviornment` parameter.
+The above report uses `Update-DbcPowerBiDataSource`'s `-Environment` parameter.
 
 ```powershell
 # Run checks and export its JSON
 Invoke-DbcCheck -SqlInstance $prod -Checks LastBackup -Show Summary -PassThru | 
-Update-DbcPowerBiDataSource -Enviornment Prod
+Update-DbcPowerBiDataSource -Environment Prod
 ```
 
 😍😍😍
@@ -143,8 +183,17 @@ Update-DbcPowerBiDataSource -Enviornment Prod
 We even included a command to make emailing the results easier!
 
 ```powershell
-Invoke-DbcCheck -SqlInstance sql2017 -Checks SuspectPage, LastBackup -OutputFormat NUnitXml -PassThru |
-Send-DbcMailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SmtpServer smtp.ad.local
+$outputDirectory = (Get-DbcConfigValue -Name app.maildirectory)
+$filename = $outputDirectory + '\file.xml'
+Invoke-Dbccheck -OutputFile $fileName -OutputFormat NunitXML
+
+$outputpath = $outputDirectory + "\index.html"
+$reportunit = "ModulePath\bin\ReportUnit.exe"
+& $reportunit $outputDirectory
+
+$htmlbody = Get-Content -Path $outputpath -ErrorAction SilentlyContinue | Out-String
+
+Send-MailMessage -To clemaire@dbatools.io -From nobody@dbachecks.io -SMTP smtp.ad.local -BodyAsHtml $htmlbody
 ```
 
 ![image](https://user-images.githubusercontent.com/8278033/34316816-cc157d04-e79e-11e7-971d-1cfee90b2e11.png)
@@ -228,14 +277,24 @@ Read more about dbachecks from a number of our original contributors!
 * [dbachecks – Using Power BI dashboards to analyse results by Cláudio Silva](http://claudioessilva.eu/2018/02/22/dbachecks-using-power-bi-dashboards-to-analyse-results/)
 * [My wrapper for dbachecks by Tony Wilhelm](https://v-roddba.blogspot.com/2018/02/wrapper-for-dbachecks.html)
 * [Checking backups with dbachecks by Jess Promfret](http://jesspomfret.com/checking-backups-with-dbachecks/)
-* [dbachecks please! by Garry Bargsley](http://blog.garrybargsley.com/dbachecks-please)
+* [dbachecks please! by Garry Bargsley](https://garrybargsley.com/2018/02/22/dbachecks-please/)
 * [dbachecks – Configuration Deep Dive by Rob Sewell](https://sqldbawithabeard.com/2018/02/22/dbachecks-configuration-deep-dive/)
-* [Test Log Shipping with dbachecks](https://www.sqlstad.nl/powershell/test-log-shipping-with-dbachecks/)
+* [Test Log Shipping with dbachecks by Sander Stad](https://www.sqlstad.nl/powershell/test-log-shipping-with-dbachecks/)
 * [Checking your backup strategy with dbachecks by Joshua Corrick](https://corrick.io/blog/checking-your-backup-strategy-with-dbachecks)
-* [Enterprise-level reporting with dbachecks by Jason Squires](http://www.sqlnotnull.com/2018/02/20/enterprise-level-reporting-with-dbachecks-from-the-makers-of-dbatools)
+* [Enterprise-level reporting with dbachecks by Jason Squires](http://www.sqlnotnull.com/2018/02/22/enterprise-level-reporting-with-dbachecks-from-the-makers-of-dbatools/)
 * [Adding your own checks to dbachecks by Shane O'Neill](http://nocolumnname.blog/2018/02/22/adding-your-own-checks-to-dbachecks)
-* [dbachecks - A different approach for an in-progress and incremental validation by Cláudio Silva](http://claudioessilva.eu/2018/02/22/dbachecks-a-different-approach-for-a-in-progress-and-incremental-validation/)
+* [dbachecks - A different approach for an in-progress and incremental validation by Cláudio Silva](https://claudioessilva.eu/2018/02/22/dbachecks-a-different-approach-for-an-in-progress-and-incremental-validation/)
+* [dbachecks - Improved Descriptions by Rob Sewell](https://sqldbawithabeard.com/2018/05/19/dbachecks-improved-descriptions/)
+* [DBACHECKS – SQL SERVER COMPLIANCE TESTING WITH SIMPLE CONFIGURATION MANAGEMENT by Stuart Moore](https://stuart-moore.com/dbachecks-sql-server-compliance-testing-simple-configuration-management/)
+* [dbachecks – Which Configuration Item For Which Check ? by Rob Sewell](https://sqldbawithabeard.com/2018/05/15/dbachecks-which-configuration-item-for-which-check/)
+*[https://sqldbawithabeard.com/2018/04/08/checking-availability-groups-with-dbachecks/ by Rob Sewell](https://sqldbawithabeard.com/2018/04/08/checking-availability-groups-with-dbachecks/)
+
+Know of any more blog posts about dbachecks? - Please add them here.
 
 ## Party
 
 Nice work!
+
+# How to Contribute
+
+We welcome contributions to the project. You can fork the repository, make changes and create a Pull Request. [Rob has written a guide here](https://sqldbawithabeard.com/?p=11030)

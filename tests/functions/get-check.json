@@ -1,0 +1,830 @@
+[
+    {
+        "Group":  "Agent",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "AgentServiceAccount",
+        "AllTags":  "AgentServiceAccount, ServiceAccount, Agent",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that the SQL Agent Account is running and set to automatic",
+        "Describe":  "SQL Agent Account"
+    },
+    {
+        "Group":  "Agent",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DbaOperator",
+        "AllTags":  "DbaOperator, Operator, Agent",
+        "Config":  "app.sqlinstance agent.dbaoperatorname agent.dbaoperatoremail ",
+        "Description":  "Tests that the specified (default blank) DBA Operators exist and have the correct email address",
+        "Describe":  "DBA Operators"
+    },
+    {
+        "Group":  "Agent",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "FailsafeOperator",
+        "AllTags":  "FailsafeOperator, Operator, Agent",
+        "Config":  "app.sqlinstance agent.failsafeoperator ",
+        "Description":  "Tests that the specified (default blank) Failsafe Operator exists",
+        "Describe":  "Failsafe Operator"
+    },
+    {
+        "Group":  "Agent",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DatabaseMailProfile",
+        "AllTags":  "DatabaseMailProfile, Agent",
+        "Config":  "app.sqlinstance  agent.databasemailprofile ",
+        "Description":  "Tests that the specified (default blank) Database Mail Profile exists",
+        "Describe":  "Database Mail Profile"
+    },
+    {
+        "Group":  "Agent",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "FailedJob",
+        "AllTags":  "FailedJob, Agent",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that enabled Agent Jobs last outcome was succeeded",
+        "Describe":  "Failed Jobs"
+    },
+    {
+        "Group":  "Agent",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "ValidJobOwner",
+        "AllTags":  "ValidJobOwner, Agent",
+        "Config":  "app.sqlinstance agent.validjobowner.name ",
+        "Description":  "Tests that all Agent Jobs have a Job Owner in the list specified (default sa)",
+        "Describe":  "Valid Job Owner"
+    },
+    {
+        "Group":  "Agent",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "AgentAlert",
+        "AllTags":  "AgentAlert, Agent",
+        "Config":  "app.sqlinstance agent.alert.Severity agent.alert.messageid agent.alert.Job agent.alert.Notification ",
+        "Description":  "Tests that there are Agent Alerts set up for the specified (default 16-25) alert severities and ids (default 823-825) and if specified Agent Jobs and/or notifications",
+        "Describe":  "Agent Alerts"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DatabaseCollation",
+        "AllTags":  "DatabaseCollation, Database",
+        "Config":  "app.sqlinstance policy.database.wrongcollation ",
+        "Description":  "Tests that the Database Collation matches the instance collation except for specified databases",
+        "Describe":  "Database Collation"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "SuspectPage",
+        "AllTags":  "SuspectPage, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that there are 0 Suspect Pages for the database",
+        "Describe":  "Suspect Page"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "TestLastBackup",
+        "AllTags":  "TestLastBackup, Backup, Database",
+        "Config":  "app.sqlinstance skip.backup.testing policy.backup.testserver policy.backup.datadir policy.backup.logdir ",
+        "Description":  "Restores the last backup of a database onto a specified (default blank so will use the same instance) restore instance and checks if the DBCC result was successful as well as the DBCC result. This can obviously take some time for large databases!",
+        "Describe":  "Last Backup Restore Test"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "TestLastBackupVerifyOnly",
+        "AllTags":  "TestLastBackupVerifyOnly, Backup, Database",
+        "Config":  "app.sqlinstance policy.backup.newdbgraceperiod ",
+        "Description":  "Does a verify only restore of the last backup of the database and test the result",
+        "Describe":  "Last Backup VerifyOnly"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "ValidDatabaseOwner",
+        "AllTags":  "ValidDatabaseOwner, Database",
+        "Config":  "app.sqlinstance policy.validdbowner.name policy.validdbowner.excludedb ",
+        "Description":  "Tests that the database owner is in the specified (default blank) list",
+        "Describe":  "Valid Database Owner"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "InvalidDatabaseOwner",
+        "AllTags":  "InvalidDatabaseOwner, Database",
+        "Config":  "app.sqlinstance policy.invaliddbowner.name policy.invaliddbowner.excludedb ",
+        "Description":  "Tests that the Database Owner is NOT in the specified (default blank) list",
+        "Describe":  "Invalid Database Owner"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LastGoodCheckDb",
+        "AllTags":  "LastGoodCheckDb, Database",
+        "Config":  "app.sqlinstance policy.dbcc.maxdays skip.dbcc.datapuritycheck policy.backup.newdbgraceperiod ",
+        "Description":  "Tests that there was a Last Good DBCC CHECKDB within the specified limit (default blank) and if specified that the DATA_PURITY flag is set",
+        "Describe":  "Last Good DBCC CHECKDB"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "IdentityUsage",
+        "AllTags":  "IdentityUsage, Database",
+        "Config":  "app.sqlinstance policy.identity.usagepercent ",
+        "Description":  "Tests that identity columns values are not above the specified percentage (default blank) of the maximum value for that data type",
+        "Describe":  "Column Identity Usage"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "RecoveryModel",
+        "AllTags":  "RecoveryModel, DISA, Database",
+        "Config":  "app.sqlinstance policy.recoverymodel.type policy.recoverymodel.excludedb ",
+        "Description":  "Tests that the Recovery model for all of the databases is set as specified (default blank) except for any specified",
+        "Describe":  "Recovery Model"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DuplicateIndex",
+        "AllTags":  "DuplicateIndex, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests for any duplicate indexes",
+        "Describe":  "Duplicate Index"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "UnusedIndex",
+        "AllTags":  "UnusedIndex, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests for any unused indexes",
+        "Describe":  "Unused Index"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DisabledIndex",
+        "AllTags":  "DisabledIndex, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests for any disabled indexes",
+        "Describe":  "Disabled Index"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DatabaseGrowthEvent",
+        "AllTags":  "DatabaseGrowthEvent, Database",
+        "Config":  "app.sqlinstance policy.database.filegrowthexcludedb ",
+        "Description":  "Tests for any database growth events in the default system trace",
+        "Describe":  "Database Growth Event"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "PageVerify",
+        "AllTags":  "PageVerify, Database",
+        "Config":  "app.sqlinstance policy.pageverify ",
+        "Description":  "Tests the page verify settings",
+        "Describe":  "Page Verify"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "AutoClose",
+        "AllTags":  "AutoClose, Database",
+        "Config":  "app.sqlinstance policy.database.autoclose ",
+        "Description":  "Tests the auto-close setting",
+        "Describe":  "Auto Close"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "AutoShrink",
+        "AllTags":  "AutoShrink, Database",
+        "Config":  "app.sqlinstance policy.database.autoshrink ",
+        "Description":  "Tests the Auto Shrink setting",
+        "Describe":  "Auto Shrink"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LastFullBackup",
+        "AllTags":  "LastFullBackup, LastBackup, Backup, DISA, Database",
+        "Config":  "app.sqlinstance policy.backup.fullmaxdays policy.backup.newdbgraceperiod skip.backup.readonly ",
+        "Description":  "Tests if the last full backup of a database is less than the specified number of days (default 7) except for offline databases and read-only databases (read-only if specified) and databases created recently (if specified)",
+        "Describe":  "Last Full Backup Times"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LastDiffBackup",
+        "AllTags":  "LastDiffBackup, LastBackup, Backup, DISA, Database",
+        "Config":  "app.sqlinstance skip.diffbackuptest policy.backup.diffmaxhours policy.backup.newdbgraceperiod skip.backup.readonly ",
+        "Description":  "Tests if the last diff backup of a database is less than the specified number of hours (default 24) except for offline databases and read-only databases (read-only if specified) and databases created recently (if specified)",
+        "Describe":  "Last Diff Backup Times"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LastLogBackup",
+        "AllTags":  "LastLogBackup, LastBackup, Backup, DISA, Database",
+        "Config":  "app.sqlinstance policy.backup.logmaxminutes policy.backup.newdbgraceperiod skip.backup.readonly ",
+        "Description":  "Tests if the last log backup of a database is less than the specified number of minutes (default 30) except for simple databases, offline databases and read-only databases (read-only if specified) and databases created recently (if specified)",
+        "Describe":  "Last Log Backup Times"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "VirtualLogFile",
+        "AllTags":  "VirtualLogFile, Database",
+        "Config":  "app.sqlinstance policy.database.maxvlf ",
+        "Description":  "Tests the number of the Virtual Log Files are less than the specified number",
+        "Describe":  "Virtual Log Files"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LogfileCount",
+        "AllTags":  "LogfileCount, Database",
+        "Config":  "app.sqlinstance skip.database.logfilecounttest policy.database.logfilecount ",
+        "Description":  "Tests that the number of log files are less than the specified amount (default is 1) in all databases except those specified to be skipped by default",
+        "Describe":  "Log File Count Checks"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LogfileSize",
+        "AllTags":  "LogfileSize, Database",
+        "Config":  "app.sqlinstance policy.database.logfilesizepercentage policy.database.logfilesizecomparison ",
+        "Description":  "Tests that the database log files are less than the specified percentage of the specified comparison (maximum size or average - default is average) of the data file size (default 100)",
+        "Describe":  "Log File Size Checks"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "FutureFileGrowth",
+        "AllTags":  "FutureFileGrowth, Database",
+        "Config":  "app.sqlinstance policy.database.filegrowthfreespacethreshold policy.database.filegrowthexcludedb skip.database.filegrowthdisabled ",
+        "Description":  "Tests if a database (except for those specified to be skipped explicitly) has free space less than the specified percentage (default 20)",
+        "Describe":  "Future File Growth"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "FileGroupBalanced",
+        "AllTags":  "FileGroupBalanced, Database",
+        "Config":  "app.sqlinstance policy.database.filebalancetolerance ",
+        "Description":  "Tests that all of the files within each filegroup are sized within the specified percentage (default 5) of the average",
+        "Describe":  "Correctly sized Filegroup members"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "CertificateExpiration",
+        "AllTags":  "CertificateExpiration, Database",
+        "Config":  "app.sqlinstance policy.certificateexpiration.warningwindow policy.certificateexpiration.excludedb ",
+        "Description":  "Tests that all certificates have not expired and are not due to expire within the specified (default 1) number of months",
+        "Describe":  "Certificate Expiration"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "AutoCreateStatistics",
+        "AllTags":  "AutoCreateStatistics, Database",
+        "Config":  "app.sqlinstance policy.database.autocreatestatistics ",
+        "Description":  "Tests the Auto Create Statistics property on each database is set to the specified (default false) value",
+        "Describe":  "Auto Create Statistics"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "AutoUpdateStatistics",
+        "AllTags":  "AutoUpdateStatistics, Database",
+        "Config":  "app.sqlinstance policy.database.autoupdatestatistics ",
+        "Description":  "Tests the Auto Update Statistics property on each database is set to the specified (default true) value",
+        "Describe":  "Auto Update Statistics"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "AutoUpdateStatisticsAsynchronously",
+        "AllTags":  "AutoUpdateStatisticsAsynchronously, Database",
+        "Config":  "app.sqlinstance policy.database.autoupdatestatisticsasynchronously ",
+        "Description":  "Tests the Auto Update Statistics Asynchronously property on each database is set to the specified (default false) value",
+        "Describe":  "Auto Update Statistics Asynchronously"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DatafileAutoGrowthType",
+        "AllTags":  "DatafileAutoGrowthType, Database",
+        "Config":  "app.sqlinstance policy.database.filegrowthtype policy.database.filegrowthvalue policy.database.filegrowthexcludedb skip.database.filegrowthdisabled ",
+        "Description":  "Tests that the Datafile Auto Growth type and value on each database except those specified is set to the specified (default type = kb, value = 65535) values",
+        "Describe":  "Datafile Auto Growth Configuration"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "Trustworthy",
+        "AllTags":  "Trustworthy, DISA, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that the Trustworthy Option for each database is set to false",
+        "Describe":  "Trustworthy Option"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "OrphanedUser",
+        "AllTags":  "OrphanedUser, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that each database has 0 orphaned users",
+        "Describe":  "Database Orphaned User"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "PseudoSimple",
+        "AllTags":  "PseudoSimple, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that databases are not in PseudoSimple Recovery Model",
+        "Describe":  "PseudoSimple Recovery Model"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "CompatibilityLevel",
+        "AllTags":  "CompatibilityLevel, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "tests that the servers compatibility level matches the compatibility level",
+        "Describe":  "Compatibility Level"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "FKCKTrusted",
+        "AllTags":  "FKCKTrusted, Database",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that each foreign key and each constraint is trusted",
+        "Describe":  "Foreign keys and check constraints not trusted"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "MaxDopDatabase",
+        "AllTags":  "MaxDopDatabase, MaxDop, Database",
+        "Config":  "app.sqlinstance policy.database.maxdop policy.database.maxdopexcludedb ",
+        "Description":  "Tests that the database level MaxDop settings for all databases on all instances from version 2016 up are set to the specified value (default 0)",
+        "Describe":  "Database MaxDop"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DatabaseStatus",
+        "AllTags":  "DatabaseStatus, Database",
+        "Config":  "app.sqlinstance command.invokedbccheck.excludedatabases policy.database.status.excludereadonly policy.database.status.excludeoffline policy.database.status.excluderestoring ",
+        "Description":  "Tests that there are no databases on an instance that are in a state of AutoClose, Offline, ReadOnly, Restoring, Recovery, Recovery Pending, EmergencyMode, Suspect or StandBy. Databases that are in ReadOnly,Offline and Restoring mode can be specified (default none)",
+        "Describe":  "Database Status"
+    },
+    {
+        "Group":  "Database",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DatabaseExists",
+        "AllTags":  "DatabaseExists, Database",
+        "Config":  "app.sqlinstance database.exists ",
+        "Description":  "Tests that the databases are specified are on the instance (Note - Does not check if they are available - Use DatabaseStatus for that))",
+        "Describe":  "Database Exists"
+    },
+    {
+        "Group":  "Domain",
+        "Type":  "ComputerName",
+        "UniqueTag":  "DomainName",
+        "AllTags":  "DomainName, Domain",
+        "Config":  "app.computername domain.name ",
+        "Description":  "Uses WMI Win32_ComputerSystem to check that the host machine is on the correct domain",
+        "Describe":  "Active Directory Domain Name"
+    },
+    {
+        "Group":  "Domain",
+        "Type":  "ComputerName",
+        "UniqueTag":  "OrganizationalUnit",
+        "AllTags":  "OrganizationalUnit, Domain",
+        "Config":  "app.computername domain.domaincontroller domain.organizationalunit ",
+        "Description":  "Currently skipped - Active Directory OU",
+        "Describe":  "Active Directory OU"
+    },
+    {
+        "Group":  "HADR",
+        "Type":  "ClusterNode",
+        "UniqueTag":  "ClusterHealth",
+        "AllTags":  "ClusterHealth, HADR",
+        "Config":  "app.cluster skip.hadr.listener.pingcheck domain.name policy.hadr.tcpport ",
+        "Description":  "Runs a suite of tests against an Availability Group on a Windows cluster to ensure that everything is as it should be. Tests cluster resources are online, cluster nodes are up, at least one IP Address for the AG listener is available, that each replica and listener are pingable (listener ping check can be skipped), can be connected to via T-SQL, have the correct domain name and TCP port, that each replica is synchronised/ing, is connected, is not in an unknown state, each database is synchronised/ing, failover ready and joined to the domain and that the Always On Health Extended Event sessions are running and set to auto-start",
+        "Describe":  "Cluster $clustername Health using Node $clustervm"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "SqlEngineServiceAccount",
+        "AllTags":  "SqlEngineServiceAccount, ServiceAccount, Instance",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that the SQL Engine Service is started and set to auto-start",
+        "Describe":  "SQL Engine Service"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "ComputerName",
+        "UniqueTag":  "SqlBrowserServiceAccount",
+        "AllTags":  "SqlBrowserServiceAccount, ServiceAccount, Instance",
+        "Config":  "app.computername ",
+        "Description":  "Tests that the SQL Browser Service is started and set to auto-start if there are multiple instances and stopped and set to disabled if there is only one ",
+        "Describe":  "SQL Browser Service"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "TempDbConfiguration",
+        "AllTags":  "TempDbConfiguration, Instance",
+        "Config":  "app.sqlinstance skip.TempDb1118 skip.tempdbfileCount skip.TempDbFileGrowthPercent skip.TempDbFilesonC skip.TempDbFileSizeMax ",
+        "Description":  "Tests that the TempDB Configuration is correct, that TF118 is enabled, there are the recommended number of files, autogrowth is not set to percent, that the files can grow and that they are not located on the C drive (each of these tests can be configured individually to be skipped",
+        "Describe":  "TempDB Configuration"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "AdHocWorkload",
+        "AllTags":  "AdHocWorkload, Instance",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that the AAd Hoc Workload Optimization is enabled",
+        "Describe":  "Ad Hoc Workload Optimization"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "BackupPathAccess",
+        "AllTags":  "BackupPathAccess, Storage, DISA, Instance",
+        "Config":  "app.sqlinstance policy.storage.backuppath ",
+        "Description":  "Tests that the SQL Service account has access to the default backup path or the specified folder path",
+        "Describe":  "Backup Path Access"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DAC",
+        "AllTags":  "DAC, Instance",
+        "Config":  "app.sqlinstance policy.dacallowed ",
+        "Description":  "Tests that the Dedicated Administrator Connection configuration setting matches the specified value (default true)",
+        "Describe":  "Dedicated Administrator Connection"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "NetworkLatency",
+        "AllTags":  "NetworkLatency, Connectivity, Instance",
+        "Config":  "app.sqlinstance policy.network.latencymaxms ",
+        "Description":  "Tests that the Network Latency is less than the specified (default 40) ms",
+        "Describe":  "Network Latency"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LinkedServerConnection",
+        "AllTags":  "LinkedServerConnection, Connectivity, Instance",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests for successful connection to all Linked Servers",
+        "Describe":  "Linked Servers"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "MaxMemory",
+        "AllTags":  "MaxMemory, Instance",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests an instances Max Memory",
+        "Describe":  "Max Memory"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "OrphanedFile",
+        "AllTags":  "OrphanedFile, Instance",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that there are 0 orphaned data files",
+        "Describe":  "Orphaned Files"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "ServerNameMatch",
+        "AllTags":  "ServerNameMatch, Instance",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that the SQL + Windows names match",
+        "Describe":  "SQL + Windows names match"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "MemoryDump",
+        "AllTags":  "MemoryDump, Instance",
+        "Config":  "app.sqlinstance  policy.dump.maxcount ",
+        "Description":  "Tests that there are less than the specified (default 1) number of SQL Memory Dumps",
+        "Describe":  "SQL Memory Dumps"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "SupportedBuild",
+        "AllTags":  "SupportedBuild, DISA, Instance",
+        "Config":  "app.sqlinstance policy.build.warningwindow ",
+        "Description":  "Tests that the instance is still under Microsoft support and that it will still be under support in a specified (default 6) months",
+        "Describe":  "Supported Build"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "SaRenamed",
+        "AllTags":  "SaRenamed, DISA, Instance",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that the SA Login has been renamed",
+        "Describe":  "SA Login Renamed"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DefaultBackupCompression",
+        "AllTags":  "DefaultBackupCompression, Instance",
+        "Config":  "app.sqlinstance policy.backup.defaultbackupcompression ",
+        "Description":  "Tests that an instances Default Backup Compression is set to the specified (default true) setting",
+        "Describe":  "Default Backup Compression"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "XESessionStopped",
+        "AllTags":  "XESessionStopped, ExtendedEvent, Instance",
+        "Config":  "app.sqlinstance policy.xevent.requiredstoppedsession ",
+        "Description":  "Tests that the specified (default blank) XE Sessions are stopped",
+        "Describe":  "XE Sessions That should be Stopped"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "XESessionRunning",
+        "AllTags":  "XESessionRunning, ExtendedEvent, Instance",
+        "Config":  "app.sqlinstance policy.xevent.requiredrunningsession ",
+        "Description":  "Tests that the specified (default blank) XE Sessions that are expected to be running are running",
+        "Describe":  "XE Sessions That should be Running"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "XESessionRunningAllowed",
+        "AllTags":  "XESessionRunningAllowed, ExtendedEvent, Instance",
+        "Config":  "app.sqlinstance policy.xevent.validrunningsession ",
+        "Description":  "Tests that the specified (default blank) XE Sessions that are allowed to be running are running",
+        "Describe":  "XE Sessions That Are Allowed to Be Running"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "OLEAutomation",
+        "AllTags":  "OLEAutomation, Instance",
+        "Config":  "app.sqlinstance policy.oleautomation ",
+        "Description":  "Tests that OLE Automation is set to the specified (default false) setting",
+        "Describe":  "OLE Automation"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "WhoIsActiveInstalled",
+        "AllTags":  "WhoIsActiveInstalled, Instance",
+        "Config":  "app.sqlinstance policy.whoisactive.database ",
+        "Description":  "Tests that sp_whoisactive is Installed by testing the specified (default master) database for the stored procedure",
+        "Describe":  "sp_whoisactive is Installed"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "ModelDbGrowth",
+        "AllTags":  "ModelDbGrowth, Instance",
+        "Config":  "app.sqlinstance skip.instance.modeldbgrowth ",
+        "Description":  "Tests that the Model Database Growth settings are not set to default",
+        "Describe":  "Model Database Growth"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "ADUser",
+        "AllTags":  "ADUser, Domain, Instance",
+        "Config":  "app.sqlinstance policy.adloginuser.excludecheck policy.adlogingroup.excludecheck ",
+        "Description":  "Tests that Ad Users and Groups, except those specified, that are logins on a SQL Server exist in Active Directory, do not have an expired password, are not locked out, are enabled in AD and on the SQL Server ",
+        "Describe":  "Ad Users and Groups "
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "ErrorLog",
+        "AllTags":  "ErrorLog, Instance",
+        "Config":  "app.sqlinstance policy.errorlog.warningwindow ",
+        "Description":  "Tests that the SQL Server Error Log does not have any Severity 17-24 level entries within the specified (default 2) days",
+        "Describe":  "Error Log Entries"
+    },
+    {
+        "Group":  "Instance",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "MaxDopInstance",
+        "AllTags":  "MaxDopInstance, MaxDop, Instance",
+        "Config":  "app.sqlinstance policy.instancemaxdop.userecommended policy.instancemaxdop.maxdop policy.instancemaxdop.excludeinstance ",
+        "Description":  "Tests that the instance level MaxDop settings on all instances (except those specified default blank) are set to the recommended value if specified (default false) or to the specified value (default 0)",
+        "Describe":  "Instance MaxDop"
+    },
+    {
+        "Group":  "LogShipping",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LogShippingPrimary",
+        "AllTags":  "LogShippingPrimary, LogShipping",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that the Log Shipping Primary status is ok",
+        "Describe":  "Log Shipping Status Primary"
+    },
+    {
+        "Group":  "LogShipping",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "LogShippingSecondary",
+        "AllTags":  "LogShippingSecondary, LogShipping",
+        "Config":  "app.sqlinstance ",
+        "Description":  "Tests that the Log Shipping Secondary status is ok",
+        "Describe":  "Log Shipping Status Secondary"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "OlaInstalled",
+        "AllTags":  "OlaInstalled, MaintenanceSolution",
+        "Config":  "app.sqlinstance policy.ola.database ",
+        "Description":  "Tests that Ola maintenance solution is installed by testing the specified (default master) database for the command log table and the stored procedures",
+        "Describe":  "Ola maintenance solution installed"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "SystemFull",
+        "AllTags":  "SystemFull, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.SystemFull policy.ola.SystemFullenabled policy.ola.SystemFullscheduled policy.ola.SystemFullretention ",
+        "Description":  "Tests that the Ola - System Full Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))",
+        "Describe":  "Ola - $SysFullJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "UserFull",
+        "AllTags":  "UserFull, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.UserFull policy.ola.UserFullenabled policy.ola.UserFullscheduled policy.ola.UserFullretention ",
+        "Description":  "Tests that the Ola - User Full Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))",
+        "Describe":  "Ola - $UserFullJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "UserDiff",
+        "AllTags":  "UserDiff, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.UserDiff policy.ola.UserDiffenabled policy.ola.UserDiffscheduled policy.ola.UserDiffretention ",
+        "Description":  "Tests that the Ola - User Diff Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))",
+        "Describe":  "Ola - $UserDiffJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "UserLog",
+        "AllTags":  "UserLog, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.UserLog policy.ola.UserLogenabled policy.ola.UserLogscheduled policy.ola.UserLogretention ",
+        "Description":  "Tests that the Ola - User Log Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))",
+        "Describe":  "Ola - $UserLogJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "CommandLog",
+        "AllTags":  "CommandLog, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.CommandLogCleanup policy.ola.CommandLogenabled policy.ola.CommandLogscheduled policy.ola.CommandLogCleanUp ",
+        "Description":  "Tests that the Ola - Command Log Cleanup Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))",
+        "Describe":  "Ola - $CommandLogJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "SystemIntegrityCheck",
+        "AllTags":  "SystemIntegrityCheck, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.SystemIntegrity policy.ola.SystemIntegrityCheckenabled policy.ola.SystemIntegrityCheckscheduled ",
+        "Description":  "Tests that the Ola - System Integrity Check Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled",
+        "Describe":  "Ola - $SysIntegrityJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "UserIntegrityCheck",
+        "AllTags":  "UserIntegrityCheck, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.UserIntegrity policy.ola.UserIntegrityCheckenabled policy.ola.UserIntegrityCheckscheduled ",
+        "Description":  "Tests that the Ola - User Integrity Check Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled",
+        "Describe":  "Ola - $UserIntegrityJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "UserIndexOptimize",
+        "AllTags":  "UserIndexOptimize, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.UserIndex policy.ola.UserIndexOptimizeenabled policy.ola.UserIndexOptimizescheduled ",
+        "Description":  "Tests that the Ola - User Index Optimise Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled",
+        "Describe":  "Ola - $UserIndexJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "OutputFileCleanup",
+        "AllTags":  "OutputFileCleanup, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.OutputFileCleanup policy.ola.OutputFileCleanupenabled policy.ola.OutputFileCleanupscheduled policy.ola.OutputFileCleanUp ",
+        "Description":  "Tests that the Ola - Output File Cleanup Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))",
+        "Describe":  "Ola - $OutputFileJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "DeleteBackupHistory",
+        "AllTags":  "DeleteBackupHistory, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.DeleteBackupHistory policy.ola.DeleteBackupHistoryenabled policy.ola.DeleteBackupHistoryscheduled policy.ola.DeleteBackupHistoryCleanUp ",
+        "Description":  "Tests that the Ola - Delete Backup History Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))",
+        "Describe":  "Ola - $DeleteBackupJobName"
+    },
+    {
+        "Group":  "MaintenanceSolution",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "PurgeJobHistory",
+        "AllTags":  "PurgeJobHistory, OlaJobs, MaintenanceSolution",
+        "Config":  "app.sqlinstance ola.JobName.PurgeBackupHistory policy.ola.PurgeJobHistoryenabled policy.ola.PurgeJobHistoryscheduled policy.ola.PurgeJobHistoryCleanUp ",
+        "Description":  "Tests that the Ola - Purge Job History Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))",
+        "Describe":  "Ola - $PurgeBackupJobName"
+    },
+    {
+        "Group":  "Server",
+        "Type":  "ComputerName",
+        "UniqueTag":  "PowerPlan",
+        "AllTags":  "PowerPlan, Server",
+        "Config":  "app.computername ",
+        "Description":  "Tests that the Server Power Plan is set to High Performance",
+        "Describe":  "Server Power Plan Configuration"
+    },
+    {
+        "Group":  "Server",
+        "Type":  "Sqlinstance",
+        "UniqueTag":  "InstanceConnection",
+        "AllTags":  "InstanceConnection, Connectivity, Server",
+        "Config":  "app.sqlinstance skip.connection.remoting skip.connection.ping policy.connection.authscheme ",
+        "Description":  "Tests that a SQL query can be run, that the specified authentication scheme (default kerboros) is being used, that the host responds to one ping and that the host supports PS Remoting",
+        "Describe":  "Instance Connection"
+    },
+    {
+        "Group":  "Server",
+        "Type":  "ComputerName",
+        "UniqueTag":  "SPN",
+        "AllTags":  "SPN, Server",
+        "Config":  "app.computername ",
+        "Description":  "Tests that all default SQL SPNs have been correctly registered",
+        "Describe":  "SPNs"
+    },
+    {
+        "Group":  "Server",
+        "Type":  "ComputerName",
+        "UniqueTag":  "DiskCapacity",
+        "AllTags":  "DiskCapacity, Storage, DISA, Server",
+        "Config":  "app.computername policy.diskspace.percentfree ",
+        "Description":  "Tests that each drive has at least the specified percentage (default 20) free space",
+        "Describe":  "Disk Space"
+    },
+    {
+        "Group":  "Server",
+        "Type":  "ComputerName",
+        "UniqueTag":  "PingComputer",
+        "AllTags":  "PingComputer, Server",
+        "Config":  "app.computername policy.connection.pingmaxms policy.connection.pingcount skip.connection.ping ",
+        "Description":  "Tests that a host has been pinged a specified number of times (default 3) and that the average response time is less than specified (default 10ms)",
+        "Describe":  "Ping Computer"
+    },
+    {
+        "Group":  "Server",
+        "Type":  "ComputerName",
+        "UniqueTag":  "CPUPrioritisation",
+        "AllTags":  "CPUPrioritisation, Server",
+        "Config":  "app.computername policy.server.cpuprioritisation ",
+        "Description":  "Tests that the CPU is prioritised for background activity over user UI experience. unless specified to ignore (default true)",
+        "Describe":  "CPUPrioritisation"
+    },
+    {
+        "Group":  "Server",
+        "Type":  "ComputerName",
+        "UniqueTag":  "DiskAllocationUnit",
+        "AllTags":  "DiskAllocationUnit, Server",
+        "Config":  "app.computername ",
+        "Description":  "Tests that the disks available to the server are formatted for optimum performance (64KB allocation unit)",
+        "Describe":  "Disk Allocation Unit"
+    }
+]

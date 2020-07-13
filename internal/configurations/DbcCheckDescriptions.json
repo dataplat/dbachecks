@@ -1,0 +1,541 @@
+[
+    {
+        "UniqueTag": "AgentServiceAccount",
+        "Description": "Tests that the SQL Agent Account is running and set to automatic"
+    },
+    {
+        "UniqueTag": "DbaOperator",
+        "Description": "Tests that the specified (default blank) DBA Operators exist and have the correct email address"
+    },
+    {
+        "UniqueTag": "FailsafeOperator",
+        "Description": "Tests that the specified (default blank) Failsafe Operator exists"
+    },
+    {
+        "UniqueTag": "DatabaseMailProfile",
+        "Description": "Tests that the specified (default blank) Database Mail Profile exists"
+    },
+    {
+        "UniqueTag": "FailedJob",
+        "Description": "Tests that enabled Agent Jobs last outcome was succeeded since specified start date (default 30 days ago) and can exclude cancelled jobs (default false)"
+    },
+    {
+        "UniqueTag": "ValidJobOwner",
+        "Description": "Tests that all Agent Jobs have a Job Owner in the list specified (default sa)"
+    },
+    {
+        "UniqueTag": "AgentAlert",
+        "Description": "Tests that there are Agent Alerts set up for the specified (default 16-25) alert severities and ids (default 823-825) and if specified Agent Jobs and/or notifications"
+    },
+    {
+        "UniqueTag": "DatabaseCollation",
+        "Description": "Tests that the Database Collation matches the instance collation except for specified databases"
+    },
+    {
+        "UniqueTag": "SuspectPage",
+        "Description": "Tests that there are 0 Suspect Pages for the database"
+    },
+    {
+        "UniqueTag": "SuspectPageLimit",
+        "Description": "Tests that the suspect_pages table in msdb is not nearing the limit of 1000 rows"
+    },
+    {
+        "UniqueTag": "TestLastBackup",
+        "Description": "Restores the last backup of a database onto a specified (default blank so will use the same instance) restore instance and checks if the DBCC result was successful as well as the DBCC result. This can obviously take some time for large databases!"
+    },
+    {
+        "UniqueTag": "TestLastBackupVerifyOnly",
+        "Description": "Does a verify only restore of the last backup of the database and test the result"
+    },
+    {
+        "UniqueTag": "ValidDatabaseOwner",
+        "Description": "Tests that the database owner is in the specified (default blank) list"
+    },
+    {
+        "UniqueTag": "InvalidDatabaseOwner",
+        "Description": "Tests that the Database Owner is NOT in the specified (default blank) list"
+    },
+    {
+        "UniqueTag": "LastGoodCheckDb",
+        "Description": "Tests that there was a Last Good DBCC CHECKDB within the specified limit (default blank) and if specified that the DATA_PURITY flag is set"
+    },
+    {
+        "UniqueTag": "IdentityUsage",
+        "Description": "Tests that identity columns values are not above the specified percentage (default blank) of the maximum value for that data type"
+    },
+    {
+        "UniqueTag": "RecoveryModel",
+        "Description": "Tests that the Recovery model for all of the databases is set as specified (default blank) except for any specified"
+    },
+    {
+        "UniqueTag": "DuplicateIndex",
+        "Description": "Tests for any duplicate indexes"
+    },
+    {
+        "UniqueTag": "UnusedIndex",
+        "Description": "Tests for any unused indexes"
+    },
+    {
+        "UniqueTag": "DisabledIndex",
+        "Description": "Tests for any disabled indexes"
+    },
+    {
+        "UniqueTag": "DatabaseGrowthEvent",
+        "Description": "Tests for any database growth events in the default system trace"
+    },
+    {
+        "UniqueTag": "PageVerify",
+        "Description": "Tests the page verify settings"
+    },
+    {
+        "UniqueTag": "AutoClose",
+        "Description": "Tests the auto-close setting"
+    },
+    {
+        "UniqueTag": "AutoShrink",
+        "Description": "Tests the Auto Shrink setting"
+    },
+    {
+        "UniqueTag": "LastFullBackup",
+        "Description": "Tests if the last full backup of a database is less than the specified number of days (default 7) except for offline databases and read-only databases (read-only if specified) and databases created recently (if specified)"
+    },
+    {
+        "UniqueTag": "LastDiffBackup",
+        "Description": "Tests if the last diff backup of a database is less than the specified number of hours (default 24) except for offline databases and read-only databases (read-only if specified) and databases created recently (if specified)"
+    },
+    {
+        "UniqueTag": "LastLogBackup",
+        "Description": "Tests if the last log backup of a database is less than the specified number of minutes (default 30) except for simple databases, offline databases and read-only databases (read-only if specified) and databases created recently (if specified)"
+    },
+    {
+        "UniqueTag": "VirtualLogFile",
+        "Description": "Tests the number of the Virtual Log Files are less than the specified number"
+    },
+    {
+        "UniqueTag": "LogfileCount",
+        "Description": "Tests that the number of log files are less than the specified amount (default is 1) in all databases except those specified to be skipped by default"
+    },
+    {
+        "UniqueTag": "LogfileSize",
+        "Description": "Tests that the database log files are less than the specified percentage of the specified comparison (maximum size or average - default is average) of the data file size (default 100)"
+    },
+    {
+        "UniqueTag": "FutureFileGrowth",
+        "Description": "Tests if a database (except for those specified to be skipped explicitly) has free space less than the specified percentage (default 20)"
+    },
+    {
+        "UniqueTag": "FileGroupBalanced",
+        "Description": "Tests that all of the files within each filegroup are sized within the specified percentage (default 5) of the average"
+    },
+    {
+        "UniqueTag": "CertificateExpiration",
+        "Description": "Tests that all certificates have not expired and are not due to expire within the specified (default 1) number of months"
+    },
+    {
+        "UniqueTag": "AutoCreateStatistics",
+        "Description": "Tests the Auto Create Statistics property on each database is set to the specified (default false) value"
+    },
+    {
+        "UniqueTag": "AutoUpdateStatistics",
+        "Description": "Tests the Auto Update Statistics property on each database is set to the specified (default true) value"
+    },
+    {
+        "UniqueTag": "AutoUpdateStatisticsAsynchronously",
+        "Description": "Tests the Auto Update Statistics Asynchronously property on each database is set to the specified (default false) value"
+    },
+    {
+        "UniqueTag": "DatafileAutoGrowthType",
+        "Description": "Tests that the Datafile Auto Growth type and value on each database except those specified is set to the specified (default type = kb, value = 65535) values"
+    },
+    {
+        "UniqueTag": "Trustworthy",
+        "Description": "Tests that the Trustworthy Option for each database is set to false"
+    },
+    {
+        "UniqueTag": "OrphanedUser",
+        "Description": "Tests that each database has 0 orphaned users"
+    },
+    {
+        "UniqueTag": "PseudoSimple",
+        "Description": "Tests that databases are not in PseudoSimple Recovery Model"
+    },
+    {
+        "UniqueTag": "CompatibilityLevel",
+        "Description": "tests that the servers compatibility level matches the compatibility level"
+    },
+    {
+        "UniqueTag": "DomainName",
+        "Description": "Uses WMI Win32_ComputerSystem to check that the host machine is on the correct domain"
+    },
+    {
+        "UniqueTag": "OrganizationalUnit",
+        "Description": "Currently skipped - Active Directory OU"
+    },
+    {
+        "UniqueTag": "ClusterHealth",
+        "Description": "Runs a suite of tests against an Availability Group on a Windows cluster to ensure that everything is as it should be. Tests cluster resources are online, cluster nodes are up, at least one IP Address for the AG listener is available, that each replica and listener are pingable (listener ping check can be skipped), can be connected to via T-SQL, have the correct domain name and TCP port, that each replica is synchronized/ing, is connected, is not in an unknown state, each database is synchronized/ing, failover ready and joined to the domain and that the Always On Health Extended Event sessions are running and set to auto-start"
+    },
+    {
+        "UniqueTag": "SqlEngineServiceAccount",
+        "Description": "Tests that the SQL Engine Service state is set to the configured value (default - Running) and that the start mode is set to the configured value (default - Automatic) unless it is a cluster in which case it checks that the start mode is set to Manual"
+    },
+    {
+        "UniqueTag": "SqlBrowserServiceAccount",
+        "Description": "Tests that the SQL Browser Service is started and set to auto-start if there are multiple instances and stopped and set to disabled if there is only one "
+    },
+    {
+        "UniqueTag": "TempDbConfiguration",
+        "Description": "Tests that the TempDB Configuration is correct, that TF118 is enabled, there are the recommended number of files, autogrowth is not set to percent, that the files can grow and that they are not located on the C drive (each of these tests can be configured individually to be skipped"
+    },
+    {
+        "UniqueTag": "AdHocWorkload",
+        "Description": "Tests that the AAd Hoc Workload Optimization is enabled"
+    },
+    {
+        "UniqueTag": "BackupPathAccess",
+        "Description": "Tests that the SQL Service account has access to the default backup path or the specified folder path"
+    },
+    {
+        "UniqueTag": "DAC",
+        "Description": "Tests that the Dedicated Administrator Connection configuration setting matches the specified value (default true)"
+    },
+    {
+        "UniqueTag": "TwoDigitYearCutoff",
+        "Description": "Tests that the 'Two Digit Year Cutoff' configuration setting matches the specified value (default 2049)"
+    },
+    {
+        "UniqueTag": "NetworkLatency",
+        "Description": "Tests that the Network Latency is less than the specified (default 40) ms"
+    },
+    {
+        "UniqueTag": "LinkedServerConnection",
+        "Description": "Tests for successful connection to all Linked Servers"
+    },
+    {
+        "UniqueTag": "MaxMemory",
+        "Description": "Tests an instances Max Memory"
+    },
+    {
+        "UniqueTag": "OrphanedFile",
+        "Description": "Tests that there are 0 orphaned data files"
+    },
+    {
+        "UniqueTag": "ServerNameMatch",
+        "Description": "Tests that the SQL + Windows names match"
+    },
+    {
+        "UniqueTag": "MemoryDump",
+        "Description": "Tests that there are less than the specified (default 1) number of SQL Memory Dumps"
+    },
+    {
+        "UniqueTag": "SupportedBuild",
+        "Description": "Tests that the instance is still under Microsoft support and that it will still be under support in a specified (default 6) months"
+    },
+    {
+        "UniqueTag": "SaRenamed",
+        "Description": "Tests that the SA Login has been renamed"
+    },
+    {
+        "UniqueTag": "SaExist",
+        "Description": "Tests that a sa login does not exist"
+    },
+    {
+        "UniqueTag": "SaDisabled",
+        "Description": "Tests that the original SA Login is disabled"
+    },
+    {
+        "UniqueTag": "DefaultBackupCompression",
+        "Description": "Tests that an instances Default Backup Compression is set to the specified (default true) setting"
+    },
+    {
+        "UniqueTag": "XESessionStopped",
+        "Description": "Tests that the specified (default blank) XE Sessions are stopped"
+    },
+    {
+        "UniqueTag": "XESessionRunning",
+        "Description": "Tests that the specified (default blank) XE Sessions that are expected to be running are running"
+    },
+    {
+        "UniqueTag": "XESessionRunningAllowed",
+        "Description": "Tests that the specified (default blank) XE Sessions that are allowed to be running are running"
+    },
+    {
+        "UniqueTag": "OLEAutomation",
+        "Description": "Tests that OLE Automation is set to the specified (default false) setting"
+    },
+    {
+        "UniqueTag": "WhoIsActiveInstalled",
+        "Description": "Tests that sp_whoisactive is Installed by testing the specified (default master) database for the stored procedure"
+    },
+    {
+        "UniqueTag": "ModelDbGrowth",
+        "Description": "Tests that the Model Database Growth settings are not set to default"
+    },
+    {
+        "UniqueTag": "ADUser",
+        "Description": "Tests that Ad Users and Groups, except those specified, that are logins on a SQL Server exist in Active Directory, do not have an expired password, are not locked out, are enabled in AD and on the SQL Server "
+    },
+    {
+        "UniqueTag": "ErrorLog",
+        "Description": "Tests that the SQL Server Error Log does not have any Severity 17-24 level entries within the specified (default 2) days"
+    },
+    {
+        "UniqueTag": "ErrorLogCount",
+        "Description": "Tests that the number of SQL Server Error Logs configured. Default value is -1 which means off (will use 6 files)."
+    },
+    {
+        "UniqueTag": "LogShippingPrimary",
+        "Description": "Tests that the Log Shipping Primary status is ok"
+    },
+    {
+        "UniqueTag": "LogShippingSecondary",
+        "Description": "Tests that the Log Shipping Secondary status is ok"
+    },
+    {
+        "UniqueTag": "OlaInstalled",
+        "Description": "Tests that Ola maintenance solution is installed by testing the specified (default master) database for the command log table and the stored procedures"
+    },
+    {
+        "UniqueTag": "SystemFull",
+        "Description": "Tests that the Ola - System Full Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))"
+    },
+    {
+        "UniqueTag": "UserFull",
+        "Description": "Tests that the Ola - User Full Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))"
+    },
+    {
+        "UniqueTag": "UserDiff",
+        "Description": "Tests that the Ola - User Diff Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))"
+    },
+    {
+        "UniqueTag": "UserLog",
+        "Description": "Tests that the Ola - User Log Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the backup retention setting for the job is set as specified (default 192 (hours))"
+    },
+    {
+        "UniqueTag": "CommandLog",
+        "Description": "Tests that the Ola - Command Log Cleanup Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))"
+    },
+    {
+        "UniqueTag": "SystemIntegrityCheck",
+        "Description": "Tests that the Ola - System Integrity Check Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled"
+    },
+    {
+        "UniqueTag": "UserIntegrityCheck",
+        "Description": "Tests that the Ola - User Integrity Check Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled"
+    },
+    {
+        "UniqueTag": "UserIndexOptimize",
+        "Description": "Tests that the Ola - User Index Optimise Agent Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled"
+    },
+    {
+        "UniqueTag": "OutputFileCleanup",
+        "Description": "Tests that the Ola - Output File Cleanup Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))"
+    },
+    {
+        "UniqueTag": "DeleteBackupHistory",
+        "Description": "Tests that the Ola - Delete Backup History Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))"
+    },
+    {
+        "UniqueTag": "PurgeJobHistory",
+        "Description": "Tests that the Ola - Purge Job History Job (using the specified name defaults to Olas default naming) enabled setting is set as specified (default true), the schedules are set as specified (default true) and enabled and that the clean up setting for the job is set as specified (default 30 (days))"
+    },
+    {
+        "UniqueTag": "PowerPlan",
+        "Description": "Tests that the Server Power Plan is set to High Performance"
+    },
+    {
+        "UniqueTag": "InstanceConnection",
+        "Description": "Tests that a SQL query can be run, that the specified authentication scheme (default kerberos) is being used, that the host responds to one ping and that the host supports PS Remoting"
+    },
+    {
+        "UniqueTag": "SPN",
+        "Description": "Tests that all default SQL SPNs have been correctly registered"
+    },
+    {
+        "UniqueTag": "DiskCapacity",
+        "Description": "Tests that each drive has at least the specified percentage (default 20) free space"
+    },
+    {
+        "UniqueTag": "PingComputer",
+        "Description": "Tests that a host has been pinged a specified number of times (default 3) and that the average response time is less than specified (default 10ms)"
+    },
+    {
+        "UniqueTag": "FKCKTrusted",
+        "Description": "Tests that each foreign key and each constraint is trusted"
+    },
+    {
+        "UniqueTag": "MaxDopInstance",
+        "Description": "Tests that the instance level MaxDop settings on all instances (except those specified default blank) are set to the recommended value if specified (default false) or to the specified value (default 0)"
+    },
+    {
+        "UniqueTag": "MaxDopDatabase",
+        "Description": "Tests that the database level MaxDop settings for all databases on all instances from version 2016 up are set to the specified value (default 0)"
+    },
+    {
+        "UniqueTag": "DatabaseStatus",
+        "Description": "Tests that there are no databases on an instance that are in a state of AutoClose, Offline, ReadOnly, Restoring, Recovery, Recovery Pending, EmergencyMode, Suspect or StandBy. Databases that are in ReadOnly,Offline and Restoring mode can be specified (default none)"
+    },
+    {
+        "UniqueTag": "CPUPrioritisation",
+        "Description": "Tests that the CPU is prioritised for background activity over user UI experience. unless specified to ignore (default true)"
+    },
+    {
+        "UniqueTag": "DiskAllocationUnit",
+        "Description": "Tests that the disks available to the server are formatted for optimum performance (64KB allocation unit) unless a specified disk name (default none)"
+    },
+    {
+        "UniqueTag": "DatabaseExists",
+        "Description": "Tests that the databases are specified are on the instance (Note - Does not check if they are available - Use DatabaseStatus for that))"
+    },
+    {
+        "UniqueTag": "TraceFlagsExpected",
+        "Description": "Tests that the specified (default none) trace flags are running on the instance"
+    },
+    {
+        "UniqueTag": "TraceFlagsNotExpected",
+        "Description": "Tests that the specified (default none) trace flags are not running on the instance"
+    },
+    {
+        "UniqueTag": "CLREnabled",
+        "Description": "Tests that the CLR Enabled configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "CrossDBOwnershipChaining",
+        "Description": "Tests that the Cross Database Ownership Chaining configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "DatabaseMailEnabled",
+        "Description": "Tests that the Database Mail XPs configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "DefaultFilePath",
+        "Description": "Tests that the default file path for an instance is not the C drive"
+    },
+    {
+        "UniqueTag": "AdHocDistributedQueriesEnabled",
+        "Description": "Tests that the AdHoc Distributed Queries configuration setting is set as specified (default false)"
+    },
+    {
+        "UniqueTag": "XpCmdShellDisabled",
+        "Description": "Tests that the XP CmdShell configuration setting is set as specified (default true - meaning it should be disabled)"
+    },
+    {
+        "UniqueTag": "OLEAutomationProceduresDisabled",
+        "Description": "Tests that the OLE Automation Procedures configuration setting is set as specified (default 0 - meaning it should be disabled)"
+    },
+    {
+        "UniqueTag": "RemoteAccessDisabled",
+        "Description": "Tests that the Remote Access configuration setting is set as specified (default true - meaning it should be disabled)"
+    },
+    {
+        "UniqueTag": "ScanForStartupProceduresDisabled",
+        "Description": "Tests that the Scan For Startup Procedures configuration setting is set as specified (default 0 - meaning it should be disabled)"
+    },
+    {
+        "UniqueTag": "JobHistory",
+        "Description": "Tests that the job history configuration for max number of rows in the whole agent log is greater than or equal to the specified value (default 1000) and that the max number of rows per job configuration is greater than or equal to the specified value (default 100) ."
+    },
+    {
+        "UniqueTag": "DefaultTrace",
+        "Description": "Tests that the default trace configuration is set to enabled"
+    },
+    {
+        "UniqueTag": "LongRunningJob",
+        "Description": "Tests that any currently running agent jobs have not been running for longer than the configured percentage (default 50) of time more than the average job run"
+    },
+    {
+        "UniqueTag": "LastJobRunTime",
+        "Description": "Tests that the last duration of the agent jobs were not longer than the configured percentage (default 50) of time more than the average job run"
+    },
+    {
+        "UniqueTag": "LatestBuild",
+        "Description": "Tests that the sees is SQL Server has the newest Service Packs and CUs installed."
+    },
+    {
+        "UniqueTag": "ContainedDBAutoClose",
+        "Description": "Tests that each contained database has AUTO CLOSE disabled."
+    },
+    {
+        "UniqueTag": "SqlAgentProxiesNoPublicRole",
+        "Description": "Tests that the public role does not have access to SQL Agent Proxies."
+    },
+    {    "UniqueTag": "SymmetricKeyEncryptionLevel",
+        "Description": "Tests that Symmetric Key Encryption Level is at least AES_128 in non-system databases."
+    },
+    {
+        "UniqueTag": "AsymmetricKeySize",
+        "Description": "Tests that Asymmetric Key Sizes are at least 2048 in non-system databases."
+    },
+    {
+        "UniqueTag": "HideInstance",
+        "Description": "Tests that each hide instance is set to YES for the instance."
+    },
+    {
+        "UniqueTag": "CLRAssembliesSafe",
+        "Description": "Tests that CLR assembly permissions are set to SAFE_ACCESS."
+    },
+    {
+        "UniqueTag": "EngineServiceAdmin",
+        "Description": "Tests that the SQL Engine service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "AgentServiceAdmin",
+        "Description": "Tests that the SQL Agent service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "FullTextServiceAdmin",
+        "Description": "Tests that the SQL Full Text service account is not a local administrator."
+    },
+    {
+        "UniqueTag": "LoginAuditFailed",
+        "Description": "Tests that server level logins are recorded for failed logins."
+    },
+    {
+        "UniqueTag": "LoginAuditSuccessful",
+        "Description": "Tests that server level logins are recorded for successful and failed logins."
+    },
+    {
+        "UniqueTag": "LocalWindowsGroup",
+        "Description": "Tests that no local Windows group has has a SQL Login."
+    },
+    {
+        "UniqueTag": "PublicRolePermission",
+        "Description": "Tests that server public role does not have any permissions."
+    },
+    {
+        "UniqueTag": "GuestUserConnect",
+        "Description": "Tests that guest user does not have CONNECT permission."
+    },
+    {
+        "UniqueTag": "BuiltInAdmin",
+        "Description": "Tests to see if the BUILTIN\\Administrator login exist."
+    },
+    {
+        "UniqueTag": "QueryStoreEnabled",
+        "Description": "Tests to see Query Store is enabled on each database except those specified."
+    },
+    {
+        "UniqueTag": "QueryStoreDisabled",
+        "Description": "Tests to see Query Store is disabled on each database except those specified."
+    },
+    {
+        "UniqueTag": "ContainedDBSQLAuth",
+        "Description": "Tests to see a contained database contains sql authenticated users."
+    },
+    {
+        "UniqueTag": "LoginCheckPolicy",
+        "Description": "Tests to see if CHECK_POLICY property is set for all logins."
+    },
+    {
+        "UniqueTag": "LoginPasswordExpiration",
+        "Description": "Tests to see if password expiration policy is set for sql logins in sysadmin role."
+    },
+    {
+        "UniqueTag": "LoginMustChange",
+        "Description": "Tests to see if password must change is enabled for new logins."
+    },
+    {
+        "UniqueTag": "NonStandardPort",
+        "Description": "Tests to see if the SQL Server Instances are NOT running on the default port of 1433."
+    }
+]
