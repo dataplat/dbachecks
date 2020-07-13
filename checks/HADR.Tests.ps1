@@ -7,7 +7,7 @@ function Get-ClusterObject {
         [string]$ClusterVM
     )
 
-    [pscustomobject]$return = @{ }
+    [PsCustomObject]$return = @{ }
     # Don't think you can use the cluster name here it won't run remotely
     try {
         $ErrorActionPreference = 'Stop'
@@ -107,7 +107,7 @@ foreach ($clustervm in $clusters) {
         $clustername = (Get-Cluster -Name $clustervm -ErrorAction Stop).Name
     }
     catch {
-        # so that we dont get the error and Get-ClusterObject fills it as FailedtoConnect
+        # so that we don't get the error and Get-ClusterObject fills it as FailedtoConnect
         $clustername = $clustervm
     }
 
@@ -138,7 +138,7 @@ foreach ($clustervm in $clusters) {
         Context "Cluster networks for $clustername" {
             @($return.Network).ForEach{
                 It "The Network should be up - Network $($psitem.Name)" {
-                    $psitem.State | Should -Be 'Up' -Because 'All of the CLuster Networks should be up'
+                    $psitem.State | Should -Be 'Up' -Because 'All of the Cluster Networks should be up'
                 }
             }
         }
@@ -162,7 +162,7 @@ foreach ($clustervm in $clusters) {
             Context "Cluster Connectivity for Availability Group $($AG.Name) on $clustername" {
                 @($AG.AvailabilityGroupListeners).ForEach{
                     try {
-                        $results = Test-DbaConnection -sqlinstance $_.Name
+                        $results = Test-DbaConnection -SqlInstance $_.Name
                     }
                     Catch {
                         $results = [PSCustomObject]@{
@@ -185,7 +185,7 @@ foreach ($clustervm in $clusters) {
                 }
 
                 @($AG.AvailabilityReplicas).ForEach{
-                    $results = Test-DbaConnection -sqlinstance $PsItem.Name
+                    $results = Test-DbaConnection -SqlInstance $PsItem.Name
                     It "Replica should be Pingable for $($results.SqlInstance)" {
                         $results.IsPingable | Should -BeTrue -Because 'Each replica should be pingable'
                     }
