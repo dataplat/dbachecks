@@ -89,33 +89,36 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicySecurityScanforstartupproceduresdisabled <Object>]
  [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
  [-ConfigPolicyServerExcludeDiskAllocationUnit <Object>] [-ConfigPolicyStorageBackuppath <Object>]
- [-ConfigPolicyTraceflagsExpected <Object>] [-ConfigPolicyTraceflagsNotexpected <Object>]
- [-ConfigPolicyTwodigityearcutoff <Object>] [-ConfigPolicyValiddbownerExcludedb <Object>]
- [-ConfigPolicyValiddbownerName <Object>] [-ConfigPolicyWhoisactiveDatabase <Object>]
- [-ConfigPolicyXeventRequiredrunningsession <Object>] [-ConfigPolicyXeventRequiredstoppedsession <Object>]
- [-ConfigPolicyXeventValidrunningsession <Object>] [-ConfigSkipAgentAlert <Object>]
- [-ConfigSkipAgentLastjobruntime <Object>] [-ConfigSkipAgentLongrunningjobs <Object>]
- [-ConfigSkipBackupReadonly <Object>] [-ConfigSkipBackupTesting <Object>] [-ConfigSkipConnectionAuth <Object>]
- [-ConfigSkipConnectionPing <Object>] [-ConfigSkipConnectionRemoting <Object>]
- [-ConfigSkipDatabaseFilegrowthdisabled <Object>] [-ConfigSkipDatabaseLogfilecounttest <Object>]
- [-ConfigSkipDatafilegrowthdisabled <Object>] [-ConfigSkipDbccDatapuritycheck <Object>]
- [-ConfigSkipDiffbackuptest <Object>] [-ConfigSkipHadrListenerPingcheck <Object>]
- [-ConfigSkipHadrListenerTcpport <Object>] [-ConfigSkipHadrReplicaTcpport <Object>]
- [-ConfigSkipInstanceDefaulttrace <Object>] [-ConfigSkipInstanceLatestbuild <Object>]
- [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
+ [-ConfigPolicySuspectpagesThreshold <Object>] [-ConfigPolicyTraceflagsExpected <Object>]
+ [-ConfigPolicyTraceflagsNotexpected <Object>] [-ConfigPolicyTwodigityearcutoff <Object>]
+ [-ConfigPolicyValiddbownerExcludedb <Object>] [-ConfigPolicyValiddbownerName <Object>]
+ [-ConfigPolicyWhoisactiveDatabase <Object>] [-ConfigPolicyXeventRequiredrunningsession <Object>]
+ [-ConfigPolicyXeventRequiredstoppedsession <Object>] [-ConfigPolicyXeventValidrunningsession <Object>]
+ [-ConfigSkipAgentAlert <Object>] [-ConfigSkipAgentLastjobruntime <Object>]
+ [-ConfigSkipAgentLongrunningjobs <Object>] [-ConfigSkipBackupReadonly <Object>]
+ [-ConfigSkipBackupSecondaries <Object>] [-ConfigSkipBackupTesting <Object>]
+ [-ConfigSkipConnectionAuth <Object>] [-ConfigSkipConnectionPing <Object>]
+ [-ConfigSkipConnectionRemoting <Object>] [-ConfigSkipDatabaseFilegrowthdisabled <Object>]
+ [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
+ [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
+ [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipHadrListenerTcpport <Object>]
+ [-ConfigSkipHadrReplicaTcpport <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
+ [-ConfigSkipInstanceLatestbuild <Object>] [-ConfigSkipInstanceModeldbgrowth <Object>]
+ [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
- [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityAgentserviceadmin <Object>]
- [-ConfigSkipSecurityAsymmetrickeysize <Object>] [-ConfigSkipSecurityBuiltinadmin <Object>]
- [-ConfigSkipSecurityClrassembliessafe <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
- [-ConfigSkipSecurityContainedDBSQLAuth <Object>] [-ConfigSkipSecurityEngineserviceadmin <Object>]
- [-ConfigSkipSecurityFulltextserviceadmin <Object>] [-ConfigSkipSecurityGuestuserconnect <Object>]
- [-ConfigSkipSecurityHideinstance <Object>] [-ConfigSkipSecurityLocalwindowsgroup <Object>]
- [-ConfigSkipSecurityLoginauditlevelfailed <Object>] [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>]
- [-ConfigSkipSecurityLoginCheckPolicy <Object>] [-ConfigSkipSecurityLoginMustChange <Object>]
- [-ConfigSkipSecurityLoginPasswordExpiration <Object>] [-ConfigSkipSecurityNonstandardport <Object>]
- [-ConfigSkipSecurityPublicrolepermission <Object>] [-ConfigSkipSecuritySadisabled <Object>]
- [-ConfigSkipSecuritySaexist <Object>] [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
+ [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipInstanceSuspectpagelimit <Object>]
+ [-ConfigSkipLogfilecounttest <Object>] [-ConfigSkipLogshiptesting <Object>]
+ [-ConfigSkipSecurityAgentserviceadmin <Object>] [-ConfigSkipSecurityAsymmetrickeysize <Object>]
+ [-ConfigSkipSecurityBuiltinadmin <Object>] [-ConfigSkipSecurityClrassembliessafe <Object>]
+ [-ConfigSkipSecurityContainedbautoclose <Object>] [-ConfigSkipSecurityContainedDBSQLAuth <Object>]
+ [-ConfigSkipSecurityEngineserviceadmin <Object>] [-ConfigSkipSecurityFulltextserviceadmin <Object>]
+ [-ConfigSkipSecurityGuestuserconnect <Object>] [-ConfigSkipSecurityHideinstance <Object>]
+ [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
+ [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityLoginCheckPolicy <Object>]
+ [-ConfigSkipSecurityLoginMustChange <Object>] [-ConfigSkipSecurityLoginPasswordExpiration <Object>]
+ [-ConfigSkipSecurityNonstandardport <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
+ [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
+ [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
  [-ConfigSkipSecuritySymmetrickeyencryptionlevel <Object>] [-ConfigSkipTempdb1118 <Object>]
  [-ConfigSkipTempdbfilecount <Object>] [-ConfigSkipTempdbfilegrowthpercent <Object>]
  [-ConfigSkipTempdbfilesizemax <Object>] [-ConfigSkipTempdbfilesonc <Object>]
@@ -206,33 +209,36 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicySecurityScanforstartupproceduresdisabled <Object>]
  [-ConfigPolicySecurityXpcmdshelldisabled <Object>] [-ConfigPolicyServerCpuprioritisation <Object>]
  [-ConfigPolicyServerExcludeDiskAllocationUnit <Object>] [-ConfigPolicyStorageBackuppath <Object>]
- [-ConfigPolicyTraceflagsExpected <Object>] [-ConfigPolicyTraceflagsNotexpected <Object>]
- [-ConfigPolicyTwodigityearcutoff <Object>] [-ConfigPolicyValiddbownerExcludedb <Object>]
- [-ConfigPolicyValiddbownerName <Object>] [-ConfigPolicyWhoisactiveDatabase <Object>]
- [-ConfigPolicyXeventRequiredrunningsession <Object>] [-ConfigPolicyXeventRequiredstoppedsession <Object>]
- [-ConfigPolicyXeventValidrunningsession <Object>] [-ConfigSkipAgentAlert <Object>]
- [-ConfigSkipAgentLastjobruntime <Object>] [-ConfigSkipAgentLongrunningjobs <Object>]
- [-ConfigSkipBackupReadonly <Object>] [-ConfigSkipBackupTesting <Object>] [-ConfigSkipConnectionAuth <Object>]
- [-ConfigSkipConnectionPing <Object>] [-ConfigSkipConnectionRemoting <Object>]
- [-ConfigSkipDatabaseFilegrowthdisabled <Object>] [-ConfigSkipDatabaseLogfilecounttest <Object>]
- [-ConfigSkipDatafilegrowthdisabled <Object>] [-ConfigSkipDbccDatapuritycheck <Object>]
- [-ConfigSkipDiffbackuptest <Object>] [-ConfigSkipHadrListenerPingcheck <Object>]
- [-ConfigSkipHadrListenerTcpport <Object>] [-ConfigSkipHadrReplicaTcpport <Object>]
- [-ConfigSkipInstanceDefaulttrace <Object>] [-ConfigSkipInstanceLatestbuild <Object>]
- [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
+ [-ConfigPolicySuspectpagesThreshold <Object>] [-ConfigPolicyTraceflagsExpected <Object>]
+ [-ConfigPolicyTraceflagsNotexpected <Object>] [-ConfigPolicyTwodigityearcutoff <Object>]
+ [-ConfigPolicyValiddbownerExcludedb <Object>] [-ConfigPolicyValiddbownerName <Object>]
+ [-ConfigPolicyWhoisactiveDatabase <Object>] [-ConfigPolicyXeventRequiredrunningsession <Object>]
+ [-ConfigPolicyXeventRequiredstoppedsession <Object>] [-ConfigPolicyXeventValidrunningsession <Object>]
+ [-ConfigSkipAgentAlert <Object>] [-ConfigSkipAgentLastjobruntime <Object>]
+ [-ConfigSkipAgentLongrunningjobs <Object>] [-ConfigSkipBackupReadonly <Object>]
+ [-ConfigSkipBackupSecondaries <Object>] [-ConfigSkipBackupTesting <Object>]
+ [-ConfigSkipConnectionAuth <Object>] [-ConfigSkipConnectionPing <Object>]
+ [-ConfigSkipConnectionRemoting <Object>] [-ConfigSkipDatabaseFilegrowthdisabled <Object>]
+ [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
+ [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
+ [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipHadrListenerTcpport <Object>]
+ [-ConfigSkipHadrReplicaTcpport <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
+ [-ConfigSkipInstanceLatestbuild <Object>] [-ConfigSkipInstanceModeldbgrowth <Object>]
+ [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
- [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipLogfilecounttest <Object>]
- [-ConfigSkipLogshiptesting <Object>] [-ConfigSkipSecurityAgentserviceadmin <Object>]
- [-ConfigSkipSecurityAsymmetrickeysize <Object>] [-ConfigSkipSecurityBuiltinadmin <Object>]
- [-ConfigSkipSecurityClrassembliessafe <Object>] [-ConfigSkipSecurityContainedbautoclose <Object>]
- [-ConfigSkipSecurityContainedDBSQLAuth <Object>] [-ConfigSkipSecurityEngineserviceadmin <Object>]
- [-ConfigSkipSecurityFulltextserviceadmin <Object>] [-ConfigSkipSecurityGuestuserconnect <Object>]
- [-ConfigSkipSecurityHideinstance <Object>] [-ConfigSkipSecurityLocalwindowsgroup <Object>]
- [-ConfigSkipSecurityLoginauditlevelfailed <Object>] [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>]
- [-ConfigSkipSecurityLoginCheckPolicy <Object>] [-ConfigSkipSecurityLoginMustChange <Object>]
- [-ConfigSkipSecurityLoginPasswordExpiration <Object>] [-ConfigSkipSecurityNonstandardport <Object>]
- [-ConfigSkipSecurityPublicrolepermission <Object>] [-ConfigSkipSecuritySadisabled <Object>]
- [-ConfigSkipSecuritySaexist <Object>] [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
+ [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipInstanceSuspectpagelimit <Object>]
+ [-ConfigSkipLogfilecounttest <Object>] [-ConfigSkipLogshiptesting <Object>]
+ [-ConfigSkipSecurityAgentserviceadmin <Object>] [-ConfigSkipSecurityAsymmetrickeysize <Object>]
+ [-ConfigSkipSecurityBuiltinadmin <Object>] [-ConfigSkipSecurityClrassembliessafe <Object>]
+ [-ConfigSkipSecurityContainedbautoclose <Object>] [-ConfigSkipSecurityContainedDBSQLAuth <Object>]
+ [-ConfigSkipSecurityEngineserviceadmin <Object>] [-ConfigSkipSecurityFulltextserviceadmin <Object>]
+ [-ConfigSkipSecurityGuestuserconnect <Object>] [-ConfigSkipSecurityHideinstance <Object>]
+ [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
+ [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityLoginCheckPolicy <Object>]
+ [-ConfigSkipSecurityLoginMustChange <Object>] [-ConfigSkipSecurityLoginPasswordExpiration <Object>]
+ [-ConfigSkipSecurityNonstandardport <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
+ [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
+ [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
  [-ConfigSkipSecuritySymmetrickeyencryptionlevel <Object>] [-ConfigSkipTempdb1118 <Object>]
  [-ConfigSkipTempdbfilecount <Object>] [-ConfigSkipTempdbfilegrowthpercent <Object>]
  [-ConfigSkipTempdbfilesizemax <Object>] [-ConfigSkipTempdbfilesonc <Object>]
@@ -2997,6 +3003,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigPolicySuspectpagesThreshold
+{{ Fill ConfigPolicySuspectpagesThreshold Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigPolicyTraceflagsExpected
 {{ Fill ConfigPolicyTraceflagsExpected Description }}
 
@@ -3179,6 +3200,21 @@ Accept wildcard characters: False
 
 ### -ConfigSkipBackupReadonly
 {{ Fill ConfigSkipBackupReadonly Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipBackupSecondaries
+{{ Fill ConfigSkipBackupSecondaries Description }}
 
 ```yaml
 Type: Object
@@ -3449,6 +3485,21 @@ Accept wildcard characters: False
 
 ### -ConfigSkipInstanceScanforstartupproceduresdisabled
 {{ Fill ConfigSkipInstanceScanforstartupproceduresdisabled Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipInstanceSuspectpagelimit
+{{ Fill ConfigSkipInstanceSuspectpagelimit Description }}
 
 ```yaml
 Type: Object
