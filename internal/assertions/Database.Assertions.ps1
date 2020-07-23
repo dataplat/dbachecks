@@ -86,7 +86,7 @@ function Assert-CLRAssembliesSafe {
         [string]$Instance,
         [string]$Database
     )
-    @(Get-DbaDbAssembly -SqlInstance $Instance -Database $Database | Where-Object {$_.IsSystemObject -eq $false -and $_.SecurityLevel -ne "Safe" -and $_.Database -ne "SSISDB" -and $_.Name -ne "ISSERVER"}).Count | Should -Be 0 -Because "We expect CLR Assemblies to operate in the SAFE permission set"
+    @(Get-DbaDbAssembly -SqlInstance $Instance -Database $Database | Where-Object {$_.IsSystemObject -eq $false -and $_.SecurityLevel -ne "Safe" -and $_.Database -ne "SSISDB" -and $_.Name -ne "ISSERVER"}).Count | Should -Be 0 -Because "We expect CLE Assemblies to operate in the SAFE permission set"
 }
 
 function Assert-AsymmetricKeySize {
