@@ -772,8 +772,8 @@ $ExcludedDatabases += $ExcludeDatabase
     Describe "Datafile Auto Growth Configuration" -Tags DatafileAutoGrowthType, Low, $filename {
         $datafilegrowthtype = Get-DbcConfigValue policy.database.filegrowthtype
         $datafilegrowthvalue = Get-DbcConfigValue policy.database.filegrowthvalue
-        $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
-        $exclude += $ExcludedDatabases
+        $ExcludedDatabases = Get-DbcConfigValue policy.database.filegrowthexcludedb
+        $ExcludedDatabases += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing datafile growth type on $psitem" {
                 It "Can't Connect to $Psitem" {
