@@ -424,7 +424,11 @@ function Get-AllInstanceInfo {
         'LocalWindowsGroup' {
             if ($There) {
                 try {
-                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object LoginType -eq WindowsGroup
+                    $ComputerName, $InstanceName = $Instance.Name.Split('\')
+                    if ($null -eq $InstanceName){
+                        $InstanceName = 'MSSQLSERVER'
+                    }
+                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object {$_.LoginType -eq 'WindowsGroup' -and $_.Name.Split('\') -eq $ComputerName}
                     if ($null -ne $logins) {
                         $LocalWindowsGroup = [pscustomobject] @{
                             Exist = $true
