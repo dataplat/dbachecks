@@ -996,9 +996,9 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing contained database auto close option on $psitem" {
-                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
-                    It "Database $($psitem.Name) should have auto close set to true on $($psitem.Parent.Name)" -Skip:$skip {
-                        $psitem.AutoClose | Should -BeTrue -Because "Contained Databases should have auto close set to true for CIS compliance"
+                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and $psItem.ContainmentType -ne $null -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
+                    It "Database $($psitem.Name) should have auto close set to false on $($psitem.Parent.Name)" -Skip:$skip {
+                        $psitem.AutoClose | Should -BeFalse -Because "Contained Databases should have auto close set to false for CIS compliance"
                     }
                 }
             }
