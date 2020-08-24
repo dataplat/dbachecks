@@ -254,6 +254,8 @@ Set-PSFConfig -Module dbachecks -Name skip.security.clrassembliessafe -Validatio
 Set-PSFConfig -Module dbachecks -Name skip.security.engineserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Engine account is a local administrator"
 Set-PSFConfig -Module dbachecks -Name skip.security.agentserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Agent account is a local administrator"
 Set-PSFConfig -Module dbachecks -Name skip.security.fulltextserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Full Text account is a local administrator"
+Set-PSFConfig -Module dbachecks -Name skip.security.querystoredisabled -Validation bool -Value $true -Initialize -Description "Skips the check for if Query Store is disabled"
+Set-PSFConfig -Module dbachecks -Name skip.security.querystoreenabled -Validation bool -Value $false -Initialize -Description "Skips the check for if Query Store is enabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelfailed -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelsuccessful -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records successful and failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.localwindowsgroup -Validation bool -Value $true -Initialize -Description "Skips the scan for if local windows groups have SQL Logins"
