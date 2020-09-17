@@ -697,7 +697,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Checking that encryption certificates have not expired on $psitem" {
-                @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object { $_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude) }).ForEach{
+                @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database -ExcludeDatabase $exclude | Where-Object { $_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude) }).ForEach{
                     It "Database $($psitem.Database) certificate $($psitem.Name) has not expired on $($psitem.SqlInstance)" {
                         $psitem.ExpirationDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime() -Because "this certificate should not be expired"
                     }
@@ -1051,7 +1051,7 @@ $ExcludedDatabases += $ExcludeDatabase
     }
     Describe "AsymmetricKeySize" -Tags AsymmetricKeySize, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.asymmetrickeysize
-        $ExcludedDatabases += "master", "tempdb", "msdb"
+        $ExcludedDatabases = $ExcludedDatabases + "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -1072,7 +1072,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "SymmetricKeyEncryptionLevel" -Tags SymmetricKeyEncryptionLevel, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.symmetrickeyencryptionlevel
-        $ExcludedDatabases += "master", "tempdb", "msdb"
+        $ExcludedDatabases = $ExcludedDatabases + "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
