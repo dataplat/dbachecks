@@ -1,4 +1,5 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 
+<#
 Install-Module PlatyPs -Scope CurrentUser -Force
 Import-Module PlatyPs
 
@@ -42,6 +43,7 @@ try {
 catch {
     Write-Error "Failed to Install dbatools $($_)"
 }
+#>
 
 # Add current folder to PSModulePath
 try {
