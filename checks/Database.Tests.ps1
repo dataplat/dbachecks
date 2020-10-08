@@ -285,7 +285,8 @@ $ExcludedDatabases += $ExcludeDatabase
     }
 
     Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
-        $Excludeddbs = $ExcludedDatabases + 'msdb'
+        $Excludeddbs = Get-DbcConfigValue policy.database.duplicateindexexcludedb
+        $Excludeddbs += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing duplicate indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -1041,9 +1042,9 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing Guest user has CONNECT permission on $psitem" {
-                @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
-                    It "Database Guest user should return no CONNECT permissions in $($psitem.Name) on $Instance" -Skip:$skip {
-                        Assert-GuestUserConnect -Instance $instance -Database $($psitem.Name)
+				@(Get-Database -Instance $Instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $ExcludedDatabases).ForEach{
+                    It "Database Guest user should return no CONNECT permissions in $psitem on $Instance" -Skip:$skip {
+                        Assert-GuestUserConnect -Instance $instance -Database $psitem
                     }
                 }
             }
