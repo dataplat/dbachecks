@@ -1,3 +1,9 @@
+## Date September 22nd 2020
+
+Only Importing Pester v4 and lower to reduce Pester v5 errors
+
+##Latest
+
 ## Date July 13th 2020
 
 Thank you jpomfret Added skip.backup.readonly config  #777
@@ -5,8 +11,6 @@ Thank you jpomfret typos  #771
 Thank you jpomfret Added MSDB suspect pages table check  #768
 Thank you markaugust Added instance name to Agent Service ACcount checks #766
 Thank you tboggiano fixed Agent Run time calculation #746
-
-##Latest
 
 ## Date 9th May 2020
 

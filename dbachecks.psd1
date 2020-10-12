@@ -51,7 +51,6 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
-        @{ ModuleName = 'Pester'; ModuleVersion = '4.9.0' },
         @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.103' }
         @{ ModuleName = 'PSFramework'; ModuleVersion = '1.1.59' }
     )
@@ -137,13 +136,9 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date July 13th 2020
+## Date September 22nd 2020
 
-Thank you jpomfret Added skip.backup.readonly config  #777
-Thank you jpomfret typos  #771
-Thank you jpomfret Added MSDB suspect pages table check  #768
-Thank you markaugust Added instance name to Agent Service ACcount checks #766
-Thank you tboggiano fixed Agent Run time calculation #746
+Only Importing Pester v4 and lower to reduce Pester v5 errors
 
 ##Latest
 
