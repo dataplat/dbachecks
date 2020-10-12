@@ -1029,7 +1029,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Guest User" -Tags GuestUserConnect, Security, CIS, Medium, $filename {
         $exclude = "master", "tempdb", "msdb"
-        $ExcludedDatabases += $exclude
+        $ExcludedDatabases = $ExcludedDatabases + $exclude
         $skip = Get-DbcConfigValue skip.security.guestuserconnect
 
         if ($NotContactable -contains $psitem) {
@@ -1052,7 +1052,7 @@ $ExcludedDatabases += $ExcludeDatabase
     }
     Describe "AsymmetricKeySize" -Tags AsymmetricKeySize, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.asymmetrickeysize
-        $ExcludedDatabases += "master", "tempdb", "msdb"
+        $ExcludedDatabases = $ExcludedDatabases + "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -1073,7 +1073,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "SymmetricKeyEncryptionLevel" -Tags SymmetricKeyEncryptionLevel, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.symmetrickeyencryptionlevel
-        $ExcludedDatabases += "master", "tempdb", "msdb"
+        $ExcludedDatabases = $ExcludedDatabases + "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
