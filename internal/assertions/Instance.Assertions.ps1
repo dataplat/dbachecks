@@ -925,7 +925,7 @@ function Assert-NotTraceFlag {
     )
 
     if ($null -eq $NotExpectedTraceFlag) {
-        ((Get-DbaTraceFlag -SqlInstance $SQLInstance).Where{ $_.TraceFlag -notin $ExpectedTraceFlag} | Select-Object).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
+        (@(Get-DbaTraceFlag -SqlInstance $SQLInstance).Where{ $_.TraceFlag -notin $ExpectedTraceFlag} | Select-Object).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
     else {
         @($NotExpectedTraceFlag).ForEach{
