@@ -39,6 +39,7 @@ Set-PSFConfig -Module dbachecks -Name app.cluster -Value $null -Initialize -Desc
 #instance
 Set-PSFConfig -Module dbachecks -Name policy.instance.sqlenginestart -Value 'Automatic' -Initialize -Description "The expected start type of the SQL Engine Service - Automatic, Manual, Disabled - Defaults to Automatic"
 Set-PSFConfig -Module dbachecks -Name policy.instance.sqlenginestate -Value 'Running' -Initialize -Description "The expected state of the SQL Engine Service - Running, Stopped - Defaults to Running"
+Set-PSFConfig -Module dbachecks -Name policy.instance.memorydumpsdaystocheck -Value $null -Initialize -Description "The number of days to go back and check for memory dumps"
 
 #Storage
 Set-PSFConfig -Module dbachecks -Name policy.storage.backuppath -Value $null -Initialize -Description "Enables tests to check if servers have access to centralized backup location"
