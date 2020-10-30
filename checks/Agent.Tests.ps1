@@ -135,7 +135,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         Context "Testing database mail profile is set on $psitem" {
                             $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
                             It "The Database Mail profile $databasemailprofile exists on $psitem" {
-                                (Get-DbaDbMailProfile -SqlInstance $InstanceSMO).Name | Should -Be $databasemailprofile -Because 'The database mail profile is required to send emails'
+                                ((Get-DbaDbMailProfile -SqlInstance $InstanceSMO).Name -contains $databasemailprofile) | Should -Be $true -Because 'The database mail profile is required to send emails'
                             }
                         }
                     }
