@@ -704,6 +704,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "Error Log Entries" -Tags ErrorLog, Medium, $filename {
+        $logwindow = Get-DbcConfigValue policy.errorlog.warningwindow
         if ($NotContactable -contains $psitem) {
             Context "Checking error log on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -713,7 +714,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking error log on $psitem" {
-                It "Error log should be free of error severities 17-24 on $psitem" {
+                It "Error log should be free of error severities 17-24 within the window of $logwindow days on $psitem" {
                     Assert-ErrorLogEntry -AllInstanceInfo $AllInstanceInfo
                 }
             }
