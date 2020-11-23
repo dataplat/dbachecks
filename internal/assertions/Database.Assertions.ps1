@@ -77,7 +77,7 @@ function Assert-GuestUserConnect {
         [string]$Instance,
         [string]$Database
     )
-    $guestperms = Get-DbaUserPermission -SqlInstance $Instance -Database $psitem.Name | Where-Object {$_.Grantee -eq "guest" -and $_.Permission -eq "CONNECT"}
+    $guestperms = Get-DbaUserPermission -SqlInstance $Instance -Database $Database | Where-Object {$_.Grantee -eq "guest" -and $_.Permission -eq "CONNECT"}
     $guestperms.Count | Should -Be 0 -Because "We expect the guest user in $Database on $Instance to not have CONNECT permissions"
 }
 

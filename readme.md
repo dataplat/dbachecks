@@ -59,8 +59,14 @@ Want to know how our CD process works? Read this [blog post](https://sqldbawitha
 When you install from the Gallery, it'll auto-install:
 
 * dbatools
-* Pester
 * PSFramework
+
+You will also need to manually install the Pester module at version 4.10.0, this is due to inconsistencies between dbachecks and Pester v5.  If you have Pester v5 installed it is recommended to remove this and use Pester 4.10.0 or force an import of 4.10.0 when running dbachecks
+
+````
+Install-Module Pester -SkipPublisherCheck -Force -RequiredVersion 4.10.0
+Import-Module Pester -Force -RequiredVersion 4.10.0
+````
 
 When you import, it'll auto-import
 
@@ -75,8 +81,8 @@ If you have already installed the module and you update it, you may be required 
 Then you need to
 
 ````
-Install-Module Pester -SkipPublisherCheck -Force
-Import-Module Pester -Force
+Install-Module Pester -SkipPublisherCheck -Force -RequiredVersion 4.10.0
+Import-Module Pester -Force -RequiredVersion 4.10.0
 ````
 
 You may need to do the same thing for the PSFramework or dbatools modules also
