@@ -150,6 +150,7 @@ Set-PSFConfig -Module dbachecks -Name policy.database.status.excludeoffline -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -Value @() -Initialize -Description "Database names that we expect to be restoring"
 Set-PSFConfig -Module dbachecks -Name database.querystoreenabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store enabled"
 Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store disabled"
+Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
 Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb','ReportServer','ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
 
 # Policy for Ola Hallengren Maintenance Solution

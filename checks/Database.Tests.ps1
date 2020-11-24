@@ -809,6 +809,8 @@ $ExcludedDatabases += $ExcludeDatabase
     }
 
     Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, CIS, $filename {
+        $exclude = Get-DbcConfigValue policy.database.trustworthyexcludedb
+        $exclude += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing database trustworthy option on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -818,7 +820,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing database trustworthy option on $psitem" {
-                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
+                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and ($(if ($Database) { $PsItem.Name -in $Database }else { $exclude -notcontains $PsItem.Name })) }).ForEach{
                     It "Database $($psitem.Name) should have Trustworthy set to false on $($psitem.Parent.Name)" {
                         $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
                     }
