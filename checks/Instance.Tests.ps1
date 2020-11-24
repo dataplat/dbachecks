@@ -883,6 +883,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
     Describe "Scan For Startup Procedures" -Tags ScanForStartupProceduresDisabled, Security, CIS, Medium, $filename {
         $skip = Get-DbcConfigValue skip.instance.scanforstartupproceduresdisabled
+        $ScanForStartupProcsDisabled = Get-DbcConfigValue policy.security.scanforstartupproceduresdisabled
         if ($NotContactable -contains $psitem) {
             Context "Testing Scan For Startup Procedures on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
@@ -892,8 +893,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Scan For Startup Procedures on $psitem" {
-                It "Scan For Startup Procedures should be disabled on $psitem" -Skip:$skip {
-                    Assert-ScanForStartupProcedures -AllInstanceInfo $AllInstanceInfo
+                It "Scan For Startup Procedures is set to $ScanForStartupProcsDisabled on $psitem" -Skip:$skip {
+                    Assert-ScanForStartupProcedures -AllInstanceInfo $AllInstanceInfo -ScanForStartupProcsDisabled $ScanForStartupProcsDisabled
                 }
             }
         }

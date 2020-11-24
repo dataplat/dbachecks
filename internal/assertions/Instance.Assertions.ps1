@@ -834,8 +834,8 @@ function Assert-OleAutomationProcedures {
 function Assert-ScanForStartupProcedures {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
     [CmdletBinding()]
-    param ($AllInstanceInfo)
-    $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
+    param ($AllInstanceInfo, $ScanForStartupProcsDisabled)
+    ($AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue -eq 0)  | Should -Be $ScanForStartupProcsDisabled -Because "We expected the scan for startup procedures to be configured correctly"
 }
 function Assert-MaxDump {
     Param($AllInstanceInfo, $maxdumps)
