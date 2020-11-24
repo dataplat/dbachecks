@@ -336,6 +336,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
         WHERE start_execution_date is not null
         AND stop_execution_date is null
         AND run_duration < 235959
+        AND run_duration >= 0
         AND ja.start_execution_date > DATEADD(day,-1,GETDATE())
         GROUP BY j.name,j.job_id,start_execution_date,stop_execution_date,ja.job_id
         ) AS t
@@ -405,6 +406,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         FROM msdb.dbo.sysjobhistory hist
                         WHERE msdb.dbo.agent_datetime(run_date, run_time) > DATEADD(DAY,- $maxdays,GETDATE())
                         AND Step_id = 0
+                        AND run_duration >= 0
                         GROUP BY job_id
                         ) as art
 
