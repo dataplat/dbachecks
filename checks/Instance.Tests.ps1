@@ -98,7 +98,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
-            $IsClustered = $Psitem.IsClustered
+            $IsClustered = $InstanceSMO.IsClustered
             Context "Testing SQL Engine Service on $psitem" {
                 if ( -not $IsLInux) {
                     @(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
@@ -359,7 +359,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
-                It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" -Skip:($InstanceSMO.Version.Major -lt 10 ) {
+                It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" -Skip:($InstanceSMO.Version.Major -lt 11 -and (-not ($InstanceSMO.Version.Major -eq 10 -and $InstanceSMO.Version.Minor -eq 50)) ) {
                     Assert-MaxDump -AllInstanceInfo $AllInstanceInfo -maxdumps $maxdumps
                 }
             }
@@ -796,6 +796,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
     Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag, Medium, $filename {
         $NotExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.notexpected
+        $ExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.expected
         if ($NotContactable -contains $psitem) {
             Context "Testing Not Expected Trace Flags on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -806,7 +807,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Not Expected Trace Flags on $psitem" {
                 It "Expected Trace Flags $NotExpectedTraceFlags to not exist on $psitem" {
-                    Assert-NotTraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags
+                    Assert-NotTraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags -ExpectedTraceFlag $ExpectedTraceFlags
                 }
             }
         }
@@ -882,6 +883,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
     Describe "Scan For Startup Procedures" -Tags ScanForStartupProceduresDisabled, Security, CIS, Medium, $filename {
         $skip = Get-DbcConfigValue skip.instance.scanforstartupproceduresdisabled
+        $ScanForStartupProcsDisabled = Get-DbcConfigValue policy.security.scanforstartupproceduresdisabled
         if ($NotContactable -contains $psitem) {
             Context "Testing Scan For Startup Procedures on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
@@ -891,8 +893,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Scan For Startup Procedures on $psitem" {
-                It "Scan For Startup Procedures should be disabled on $psitem" -Skip:$skip {
-                    Assert-ScanForStartupProcedures -AllInstanceInfo $AllInstanceInfo
+                It "Scan For Startup Procedures is set to $ScanForStartupProcsDisabled on $psitem" -Skip:$skip {
+                    Assert-ScanForStartupProcedures -AllInstanceInfo $AllInstanceInfo -ScanForStartupProcsDisabled $ScanForStartupProcsDisabled
                 }
             }
         }

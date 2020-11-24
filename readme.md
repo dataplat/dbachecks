@@ -1,6 +1,6 @@
 # dbachecks
 
-<img align="left" src="https://user-images.githubusercontent.com/8278033/34322840-ed09114e-e832-11e7-9670-9baa686ade71.png">  
+<img align="left" src="https://user-images.githubusercontent.com/8278033/34322840-ed09114e-e832-11e7-9670-9baa686ade71.png">
 
 dbachecks is a framework created by and for SQL Server pros who need to validate their environments. Basically, we all share similar checklists and mostly just the server names and RPO/RTO/etc change.
 
@@ -13,15 +13,15 @@ This open source module allows us to crowd-source our checklists using [Pester](
 * Disk space is not about to run out
 * All enabled jobs have succeeded
 
-## Interactive dbachecks PowerShell Notebooks for Azure Data Studio 
+## Interactive dbachecks PowerShell Notebooks for Azure Data Studio
 
-You can find a set of interactive PowerShell Notebooks which will introduce you to all of the core concepts in Robs GitHub. There is a set of .NET interactive Jupyter Notebooks 
+You can find a set of interactive PowerShell Notebooks which will introduce you to all of the core concepts in Robs GitHub. There is a set of .NET interactive Jupyter Notebooks
 
 https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/master/notebooks/dotNETNotebooks/dbachecks
 
 and a set of Jupyter Notebooks that will run in Azure Data Studio
 
-https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/master/notebooks/NotDotNet/dbachecks  
+https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/master/notebooks/NotDotNet/dbachecks
 
 Both will use a docker container to show you how dbachecks works.
 
@@ -47,7 +47,7 @@ Have questions about development? Please visit our [Wiki](https://github.com/sql
           <td>Master Branch Release - Release to PowerShell Gallery <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases" target="_blank">Click Here</a></td>
     </tr>
   </tbody>
-</table> 
+</table>
 
 Want to know how our CD process works? Read this [blog post](https://sqldbawithabeard.com/2018/05/01/version-update-code-signing-and-publishing-to-the-powershell-gallery-with-vsts/) and see how the team manage it
 
@@ -59,8 +59,14 @@ Want to know how our CD process works? Read this [blog post](https://sqldbawitha
 When you install from the Gallery, it'll auto-install:
 
 * dbatools
-* Pester
 * PSFramework
+
+You will also need to manually install the Pester module at version 4.10.0, this is due to inconsistencies between dbachecks and Pester v5.  If you have Pester v5 installed it is recommended to remove this and use Pester 4.10.0 or force an import of 4.10.0 when running dbachecks
+
+````
+Install-Module Pester -SkipPublisherCheck -Force -RequiredVersion 4.10.0
+Import-Module Pester -Force -RequiredVersion 4.10.0
+````
 
 When you import, it'll auto-import
 
@@ -68,15 +74,15 @@ When you import, it'll auto-import
 * Pester
 * PSFramework
 
-If you have already installed the module and you update it, you may be required to update the Pester or the PSFramework modules before it will import. If you see a message like 
+If you have already installed the module and you update it, you may be required to update the Pester or the PSFramework modules before it will import. If you see a message like
 
 ![error](https://user-images.githubusercontent.com/6729780/35032185-dfe988a2-fb5d-11e7-83e3-6a41a9c89b81.png)
 
-Then you need to 
+Then you need to
 
 ````
-Install-Module Pester -SkipPublisherCheck -Force
-Import-Module Pester -Force
+Install-Module Pester -SkipPublisherCheck -Force -RequiredVersion 4.10.0
+Import-Module Pester -Force -RequiredVersion 4.10.0
 ````
 
 You may need to do the same thing for the PSFramework or dbatools modules also
@@ -172,7 +178,7 @@ The above report uses `Update-DbcPowerBiDataSource`'s `-Environment` parameter.
 
 ```powershell
 # Run checks and export its JSON
-Invoke-DbcCheck -SqlInstance $prod -Checks LastBackup -Show Summary -PassThru | 
+Invoke-DbcCheck -SqlInstance $prod -Checks LastBackup -Show Summary -PassThru |
 Update-DbcPowerBiDataSource -Environment Prod
 ```
 
@@ -276,7 +282,7 @@ Read more about dbachecks from a number of our original contributors!
 * [dbachecks commands by Chrissy LeMaire](https://dbachecks.io/commands)
 * [dbachecks – Using Power BI dashboards to analyse results by Cláudio Silva](http://claudioessilva.eu/2018/02/22/dbachecks-using-power-bi-dashboards-to-analyse-results/)
 * [My wrapper for dbachecks by Tony Wilhelm](https://v-roddba.blogspot.com/2018/02/wrapper-for-dbachecks.html)
-* [Checking backups with dbachecks by Jess Promfret](http://jesspomfret.com/checking-backups-with-dbachecks/)
+* [Checking backups with dbachecks by Jess Pomfret](http://jesspomfret.com/checking-backups-with-dbachecks/)
 * [dbachecks please! by Garry Bargsley](https://garrybargsley.com/2018/02/22/dbachecks-please/)
 * [dbachecks – Configuration Deep Dive by Rob Sewell](https://sqldbawithabeard.com/2018/02/22/dbachecks-configuration-deep-dive/)
 * [Test Log Shipping with dbachecks by Sander Stad](https://www.sqlstad.nl/powershell/test-log-shipping-with-dbachecks/)
