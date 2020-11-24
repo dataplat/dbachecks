@@ -793,7 +793,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing datafile growth type on $psitem" {
-                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $excluded -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
+                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $exclude -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
                     $Files = Get-DbaDbFile -SqlInstance $InstanceSMO -Database $psitem.Name
                     @($Files).ForEach{
                         if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
