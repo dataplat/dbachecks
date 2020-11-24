@@ -363,6 +363,13 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Database Growth Event" -Tags DatabaseGrowthEvent, Low, $filename {
         $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
+        $daystocheck = Get-DbcConfigValue policy.database.filegrowthdaystocheck
+        if ($null -eq $daystocheck) {
+            $datetocheckfrom = '0001-01-01'
+        }
+        else {
+            $datetocheckfrom = (Get-Date).ToUniversalTime().AddDays( - $daystocheck)
+        }
         if ($NotContactable -contains $psitem) {
             Context "Testing database growth event on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -373,7 +380,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing database growth event on $psitem" {
                 $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name) }) }.ForEach{
-                    $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
+                    $results = @(Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name).Where{ $_.StartTime -gt $datetocheckfrom }
                     It "Database $($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                         @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
                     }
@@ -786,7 +793,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing datafile growth type on $psitem" {
-                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
+                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $excluded -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
                     $Files = Get-DbaDbFile -SqlInstance $InstanceSMO -Database $psitem.Name
                     @($Files).ForEach{
                         if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
