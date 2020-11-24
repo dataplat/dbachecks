@@ -17,7 +17,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
             if ($null -eq $InstanceSMO.version) {
                 $NotContactable += $Instance
             }
-            elseif (($connectioncheck).Edition -like "Express Edition*") { }
+            elseif (($InstanceSMO).Edition -like "Express Edition*") { }
             else {
                 Describe "Database Mail XPs" -Tags DatabaseMailEnabled, CIS, security, $filename {
                     $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
@@ -54,7 +54,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                                     It "SQL Agent should be running for $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                         $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
                                     }
-                                    if ($connectioncheck.IsClustered) {
+                                    if ($InstanceSMO.IsClustered) {
                                         It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                             $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
                                         }
