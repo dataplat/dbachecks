@@ -1,12 +1,48 @@
+## Date November 23rd 2020
+
+Finally Rob gets around to working on PRs - Really sorry it has taken so long
+
+Fixes for bug 780 & 783 #784 - Thank you @TheAntGreen
+Fix local windows groups, additional filter needed on the object filter #789 - Thank you @TheAntGreen
+$null check for anything running SQL2008R2 or below as containment doesnt exist in those versions. #790 - Thank you @TheAntGreen
+
+Fix for IsClustered checks for service startup types #792  - Thank you @TheAntGreen
+
+CertCheck took ages to run, was still checking excluded DB's then filtering, change to not query the excluded DBs #793  - Thank you @TheAntGreen
+
+Fixed few typos in docs #799 - Thank you @jpomfret
+
+Fixed few typos in docs #799 - Thank you @TheAntGreen
+
+DuplicateIndex Check - Added new configuration option to allow people to filter out databases, as SSRS DB's have duplicate indexes and names are configuration in older versions, defaults to ReportServer & ReportServerTempDB
+
+GuestUserConnect - Changes method to Get-Database instead of InstanceSMO so its easier to filter out none accessable databases as the check would report false positives for offline or restoring databases
+
+NotExpectedTraceFlag - added a filter to filter out any trace flags which WHERE expected to prevent false positive alerts #801 - Thank you @TheAntGreen
+
+Add policy to exclude databases on the trustworthy check #806  - Thank you @TheAntGreen
+
+Unused Index Check wasn't executing correctly #808   - Thank you @TheAntGreen
+
+#803 Addition of the date filter for File Autogrowth detection #809   - Thank you @TheAntGreen
+
+New Check - Agent Mail Profile #811   - Thank you @TheAntGreen
+
+Scan for startup procs, use config option to override the value in use #813  - Thank you @TheAntGreen
+
+##Latest
+
+## Date September 22nd 2020
+
+Only Importing Pester v4 and lower to reduce Pester v5 errors
+
 ## Date July 13th 2020
 
 Thank you jpomfret Added skip.backup.readonly config  #777
 Thank you jpomfret typos  #771
 Thank you jpomfret Added MSDB suspect pages table check  #768
-Thank you markaugust Added instance name to Agent Service Account checks #766
+Thank you markaugust Added instance name to Agent Service ACcount checks #766
 Thank you tboggiano fixed Agent Run time calculation #746
-
-##Latest
 
 ## Date 9th May 2020
 
@@ -74,7 +110,7 @@ Thank you Rob
     Getting service accounts tests to pass if no service
     Made long running jobs check work as expected
     Improved Database Mail check
-    Made sure disk allocations don't run on Core
+    Made sure disk allocations dont run on Core
 
 Thank you mikedavem
     Fixed bug in disk allocation check exclusions
@@ -115,7 +151,7 @@ Thank you Rob
 
 ## Date 26th November
 Thank you Tracey @tboggiano
-    Added new CIS Check for OLE Automation Procedures to be disabled #707
+    Added new CIS Check for OLE AUtomation Procedures to be disabled #707
     Moving the Cross DB Ownership Chaining check into the AllInstance check to help speed up checks #708
 Thank you Rob
     Fixing the Tags so that they are picked up by AllInstanceInfo Fixes #715
@@ -199,7 +235,7 @@ Some internal testing changes
 Thank you Chrissy! @cl
 added default environment #596
 altered configuration validation for mail to stop errors
-Ensured database status check doesn't fail as readonly for snapshots
+Ensured database status check doesnt fail as readonly for snapshots
 
 ## Date 31/01/2019
 Thank you Chrissy!
@@ -312,7 +348,7 @@ Fixed PSv4 support for importing the module also
 
 Added check for Database Exists - Thanks @sqldbawithbeard
 Added excluded databases config to each Database Check and wrote Pester Test for that #506
-Added msdb to exclusion for duplicate index #506
+Added msdb to exclusion fro duplicate index #506
 Fixed offline install bug #484
 
 ## Date 30/07/2018
