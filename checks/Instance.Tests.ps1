@@ -98,7 +98,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
-            $IsClustered = $Psitem.IsClustered
+            $IsClustered = $InstanceSMO.IsClustered
             Context "Testing SQL Engine Service on $psitem" {
                 if ( -not $IsLInux) {
                     @(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
@@ -796,6 +796,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
     Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag, Medium, $filename {
         $NotExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.notexpected
+        $ExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.expected
         if ($NotContactable -contains $psitem) {
             Context "Testing Not Expected Trace Flags on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -806,7 +807,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Not Expected Trace Flags on $psitem" {
                 It "Expected Trace Flags $NotExpectedTraceFlags to not exist on $psitem" {
-                    Assert-NotTraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags
+                    Assert-NotTraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags -ExpectedTraceFlag $ExpectedTraceFlags
                 }
             }
         }

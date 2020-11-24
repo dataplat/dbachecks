@@ -424,7 +424,11 @@ function Get-AllInstanceInfo {
         'LocalWindowsGroup' {
             if ($There) {
                 try {
-                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object LoginType -eq WindowsGroup
+                    $ComputerName, $InstanceName = $Instance.Name.Split('\')
+                    if ($null -eq $InstanceName){
+                        $InstanceName = 'MSSQLSERVER'
+                    }
+                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object {$_.LoginType -eq 'WindowsGroup' -and $_.Name.Split('\') -eq $ComputerName}
                     if ($null -ne $logins) {
                         $LocalWindowsGroup = [pscustomobject] @{
                             Exist = $true
@@ -920,11 +924,12 @@ function Assert-TraceFlag {
 function Assert-NotTraceFlag {
     Param(
         [string]$SQLInstance,
-        [int[]]$NotExpectedTraceFlag
+        [int[]]$NotExpectedTraceFlag,
+        [int[]]$ExpectedTraceFlag
     )
 
     if ($null -eq $NotExpectedTraceFlag) {
-        (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
+        (@(Get-DbaTraceFlag -SqlInstance $SQLInstance).Where{ $_.TraceFlag -notin $ExpectedTraceFlag} | Select-Object).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
     else {
         @($NotExpectedTraceFlag).ForEach{
