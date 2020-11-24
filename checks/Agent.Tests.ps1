@@ -17,7 +17,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
             if ($null -eq $InstanceSMO.version) {
                 $NotContactable += $Instance
             }
-            elseif (($connectioncheck).Edition -like "Express Edition*") { }
+            elseif (($InstanceSMO).Edition -like "Express Edition*") { }
             else {
                 Describe "Database Mail XPs" -Tags DatabaseMailEnabled, CIS, security, $filename {
                     $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
@@ -54,7 +54,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                                     It "SQL Agent should be running for $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                         $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
                                     }
-                                    if ($connectioncheck.IsClustered) {
+                                    if ($InstanceSMO.IsClustered) {
                                         It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                             $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
                                         }
@@ -135,7 +135,25 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         Context "Testing database mail profile is set on $psitem" {
                             $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
                             It "The Database Mail profile $databasemailprofile exists on $psitem" {
-                                (Get-DbaDbMailProfile -SqlInstance $InstanceSMO).Name | Should -Be $databasemailprofile -Because 'The database mail profile is required to send emails'
+                                ((Get-DbaDbMailProfile -SqlInstance $InstanceSMO).Name -contains $databasemailprofile) | Should -Be $true -Because 'The database mail profile is required to send emails'
+                            }
+                        }
+                    }
+                }
+
+                Describe "Agent Mail Profile" -Tags AgentMailProfile, $filename {
+                    if ($NotContactable -contains $psitem) {
+                        Context "Testing SQL Agent Alert System database mail profile is set on $psitem" {
+                            It "Can't Connect to $Psitem" {
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                            }
+                        }
+                    }
+                    else {
+                        Context "Testing SQL Agent Alert System database mail profile is set on $psitem" {
+                            $agentmailprofile = Get-DbcConfigValue  agent.databasemailprofile
+                            It "The SQL Server Agent Alert System should have an enabled database mail profile on $psitem" {
+                                (Get-DbaAgentServer -SqlInstance $InstanceSMO).DatabaseMailProfile | Should -Be $agentmailprofile -Because 'The SQL Agent Alert System needs an enabled database mail profile to send alert emails'
                             }
                         }
                     }
