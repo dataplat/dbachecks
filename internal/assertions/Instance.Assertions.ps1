@@ -227,10 +227,17 @@ function Get-AllInstanceInfo {
         'MemoryDump' {
             if ($There) {
                 try {
+                    $daystocheck = Get-DbcConfigValue policy.instance.memorydumpsdaystocheck
+                    if ($null -eq $daystocheck) {
+                        $datetocheckfrom = '0001-01-01'
+                    }
+                    else {
+                        $datetocheckfrom = (Get-Date).ToUniversalTime().AddDays( - $daystocheck )
+                    }
                     $MaxDump = [pscustomobject] @{
                         # Warning Action removes dbatools output for version too low from test results
                         # Skip on the it will show in the results
-                        Count = (Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Count
+                        Count = (@(Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Where{ $_.CreationTime -gt $datetocheckfrom}).Count
                     }
                 }
                 catch {
