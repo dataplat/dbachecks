@@ -489,7 +489,8 @@ $ExcludedDatabases += $ExcludeDatabase
                 $InstanceSMO.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database } else { $ExcludedDatabases -notcontains $PsItem.Name }) }.ForEach{
                     if ($psitem.AvailabilityGroupName) {
                         $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
-                    } else {
+                    }
+                    else {
                         $agReplicaRole = $null
                     }
                     $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
@@ -520,7 +521,8 @@ $ExcludedDatabases += $ExcludeDatabase
                     @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
                         if ($psitem.AvailabilityGroupName) {
                             $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
-                        } else {
+                        }
+                        else {
                             $agReplicaRole = $null
                         }
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
@@ -551,7 +553,8 @@ $ExcludedDatabases += $ExcludeDatabase
                     if ($psitem.RecoveryModel -ne "Simple") {
                         if ($psitem.AvailabilityGroupName) {
                             $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
-                        } else {
+                        }
+                        else {
                             $agReplicaRole = $null
                         }
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
@@ -802,12 +805,12 @@ $ExcludedDatabases += $ExcludeDatabase
                             }
                             if ($datafilegrowthtype -eq "kb") {
                                 It "Database $($psitem.Database) datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                                    $psitem.Growth * 8 | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain file growth value"
+                                    $psitem.Growth * 8 | Should -BeGreaterOrEqual $datafilegrowthvalue  -Because "We expect a certain file growth value"
                                 }
                             }
                             else {
                                 It "Database $($psitem.Database) datafile $($psitem.LogicalName) on filegroup $($psitem.FileGroupName) should have Growth set equal or higher than $datafilegrowthvalue on $($psitem.SqlInstance)" {
-                                    $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -because "We expect a certain fFile growth value"
+                                    $psitem.Growth | Should -BeGreaterOrEqual $datafilegrowthvalue  -Because "We expect a certain fFile growth value"
                                 }
                             }
                         }
@@ -1053,7 +1056,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing Guest user has CONNECT permission on $psitem" {
-				@(Get-Database -Instance $Instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $ExcludedDatabases).ForEach{
+                @(Get-Database -Instance $Instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $ExcludedDatabases).ForEach{
                     It "Database Guest user should return no CONNECT permissions in $psitem on $Instance" -Skip:$skip {
                         Assert-GuestUserConnect -Instance $instance -Database $psitem
                     }
@@ -1123,7 +1126,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
-    Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
+    Describe "Query Store Config" -Tags QueryStoreConfigured, Medium, $filename {
         $QSExcludedDatabases = Get-DbcConfigValue database.querystoreenabled.excludedb
         $exclude = "master", "tempdb" , "msdb"
         $ExcludedDatabases += $exclude
@@ -1138,10 +1141,15 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             $instance = $Psitem
-            Context "Testing to see if Query Store is enabled on $psitem" {
-                @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $QSExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
-                    It "Database $($psitem.Name) should have Query Store enabled on $Instance" -Skip:($version -lt 13 ) {
-                        Assert-QueryStoreEnabled -Instance $InstanceSMO -Database $($psitem.Name)
+            Context "Testing to see if Query Store is enabled and configure correctly on $psitem" {
+                @($InstanceSMO.Databases.Where{ $_.IsAccessible -eq $true }.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $QSExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
+                    $database = $psitem
+                    $results = Test-DbaDbQueryStore -SqlInstance $InstanceSMO -Database $database.Name
+
+                    $results.where{ $null -ne $psitem.Database }.foreach{
+                        It "$($database.Name) - $($psitem.Name) should be $($psitem.RecommendedValue)" {
+                            $psitem.Value | Should -Be $psitem.RecommendedValue -Because $psitem.Justification
+                        }
                     }
                 }
             }
@@ -1172,6 +1180,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 }
+
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
 
