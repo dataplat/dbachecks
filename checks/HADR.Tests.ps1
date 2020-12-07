@@ -163,7 +163,7 @@ foreach ($clustervm in $clusters) {
                     $StatusNetBIOS | Should -be 0 -Because "NetBIOS State should be healthy"
                 }
                 It "StatusDNS should be $clustAgStatusDNS for Resource $($PSItem.Name)" {
-                    $StatusDNS = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'StatusNetBIOS' }).Value
+                    $StatusDNS = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'StatusDNS' }).Value
                     $StatusDNS | Should -be 0 -Because "DNS State should be healthy"
                 }
                 It "StatusKerberos should be $clustAgStatusKerberos for Resource $($PSItem.Name)" {
@@ -173,13 +173,13 @@ foreach ($clustervm in $clusters) {
             }
         }
         Context "Cluster network for $clustername" {
-            It "At least 2 dedicated networks for the cluster should exist for $clustername" -Skip:$skipClusterNetInterface {
+            It "At least 2 dedicated networks for the cluster should exist for cluster $clustername" -Skip:$skipClusterNetInterface {
                 $return.Network.count | Should -BeGreaterOrEqual 2 -Because "To prevent heartbeat traffic to be overwhelmed by the public workload"
             }
-            It "One Cluster Network interface should be dedicated for cluster traffic for $clustername" -Skip:$skipClusterNetInterface {
+            It "One Cluster Network interface should be dedicated for cluster traffic for cluster $clustername" -Skip:$skipClusterNetInterface {
                 $return.network.Role | Should -Contain 'Cluster' -Because "Heartbeat traffic is sensitive to network latency and network interface should be dedicated for this specific usage"
             }
-            It "One Cluster Network interface should be dedicated for public traffic for $clustername" {
+            It "One Cluster Network interface should be dedicated for public traffic for cluster $clustername" {
                 $return.network.Role | Should -Contain 'ClusterAndClient' -Because "Public network is mandatory to handle public workload"
             }
 
@@ -198,17 +198,17 @@ foreach ($clustervm in $clusters) {
                         $netbindings.Count | Should -Be $clustPrivateNetworkProtocolsIPV4.Count -Because "Heartbeat traffic is sensitive to network latency and network protocols should be configured optimally"
                     }
                     $IpConfig = Get-NetIPConfiguration -CimSession $node.Name -InterfaceAlias $netinterface
-                    It "No default gateway should be configured for cluster network interface $($node.Name)" -Skip:$skipClusterNetInterface {
+                    It "No default gateway should be configured for cluster network interface - Node $($node.Name)" -Skip:$skipClusterNetInterface {
                         $IpConfig.IPv4DefaultGateway | Should -BeNullOrEmpty -Because "Heartbeat traffic should not be routable"
                     }
                     $IpDNS = Get-DnsClientServerAddress -CimSession $node.Name -InterfaceAlias $netinterface
-                    It "No DNS entries should be configured for cluster network interface $($node.Name)" -Skip:$skipClusterNetInterface {
+                    It "No DNS entries should be configured for cluster network interface - Node $($node.Name)" -Skip:$skipClusterNetInterface {
                         $IpDNS.ServerAddresses.Count | Should -Be 0 -Because "Heartbeat traffic doesn't use DNS resolution"
                     }
                     $DNSRegistration = Get-NetAdapter `
                                         -Name $netinterface `
                                         -CimSession $node.Name | Get-DNSClient
-                    It "DNS Registration should be disabled for cluster network interface $($node.Name)" -Skip:$skipClusterNetInterface {
+                    It "DNS Registration should be disabled for cluster network interface - Node $($node.Name)" -Skip:$skipClusterNetInterface {
                         $DNSRegistration.RegisterThisConnectionsAddress | Should -Be $false -Because "Heartbeat traffic doesn't use DNS resolution"
                     }
                     $AdapterNetBios = Get-CimInstance `
@@ -216,7 +216,7 @@ foreach ($clustervm in $clusters) {
                                         -CimSession $node.Name `
                                         -Filter "InterfaceIndex = $((Get-NetAdapter -CimSession $node.Name -Name $netinterface).ifIndex)"
 
-                    It "NetBios Over TCP/IP should be disabled for cluster network interface $($node.Name)" -Skip:$skipClusterNetInterface {
+                    It "NetBios Over TCP/IP should be disabled for cluster network interface - Node $($node.Name)" -Skip:$skipClusterNetInterface {
                         $Adapter.TcpipNetbiosOptions | Should -Be 2 -Because "Heartbeat traffic doesn't use NetBios resolution"
                     }
                 }
