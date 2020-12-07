@@ -315,8 +315,6 @@ foreach ($clustervm in $clusters) {
                         $replica.SessionTimeout | Should -BeIn $hadrSessionTimeout -Because "$hadrSessionTimeout is what we expect the session time value to be"
                     }
 
-                    # Test configuration endpoint
-                    # additional cluster config settings - dba
                     $resultshadrendpoint = Get-DbaEndpoint -SqlInstance $results.SqlInstance -Endpoint $hadrEndPointName
                     It "Replica $($results.SqlInstance) HADR endpoint name should be $hadrEndPointName" {
                         $resultshadrendpoint.Name | Should -BeIn $hadrEndPointName -Because "$hadrEndPointName is what we expect the compliant name to be"
