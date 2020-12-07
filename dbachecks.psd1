@@ -11,7 +11,7 @@
     RootModule             = 'dbachecks.psm1'
 
     # Version number of this module.
-    ModuleVersion          = '1.2.24'
+    ModuleVersion          = '2.0.8'
 
     # ID used to uniquely identify this module
     GUID                   = '578c5d98-50c8-43a8-bdbb-d7159028d7ac'
@@ -23,16 +23,16 @@
     CompanyName            = 'SQL Community Collaborative'
 
     # Copyright statement for this module
-    Copyright              = '(c) 2018. All rights reserved.'
+    Copyright              = '(c) 2020. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description            = 'SQL Server Infrastructure validation Tests to ensure that your SQL Server estate is and continues to be compliant with your requirements'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion      = '5.0'
+    PowerShellVersion      = '5.1'
 
     # Supported PSEditions
-    # CompatiblePSEditions = 'Desktop', 'Core' # Cant pu thtis in until a decision is made to make minimum version 5.1 :-(
+    CompatiblePSEditions = 'Desktop', 'Core' # Cant put this in until a decision is made to make minimum version 5.1 :-(
 
     # Name of the Windows PowerShell host required by this module
     PowerShellHostName     = ''
@@ -51,9 +51,8 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules        = @(
-        @{ ModuleName = 'Pester'; ModuleVersion = '4.7.1' },
-        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.23' }
-        @{ ModuleName = 'PSFramework'; ModuleVersion = '1.0.0' }
+        @{ ModuleName = 'dbatools'; ModuleVersion = '1.0.103' }
+        @{ ModuleName = 'PSFramework'; ModuleVersion = '1.1.59' }
     )
 
     # Assemblies that must be loaded prior to importing this module
@@ -89,10 +88,12 @@
         'Update-DbcPowerBiDataSource',
         'Get-DbcTagCollection',
         'Get-DbcCheck',
-        # 'Send-DbcMailMessage',
         'Clear-DbcPowerBiDataSource',
         'Save-DbcRequiredModules',
-        'Update-DbcRequiredModules'
+        'Update-DbcRequiredModules',
+        'Set-DbcFile',
+        'Convert-DbcResult',
+        'Write-DbcTable'
     )
 
     # Cmdlets to export from this module
@@ -103,7 +104,7 @@
 
     # Aliases to export from this module
     # Aliases are stored in dbachecks.psm1
-    AliasesToExport        = 'Update-Dbchecks'
+    AliasesToExport        = 'Update-Dbachecks'
 
     # List of all modules packaged with this module
     ModuleList             = @()
@@ -134,17 +135,37 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## Date 8th January 2020
-Thank you Tracey tboggiano
-    New CIS Check Guest Account connect permissions #725
-    New CIS Check BuiltIn Admins login #726
-    New CIS Check public role permissions #729
-    New CIS Check local windows groups do not have logins #731
-    Update sa login check #730
+## Date November 23rd 2020
 
-Thank you Rob
-    Added Tag parameter to Get-DbcCheck
-    Updated tests to work with PowerShell 7
+Finally Rob gets around to working on PRs - Really sorry it has taken so long
+
+Fixes for bug 780 & 783 #784 - Thank you @TheAntGreen
+Fix local windows groups, additional filter needed on the object filter #789 - Thank you @TheAntGreen
+null check for anything running SQL2008R2 or below as containment doesnt exist in those versions. #790 - Thank you @TheAntGreen
+
+Fix for IsClustered checks for service startup types #792  - Thank you @TheAntGreen
+
+CertCheck took ages to run, was still checking excluded DB's then filtering, change to not query the excluded DBs #793  - Thank you @TheAntGreen
+
+Fixed few typos in docs #799 - Thank you @jpomfret
+
+Fixed few typos in docs #799 - Thank you @TheAntGreen
+
+DuplicateIndex Check - Added new configuration option to allow people to filter out databases, as SSRS DB's have duplicate indexes and names are configuration in older versions, defaults to ReportServer & ReportServerTempDB
+
+GuestUserConnect - Changes method to Get-Database instead of InstanceSMO so its easier to filter out none accessable databases as the check would report false positives for offline or restoring databases
+
+NotExpectedTraceFlag - added a filter to filter out any trace flags which WHERE expected to prevent false positive alerts #801 - Thank you @TheAntGreen
+
+Add policy to exclude databases on the trustworthy check #806  - Thank you @TheAntGreen
+
+Unused Index Check wasn't executing correctly #808   - Thank you @TheAntGreen
+
+#803 Addition of the date filter for File Autogrowth detection #809   - Thank you @TheAntGreen
+
+New Check - Agent Mail Profile #811   - Thank you @TheAntGreen
+
+Scan for startup procs, use config option to override the value in use #813  - Thank you @TheAntGreen
 
 ##Latest
 

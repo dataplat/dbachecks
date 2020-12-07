@@ -21,7 +21,7 @@ Return
         Context "Testing SPNs on $psitem" {
             $computername = $psitem
             @($AllServerInfo.SPNs).ForEach{
-                It "$computername should have a SPN $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount)" {
+                It "There should be an SPN $($psitem.RequiredSPN) for $($psitem.InstanceServiceAccount) on $computername" {
                     Assert-SPN -SPN $psitem
                 }
             }
@@ -63,16 +63,37 @@ Return
     }
 
     Describe "Disk Allocation Unit" -Tags DiskAllocationUnit, Medium, $filename {
-        Context "Testing disk allocation unit on $psitem" {
-            $computerName = $psitem
-            $excludedisks = Get-DbcConfigValue policy.server.excludeDiskAllocationUnit
-            @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
-                if($Psitem.Name -in $excludedisks){
-                    $exclude = $true
+        if($IsCoreCLR){
+            Context "Testing disk allocation unit on $psitem" {
+                It "Can't run this check on Core on $psitem" -Skip {
+                    $true | Should -BeTrue
                 }
-                It "$($Psitem.Name) Should be set to 64kb on $computerName" -Skip:$exclude {
-                    Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
+            }
+        }
+        else {
+            Context "Testing disk allocation unit on $psitem" {
+                $computerName = $psitem
+                $excludedisks = Get-DbcConfigValue policy.server.excludeDiskAllocationUnit
+                @($AllServerInfo.DiskAllocation).Where{$psitem.IsSqlDisk -eq $true}.ForEach{
+                    if($Psitem.Name -in $excludedisks){
+                        $exclude = $true
+                    }
+                    else {
+                        $exclude = $false
+                    }
+                    It "$($Psitem.Name) Should be set to 64kb on $computerName" -Skip:$exclude {
+                        Assert-DiskAllocationUnit -DiskAllocationObject $Psitem
+                    }
                 }
+            }
+        }
+    }
+
+    Describe "Non Standard Port" -Tags NonStandardPort, Medium, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.nonstandardport
+        Context "Checking SQL Server ports on $psitem" {
+            It  "No SQL Server Instances should be configured with port 1433 on $psitem" -skip:$skip {
+                Assert-NonStandardPort -AllServerInfo $AllServerInfo
             }
         }
     }

@@ -10,22 +10,23 @@ jobs:
 
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Install and run Pester annoyingly on Windows PowerShell https://github.com/pester/Pester/issues/1295
-      run: |
-        $manifest = Import-PowershellDataFile -Path .\dbachecks.psd1
-        $PesterVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'Pester'}.ModuleVersion
-        $PSFrameworkVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'PSFramework'}.ModuleVersion
-        $dbatoolsVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'dbatools'}.ModuleVersion
-
-        Install-Module Pester  -RequiredVersion $PesterVersion  -Force
-        Install-Module dbatools  -RequiredVersion $dbatoolsVersion  -Force
-        Install-Module PSFramework  -RequiredVersion $PsFrameworkVersion  -Force
-
-        Import-Module .\dbachecks.psd1
-        $PesterResults = Invoke-Pester .\tests -ExcludeTag Integration -Show Fails -PassThru
-        If($PesterResults.FailedCount -ne 0){
-          Write-Warning "Some Tests Failed - See results above"
-          [System.Environment]::Exit(1)
-        }
+    - name: Checkout code Install and run Pester annoyingly on Windows PowerShell https://github.com/pester/Pester/issues/1295
+      uses: actions/checkout@v2.1.0
+    
+    - run: |
+          pwd
+          $manifest = Import-PowershellDataFile -Path .\dbachecks.psd1
+          $PSFrameworkVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'PSFramework'}.ModuleVersion
+          $dbatoolsVersion = $manifest.RequiredModules.Where{$_.ModuleName -eq 'dbatools'}.ModuleVersion
+  
+          Install-Module Pester  -RequiredVersion 4.10.0 -Force
+          Install-Module dbatools  -RequiredVersion $dbatoolsVersion  -Force
+          Install-Module PSFramework  -RequiredVersion $PsFrameworkVersion  -Force
+  
+          Import-Module .\dbachecks.psd1 -Verbose
+          $PesterResults = Invoke-Pester .\tests -ExcludeTag Integration -Show Fails -PassThru
+          If($PesterResults.FailedCount -ne 0){
+            Write-Warning "Some Tests Failed - See results above"
+            [System.Environment]::Exit(1)
+          }
       shell: powershell
