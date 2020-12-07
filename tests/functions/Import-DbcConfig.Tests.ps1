@@ -1,7 +1,7 @@
 ﻿$commandname = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . "$PSScriptRoot\..\constants.ps1"
 
-Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
+Describe "$commandname Unit Tests" -Tags UnitTest {
     Context "Command executes properly and returns proper info" {
         BeforeAll {
             Export-DbcConfig *>$null

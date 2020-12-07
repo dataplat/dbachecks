@@ -104,26 +104,37 @@ function Set-DbcConfig {
             Set-PSFConfig -Module dbachecks -Name $name -Value $NewValue
         }
         try {
-            if (-not $Temporary) { Register-PSFConfig -FullName dbachecks.$name -EnableException -WarningAction SilentlyContinue }
+            if (-not $Temporary) {
+                if ($PSCmdlet.ShouldProcess("$name" , "Registering PSFConfig ")) {
+                    Register-PSFConfig -FullName dbachecks.$name -EnableException -WarningAction SilentlyContinue
+                }
+            }
         }
         catch {
-            Set-PSFConfig -Module dbachecks -Name $name -Value ($Value -join ", ")
-            if (-not $Temporary) { Register-PSFConfig -FullName dbachecks.$name }
+            if ($PSCmdlet.ShouldProcess("$Value" , "Setting PSFConfig $name ")) {
+                Set-PSFConfig -Module dbachecks -Name $name -Value ($Value -join ", ")
+            }
+            if (-not $Temporary) {
+                if ($PSCmdlet.ShouldProcess("$name" , "Registering PSFConfig ")) {
+                    Register-PSFConfig -FullName dbachecks.$name
+                }
+            }
         }
 
         # Still unsure if I'll persist it here - wondering if this impacts global or keeps local
         if ($name -eq 'app.sqlcredential') {
-            Set-Variable -Scope 1 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $value }
+            if ($PSCmdlet.ShouldProcess("Variable" , "Setting PSDefaultParameterValues ")) {
+                Set-Variable -Scope 1 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $value }
+            }
         }
-
         Get-DbcConfig -Name $name
     }
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUaCKdcG7UQHPL7M6/qdZ62Gmm
-# UAOgggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUB+pGjuwY8gjEzNBHHh7Zv2+O
+# uD6gggpSMIIFGjCCBAKgAwIBAgIQAsF1KHTVwoQxhSrYoGRpyjANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE3MDUwOTAwMDAwMFoXDTIwMDUx
@@ -183,11 +194,11 @@ function Set-DbcConfig {
 # EyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhACwXUo
 # dNXChDGFKtigZGnKMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgACh
 # AoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAM
-# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRoMLgmtXFiIl5jPzWOPtHyo7pc
-# KzANBgkqhkiG9w0BAQEFAASCAQAwOIvlwtQgtEcX84baSNg5lHj8qKj4Cdv323sM
-# FxVefPurC//aA2wG8FqtQf0Fq7Mdl1aF94atr/r3USNQYYBeHOWOAZBPgM+FxZn7
-# tjLxVN/jkBlynmM9FE/qKxQpyZW4a5BH5rsnbckw4HWgdSwXHuIzGdkH8bX0MxNA
-# 4/+JLhvLgDUZdh3MBOM5YgxPkRpRlhUWuY6o/alV0G4qX8+aX+M2fwLSfFtWhHiq
-# pdbp1srCgJwhop9/AgnVCrimk8xIiHlzhzriWP2qb8kSEWyr/n539eytLswHPM0m
-# Ailh8vkTmk6hVQwhDkXHesAPJg0gmDY0OK7AHLrE+cTX5HNT
+# BgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQrYn6ZWaQ47KzOQwtdMBx2rmr2
+# yzANBgkqhkiG9w0BAQEFAASCAQB4dlpQQs9z3Ts6k+zq/8jqs0Yd4LC2sqL3qoXF
+# bC5QbO5/yWN26ooPc1BCUbcrQZ0a9zz4NQDTEUzZsiqfJg1nh+rx/F1ElntfHIxy
+# yM2qeXl9zp89O6+/G4DwdFDK0xqj0NK1HBNbKlVWrPG52xlhPu8T/pmstk+H12Cb
+# UiyX/lnihNFctVVzk7d8Exy+k9NCI3zAgTd6Pnq0BHgz3TwaO4JmJi8LYJfxJxRZ
+# K6ARTFi8hqG6QRUAdfvBDabGzIdeGcs7OxDEMVZzGdtIxic7XUts9zCjcSRi5cjF
+# 7+H8HT8EBEwSuD8eka7wslOaYof8cv8KqN8mRMIWw5INikfl
 # SIG # End signature block

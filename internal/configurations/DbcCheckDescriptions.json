@@ -36,6 +36,10 @@
         "Description": "Tests that there are 0 Suspect Pages for the database"
     },
     {
+        "UniqueTag": "SuspectPageLimit",
+        "Description": "Tests that the suspect_pages table in msdb is not nearing the limit of 1000 rows"
+    },
+    {
         "UniqueTag": "TestLastBackup",
         "Description": "Restores the last backup of a database onto a specified (default blank so will use the same instance) restore instance and checks if the DBCC result was successful as well as the DBCC result. This can obviously take some time for large databases!"
     },
@@ -507,6 +511,18 @@
         "Description": "Tests to see if the BUILTIN\\Administrator login exist."
     },
     {
+        "UniqueTag": "QueryStoreEnabled",
+        "Description": "Tests to see Query Store is enabled on each database except those specified."
+    },
+    {
+        "UniqueTag": "QueryStoreDisabled",
+        "Description": "Tests to see Query Store is disabled on each database except those specified."
+    },
+    {
+        "UniqueTag": "ContainedDBSQLAuth",
+        "Description": "Tests to see a contained database contains sql authenticated users."
+    },
+    {
         "UniqueTag": "LoginCheckPolicy",
         "Description": "Tests to see if CHECK_POLICY property is set for all logins."
     },
@@ -517,5 +533,13 @@
     {
         "UniqueTag": "LoginMustChange",
         "Description": "Tests to see if password must change is enabled for new logins."
+    },
+    {
+        "UniqueTag": "NonStandardPort",
+        "Description": "Tests to see if the SQL Server Instances are NOT running on the default port of 1433."
+    },
+    {
+        "UniqueTag": "AgentMailProfile",
+        "Description": "Tests to see if the SQL Server Agent Alert System has an enabled database mail profile."
     }
 ]

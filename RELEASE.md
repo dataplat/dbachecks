@@ -1,3 +1,106 @@
+## Date November 23rd 2020
+
+Finally Rob gets around to working on PRs - Really sorry it has taken so long
+
+Fixes for bug 780 & 783 #784 - Thank you @TheAntGreen
+Fix local windows groups, additional filter needed on the object filter #789 - Thank you @TheAntGreen
+$null check for anything running SQL2008R2 or below as containment doesnt exist in those versions. #790 - Thank you @TheAntGreen
+
+Fix for IsClustered checks for service startup types #792  - Thank you @TheAntGreen
+
+CertCheck took ages to run, was still checking excluded DB's then filtering, change to not query the excluded DBs #793  - Thank you @TheAntGreen
+
+Fixed few typos in docs #799 - Thank you @jpomfret
+
+Fixed few typos in docs #799 - Thank you @TheAntGreen
+
+DuplicateIndex Check - Added new configuration option to allow people to filter out databases, as SSRS DB's have duplicate indexes and names are configuration in older versions, defaults to ReportServer & ReportServerTempDB
+
+GuestUserConnect - Changes method to Get-Database instead of InstanceSMO so its easier to filter out none accessable databases as the check would report false positives for offline or restoring databases
+
+NotExpectedTraceFlag - added a filter to filter out any trace flags which WHERE expected to prevent false positive alerts #801 - Thank you @TheAntGreen
+
+Add policy to exclude databases on the trustworthy check #806  - Thank you @TheAntGreen
+
+Unused Index Check wasn't executing correctly #808   - Thank you @TheAntGreen
+
+#803 Addition of the date filter for File Autogrowth detection #809   - Thank you @TheAntGreen
+
+New Check - Agent Mail Profile #811   - Thank you @TheAntGreen
+
+Scan for startup procs, use config option to override the value in use #813  - Thank you @TheAntGreen
+
+##Latest
+
+## Date September 22nd 2020
+
+Only Importing Pester v4 and lower to reduce Pester v5 errors
+
+## Date July 13th 2020
+
+Thank you jpomfret Added skip.backup.readonly config  #777
+Thank you jpomfret typos  #771
+Thank you jpomfret Added MSDB suspect pages table check  #768
+Thank you markaugust Added instance name to Agent Service ACcount checks #766
+Thank you tboggiano fixed Agent Run time calculation #746
+
+## Date 9th May 2020
+
+UPDATED TO VERSION 2
+
+New Commands
+
+    Convert-DbcResult - To parse results and add Label, ComputerName, Instance and Database
+    Set-DbcFile - To save the parsed results to a file json, csv or xml
+    Write-DbcTable - to add results to a database
+
+New Parameter
+    -FromDatabase on Star-DbcPowerBi - to open new Power Bi template file
+
+New PowerBi template file for reporting on results from the database
+
+Improved Spelling
+
+Updated Unit Tests for Checks to enabled results to be parsed
+
+Improved Check Titles
+
+Configuration for Max history days for Job duration
+
+Stop trying to check inaccessible databases for checks
+
+Improved Query Store checks
+
+Ensure long running agent jobs ignores durations longer than 24 hours
+
+Ignore jobs that never stop from the duration check
+
+##Latest
+
+## Date 29th March 2020
+
+UPDATED MINIMUM POWERSHELL VERSION
+
+Updated Required versions of Pester, dbatools and PSFramework modules
+
+Thank you @dstrait
+    Fix variable for SaDisabled check #750
+    Fix errant braces in SQL Browser Service Check #751
+    Fix PingComputer Check #752
+
+Thank you markaugust
+    Fix to ensure AG Name is in HADR checks #755
+
+Thank you Tracey Boggiano
+    Added Contained Database auth check and Query Store Enabled Checks #756
+
+Thank you Rob
+    Added exclude database config for Query store checks
+    Version check for Query Store Checks
+    Some spellings!
+
+##Latest
+
 ## Date 18th March 2020
 Thank you Tracey tboggiano
     New CIS user-defined CLRs to be set to SAFE_ACCESS #734
@@ -13,8 +116,6 @@ Thank you mikedavem
     Fixed bug in disk allocation check exclusions
     Added multiple ags to the HADR check #742
 
-##Latest
-
 ## Date 14th March 2020
 Thank you Tracey tboggiano
     New CIS Check Hide Instance #728
@@ -28,7 +129,7 @@ Thank you Tracey tboggiano
     New CIS Check public role permissions #729
     New CIS Check local windows groups do not have logins #731
     Update sa login check #730
-    
+
 Thank you Rob
     Added Tag parameter to Get-DbcCheck
     Updated tests to work with PowerShell 7
@@ -37,14 +138,14 @@ Thank you Rob
 Thank you Tracey tboggiano
     Two New CIS Checks Contained databases should be auto-closed #721
     sa login disabled and should not exist #719
-    
+
 Thank you Rob
     Fix bug in Agent Tests #723
 
 ## Date 28th November
 Thank you Tracey tboggiano
     Added new CIS Check for the latest SQL build #716
-    
+
 Thank you Rob
     Making the SQL Engine Service Check configurable #706
 
@@ -70,14 +171,14 @@ Thank you Rob
 Fixed some merge issues with a load of code :-(
 Created GitHub Action to run Pester Checks on PR
 Thank you @TracyBoggiano
-Added New Checks 
+Added New Checks
     RemoteAccessDisabled
     ScanForStartUpProcedures
 Thank you Gareth Newman
     Improved wording in tests #700 , #697
     Fix incorrect calculation in last agent run time #696 #698
 Fixed bug in AllInstanceInfo
-Thank you Richard Imenes 
+Thank you Richard Imenes
     Fixed dead links in readme #702
 Thank you Benjamin Schenk
     Fixed Send-MailMessage in readme #705
@@ -136,16 +237,16 @@ added default environment #596
 altered configuration validation for mail to stop errors
 Ensured database status check doesnt fail as readonly for snapshots
 
-## Date 31/01/2019 
+## Date 31/01/2019
 Thank you Chrissy!
 add support for inline config file, fixes #501 #594
 
-## Date 29/01/2019 
+## Date 29/01/2019
 Added skip for authentication scheme #587
 Added WhatIf to Update-DbcPowerBiDataSource Thank you @shaneis #590
-$null to the left Thank you @jwmoss #588 
+$null to the left Thank you @jwmoss #588
 
-## Date 19/01/2019 
+## Date 19/01/2019
 Thank you Claudio
 Added extra check for Job History Settings #582
 Added extra check for Error Log Count #583
@@ -154,13 +255,13 @@ Added integration test code and docker compose file
 ##Latest
 
 ## Date 22/11/2018
-Spelling - Thanks RonaldHensbergen 
+Spelling - Thanks RonaldHensbergen
 Fix for #576 When calling just Invoke-DbcCheck without a Check it fails to run the Server Tests correctly
 
 
 ## Date 12/11/2018
 Added more information to the output - thanks @ClaudioESSilva
-Spelling - Thanks ChrisTuckerNM 
+Spelling - Thanks ChrisTuckerNM
 Fix for #564 - Error Importing DbcConfig in PowerShell 4 - Thanks @niphod
 
 ## Date 29/10/2018
@@ -196,18 +297,18 @@ Renamed all dbatools commands to new naming convention
 Fixed Bug with JSON file naming
 Improved Server Checks to remove Red and improve speed for none contactable servers
 Altered all server checks to use assertions and added pester Tests
-Removed left over ogv entry 
+Removed left over ogv entry
 
 ## Date 05/09/2018
 New Check for 2 digit cut off thanks @CláudioESSilva
 https://claudioessilva.eu/2018/09/04/dont-cutoff-yourself-when-dealing-with-dates-in-t-sql-did-you-know/
 Fixed bug with adding NoneContactable Instances to variable
-Improved error handling for HADR checks 
+Improved error handling for HADR checks
 
 ## Date 28/08/2018
 Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
 Ensured the Database parameter checks only the specified Databases - Thank you @jpomfret
-Updated Set-DbcConifg to allow Append to append arrays to arrays closes #535
+Updated Set-DbcConfig to allow Append to append arrays to arrays closes #535
 Altered json filename creation to avoid max characters error
 Altered PowerBi to display information correctly with filename changes
 
@@ -229,7 +330,7 @@ Improved performance of the ErrorLog checks
 Removed Send-DbcSendMailMessage until it can be re-coded
 
 ## Date 13/08/2018
-Fixed #504 by enabling FileName parameter on Update-PowerBiDataSouce
+Fixed #504 by enabling FileName parameter on Update-PowerBiDataSource
 Added in new function to begin to reduce the number of calls to each instance
 Reduced required Pester version to 4.3.1
 Further PowerShell V4 improvements
@@ -239,7 +340,7 @@ Added New Check for tempdb data file sizes to be the same - Thank you @garethnew
 Altered Services Check so that clustered instances start mode is checked correctly thank you @kylejdoyle #516
 Skip PowerPlan test if no connection thanks @cl #490
 Fixed bug with XESession and PSv4 thank you @kylejdoyle #517
-Error silently on failing Service check (thanks Rob ;-) ) 
+Error silently on failing Service check (thanks Rob ;-) )
 Fixed dbatools command names
 Fixed PSv4 support for importing the module also
 

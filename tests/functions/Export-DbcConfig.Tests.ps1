@@ -3,7 +3,7 @@ Remove-Module dbachecks -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\dbachecks.psd1"
 . "$PSScriptRoot\..\constants.ps1"
 
-Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
+Describe "$commandname Unit Tests" -Tags "IntegrationTests" {
     Context "Command executes properly and returns proper info" {
         BeforeAll {
             Remove-Item "$script:localapp\config.json" -ErrorAction SilentlyContinue

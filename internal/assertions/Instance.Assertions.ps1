@@ -227,10 +227,17 @@ function Get-AllInstanceInfo {
         'MemoryDump' {
             if ($There) {
                 try {
+                    $daystocheck = Get-DbcConfigValue policy.instance.memorydumpsdaystocheck
+                    if ($null -eq $daystocheck) {
+                        $datetocheckfrom = '0001-01-01'
+                    }
+                    else {
+                        $datetocheckfrom = (Get-Date).ToUniversalTime().AddDays( - $daystocheck )
+                    }
                     $MaxDump = [pscustomobject] @{
                         # Warning Action removes dbatools output for version too low from test results
                         # Skip on the it will show in the results
-                        Count = (Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Count
+                        Count = (@(Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Where{ $_.CreationTime -gt $datetocheckfrom}).Count
                     }
                 }
                 catch {
@@ -297,7 +304,7 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     #This needs to be done in query just in case the account had already been renamed
-                    $login = Get-DbaLogin -SqlInstance $server | Where-Object Id -eq 1
+                    $login = Get-DbaLogin -SqlInstance $Instance | Where-Object Id -eq 1
                     $SaDisabled = [pscustomobject] @{
                         Disabled = $login.IsDisabled
                     }
@@ -424,7 +431,11 @@ function Get-AllInstanceInfo {
         'LocalWindowsGroup' {
             if ($There) {
                 try {
-                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object LoginType -eq WindowsGroup
+                    $ComputerName, $InstanceName = $Instance.Name.Split('\')
+                    if ($null -eq $InstanceName){
+                        $InstanceName = 'MSSQLSERVER'
+                    }
+                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object {$_.LoginType -eq 'WindowsGroup' -and $_.Name.Split('\') -eq $ComputerName}
                     if ($null -ne $logins) {
                         $LocalWindowsGroup = [pscustomobject] @{
                             Exist = $true
@@ -823,8 +834,8 @@ function Assert-OleAutomationProcedures {
 function Assert-ScanForStartupProcedures {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
     [CmdletBinding()]
-    param ($AllInstanceInfo)
-    $AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue | Should -Be 0 -Because "We expected the scan for startup procedures to be disabled"
+    param ($AllInstanceInfo, $ScanForStartupProcsDisabled)
+    ($AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue -eq 0)  | Should -Be $ScanForStartupProcsDisabled -Because "We expected the scan for startup procedures to be configured correctly"
 }
 function Assert-MaxDump {
     Param($AllInstanceInfo, $maxdumps)
@@ -873,14 +884,14 @@ function Assert-InstanceSupportedBuild {
     )
     #If $BuildBehind check against SP/CU parameter to determine validity of the build
     if ($BuildBehind) {
-        $results = Test-DbaBuild -SqlInstance $Instance -MaxBehind $BuildBehind
+        $results = Test-DbaBuild -SqlInstance $Instance -SqlCredential $sqlcredential -MaxBehind $BuildBehind
         $Compliant = $results.Compliant
         $Build = $results.build
         $Compliant | Should -Be $true -Because "this build $Build should not be behind the required build"
         #If no $BuildBehind only check against support dates
     }
     else {
-        $Results = Test-DbaBuild -SqlInstance $Instance -Latest
+        $Results = Test-DbaBuild -SqlInstance $Instance -SqlCredential $sqlcredential -Latest
         [DateTime]$SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $Build = $results.build
         #If $BuildWarning, check for support date within the warning window
@@ -920,11 +931,12 @@ function Assert-TraceFlag {
 function Assert-NotTraceFlag {
     Param(
         [string]$SQLInstance,
-        [int[]]$NotExpectedTraceFlag
+        [int[]]$NotExpectedTraceFlag,
+        [int[]]$ExpectedTraceFlag
     )
 
     if ($null -eq $NotExpectedTraceFlag) {
-        (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
+        (@(Get-DbaTraceFlag -SqlInstance $SQLInstance).Where{ $_.TraceFlag -notin $ExpectedTraceFlag} | Select-Object).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
     else {
         @($NotExpectedTraceFlag).ForEach{
