@@ -167,7 +167,7 @@ foreach ($clustervm in $clusters) {
                     $StatusDNS | Should -be 0 -Because "DNS State should be healthy"
                 }
                 It "StatusKerberos for Resource $($PSItem.Name) should be $clustAgStatusKerberos" {
-                    $StatusKerberos = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'StatusNetBIOS' }).Value
+                    $StatusKerberos = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'StatusKerberos' }).Value
                     $StatusKerberos | Should -be 0 -Because "Kerberos State should be healthy"
                 }
             }
