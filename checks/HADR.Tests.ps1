@@ -87,25 +87,26 @@ else {
 
 # Grab some values
 $clusters = Get-DbcConfigValue app.cluster
-$skipclusterNetInterface = Get-DbcConfigValue skip.cluster.netclusterinterface
-$skipaglistenerping = Get-DbcConfigValue skip.hadr.listener.pingcheck
-$skipaglistenertcpport = Get-DbcConfigValue skip.hadr.listener.tcpport
-$skipreplicatcpport = Get-DbcConfigValue skip.hadr.replica.tcpport
-$domainname = Get-DbcConfigValue domain.name
-$agtcpport = Get-DbcConfigValue policy.hadr.agtcpport
-$sqltcpport = Get-DbcConfigValue policy.hadr.tcpport
+$skipClusterNetInterface = Get-DbcConfigValue skip.cluster.netclusterinterface
+$skipAgListenerPing = Get-DbcConfigValue skip.hadr.listener.pingcheck
+$skipAgListenerTcpPort = Get-DbcConfigValue skip.hadr.listener.tcpport
+$skipReplicaTcpPort = Get-DbcConfigValue skip.hadr.replica.tcpport
+$domainName = Get-DbcConfigValue domain.name
+$agTcpPort = Get-DbcConfigValue policy.hadr.agtcpport
+$sqlTcpPort = Get-DbcConfigValue policy.hadr.tcpport
 
-# New hadr endpoint config parameters -dba
-$HadrEndPointName = Get-DbcConfigValue policy.hadr.endpointname
-$HadrEndPointPort = Get-DbcConfigValue policy.hadr.endpointport
-$HadrSessionTimeout = Get-DbcConfigValue policy.hadr.sessiontimeout
+# hadr endpoint config parameters
+$hadrEndPointName = Get-DbcConfigValue policy.hadr.endpointname
+$hadrEndPointPort = Get-DbcConfigValue policy.hadr.endpointport
+$hadrSessionTimeout = Get-DbcConfigValue policy.hadr.sessiontimeout
 
-# New cluster config parameters - dba
-$ClustAGResFailureConditionLevel = Get-DbcConfigValue policy.hadr.failureconditionlevel
-$ClustAGResHealthCheckTimeout = Get-DbcConfigValue policy.hadr.healthchecktimeout
-$ClustAGResLeaseTimeout = Get-DbcConfigValue policy.hadr.leasetimeout
-$PrivateNetworkProtocolsIPV4 = Get-DbcConfigValue policy.cluster.NetworkProtocolsIPV4
-
+# cluster config parameters
+$clustAgResFailureConditionLevel = Get-DbcConfigValue policy.hadr.failureconditionlevel
+$clustAgResHealthCheckTimeout = Get-DbcConfigValue policy.hadr.healthchecktimeout
+$clustAgResLeaseTimeout = Get-DbcConfigValue policy.hadr.leasetimeout
+$clustPrivateNetworkProtocolsIPV4 = Get-DbcConfigValue policy.cluster.NetworkProtocolsIPV4
+$clustAgReshostRecordTTL = Get-DbcConfigValue policy.cluster.hostrecordttl
+$clustAgResRegisterAllProvidersIP = Get-DbcConfigValue policy.cluster.registerallprovidersIP
 
 #Check for Cluster config value
 if ($clusters.Count -eq 0) {
@@ -147,21 +148,41 @@ foreach ($clustervm in $clusters) {
                     $psitem.Group.Where{ $_.State -eq 'Online' }.Count | Should -Be 1 -Because "There should be one IP Address online for Availability Group $($PSItem.Name)"
                 }
             }
+
+            $return.Resources.Where{ $_.ResourceType -eq 'Network Name' -and $_.OwnerGroup -in $return.AGs }.ForEach{
+                It "HostRecordTTL for Resource $($PSItem.Name) should be $clustAgReshostRecordTTL"  {
+                    $hostRecordTTL = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'HostRecordTTL' }).Value
+                    $hostRecordTTL | Should -be $clustAgReshostRecordTTL -Because "$clustAgReshostRecordTTL is what we expect to be for hostRecordTTL"
+                }
+                It "RegisterAllProvidersIP for Resource $($PSItem.Name) should be $clustAgResRegisterAllProvidersIP" {
+                    $RegisterAllProvidersIP = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'RegisterAllProvidersIP' }).Value
+                    $RegisterAllProvidersIP | Should -be $clustAgResRegisterAllProvidersIP -Because "$clustAgResRegisterAllProvidersIP is what we expect to be for RegisterAllProvidersIP"
+                }
+                It "StatusNetBIOS for Resource $($PSItem.Name) should be $clustAgResStatusNetBIOS" {
+                    $StatusNetBIOS = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'StatusNetBIOS' }).Value
+                    $StatusNetBIOS | Should -be 0 -Because "NetBIOS State should be healthy"
+                }
+                It "StatusDNS for Resource $($PSItem.Name) should be $clustAgStatusDNS" {
+                    $StatusDNS = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'StatusNetBIOS' }).Value
+                    $StatusDNS | Should -be 0 -Because "DNS State should be healthy"
+                }
+                It "StatusKerberos for Resource $($PSItem.Name) should be $clustAgStatusKerberos" {
+                    $StatusKerberos = ($PSItem | Get-ClusterParameter | Where-Object { $_.Name -eq 'StatusNetBIOS' }).Value
+                    $StatusKerberos | Should -be 0 -Because "Kerberos State should be healthy"
+                }
+            }
         }
-        Context "Cluster networks for $clustername" {
-            # additional cluster config settings - dba
-            It "At least 2 dedicated networks for the cluster should exist" -Skip:$skipclusterNetInterface {
+        Context "Cluster network for $clustername" {
+            It "At least 2 dedicated networks for the cluster should exist" -Skip:$skipClusterNetInterface {
                 $return.Network.count | Should -BeGreaterOrEqual 2 -Because "To prevent heartbeat traffic to be overwhelmed by the public workload"
             }
-            # additional cluster config settings - dba
-            It "One Cluster Network interface should be dedicated for cluster traffic" -Skip:$skipclusterNetInterface {
+            It "One Cluster Network interface should be dedicated for cluster traffic" -Skip:$skipClusterNetInterface {
                 $return.network.Role | Should -Contain 'Cluster' -Because "Heartbeat traffic is sensitive to network latency and network interface should be dedicated for this specific usage"
             }
-            # additional cluster config settings - dba
             It "One Cluster Network interface should be dedicated for public traffic" {
                 $return.network.Role | Should -Contain 'ClusterAndClient' -Because "Public network is mandatory to handle public workload"
             }
-            # additional cluster config settings - dba
+
             $ClusterNetwork = $return.Network | Where-Object { $_.Role -eq 'Cluster' }
             Foreach ($node in $return.Nodes){
 
@@ -173,34 +194,29 @@ foreach ($clustervm in $clusters) {
                     $netbindings = Get-NetAdapter -Name $netinterface -CimSession $node.Name | `
                                     Get-NetAdapterBinding | `
                                     Where-Object { $_.Enabled -eq $true }
-                    # additional cluster network config settings - dba
-                    It "Only required network protocols should be configured for IPV4 cluster interface on node $($node.Name)" -Skip:$skipclusterNetInterface {
-                        $netbindings.Count | Should -Be $PrivateNetworkProtocolsIPV4.Count -Because "Heartbeat traffic is sensitive to network latency and network protocols should be configured optimally"
+                    It "Only required network protocols should be configured for IPV4 cluster interface on node $($node.Name)" -Skip:$skipClusterNetInterface {
+                        $netbindings.Count | Should -Be $clustPrivateNetworkProtocolsIPV4.Count -Because "Heartbeat traffic is sensitive to network latency and network protocols should be configured optimally"
                     }
-                    # additional cluster network config settings - dba
                     $IpConfig = Get-NetIPConfiguration -CimSession $node.Name -InterfaceAlias $netinterface
-                    It "No default gateway should be configured for cluster network interface $($node.Name)" -Skip:$skipclusterNetInterface {
+                    It "No default gateway should be configured for cluster network interface $($node.Name)" -Skip:$skipClusterNetInterface {
                         $IpConfig.IPv4DefaultGateway | Should -BeNullOrEmpty -Because "Heartbeat traffic should not be routable"
                     }
-                    # additional cluster network config settings - dba
                     $IpDNS = Get-DnsClientServerAddress -CimSession $node.Name -InterfaceAlias $netinterface
-                    It "No DNS entries should be configured for cluster network interface $($node.Name)" -Skip:$skipclusterNetInterface {
+                    It "No DNS entries should be configured for cluster network interface $($node.Name)" -Skip:$skipClusterNetInterface {
                         $IpDNS.ServerAddresses.Count | Should -Be 0 -Because "Heartbeat traffic doesn't use DNS resolution"
                     }
-                    # additional cluster network config settings - dba
                     $DNSRegistration = Get-NetAdapter `
                                         -Name $netinterface `
                                         -CimSession $node.Name | Get-DNSClient
-                    It "DNS Registration should be disabled for cluster network interface $($node.Name)" -Skip:$skipclusterNetInterface {
+                    It "DNS Registration should be disabled for cluster network interface $($node.Name)" -Skip:$skipClusterNetInterface {
                         $DNSRegistration.RegisterThisConnectionsAddress | Should -Be $false -Because "Heartbeat traffic doesn't use DNS resolution"
                     }
-                    # additional cluster network config settings - dba
                     $AdapterNetBios = Get-CimInstance `
                                         -ClassName 'Win32_NetworkAdapterConfiguration' `
                                         -CimSession $node.Name `
                                         -Filter "InterfaceIndex = $((Get-NetAdapter -CimSession $node.Name -Name $netinterface).ifIndex)"
 
-                    It "NetBios Over TCP/IP should be disabled for cluster network interface $($node.Name)" -Skip:$skipclusterNetInterface {
+                    It "NetBios Over TCP/IP should be disabled for cluster network interface $($node.Name)" -Skip:$skipClusterNetInterface {
                         $Adapter.TcpipNetbiosOptions | Should -Be 2 -Because "Heartbeat traffic doesn't use NetBios resolution"
                     }
                 }
@@ -217,20 +233,17 @@ foreach ($clustervm in $clusters) {
 
         Context "Cluster Availability Group Resources for $clustername" {
             ForEach($AGRes in $AGResources){
-                # additional cluster resource config settings - dba
-                It "Failure Condition Level for AG Resource $($AGRes.Name) should be $ClustAGResFailureConditionLevel" {
+                It "Failure Condition Level for AG Resource $($AGRes.Name) should be $clustAgResFailureConditionLevel" {
                     $AGResourceResult = $AGRes | Get-ClusterParameter | Where-Object { $_.Name -eq 'FailureConditionLevel' }
-                    $AGResourceResult.Value | Should -Be $ClustAGResFailureConditionLevel -Because "$ClustAGResFailureConditionLevel is what we expect to be for Flexible automatic failover policy"
+                    $AGResourceResult.Value | Should -Be $clustAgResFailureConditionLevel -Because "$clustAgResFailureConditionLevel is what we expect to be for Flexible automatic failover policy"
                 }
-                # additional cluster resource config settings - dba
-                It "HealthCheck Timeout for AG Resource $($AGRes.Name) should be $ClustAGResHealthCheckTimeout" {
+                It "HealthCheck Timeout for AG Resource $($AGRes.Name) should be $clustAgResHealthCheckTimeout" {
                     $AGResourceResult = $AGRes | Get-ClusterParameter | Where-Object { $_.Name -eq 'HealthCheckTimeout' }
-                    $AGResourceResult.Value | Should -Be $ClustAGResHealthCheckTimeout -Because "$ClustAGResHealthCheckTimeout is what we expect to be for health check timeout"
+                    $AGResourceResult.Value | Should -Be $clustAgResHealthCheckTimeout -Because "$clustAgResHealthCheckTimeout is what we expect to be for health check timeout"
                 }
-                # additional cluster resource config settings - dba
-                It "Lease Timeout for AG Resource $($AGRes.Name) should be $ClustAGResLeaseTimeout" {
+                It "Lease Timeout for AG Resource $($AGRes.Name) should be $clustAgResLeaseTimeout" {
                     $AGResourceResult = $AGRes | Get-ClusterParameter | Where-Object { $_.Name -eq 'LeaseTimeout' }
-                    $AGResourceResult.Value | Should -Be $ClustAGResLeaseTimeout -Because "$ClustAGResLeaseTimeout is what we expect to be for lease timeout"
+                    $AGResourceResult.Value | Should -Be $clustAgResLeaseTimeout -Because "$clustAgResLeaseTimeout is what we expect to be for lease timeout"
                 }
             }
         }
@@ -265,14 +278,14 @@ foreach ($clustervm in $clusters) {
                         }
                     }
 
-                    It "Listener $($results.SqlInstance) should be pingable" -skip:$skipaglistenerping {
+                    It "Listener $($results.SqlInstance) should be pingable" -skip:$skipAgListenerPing {
                         $results.IsPingable | Should -BeTrue -Because 'The listeners should be pingable'
                     }
                     It "Listener $($results.SqlInstance) should be able to connect with SQL" {
                         $results.ConnectSuccess | Should -BeTrue -Because 'The listener should process SQL commands successfully'
                     }
-                    It "Listener $($results.SqlInstance) domain name should be $domainname" {
-                        $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
+                    It "Listener $($results.SqlInstance) domain name should be $domainName" {
+                        $results.DomainName | Should -Be $domainName -Because "$domainName is what we expect the domain name to be"
                     }
 
                 }
@@ -285,28 +298,28 @@ foreach ($clustervm in $clusters) {
                     It "Replica $($results.SqlInstance) should be able to connect with SQL" {
                         $results.ConnectSuccess | Should -BeTrue -Because 'Each replica should be able to process SQL commands'
                     }
-                    It "Replica $($results.SqlInstance) domain name should be $domainname" {
-                        $results.DomainName | Should -Be $domainname -Because "$domainname is what we expect the domain name to be"
+                    It "Replica $($results.SqlInstance) domain name should be $domainName" {
+                        $results.DomainName | Should -Be $domainName -Because "$domainName is what we expect the domain name to be"
                     }
 
                     # Consolidated environments with multi-instances / AG replicas
                     # In this case we cannot configure the same tcpport than those used for AG listeners
                     # TCP port conflict
                     # Adding exclusion for these scenarios
-                    It "Replica $($results.SqlInstance) TCP port should be in $tcpport" -Skip:$skipreplicatcpport {
-                        $results.TCPPort | Should -BeIn $sqltcpport -Because "We expect the TCP Port to be in $sqltcpport"
+                    It "Replica $($results.SqlInstance) TCP port should be in $tcpport" -Skip:$skipReplicaTcpPort {
+                        $results.TCPPort | Should -BeIn $sqlTcpPort -Because "We expect the TCP Port to be in $sqlTcpPort"
                     }
 
-                    It "Replica $($results.SqlInstance) Session timeout should be $HadrSessionTimeout" {
+                    It "Replica $($results.SqlInstance) Session timeout should be $hadrSessionTimeout" {
                         $replica = Get-DbaAgReplica -SqlInstance $PsItem.Name
-                        $replica.SessionTimeout | Should -BeIn $HadrSessionTimeout -Because "$HadrSessionTimeout is what we expect the session time value to be"
+                        $replica.SessionTimeout | Should -BeIn $hadrSessionTimeout -Because "$hadrSessionTimeout is what we expect the session time value to be"
                     }
 
                     # Test configuration endpoint
                     # additional cluster config settings - dba
-                    $resultshadrendpoint = Get-DbaEndpoint -SqlInstance $results.SqlInstance -Endpoint $HadrEndPointName
-                    It "Replica $($results.SqlInstance) HADR endpoint name should be $HadrEndPointName" {
-                        $resultshadrendpoint.Name | Should -BeIn $HadrEndPointName -Because "$HadrEndPointName is what we expect the compliant name to be"
+                    $resultshadrendpoint = Get-DbaEndpoint -SqlInstance $results.SqlInstance -Endpoint $hadrEndPointName
+                    It "Replica $($results.SqlInstance) HADR endpoint name should be $hadrEndPointName" {
+                        $resultshadrendpoint.Name | Should -BeIn $hadrEndPointName -Because "$hadrEndPointName is what we expect the compliant name to be"
                     }
 
                     It "Replica $($results.SqlInstance) Hadr TCP endpoint state should be Started" {

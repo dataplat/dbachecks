@@ -121,6 +121,8 @@ Set-PSFConfig -Module dbachecks -Name policy.hadr.healthchecktimeout -Value 3000
 Set-PSFConfig -Module dbachecks -Name policy.hadr.leasetimeout -Value 20000 -Initialize -Description "Availability Group Lease timeout for the HADR cluster check"
 Set-PSFConfig -Module dbachecks -Name policy.hadr.sessiontimeout -Value 10 -Initialize -Description "Availability Group Replica Session timeout for the HADR replica check"
 Set-PSFConfig -Module dbachecks -Name policy.cluster.NetworkProtocolsIPV4 -Value @('Internet Protocol Version 4 (TCP/IPv4)','Client for Microsoft Networks','File and Printer Sharing for Microsoft Networks') -Initialize -Description "Minimum Private Cluster Network protocols for the HADR Cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.cluster.hostrecordttl -Value 1200 -Initialize -Description "Cluster Network Resource - HostRecordTTL for the HADR Cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.cluster.registerallprovidersIP -Value 0 -Initialize -Description "Cluster Network Resource - RegisterAllProvidersIP for the HADR Cluster check"
 
 #Dump Files
 Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize -Description "Maximum number of expected dumps"
