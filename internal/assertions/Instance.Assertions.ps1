@@ -587,12 +587,12 @@ function Get-AllInstanceInfo {
                     }
                     catch [System.Exception] {
                         if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
-                            $FullTextServiceAdmin = [pscustomobject] @{
+                            $EngineServiceAdmin = [pscustomobject] @{
                                 Exist = $false
                             }
                         }
                         else {
-                            $FullTextServiceAdmin = [pscustomobject] @{
+                            $EngineServiceAdmin = [pscustomobject] @{
                                 Exist = 'Some sort of failure'
                             }
                         }
@@ -635,12 +635,12 @@ function Get-AllInstanceInfo {
                     }
                     catch [System.Exception] {
                         if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
-                            $FullTextServiceAdmin = [pscustomobject] @{
+                            $AgentServiceAdmin = [pscustomobject] @{
                                 Exist = $false
                             }
                         }
                         else {
-                            $FullTextServiceAdmin = [pscustomobject] @{
+                            $AgentServiceAdmin = [pscustomobject] @{
                                 Exist = 'Some sort of failure'
                             }
                         }
