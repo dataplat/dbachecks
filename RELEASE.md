@@ -1,3 +1,20 @@
+## December 14th 2020
+
+Thank you tboggiano Browser check altered for instance count #758
+Thank you zikato - Fixing datafile auto growth #786
+Thank you fatherjack Typos #767
+Thank you tboggiano Query Store enabled and disabled test improvements #791
+Thank you relsna fixed issue with error log window #814
+Thank you @TheAntGreen Typos #815
+Thank you @TheAntGreen Add additional filter to filter out negative run_durations #816
+Thank you @TheAntGreen Add policy for additional excluded dbs from the SAFE CLR check #817
+Thank you @MikeyBronowski Fix the check for enabled alerts #819
+Thank you @MikeyBronowski Updating the link in documentation #820
+Thank you @mikedavem Updated HADR checks with additional checks #822
+Thank you @mikedavem Database backup diff check - fix issue #812 #824
+
+##Latest
+
 ## Date November 23rd 2020
 
 Finally Rob gets around to working on PRs - Really sorry it has taken so long
