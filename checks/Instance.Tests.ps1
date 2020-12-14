@@ -1226,20 +1226,20 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, C
                     if (-not $IsLinux) {
                         $Services = Get-DbaService -ComputerName $psitem
                         if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                            It "SQL browser service should be Stopped as only one instance is installed on $psitem" {
+                            It "SQL Browser service should be Stopped as only one instance is installed on $psitem" {
                                 $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'Unless there are multiple instances you dont need the browser service'
                             }
                         }
                         else {
-                            It "SQL browser service should be Running as multiple instances are installed on $psitem" {
+                            It "SQL Browser service should be Running as multiple instances are installed on $psitem" {
                                 $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'You need the browser service with multiple instances' }
                         }
                         if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                            It "SQL browser service startmode should be Disabled as only one instance is installed on $psitem" {
+                            It "SQL Browser service startmode should be Disabled as only one instance is installed on $psitem" {
                                 $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multiple instances you dont need the browser service' }
                         }
                         else {
-                            It "SQL browser service startmode should be Automatic as multiple instances are installed on $psitem" {
+                            It "SQL Browser service startmode should be Automatic as multiple instances are installed on $psitem" {
                                 $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
                             }
                         }
