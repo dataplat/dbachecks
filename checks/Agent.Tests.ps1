@@ -241,7 +241,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                                     ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
                                 }
                                 It "Severity $sev Alert should be enabled on $psitem" -Skip:$skip {
-                                    ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Configured alerts should be enabled"
+                                    ($alerts.Where{ $psitem.Severity -eq $sev }).IsEnabled | Should -be $true -Because "Configured alerts should be enabled"
                                 }
                                 if ($AgentAlertJob) {
                                     It "A job name for Severity $sev Alert on $psitem" -Skip:$skip {
