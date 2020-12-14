@@ -41,12 +41,14 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyBackupNewdbgraceperiod <Object>] [-ConfigPolicyBackupTestserver <Object>]
  [-ConfigPolicyBuildBehind <Object>] [-ConfigPolicyBuildWarningwindow <Object>]
  [-ConfigPolicyCertificateexpirationExcludedb <Object>]
- [-ConfigPolicyCertificateexpirationWarningwindow <Object>] [-ConfigPolicyConnectionAuthscheme <Object>]
- [-ConfigPolicyConnectionPingcount <Object>] [-ConfigPolicyConnectionPingmaxms <Object>]
- [-ConfigPolicyDacallowed <Object>] [-ConfigPolicyDatabaseAutoclose <Object>]
- [-ConfigPolicyDatabaseAutocreatestatistics <Object>] [-ConfigPolicyDatabaseAutoshrink <Object>]
- [-ConfigPolicyDatabaseAutoupdatestatistics <Object>]
+ [-ConfigPolicyCertificateexpirationWarningwindow <Object>] [-ConfigPolicyClusterHostrecordttl <Object>]
+ [-ConfigPolicyClusterNetworkProtocolsIPV4 <Object>] [-ConfigPolicyClusterRegisterallprovidersIP <Object>]
+ [-ConfigPolicyConnectionAuthscheme <Object>] [-ConfigPolicyConnectionPingcount <Object>]
+ [-ConfigPolicyConnectionPingmaxms <Object>] [-ConfigPolicyDacallowed <Object>]
+ [-ConfigPolicyDatabaseAutoclose <Object>] [-ConfigPolicyDatabaseAutocreatestatistics <Object>]
+ [-ConfigPolicyDatabaseAutoshrink <Object>] [-ConfigPolicyDatabaseAutoupdatestatistics <Object>]
  [-ConfigPolicyDatabaseAutoupdatestatisticsasynchronously <Object>]
+ [-ConfigPolicyDatabaseClrassembliessafeexcludedb <Object>]
  [-ConfigPolicyDatabaseDuplicateindexexcludedb <Object>] [-ConfigPolicyDatabaseFilebalancetolerance <Object>]
  [-ConfigPolicyDatabaseFilegrowthdaystocheck <Object>] [-ConfigPolicyDatabaseFilegrowthexcludedb <Object>]
  [-ConfigPolicyDatabaseFilegrowthfreespacethreshold <Object>] [-ConfigPolicyDatabaseFilegrowthtype <Object>]
@@ -59,6 +61,9 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyDbccMaxdays <Object>] [-ConfigPolicyDiskspacePercentfree <Object>]
  [-ConfigPolicyDumpMaxcount <Object>] [-ConfigPolicyErrorlogLogcount <Object>]
  [-ConfigPolicyErrorlogWarningwindow <Object>] [-ConfigPolicyHadrAgtcpport <Object>]
+ [-ConfigPolicyHadrEndpointname <Object>] [-ConfigPolicyHadrEndpointport <Object>]
+ [-ConfigPolicyHadrFailureconditionlevel <Object>] [-ConfigPolicyHadrHealthchecktimeout <Object>]
+ [-ConfigPolicyHadrLeasetimeout <Object>] [-ConfigPolicyHadrSessiontimeout <Object>]
  [-ConfigPolicyHadrTcpport <Object>] [-ConfigPolicyIdentityUsagepercent <Object>]
  [-ConfigPolicyInstanceMemorydumpsdaystocheck <Object>] [-ConfigPolicyInstanceSqlenginestart <Object>]
  [-ConfigPolicyInstanceSqlenginestate <Object>] [-ConfigPolicyInstancemaxdopExcludeinstance <Object>]
@@ -99,14 +104,14 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipAgentAlert <Object>] [-ConfigSkipAgentLastjobruntime <Object>]
  [-ConfigSkipAgentLongrunningjobs <Object>] [-ConfigSkipBackupReadonly <Object>]
  [-ConfigSkipBackupSecondaries <Object>] [-ConfigSkipBackupTesting <Object>]
- [-ConfigSkipConnectionAuth <Object>] [-ConfigSkipConnectionPing <Object>]
- [-ConfigSkipConnectionRemoting <Object>] [-ConfigSkipDatabaseFilegrowthdisabled <Object>]
- [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
- [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
- [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipHadrListenerTcpport <Object>]
- [-ConfigSkipHadrReplicaTcpport <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
- [-ConfigSkipInstanceLatestbuild <Object>] [-ConfigSkipInstanceModeldbgrowth <Object>]
- [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
+ [-ConfigSkipClusterNetclusterinterface <Object>] [-ConfigSkipConnectionAuth <Object>]
+ [-ConfigSkipConnectionPing <Object>] [-ConfigSkipConnectionRemoting <Object>]
+ [-ConfigSkipDatabaseFilegrowthdisabled <Object>] [-ConfigSkipDatabaseLogfilecounttest <Object>]
+ [-ConfigSkipDatafilegrowthdisabled <Object>] [-ConfigSkipDbccDatapuritycheck <Object>]
+ [-ConfigSkipDiffbackuptest <Object>] [-ConfigSkipHadrListenerPingcheck <Object>]
+ [-ConfigSkipHadrListenerTcpport <Object>] [-ConfigSkipHadrReplicaTcpport <Object>]
+ [-ConfigSkipInstanceDefaulttrace <Object>] [-ConfigSkipInstanceLatestbuild <Object>]
+ [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipInstanceSuspectpagelimit <Object>]
  [-ConfigSkipLogfilecounttest <Object>] [-ConfigSkipLogshiptesting <Object>]
@@ -119,6 +124,7 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityLoginCheckPolicy <Object>]
  [-ConfigSkipSecurityLoginMustChange <Object>] [-ConfigSkipSecurityLoginPasswordExpiration <Object>]
  [-ConfigSkipSecurityNonstandardport <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
+ [-ConfigSkipSecurityQuerystoredisabled <Object>] [-ConfigSkipSecurityQuerystoreenabled <Object>]
  [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
  [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
  [-ConfigSkipSecuritySymmetrickeyencryptionlevel <Object>] [-ConfigSkipTempdb1118 <Object>]
@@ -163,12 +169,14 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyBackupNewdbgraceperiod <Object>] [-ConfigPolicyBackupTestserver <Object>]
  [-ConfigPolicyBuildBehind <Object>] [-ConfigPolicyBuildWarningwindow <Object>]
  [-ConfigPolicyCertificateexpirationExcludedb <Object>]
- [-ConfigPolicyCertificateexpirationWarningwindow <Object>] [-ConfigPolicyConnectionAuthscheme <Object>]
- [-ConfigPolicyConnectionPingcount <Object>] [-ConfigPolicyConnectionPingmaxms <Object>]
- [-ConfigPolicyDacallowed <Object>] [-ConfigPolicyDatabaseAutoclose <Object>]
- [-ConfigPolicyDatabaseAutocreatestatistics <Object>] [-ConfigPolicyDatabaseAutoshrink <Object>]
- [-ConfigPolicyDatabaseAutoupdatestatistics <Object>]
+ [-ConfigPolicyCertificateexpirationWarningwindow <Object>] [-ConfigPolicyClusterHostrecordttl <Object>]
+ [-ConfigPolicyClusterNetworkProtocolsIPV4 <Object>] [-ConfigPolicyClusterRegisterallprovidersIP <Object>]
+ [-ConfigPolicyConnectionAuthscheme <Object>] [-ConfigPolicyConnectionPingcount <Object>]
+ [-ConfigPolicyConnectionPingmaxms <Object>] [-ConfigPolicyDacallowed <Object>]
+ [-ConfigPolicyDatabaseAutoclose <Object>] [-ConfigPolicyDatabaseAutocreatestatistics <Object>]
+ [-ConfigPolicyDatabaseAutoshrink <Object>] [-ConfigPolicyDatabaseAutoupdatestatistics <Object>]
  [-ConfigPolicyDatabaseAutoupdatestatisticsasynchronously <Object>]
+ [-ConfigPolicyDatabaseClrassembliessafeexcludedb <Object>]
  [-ConfigPolicyDatabaseDuplicateindexexcludedb <Object>] [-ConfigPolicyDatabaseFilebalancetolerance <Object>]
  [-ConfigPolicyDatabaseFilegrowthdaystocheck <Object>] [-ConfigPolicyDatabaseFilegrowthexcludedb <Object>]
  [-ConfigPolicyDatabaseFilegrowthfreespacethreshold <Object>] [-ConfigPolicyDatabaseFilegrowthtype <Object>]
@@ -181,6 +189,9 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyDbccMaxdays <Object>] [-ConfigPolicyDiskspacePercentfree <Object>]
  [-ConfigPolicyDumpMaxcount <Object>] [-ConfigPolicyErrorlogLogcount <Object>]
  [-ConfigPolicyErrorlogWarningwindow <Object>] [-ConfigPolicyHadrAgtcpport <Object>]
+ [-ConfigPolicyHadrEndpointname <Object>] [-ConfigPolicyHadrEndpointport <Object>]
+ [-ConfigPolicyHadrFailureconditionlevel <Object>] [-ConfigPolicyHadrHealthchecktimeout <Object>]
+ [-ConfigPolicyHadrLeasetimeout <Object>] [-ConfigPolicyHadrSessiontimeout <Object>]
  [-ConfigPolicyHadrTcpport <Object>] [-ConfigPolicyIdentityUsagepercent <Object>]
  [-ConfigPolicyInstanceMemorydumpsdaystocheck <Object>] [-ConfigPolicyInstanceSqlenginestart <Object>]
  [-ConfigPolicyInstanceSqlenginestate <Object>] [-ConfigPolicyInstancemaxdopExcludeinstance <Object>]
@@ -221,14 +232,14 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipAgentAlert <Object>] [-ConfigSkipAgentLastjobruntime <Object>]
  [-ConfigSkipAgentLongrunningjobs <Object>] [-ConfigSkipBackupReadonly <Object>]
  [-ConfigSkipBackupSecondaries <Object>] [-ConfigSkipBackupTesting <Object>]
- [-ConfigSkipConnectionAuth <Object>] [-ConfigSkipConnectionPing <Object>]
- [-ConfigSkipConnectionRemoting <Object>] [-ConfigSkipDatabaseFilegrowthdisabled <Object>]
- [-ConfigSkipDatabaseLogfilecounttest <Object>] [-ConfigSkipDatafilegrowthdisabled <Object>]
- [-ConfigSkipDbccDatapuritycheck <Object>] [-ConfigSkipDiffbackuptest <Object>]
- [-ConfigSkipHadrListenerPingcheck <Object>] [-ConfigSkipHadrListenerTcpport <Object>]
- [-ConfigSkipHadrReplicaTcpport <Object>] [-ConfigSkipInstanceDefaulttrace <Object>]
- [-ConfigSkipInstanceLatestbuild <Object>] [-ConfigSkipInstanceModeldbgrowth <Object>]
- [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
+ [-ConfigSkipClusterNetclusterinterface <Object>] [-ConfigSkipConnectionAuth <Object>]
+ [-ConfigSkipConnectionPing <Object>] [-ConfigSkipConnectionRemoting <Object>]
+ [-ConfigSkipDatabaseFilegrowthdisabled <Object>] [-ConfigSkipDatabaseLogfilecounttest <Object>]
+ [-ConfigSkipDatafilegrowthdisabled <Object>] [-ConfigSkipDbccDatapuritycheck <Object>]
+ [-ConfigSkipDiffbackuptest <Object>] [-ConfigSkipHadrListenerPingcheck <Object>]
+ [-ConfigSkipHadrListenerTcpport <Object>] [-ConfigSkipHadrReplicaTcpport <Object>]
+ [-ConfigSkipInstanceDefaulttrace <Object>] [-ConfigSkipInstanceLatestbuild <Object>]
+ [-ConfigSkipInstanceModeldbgrowth <Object>] [-ConfigSkipInstanceOleautomationproceduresdisabled <Object>]
  [-ConfigSkipInstanceRemoteaccessdisabled <Object>]
  [-ConfigSkipInstanceScanforstartupproceduresdisabled <Object>] [-ConfigSkipInstanceSuspectpagelimit <Object>]
  [-ConfigSkipLogfilecounttest <Object>] [-ConfigSkipLogshiptesting <Object>]
@@ -241,6 +252,7 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityLoginCheckPolicy <Object>]
  [-ConfigSkipSecurityLoginMustChange <Object>] [-ConfigSkipSecurityLoginPasswordExpiration <Object>]
  [-ConfigSkipSecurityNonstandardport <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
+ [-ConfigSkipSecurityQuerystoredisabled <Object>] [-ConfigSkipSecurityQuerystoreenabled <Object>]
  [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
  [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
  [-ConfigSkipSecuritySymmetrickeyencryptionlevel <Object>] [-ConfigSkipTempdb1118 <Object>]
@@ -1672,6 +1684,51 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigPolicyClusterHostrecordttl
+{{ Fill ConfigPolicyClusterHostrecordttl Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyClusterNetworkProtocolsIPV4
+{{ Fill ConfigPolicyClusterNetworkProtocolsIPV4 Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyClusterRegisterallprovidersIP
+{{ Fill ConfigPolicyClusterRegisterallprovidersIP Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigPolicyConnectionAuthscheme
 {{ Fill ConfigPolicyConnectionAuthscheme Description }}
 
@@ -1794,6 +1851,21 @@ Accept wildcard characters: False
 
 ### -ConfigPolicyDatabaseAutoupdatestatisticsasynchronously
 {{ Fill ConfigPolicyDatabaseAutoupdatestatisticsasynchronously Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyDatabaseClrassembliessafeexcludedb
+{{ Fill ConfigPolicyDatabaseClrassembliessafeexcludedb Description }}
 
 ```yaml
 Type: Object
@@ -2154,6 +2226,96 @@ Accept wildcard characters: False
 
 ### -ConfigPolicyHadrAgtcpport
 {{ Fill ConfigPolicyHadrAgtcpport Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyHadrEndpointname
+{{ Fill ConfigPolicyHadrEndpointname Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyHadrEndpointport
+{{ Fill ConfigPolicyHadrEndpointport Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyHadrFailureconditionlevel
+{{ Fill ConfigPolicyHadrFailureconditionlevel Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyHadrHealthchecktimeout
+{{ Fill ConfigPolicyHadrHealthchecktimeout Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyHadrLeasetimeout
+{{ Fill ConfigPolicyHadrLeasetimeout Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyHadrSessiontimeout
+{{ Fill ConfigPolicyHadrSessiontimeout Description }}
 
 ```yaml
 Type: Object
@@ -3307,6 +3469,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigSkipClusterNetclusterinterface
+{{ Fill ConfigSkipClusterNetclusterinterface Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigSkipConnectionAuth
 {{ Fill ConfigSkipConnectionAuth Description }}
 
@@ -3864,6 +4041,36 @@ Accept wildcard characters: False
 
 ### -ConfigSkipSecurityPublicrolepermission
 {{ Fill ConfigSkipSecurityPublicrolepermission Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityQuerystoredisabled
+{{ Fill ConfigSkipSecurityQuerystoredisabled Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecurityQuerystoreenabled
+{{ Fill ConfigSkipSecurityQuerystoreenabled Description }}
 
 ```yaml
 Type: Object
