@@ -108,14 +108,22 @@ Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Val
 Set-PSFConfig -Module dbachecks -Name policy.twodigityearcutoff -Value 2049 -Initialize -Description "The value for 'Two Digit Year Cutoff' configuration. Default is 2049. "
 
 #Connectivity
-Set-PSFConfig -Module dbachecks -Name policy.connection.authscheme  -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
+Set-PSFConfig -Module dbachecks -Name policy.connection.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
 Set-PSFConfig -Module dbachecks -Name policy.connection.pingmaxms -Value 10 -Initialize -Description "Maximum response time in ms"
 Set-PSFConfig -Module dbachecks -Name policy.connection.pingcount -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
 
 #HADR
 Set-PSFConfig -Module dbachecks -Name policy.hadr.agtcpport -Value "" -Initialize -Description "The TCPPort for the HADR listener check"
 Set-PSFConfig -Module dbachecks -Name policy.hadr.tcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR replica check"
-
+Set-PSFConfig -Module dbachecks -Name policy.hadr.endpointname -Value "Hadr_Endpoint" -Initialize -Description "The name for the HADR Endpoint check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.endpointport -Value 5022 -Initialize -Description "The TCPPort for the HADR endpoint check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.failureconditionlevel -Value 3 -Initialize -Description "Availability Group flexible automatic failover policy for the HADR cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.healthchecktimeout -Value 30000 -Initialize -Description "Availability Group healthcheck timeout for the HADR cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.leasetimeout -Value 20000 -Initialize -Description "Availability Group Lease timeout for the HADR cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.sessiontimeout -Value 10 -Initialize -Description "Availability Group Replica Session timeout for the HADR replica check"
+Set-PSFConfig -Module dbachecks -Name policy.cluster.NetworkProtocolsIPV4 -Value @('Internet Protocol Version 4 (TCP/IPv4)','Client for Microsoft Networks','File and Printer Sharing for Microsoft Networks') -Initialize -Description "Minimum Private Cluster Network protocols for the HADR Cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.cluster.hostrecordttl -Value 1200 -Initialize -Description "Cluster Network Resource - HostRecordTTL for the HADR Cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.cluster.registerallprovidersIP -Value 0 -Initialize -Description "Cluster Network Resource - RegisterAllProvidersIP for the HADR Cluster check"
 
 #Dump Files
 Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize -Description "Maximum number of expected dumps"
@@ -238,6 +246,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validati
 Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
+Set-PSFConfig -Module dbachecks -Name skip.cluster.netclusterinterface -Validation bool -Value $false -Initialize -Description "Skip cluster private network interface checks"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR AG Listener TCP port number (If port number is not standard across the entire AG architecture)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.replica.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR Replica TCP port number (If port number is not standard across the entire AG architecture)"
