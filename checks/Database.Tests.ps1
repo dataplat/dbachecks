@@ -1019,6 +1019,8 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "CLR Assemblies SAFE_ACCESS" -Tags CLRAssembliesSafe, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.clrassembliessafe
+        [string[]]$exclude = Get-DbcConfigValue policy.database.clrassembliessafeexcludedb
+        $ExcludedDatabases += $exclude
         if ($NotContactable -contains $psitem) {
             Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
