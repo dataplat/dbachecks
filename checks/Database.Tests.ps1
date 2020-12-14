@@ -285,7 +285,8 @@ $ExcludedDatabases += $ExcludeDatabase
     }
 
     Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
-        $Excludeddbs = $ExcludedDatabases + 'msdb'
+        $Excludeddbs = Get-DbcConfigValue policy.database.duplicateindexexcludedb
+        $Excludeddbs += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing duplicate indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -323,7 +324,9 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Unused indexes on $psitem" {
                 try {
-                    @($results = Find-DbaDbUnusedIndex -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases -EnableException).ForEach{
+                    $Instance = $Psitem
+                    (Get-Database -Instance $Instance -RequiredInfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $Excludeddbs).ForEach{
+                        $results = Find-DbaDbUnusedIndex -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases -EnableException
                         It "Database $psitem should return 0 Unused indexes on $($psitem.SQLInstance)" {
                             @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                         }
@@ -360,6 +363,13 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Database Growth Event" -Tags DatabaseGrowthEvent, Low, $filename {
         $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
+        $daystocheck = Get-DbcConfigValue policy.database.filegrowthdaystocheck
+        if ($null -eq $daystocheck) {
+            $datetocheckfrom = '0001-01-01'
+        }
+        else {
+            $datetocheckfrom = (Get-Date).ToUniversalTime().AddDays( - $daystocheck)
+        }
         if ($NotContactable -contains $psitem) {
             Context "Testing database growth event on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -370,7 +380,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing database growth event on $psitem" {
                 $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name) }) }.ForEach{
-                    $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
+                    $results = @(Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name).Where{ $_.StartTime -gt $datetocheckfrom }
                     It "Database $($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                         @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
                     }
@@ -697,7 +707,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Checking that encryption certificates have not expired on $psitem" {
-                @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object { $_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude) }).ForEach{
+                @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database -ExcludeDatabase $exclude | Where-Object { $_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude) }).ForEach{
                     It "Database $($psitem.Database) certificate $($psitem.Name) has not expired on $($psitem.SqlInstance)" {
                         $psitem.ExpirationDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime() -Because "this certificate should not be expired"
                     }
@@ -808,6 +818,8 @@ $ExcludedDatabases += $ExcludeDatabase
     }
 
     Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, CIS, $filename {
+        $exclude = Get-DbcConfigValue policy.database.trustworthyexcludedb
+        $exclude += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing database trustworthy option on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -817,7 +829,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing database trustworthy option on $psitem" {
-                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
+                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and ($(if ($Database) { $PsItem.Name -in $Database }else { $exclude -notcontains $PsItem.Name })) }).ForEach{
                     It "Database $($psitem.Name) should have Trustworthy set to false on $($psitem.Parent.Name)" {
                         $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
                     }
@@ -996,9 +1008,9 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing contained database auto close option on $psitem" {
-                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
-                    It "Database $($psitem.Name) should have auto close set to true on $($psitem.Parent.Name)" -Skip:$skip {
-                        $psitem.AutoClose | Should -BeTrue -Because "Contained Databases should have auto close set to true for CIS compliance"
+                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and $psItem.ContainmentType -ne $null -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
+                    It "Database $($psitem.Name) should have auto close set to false on $($psitem.Parent.Name)" -Skip:$skip {
+                        $psitem.AutoClose | Should -BeFalse -Because "Contained Databases should have auto close set to false for CIS compliance"
                     }
                 }
             }
@@ -1028,7 +1040,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Guest User" -Tags GuestUserConnect, Security, CIS, Medium, $filename {
         $exclude = "master", "tempdb", "msdb"
-        $ExcludedDatabases += $exclude
+        $ExcludedDatabases = $ExcludedDatabases + $exclude
         $skip = Get-DbcConfigValue skip.security.guestuserconnect
 
         if ($NotContactable -contains $psitem) {
@@ -1041,9 +1053,9 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing Guest user has CONNECT permission on $psitem" {
-                @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
-                    It "Database Guest user should return no CONNECT permissions in $($psitem.Name) on $Instance" -Skip:$skip {
-                        Assert-GuestUserConnect -Instance $instance -Database $($psitem.Name)
+				@(Get-Database -Instance $Instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $ExcludedDatabases).ForEach{
+                    It "Database Guest user should return no CONNECT permissions in $psitem on $Instance" -Skip:$skip {
+                        Assert-GuestUserConnect -Instance $instance -Database $psitem
                     }
                 }
             }
@@ -1051,7 +1063,7 @@ $ExcludedDatabases += $ExcludeDatabase
     }
     Describe "AsymmetricKeySize" -Tags AsymmetricKeySize, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.asymmetrickeysize
-        $ExcludedDatabases += "master", "tempdb", "msdb"
+        $ExcludedDatabases = $ExcludedDatabases + "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -1072,7 +1084,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "SymmetricKeyEncryptionLevel" -Tags SymmetricKeyEncryptionLevel, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.symmetrickeyencryptionlevel
-        $ExcludedDatabases += "master", "tempdb", "msdb"
+        $ExcludedDatabases = $ExcludedDatabases + "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {

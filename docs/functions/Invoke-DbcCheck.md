@@ -47,18 +47,20 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyDatabaseAutocreatestatistics <Object>] [-ConfigPolicyDatabaseAutoshrink <Object>]
  [-ConfigPolicyDatabaseAutoupdatestatistics <Object>]
  [-ConfigPolicyDatabaseAutoupdatestatisticsasynchronously <Object>]
- [-ConfigPolicyDatabaseFilebalancetolerance <Object>] [-ConfigPolicyDatabaseFilegrowthexcludedb <Object>]
+ [-ConfigPolicyDatabaseDuplicateindexexcludedb <Object>] [-ConfigPolicyDatabaseFilebalancetolerance <Object>]
+ [-ConfigPolicyDatabaseFilegrowthdaystocheck <Object>] [-ConfigPolicyDatabaseFilegrowthexcludedb <Object>]
  [-ConfigPolicyDatabaseFilegrowthfreespacethreshold <Object>] [-ConfigPolicyDatabaseFilegrowthtype <Object>]
  [-ConfigPolicyDatabaseFilegrowthvalue <Object>] [-ConfigPolicyDatabaseLogfilecount <Object>]
  [-ConfigPolicyDatabaseLogfilesizecomparison <Object>] [-ConfigPolicyDatabaseLogfilesizepercentage <Object>]
  [-ConfigPolicyDatabaseMaxdop <Object>] [-ConfigPolicyDatabaseMaxdopexcludedb <Object>]
  [-ConfigPolicyDatabaseMaxvlf <Object>] [-ConfigPolicyDatabaseStatusExcludeoffline <Object>]
  [-ConfigPolicyDatabaseStatusExcludereadonly <Object>] [-ConfigPolicyDatabaseStatusExcluderestoring <Object>]
- [-ConfigPolicyDatabaseWrongcollation <Object>] [-ConfigPolicyDbccMaxdays <Object>]
- [-ConfigPolicyDiskspacePercentfree <Object>] [-ConfigPolicyDumpMaxcount <Object>]
- [-ConfigPolicyErrorlogLogcount <Object>] [-ConfigPolicyErrorlogWarningwindow <Object>]
- [-ConfigPolicyHadrAgtcpport <Object>] [-ConfigPolicyHadrTcpport <Object>]
- [-ConfigPolicyIdentityUsagepercent <Object>] [-ConfigPolicyInstanceSqlenginestart <Object>]
+ [-ConfigPolicyDatabaseTrustworthyexcludedb <Object>] [-ConfigPolicyDatabaseWrongcollation <Object>]
+ [-ConfigPolicyDbccMaxdays <Object>] [-ConfigPolicyDiskspacePercentfree <Object>]
+ [-ConfigPolicyDumpMaxcount <Object>] [-ConfigPolicyErrorlogLogcount <Object>]
+ [-ConfigPolicyErrorlogWarningwindow <Object>] [-ConfigPolicyHadrAgtcpport <Object>]
+ [-ConfigPolicyHadrTcpport <Object>] [-ConfigPolicyIdentityUsagepercent <Object>]
+ [-ConfigPolicyInstanceMemorydumpsdaystocheck <Object>] [-ConfigPolicyInstanceSqlenginestart <Object>]
  [-ConfigPolicyInstanceSqlenginestate <Object>] [-ConfigPolicyInstancemaxdopExcludeinstance <Object>]
  [-ConfigPolicyInstancemaxdopMaxdop <Object>] [-ConfigPolicyInstancemaxdopUserecommended <Object>]
  [-ConfigPolicyInvaliddbownerExcludedb <Object>] [-ConfigPolicyInvaliddbownerName <Object>]
@@ -167,18 +169,20 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyDatabaseAutocreatestatistics <Object>] [-ConfigPolicyDatabaseAutoshrink <Object>]
  [-ConfigPolicyDatabaseAutoupdatestatistics <Object>]
  [-ConfigPolicyDatabaseAutoupdatestatisticsasynchronously <Object>]
- [-ConfigPolicyDatabaseFilebalancetolerance <Object>] [-ConfigPolicyDatabaseFilegrowthexcludedb <Object>]
+ [-ConfigPolicyDatabaseDuplicateindexexcludedb <Object>] [-ConfigPolicyDatabaseFilebalancetolerance <Object>]
+ [-ConfigPolicyDatabaseFilegrowthdaystocheck <Object>] [-ConfigPolicyDatabaseFilegrowthexcludedb <Object>]
  [-ConfigPolicyDatabaseFilegrowthfreespacethreshold <Object>] [-ConfigPolicyDatabaseFilegrowthtype <Object>]
  [-ConfigPolicyDatabaseFilegrowthvalue <Object>] [-ConfigPolicyDatabaseLogfilecount <Object>]
  [-ConfigPolicyDatabaseLogfilesizecomparison <Object>] [-ConfigPolicyDatabaseLogfilesizepercentage <Object>]
  [-ConfigPolicyDatabaseMaxdop <Object>] [-ConfigPolicyDatabaseMaxdopexcludedb <Object>]
  [-ConfigPolicyDatabaseMaxvlf <Object>] [-ConfigPolicyDatabaseStatusExcludeoffline <Object>]
  [-ConfigPolicyDatabaseStatusExcludereadonly <Object>] [-ConfigPolicyDatabaseStatusExcluderestoring <Object>]
- [-ConfigPolicyDatabaseWrongcollation <Object>] [-ConfigPolicyDbccMaxdays <Object>]
- [-ConfigPolicyDiskspacePercentfree <Object>] [-ConfigPolicyDumpMaxcount <Object>]
- [-ConfigPolicyErrorlogLogcount <Object>] [-ConfigPolicyErrorlogWarningwindow <Object>]
- [-ConfigPolicyHadrAgtcpport <Object>] [-ConfigPolicyHadrTcpport <Object>]
- [-ConfigPolicyIdentityUsagepercent <Object>] [-ConfigPolicyInstanceSqlenginestart <Object>]
+ [-ConfigPolicyDatabaseTrustworthyexcludedb <Object>] [-ConfigPolicyDatabaseWrongcollation <Object>]
+ [-ConfigPolicyDbccMaxdays <Object>] [-ConfigPolicyDiskspacePercentfree <Object>]
+ [-ConfigPolicyDumpMaxcount <Object>] [-ConfigPolicyErrorlogLogcount <Object>]
+ [-ConfigPolicyErrorlogWarningwindow <Object>] [-ConfigPolicyHadrAgtcpport <Object>]
+ [-ConfigPolicyHadrTcpport <Object>] [-ConfigPolicyIdentityUsagepercent <Object>]
+ [-ConfigPolicyInstanceMemorydumpsdaystocheck <Object>] [-ConfigPolicyInstanceSqlenginestart <Object>]
  [-ConfigPolicyInstanceSqlenginestate <Object>] [-ConfigPolicyInstancemaxdopExcludeinstance <Object>]
  [-ConfigPolicyInstancemaxdopMaxdop <Object>] [-ConfigPolicyInstancemaxdopUserecommended <Object>]
  [-ConfigPolicyInvaliddbownerExcludedb <Object>] [-ConfigPolicyInvaliddbownerName <Object>]
@@ -1803,8 +1807,38 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigPolicyDatabaseDuplicateindexexcludedb
+{{ Fill ConfigPolicyDatabaseDuplicateindexexcludedb Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigPolicyDatabaseFilebalancetolerance
 {{ Fill ConfigPolicyDatabaseFilebalancetolerance Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyDatabaseFilegrowthdaystocheck
+{{ Fill ConfigPolicyDatabaseFilegrowthdaystocheck Description }}
 
 ```yaml
 Type: Object
@@ -2013,6 +2047,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigPolicyDatabaseTrustworthyexcludedb
+{{ Fill ConfigPolicyDatabaseTrustworthyexcludedb Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigPolicyDatabaseWrongcollation
 {{ Fill ConfigPolicyDatabaseWrongcollation Description }}
 
@@ -2180,6 +2229,21 @@ Accept wildcard characters: False
 
 ### -ConfigPolicyInstancemaxdopUserecommended
 {{ Fill ConfigPolicyInstancemaxdopUserecommended Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyInstanceMemorydumpsdaystocheck
+{{ Fill ConfigPolicyInstanceMemorydumpsdaystocheck Description }}
 
 ```yaml
 Type: Object

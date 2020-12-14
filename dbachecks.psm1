@@ -1,6 +1,36 @@
 ﻿$script:ModuleRoot = $PSScriptRoot
 $VerbosePreference = "Continue"
 
+## Rotten way to fix Pester v5 issues
+
+
+if ((Get-Module Pester).Version.Major -eq 5) {
+    Write-PSFMessage -Message "You have Pester version 5 in this session which is not compatible - Let me try to remove it" -Level Verbose
+
+    try {
+        Remove-Module Pester -Force
+        $CompatibleInstalledPester = Get-Module Pester -ListAvailable | Where { $Psitem.Version.Major -le 4 } | Sort Version -Descending | Select -First 1 
+        Write-PSFMessage -Message "Removed Version 5 trying to import version $($CompatibleInstalledPester.Version.ToString())"
+        Import-Module $CompatibleInstalledPester.Path -Verbose -Scope Global
+    }
+    catch {
+        Write-PSFMessage -Level Significant -Message "Failed to remove Pester version 5 or import suitable version - Do you have Version 4* installed ?"
+        Break
+    }
+}
+else {
+    try {
+        $CompatibleInstalledPester = Get-Module Pester -ListAvailable | Where { $Psitem.Version.Major -le 4 } | Sort Version -Descending | Select -First 1 
+        Write-PSFMessage -Message "Trying to import version $($CompatibleInstalledPester.Version.ToString())"
+        Import-Module $CompatibleInstalledPester.Path -Verbose -Scope Global
+    }
+    catch {
+        Write-PSFMessage -Level Significant -Message "Failed to import suitable version - Do you have Version 4* installed ?"
+        Break
+    }
+}
+
+
 function Import-ModuleFile {
     [CmdletBinding()]
     Param (

@@ -783,7 +783,7 @@ InModuleScope dbachecks {
         }
         Context "Checking Scan For Startup Procedures Entries" {
 
-            It "Should pass the test successfully when scan for startup procedures is disabled" {
+            It "Should pass the test successfully when scan for startup procedures is disabled and config is true" {
                 # Mock for success
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
                         ScanForStartupProceduresDisabled = [PSCustomObject]@{
@@ -791,17 +791,38 @@ InModuleScope dbachecks {
                         }
                     }
                 }
-                Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo)
+                Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo) -ScanForStartupProcsDisabled $true
             }
 
-            It "Should fail the test successfully when scan for startup procedures is enabled" {
+            It "Should fail the test successfully when scan for startup procedures is disabled and config is false" {
+                # Mock for failing test
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                            ConfiguredValue = 0
+                        }
+                    } }
+                { Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo) -ScanForStartupProcsDisabled $false } | Should -Throw -ExpectedMessage "Expected `$false, because We expected the scan for startup procedures to be configured correctly, but got `$true."
+            }
+
+            It "Should pass the test successfully when scan for startup procedures is enabled and config is false" {
+                # Mock for success
+                Mock Get-AllInstanceInfo { [PSCustomObject]@{
+                        ScanForStartupProceduresDisabled = [PSCustomObject]@{
+                            ConfiguredValue = 1
+                        }
+                    }
+                }
+                Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo) -ScanForStartupProcsDisabled $false
+            }
+
+            It "Should fail the test successfully when scan for startup procedures is enabled and config is true" {
                 # Mock for failing test
                 Mock Get-AllInstanceInfo { [PSCustomObject]@{
                         ScanForStartupProceduresDisabled = [PSCustomObject]@{
                             ConfiguredValue = 1
                         }
                     } }
-                { Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo) } | Should -Throw -ExpectedMessage "Expected 0, because We expected the scan for startup procedures to be disabled, but got 1."
+                { Assert-ScanForStartupProcedures -AllInstanceInfo (Get-AllInstanceInfo) -ScanForStartupProcsDisabled $true } | Should -Throw -ExpectedMessage "Expected `$true, because We expected the scan for startup procedures to be configured correctly, but got `$false."
             }
         }
         Context "Checking Cross DB Ownership Chaining" {

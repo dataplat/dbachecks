@@ -39,6 +39,7 @@ Set-PSFConfig -Module dbachecks -Name app.cluster -Value $null -Initialize -Desc
 #instance
 Set-PSFConfig -Module dbachecks -Name policy.instance.sqlenginestart -Value 'Automatic' -Initialize -Description "The expected start type of the SQL Engine Service - Automatic, Manual, Disabled - Defaults to Automatic"
 Set-PSFConfig -Module dbachecks -Name policy.instance.sqlenginestate -Value 'Running' -Initialize -Description "The expected state of the SQL Engine Service - Running, Stopped - Defaults to Running"
+Set-PSFConfig -Module dbachecks -Name policy.instance.memorydumpsdaystocheck -Value $null -Initialize -Description "The number of days to go back and check for memory dumps"
 
 #Storage
 Set-PSFConfig -Module dbachecks -Name policy.storage.backuppath -Value $null -Initialize -Description "Enables tests to check if servers have access to centralized backup location"
@@ -150,6 +151,9 @@ Set-PSFConfig -Module dbachecks -Name policy.database.status.excludeoffline -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -Value @() -Initialize -Description "Database names that we expect to be restoring"
 Set-PSFConfig -Module dbachecks -Name database.querystoreenabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store enabled"
 Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store disabled"
+Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Value $null -Initialize -Description "The number of days to go back to check for growth events"
+Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
+Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb','ReportServer','ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
 
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"

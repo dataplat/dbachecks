@@ -537,5 +537,9 @@
     {
         "UniqueTag": "NonStandardPort",
         "Description": "Tests to see if the SQL Server Instances are NOT running on the default port of 1433."
+    },
+    {
+        "UniqueTag": "AgentMailProfile",
+        "Description": "Tests to see if the SQL Server Agent Alert System has an enabled database mail profile."
     }
 ]
