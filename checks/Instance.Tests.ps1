@@ -1210,7 +1210,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 }
 
-Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
+Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, CIS, High, $filename {
     @(Get-ComputerName).ForEach{
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Browser Service on $psitem" {
