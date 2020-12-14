@@ -1,5 +1,5 @@
 ﻿$script:ModuleRoot = $PSScriptRoot
-$VerbosePreference = "Continue"
+# $VerbosePreference = "Continue"
 
 ## Rotten way to fix Pester v5 issues
 
