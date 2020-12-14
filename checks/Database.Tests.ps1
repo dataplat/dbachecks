@@ -525,7 +525,7 @@ $ExcludedDatabases += $ExcludeDatabase
                         }
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
                         It -Skip:$skip "Database $($psitem.Name) diff backups should be less than $maxdiff hours old on $($psitem.Parent.Name)" {
-                            $psitem.LastDifferentialBackupDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
+                            ($psitem.LastBackupDate.ToUniversalTime(), $psitem.LastDifferentialBackupDate.ToUniversalTime() | Measure-Object -Max).Maximum | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
                         }
                     }
                 }
