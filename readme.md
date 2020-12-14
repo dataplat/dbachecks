@@ -264,7 +264,7 @@ If you do choose to use the PowerShell step, don't forget to `Set-Location` some
 
 ## I don't have access to the PowerShell Gallery, how can I download this?
 
-This module has a number of dependencies which makes creating a GitHub-centric installer a bit of a pain. We suggest you use a machine with [PowerShellGet](https://docs.microsoft.com/en-us/powershell/gallery/psget/get_psget_module) installed and Save all the modules you need:
+This module has a number of dependencies which makes creating a GitHub-centric installer a bit of a pain. We suggest you use a machine with [PowerShellGet](https://docs.microsoft.com/en-us/powershell/scripting/gallery/installing-psget) installed and Save all the modules you need:
 
 ```powershell
 Save-Module -Name dbachecks, dbatools, PSFramework, Pester -Path C:\temp
