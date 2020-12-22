@@ -10,6 +10,7 @@ Describe "$commandname Unit Tests" -Tags UnitTest {
         BeforeAll {
             $results = Get-DbcConfig
             $specific = Get-DbcConfig -Name policy.database.autoclose
+            $multiple = Get-DbcConfig -Name skip.tempdb1118,skip.tempdbfilecount
         }
 
         It "returns a number of configs" {
@@ -18,6 +19,10 @@ Describe "$commandname Unit Tests" -Tags UnitTest {
 
         It "returns a single bool" {
             $specific.Value -eq $true -or $specific.Value -eq $false | Should -BeTrue
+        }
+
+        It "returns results for each config provided" {
+            $multiple.Count -eq 2 | Should -BeTrue
         }
     }
 }
