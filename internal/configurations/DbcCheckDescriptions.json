@@ -119,6 +119,10 @@
         "UniqueTag": "LogfileSize",
         "Description": "Tests that the database log files are less than the specified percentage of the specified comparison (maximum size or average - default is average) of the data file size (default 100)"
     },
+        {
+        "UniqueTag": "LogfilePercentUsed",
+        "Description": "Tests that the database percent log file used is less than the specified percentage (default 75)"
+    },
     {
         "UniqueTag": "FutureFileGrowth",
         "Description": "Tests if a database (except for those specified to be skipped explicitly) has free space less than the specified percentage (default 20)"
