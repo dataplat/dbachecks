@@ -538,6 +538,8 @@ $ExcludedDatabases += $ExcludeDatabase
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
         $skipsecondaries = Get-DbcConfigValue skip.backup.secondaries
+		[DateTime]$sqlinstancedatetime = $InstanceSMO.Query("SELECT getutcdate() as getutcdate").getutcdate
+		[DateTime]$oldestbackupdateallowed = $sqlinstancedatetime.AddHours( - $graceperiod)
         if ($NotContactable -contains $psitem) {
             Context "Testing last log backups on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -547,7 +549,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing last log backups on $psitem" {
-                @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
+                @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt $oldestbackupdateallowed -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
                     if ($psitem.RecoveryModel -ne "Simple") {
                         if ($psitem.AvailabilityGroupName) {
                             $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
@@ -556,7 +558,7 @@ $ExcludedDatabases += $ExcludeDatabase
                         }
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
                         It -Skip:$skip  "Database $($psitem.Name) log backups should be less than $maxlog minutes old on $($psitem.Parent.Name)" {
-                            $psitem.LastLogBackupDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
+                            $psitem.LastLogBackupDate | Should -BeGreaterThan $sqlinstancedatetime.AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
                         }
                     }
                 }
