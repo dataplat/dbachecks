@@ -564,6 +564,30 @@ $ExcludedDatabases += $ExcludeDatabase
         }
     }
 
+
+    Describe "Log File percent used" -Tags LogfilePercentUsed, Medium, $filename {
+        $LogFilePercentage = Get-DbcConfigValue policy.database.logfilepercentused
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Log File percent used for $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Log File percent used for $psitem" {
+                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
+                    $LogFiles = Get-DbaDbSpace -SqlInstance $psitem.Parent.Name -Database $psitem.Name | Where-Object {$_.FileType -eq "LOG"} 
+                    $DatabaseName = $psitem.Name
+                    $CurrentLogFilePercentage = ($LogFiles | Measure-Object -Property PercentUsed -Maximum).Maximum
+                    It "Database $DatabaseName Should have  apercentage used lower than $LogFilePercentage% on $($psitem.Parent.Name)" {
+                        $CurrentLogFilePercentage | Should -BeLessThan $LogFilePercentage -Because "Check backup strategy, open transactions, CDC, Replication and HADR solutions "
+                    }
+                }
+            }
+        }
+    }
+
     Describe "Virtual Log Files" -Tags VirtualLogFile, Medium, $filename {
         $vlfmax = Get-DbcConfigValue policy.database.maxvlf
         if ($NotContactable -contains $psitem) {
