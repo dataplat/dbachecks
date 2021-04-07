@@ -1,9 +1,9 @@
 ﻿<#
 .SYNOPSIS
-    Exports dbachecks configs from a json file to make it easier to modify or be used for specific configurations.
+    Exports dbachecks configs to a json file to make it easier to modify or be used for specific configurations.
 
 .DESCRIPTION
-    Exports dbachecks configs from a json file to make it easier to modify or be used for specific configurations.
+    Exports dbachecks configs to a json file to make it easier to modify or be used for specific configurations.
 
 .PARAMETER Path
     The path to export to, by default is "$script:localapp\config.json"
@@ -20,7 +20,7 @@ Using this switch turns this "nice by default" feature off and enables you to ca
 .EXAMPLE
     Export-DbcConfig -Path \\nfs\projects\config.json
 
-    Exports config to \\nfs\projects\config.jso
+    Exports config to \\nfs\projects\config.json
 
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Export-DbcConfig/
