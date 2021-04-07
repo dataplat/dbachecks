@@ -27,7 +27,7 @@ https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcConfig/
 function Get-DbcConfig {
     [CmdletBinding()]
     param (
-        [string]$Name = "*",
+        [string[]]$Name = "*",
         [switch]$EnableException
     )
 
@@ -35,9 +35,11 @@ function Get-DbcConfig {
         $Module = "dbachecks"
     }
     process {
-        $Name = $Name.ToLower()
-        $results = [PSFramework.Configuration.ConfigurationHost]::Configurations.Values | Where-Object { ($_.Name -like $Name) -and ($_.Module -like $Module) -and ((-not $_.Hidden) -or ($Force)) } | Sort-Object Module, Name
-        $results | Select-Object Name, Value, Description
+        foreach ($configName in $Name) {
+            $configName = $configName.ToLower()
+            $results = [PSFramework.Configuration.ConfigurationHost]::Configurations.Values | Where-Object { ($_.Name -like $configName) -and ($_.Module -like $Module) -and ((-not $_.Hidden) -or ($Force)) } | Sort-Object Module, Name
+            $results | Select-Object Name, Value, Description
+        }
     }
 }
 
