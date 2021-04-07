@@ -231,7 +231,7 @@ Describe "Ola - $CommandLogJobName" -Tags CommandLog, OlaJobs, $filename {
 
         Context "Checking the Command Log Cleanup Time on $psitem" {
             $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
-            $days = [regex]::matches($jobsteps.Command, "dd,-(\d\d)").groups[1].value
+            $days = [regex]::matches($jobsteps.Command, "dd,-(\d*)").groups[1].value
 
             It "Is the Clean up time set to at least $CleanUp Days on $psitem" {
                 $days | Should -BeGreaterOrEqual $CleanUp -Because "The Clean up time for $CommandLogJobName needs to be correct"
@@ -377,7 +377,7 @@ Describe "Ola - $DeleteBackupJobName" -Tags DeleteBackupHistory, OlaJobs, $filen
 
         Context "Checking the Delete Backup History Cleanup Time on $psitem" {
             $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
-            $days = [regex]::matches($jobsteps.Command, "dd,-(\d\d)").groups[1].value
+            $days = [regex]::matches($jobsteps.Command, "dd,-(\d*)").groups[1].value
 
             It "Is the Clean up time set to at least $CleanUp Days on $psitem" {
                 $days | Should -BeGreaterOrEqual $CleanUp -Because "The Clean up time for $DeleteBackupJobName needs to be correct"
@@ -411,7 +411,7 @@ Describe "Ola - $PurgeBackupJobName" -Tags PurgeJobHistory, OlaJobs, $filename {
 
         Context "Checking the Purge Backup History Cleanup Time on $psitem" {
             $jobsteps = $job.JobSteps | Where-Object { $_.SubSystem -eq "CmdExec" -or $_.SubSystem -eq "TransactSql" }
-            $days = [regex]::matches($jobsteps.Command, "dd,-(\d\d)").groups[1].value
+            $days = [regex]::matches($jobsteps.Command, "dd,-(\d*)").groups[1].value
 
             It "Is the Clean up time set to at least $CleanUp Days on $psitem" {
                 $days | Should -BeGreaterOrEqual $CleanUp -Because "The Clean up time for $PurgeBackupJobName needs to be correct"
