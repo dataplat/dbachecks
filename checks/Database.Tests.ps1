@@ -582,7 +582,7 @@ $ExcludedDatabases += $ExcludeDatabase
                     $LogFiles = Get-DbaDbSpace -SqlInstance $psitem.Parent.Name -Database $psitem.Name | Where-Object {$_.FileType -eq "LOG"} 
                     $DatabaseName = $psitem.Name
                     $CurrentLogFilePercentage = ($LogFiles | Measure-Object -Property PercentUsed -Maximum).Maximum
-                    It "Database $DatabaseName Should have  apercentage used lower than $LogFilePercentage% on $($psitem.Parent.Name)" {
+                    It "Database $DatabaseName Should have a percentage used lower than $LogFilePercentage% on $($psitem.Parent.Name)" {
                         $CurrentLogFilePercentage | Should -BeLessThan $LogFilePercentage -Because "Check backup strategy, open transactions, CDC, Replication and HADR solutions "
                     }
                 }
