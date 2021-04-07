@@ -489,7 +489,8 @@ $ExcludedDatabases += $ExcludeDatabase
                 $InstanceSMO.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database } else { $ExcludedDatabases -notcontains $PsItem.Name }) }.ForEach{
                     if ($psitem.AvailabilityGroupName) {
                         $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
-                    } else {
+                    }
+                    else {
                         $agReplicaRole = $null
                     }
                     $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
@@ -520,7 +521,8 @@ $ExcludedDatabases += $ExcludeDatabase
                     @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
                         if ($psitem.AvailabilityGroupName) {
                             $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
-                        } else {
+                        }
+                        else {
                             $agReplicaRole = $null
                         }
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
@@ -538,8 +540,8 @@ $ExcludedDatabases += $ExcludeDatabase
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
         $skipsecondaries = Get-DbcConfigValue skip.backup.secondaries
-		[DateTime]$sqlinstancedatetime = $InstanceSMO.Query("SELECT getutcdate() as getutcdate").getutcdate
-		[DateTime]$oldestbackupdateallowed = $sqlinstancedatetime.AddHours( - $graceperiod)
+        [DateTime]$sqlinstancedatetime = $InstanceSMO.Query("SELECT getutcdate() as getutcdate").getutcdate
+        [DateTime]$oldestbackupdateallowed = $sqlinstancedatetime.AddHours( - $graceperiod)
         if ($NotContactable -contains $psitem) {
             Context "Testing last log backups on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -553,7 +555,8 @@ $ExcludedDatabases += $ExcludeDatabase
                     if ($psitem.RecoveryModel -ne "Simple") {
                         if ($psitem.AvailabilityGroupName) {
                             $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
-                        } else {
+                        }
+                        else {
                             $agReplicaRole = $null
                         }
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
@@ -579,7 +582,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Log File percent used for $psitem" {
                 $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
-                    $LogFiles = Get-DbaDbSpace -SqlInstance $psitem.Parent.Name -Database $psitem.Name | Where-Object {$_.FileType -eq "LOG"} 
+                    $LogFiles = Get-DbaDbSpace -SqlInstance $psitem.Parent.Name -Database $psitem.Name | Where-Object { $_.FileType -eq "LOG" } 
                     $DatabaseName = $psitem.Name
                     $CurrentLogFilePercentage = ($LogFiles | Measure-Object -Property PercentUsed -Maximum).Maximum
                     It "Database $DatabaseName Should have a percentage used lower than $LogFilePercentage% on $($psitem.Parent.Name)" {
@@ -737,8 +740,14 @@ $ExcludedDatabases += $ExcludeDatabase
                     It "Database $($psitem.Database) certificate $($psitem.Name) has not expired on $($psitem.SqlInstance)" {
                         $psitem.ExpirationDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime() -Because "this certificate should not be expired"
                     }
-                    It "Database $($psitem.Database) certificate $($psitem.Name) does not expire for more than $CertificateWarning months on $($psitem.SqlInstance)" {
-                        $psitem.ExpirationDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning"
+                    if ($psitem.ExpirationDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime()) {
+                        $skip = $true
+                    }
+                    else {
+                        $skip = $false
+                    }
+                    It "Database $($psitem.Database) certificate $($psitem.Name) does not expire for more than $CertificateWarning months on $($psitem.SqlInstance)" -Skip:$skip {
+                        $psitem.ExpirationDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning months"
                     }
                 }
             }
@@ -1081,7 +1090,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing Guest user has CONNECT permission on $psitem" {
-				@(Get-Database -Instance $Instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $ExcludedDatabases).ForEach{
+                @(Get-Database -Instance $Instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $ExcludedDatabases).ForEach{
                     It "Database Guest user should return no CONNECT permissions in $psitem on $Instance" -Skip:$skip {
                         Assert-GuestUserConnect -Instance $instance -Database $psitem
                     }
