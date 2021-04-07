@@ -217,7 +217,7 @@ foreach ($clustervm in $clusters) {
                                         -Filter "InterfaceIndex = $((Get-NetAdapter -CimSession $node.Name -Name $netinterface).ifIndex)"
 
                     It "NetBios Over TCP/IP should be disabled for cluster network interface - Node $($node.Name)" -Skip:$skipClusterNetInterface {
-                        $Adapter.TcpipNetbiosOptions | Should -Be 2 -Because "Heartbeat traffic doesn't use NetBios resolution"
+                        $AdapterNetBios.TcpipNetbiosOptions | Should -Be 2 -Because "Heartbeat traffic doesn't use NetBios resolution"
                     }
                 }
             }
