@@ -135,21 +135,21 @@
 
             # Release notes for this particular version of the module
             ReleaseNotes = "
-## December 14th 2020
+## April 7th 20
+Thank you @mikedavem Fixed rogue verbose when importing #834
+Thank you @mikedavem Test NetBios Over TCP/IP should be disabled for cluster network interface #833
+Thank you conseilit Add LogfilePercentUsed check. Log might fill even if simple recovery model or full recovery model + Tlog backup in case of replication, CDC, HADR issues. #831 #832
+Thank you conseilit Getting SQL Server instance DateTime prevent Log Backup checks to fail if the instance is not in the same timezone than the computer running dbaChecks scripts. #830
+Thank you @MikeyBronowski Get-DbcConfig Adding support to multiple names #829
+Thank you @MikeyBronowski Spellings #827
+Thank you @TheAntGreen updated variables to make errors obvious #825
+Thank you MrBlueSky - add info to suggest using Duplicate index command #807
+Thank you PsPsam - Ping check to work on core and 5.1 #763
+Thank you zikato - certificate expiration gives two failures if in the past #785
+Thank you mikedavem - allow more than 99 days for retention for Olas jobs #835
+Thank you Shashtsoh - Remove aliases to work in core #837
+Thank you a4ic6n - Max Memory check false succeeds #836
 
-Thank you tboggiano Browser check altered for instance count #758
-Thank you zikato - Fixing datafile auto growth #786
-Thank you fatherjack Typos #767
-Thank you tboggiano Query Store enabled and disabled test improvements #791
-Thank you relsna fixed issue with error log window #814
-Thank you @TheAntGreen Typos #815
-Thank you @TheAntGreen Add additional filter to filter out negative run_durations #816
-Thank you @TheAntGreen Add policy for additional excluded dbs from the SAFE CLR check #817
-Thank you @MikeyBronowski Fix the check for enabled alerts #819
-Thank you @MikeyBronowski Updating the link in documentation #820
-Thank you @mikedavem Updated HADR checks with additional checks #822
-Thank you @mikedavem Database backup diff check - fix issue #812 #824
-        
 ##Latest
 
 Run Get-DbcReleaseNotes for all release notes
