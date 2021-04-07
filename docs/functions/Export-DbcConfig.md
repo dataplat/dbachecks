@@ -1,7 +1,7 @@
 # Export-DbcConfig
 
 ## SYNOPSIS
-Exports dbachecks configs from a json file to make it easier to modify or be used for specific configurations.
+Exports dbachecks configs to a json file to make it easier to modify or be used for specific configurations.
 
 ## SYNTAX
 
@@ -10,7 +10,7 @@ Export-DbcConfig [[-Path] <String>] [-EnableException] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Exports dbachecks configs from a json file to make it easier to modify or be used for specific configurations.
+Exports dbachecks configs to a json file to make it easier to modify or be used for specific configurations.
 
 ## EXAMPLES
 
@@ -26,7 +26,7 @@ Exports config to "$script:localapp\config.json"
 Export-DbcConfig -Path \\nfs\projects\config.json
 ```
 
-Exports config to \\\\nfs\projects\config.jso
+Exports config to \\\\nfs\projects\config.json
 
 ## PARAMETERS
 

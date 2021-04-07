@@ -6,7 +6,7 @@ Retrieves configuration elements by name.
 ## SYNTAX
 
 ```
-Get-DbcConfig [[-Name] <String>] [-EnableException] [<CommonParameters>]
+Get-DbcConfig [[-Name] <String[]>] [-EnableException] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,7 +30,7 @@ The name of the configuration element(s) to retrieve.
 May be any string, supports wildcards.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 

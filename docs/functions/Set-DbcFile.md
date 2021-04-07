@@ -32,9 +32,8 @@ Convert-DbcResult This command will write the results to a CSV, JSON or XML file
 ### EXAMPLE 1
 ```
 $Date = Get-Date -Format "yyyy-MM-dd"
-```
-
 Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Set-DbcFile -FilePath C:\temp\dbachecks\ -FileName Auto-close_$Date -FileType xml
+```
 
 Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and outputs to xml and saves in C:\temp\dbachecks\Auto-close_DATE.xml
 

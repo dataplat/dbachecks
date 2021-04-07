@@ -53,32 +53,32 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyDatabaseFilegrowthdaystocheck <Object>] [-ConfigPolicyDatabaseFilegrowthexcludedb <Object>]
  [-ConfigPolicyDatabaseFilegrowthfreespacethreshold <Object>] [-ConfigPolicyDatabaseFilegrowthtype <Object>]
  [-ConfigPolicyDatabaseFilegrowthvalue <Object>] [-ConfigPolicyDatabaseLogfilecount <Object>]
- [-ConfigPolicyDatabaseLogfilesizecomparison <Object>] [-ConfigPolicyDatabaseLogfilesizepercentage <Object>]
- [-ConfigPolicyDatabaseMaxdop <Object>] [-ConfigPolicyDatabaseMaxdopexcludedb <Object>]
- [-ConfigPolicyDatabaseMaxvlf <Object>] [-ConfigPolicyDatabaseStatusExcludeoffline <Object>]
- [-ConfigPolicyDatabaseStatusExcludereadonly <Object>] [-ConfigPolicyDatabaseStatusExcluderestoring <Object>]
- [-ConfigPolicyDatabaseTrustworthyexcludedb <Object>] [-ConfigPolicyDatabaseWrongcollation <Object>]
- [-ConfigPolicyDbccMaxdays <Object>] [-ConfigPolicyDiskspacePercentfree <Object>]
- [-ConfigPolicyDumpMaxcount <Object>] [-ConfigPolicyErrorlogLogcount <Object>]
- [-ConfigPolicyErrorlogWarningwindow <Object>] [-ConfigPolicyHadrAgtcpport <Object>]
- [-ConfigPolicyHadrEndpointname <Object>] [-ConfigPolicyHadrEndpointport <Object>]
- [-ConfigPolicyHadrFailureconditionlevel <Object>] [-ConfigPolicyHadrHealthchecktimeout <Object>]
- [-ConfigPolicyHadrLeasetimeout <Object>] [-ConfigPolicyHadrSessiontimeout <Object>]
- [-ConfigPolicyHadrTcpport <Object>] [-ConfigPolicyIdentityUsagepercent <Object>]
- [-ConfigPolicyInstanceMemorydumpsdaystocheck <Object>] [-ConfigPolicyInstanceSqlenginestart <Object>]
- [-ConfigPolicyInstanceSqlenginestate <Object>] [-ConfigPolicyInstancemaxdopExcludeinstance <Object>]
- [-ConfigPolicyInstancemaxdopMaxdop <Object>] [-ConfigPolicyInstancemaxdopUserecommended <Object>]
- [-ConfigPolicyInvaliddbownerExcludedb <Object>] [-ConfigPolicyInvaliddbownerName <Object>]
- [-ConfigPolicyNetworkLatencymaxms <Object>] [-ConfigPolicyOlaCommandLogCleanUp <Object>]
- [-ConfigPolicyOlaCommandLogenabled <Object>] [-ConfigPolicyOlaCommandLogscheduled <Object>]
- [-ConfigPolicyOlaDatabase <Object>] [-ConfigPolicyOlaDeleteBackupHistoryCleanUp <Object>]
- [-ConfigPolicyOlaDeleteBackupHistoryenabled <Object>] [-ConfigPolicyOlaDeleteBackupHistoryscheduled <Object>]
- [-ConfigPolicyOlaInstalled <Object>] [-ConfigPolicyOlaOutputFileCleanUp <Object>]
- [-ConfigPolicyOlaOutputFileCleanupenabled <Object>] [-ConfigPolicyOlaOutputFileCleanupscheduled <Object>]
- [-ConfigPolicyOlaPurgeJobHistoryCleanUp <Object>] [-ConfigPolicyOlaPurgeJobHistoryenabled <Object>]
- [-ConfigPolicyOlaPurgeJobHistoryscheduled <Object>] [-ConfigPolicyOlaSystemfullenabled <Object>]
- [-ConfigPolicyOlaSystemfullretention <Object>] [-ConfigPolicyOlaSystemfullscheduled <Object>]
- [-ConfigPolicyOlaSystemIntegrityCheckenabled <Object>]
+ [-ConfigPolicyDatabaseLogfilepercentused <Object>] [-ConfigPolicyDatabaseLogfilesizecomparison <Object>]
+ [-ConfigPolicyDatabaseLogfilesizepercentage <Object>] [-ConfigPolicyDatabaseMaxdop <Object>]
+ [-ConfigPolicyDatabaseMaxdopexcludedb <Object>] [-ConfigPolicyDatabaseMaxvlf <Object>]
+ [-ConfigPolicyDatabaseStatusExcludeoffline <Object>] [-ConfigPolicyDatabaseStatusExcludereadonly <Object>]
+ [-ConfigPolicyDatabaseStatusExcluderestoring <Object>] [-ConfigPolicyDatabaseTrustworthyexcludedb <Object>]
+ [-ConfigPolicyDatabaseWrongcollation <Object>] [-ConfigPolicyDbccMaxdays <Object>]
+ [-ConfigPolicyDiskspacePercentfree <Object>] [-ConfigPolicyDumpMaxcount <Object>]
+ [-ConfigPolicyErrorlogLogcount <Object>] [-ConfigPolicyErrorlogWarningwindow <Object>]
+ [-ConfigPolicyHadrAgtcpport <Object>] [-ConfigPolicyHadrEndpointname <Object>]
+ [-ConfigPolicyHadrEndpointport <Object>] [-ConfigPolicyHadrFailureconditionlevel <Object>]
+ [-ConfigPolicyHadrHealthchecktimeout <Object>] [-ConfigPolicyHadrLeasetimeout <Object>]
+ [-ConfigPolicyHadrSessiontimeout <Object>] [-ConfigPolicyHadrTcpport <Object>]
+ [-ConfigPolicyIdentityUsagepercent <Object>] [-ConfigPolicyInstanceMemorydumpsdaystocheck <Object>]
+ [-ConfigPolicyInstanceSqlenginestart <Object>] [-ConfigPolicyInstanceSqlenginestate <Object>]
+ [-ConfigPolicyInstancemaxdopExcludeinstance <Object>] [-ConfigPolicyInstancemaxdopMaxdop <Object>]
+ [-ConfigPolicyInstancemaxdopUserecommended <Object>] [-ConfigPolicyInvaliddbownerExcludedb <Object>]
+ [-ConfigPolicyInvaliddbownerName <Object>] [-ConfigPolicyNetworkLatencymaxms <Object>]
+ [-ConfigPolicyOlaCommandLogCleanUp <Object>] [-ConfigPolicyOlaCommandLogenabled <Object>]
+ [-ConfigPolicyOlaCommandLogscheduled <Object>] [-ConfigPolicyOlaDatabase <Object>]
+ [-ConfigPolicyOlaDeleteBackupHistoryCleanUp <Object>] [-ConfigPolicyOlaDeleteBackupHistoryenabled <Object>]
+ [-ConfigPolicyOlaDeleteBackupHistoryscheduled <Object>] [-ConfigPolicyOlaInstalled <Object>]
+ [-ConfigPolicyOlaOutputFileCleanUp <Object>] [-ConfigPolicyOlaOutputFileCleanupenabled <Object>]
+ [-ConfigPolicyOlaOutputFileCleanupscheduled <Object>] [-ConfigPolicyOlaPurgeJobHistoryCleanUp <Object>]
+ [-ConfigPolicyOlaPurgeJobHistoryenabled <Object>] [-ConfigPolicyOlaPurgeJobHistoryscheduled <Object>]
+ [-ConfigPolicyOlaSystemfullenabled <Object>] [-ConfigPolicyOlaSystemfullretention <Object>]
+ [-ConfigPolicyOlaSystemfullscheduled <Object>] [-ConfigPolicyOlaSystemIntegrityCheckenabled <Object>]
  [-ConfigPolicyOlaSystemIntegrityCheckscheduled <Object>] [-ConfigPolicyOlaUserdiffenabled <Object>]
  [-ConfigPolicyOlaUserdiffretention <Object>] [-ConfigPolicyOlaUserdiffscheduled <Object>]
  [-ConfigPolicyOlaUserfullenabled <Object>] [-ConfigPolicyOlaUserfullretention <Object>]
@@ -181,32 +181,32 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigPolicyDatabaseFilegrowthdaystocheck <Object>] [-ConfigPolicyDatabaseFilegrowthexcludedb <Object>]
  [-ConfigPolicyDatabaseFilegrowthfreespacethreshold <Object>] [-ConfigPolicyDatabaseFilegrowthtype <Object>]
  [-ConfigPolicyDatabaseFilegrowthvalue <Object>] [-ConfigPolicyDatabaseLogfilecount <Object>]
- [-ConfigPolicyDatabaseLogfilesizecomparison <Object>] [-ConfigPolicyDatabaseLogfilesizepercentage <Object>]
- [-ConfigPolicyDatabaseMaxdop <Object>] [-ConfigPolicyDatabaseMaxdopexcludedb <Object>]
- [-ConfigPolicyDatabaseMaxvlf <Object>] [-ConfigPolicyDatabaseStatusExcludeoffline <Object>]
- [-ConfigPolicyDatabaseStatusExcludereadonly <Object>] [-ConfigPolicyDatabaseStatusExcluderestoring <Object>]
- [-ConfigPolicyDatabaseTrustworthyexcludedb <Object>] [-ConfigPolicyDatabaseWrongcollation <Object>]
- [-ConfigPolicyDbccMaxdays <Object>] [-ConfigPolicyDiskspacePercentfree <Object>]
- [-ConfigPolicyDumpMaxcount <Object>] [-ConfigPolicyErrorlogLogcount <Object>]
- [-ConfigPolicyErrorlogWarningwindow <Object>] [-ConfigPolicyHadrAgtcpport <Object>]
- [-ConfigPolicyHadrEndpointname <Object>] [-ConfigPolicyHadrEndpointport <Object>]
- [-ConfigPolicyHadrFailureconditionlevel <Object>] [-ConfigPolicyHadrHealthchecktimeout <Object>]
- [-ConfigPolicyHadrLeasetimeout <Object>] [-ConfigPolicyHadrSessiontimeout <Object>]
- [-ConfigPolicyHadrTcpport <Object>] [-ConfigPolicyIdentityUsagepercent <Object>]
- [-ConfigPolicyInstanceMemorydumpsdaystocheck <Object>] [-ConfigPolicyInstanceSqlenginestart <Object>]
- [-ConfigPolicyInstanceSqlenginestate <Object>] [-ConfigPolicyInstancemaxdopExcludeinstance <Object>]
- [-ConfigPolicyInstancemaxdopMaxdop <Object>] [-ConfigPolicyInstancemaxdopUserecommended <Object>]
- [-ConfigPolicyInvaliddbownerExcludedb <Object>] [-ConfigPolicyInvaliddbownerName <Object>]
- [-ConfigPolicyNetworkLatencymaxms <Object>] [-ConfigPolicyOlaCommandLogCleanUp <Object>]
- [-ConfigPolicyOlaCommandLogenabled <Object>] [-ConfigPolicyOlaCommandLogscheduled <Object>]
- [-ConfigPolicyOlaDatabase <Object>] [-ConfigPolicyOlaDeleteBackupHistoryCleanUp <Object>]
- [-ConfigPolicyOlaDeleteBackupHistoryenabled <Object>] [-ConfigPolicyOlaDeleteBackupHistoryscheduled <Object>]
- [-ConfigPolicyOlaInstalled <Object>] [-ConfigPolicyOlaOutputFileCleanUp <Object>]
- [-ConfigPolicyOlaOutputFileCleanupenabled <Object>] [-ConfigPolicyOlaOutputFileCleanupscheduled <Object>]
- [-ConfigPolicyOlaPurgeJobHistoryCleanUp <Object>] [-ConfigPolicyOlaPurgeJobHistoryenabled <Object>]
- [-ConfigPolicyOlaPurgeJobHistoryscheduled <Object>] [-ConfigPolicyOlaSystemfullenabled <Object>]
- [-ConfigPolicyOlaSystemfullretention <Object>] [-ConfigPolicyOlaSystemfullscheduled <Object>]
- [-ConfigPolicyOlaSystemIntegrityCheckenabled <Object>]
+ [-ConfigPolicyDatabaseLogfilepercentused <Object>] [-ConfigPolicyDatabaseLogfilesizecomparison <Object>]
+ [-ConfigPolicyDatabaseLogfilesizepercentage <Object>] [-ConfigPolicyDatabaseMaxdop <Object>]
+ [-ConfigPolicyDatabaseMaxdopexcludedb <Object>] [-ConfigPolicyDatabaseMaxvlf <Object>]
+ [-ConfigPolicyDatabaseStatusExcludeoffline <Object>] [-ConfigPolicyDatabaseStatusExcludereadonly <Object>]
+ [-ConfigPolicyDatabaseStatusExcluderestoring <Object>] [-ConfigPolicyDatabaseTrustworthyexcludedb <Object>]
+ [-ConfigPolicyDatabaseWrongcollation <Object>] [-ConfigPolicyDbccMaxdays <Object>]
+ [-ConfigPolicyDiskspacePercentfree <Object>] [-ConfigPolicyDumpMaxcount <Object>]
+ [-ConfigPolicyErrorlogLogcount <Object>] [-ConfigPolicyErrorlogWarningwindow <Object>]
+ [-ConfigPolicyHadrAgtcpport <Object>] [-ConfigPolicyHadrEndpointname <Object>]
+ [-ConfigPolicyHadrEndpointport <Object>] [-ConfigPolicyHadrFailureconditionlevel <Object>]
+ [-ConfigPolicyHadrHealthchecktimeout <Object>] [-ConfigPolicyHadrLeasetimeout <Object>]
+ [-ConfigPolicyHadrSessiontimeout <Object>] [-ConfigPolicyHadrTcpport <Object>]
+ [-ConfigPolicyIdentityUsagepercent <Object>] [-ConfigPolicyInstanceMemorydumpsdaystocheck <Object>]
+ [-ConfigPolicyInstanceSqlenginestart <Object>] [-ConfigPolicyInstanceSqlenginestate <Object>]
+ [-ConfigPolicyInstancemaxdopExcludeinstance <Object>] [-ConfigPolicyInstancemaxdopMaxdop <Object>]
+ [-ConfigPolicyInstancemaxdopUserecommended <Object>] [-ConfigPolicyInvaliddbownerExcludedb <Object>]
+ [-ConfigPolicyInvaliddbownerName <Object>] [-ConfigPolicyNetworkLatencymaxms <Object>]
+ [-ConfigPolicyOlaCommandLogCleanUp <Object>] [-ConfigPolicyOlaCommandLogenabled <Object>]
+ [-ConfigPolicyOlaCommandLogscheduled <Object>] [-ConfigPolicyOlaDatabase <Object>]
+ [-ConfigPolicyOlaDeleteBackupHistoryCleanUp <Object>] [-ConfigPolicyOlaDeleteBackupHistoryenabled <Object>]
+ [-ConfigPolicyOlaDeleteBackupHistoryscheduled <Object>] [-ConfigPolicyOlaInstalled <Object>]
+ [-ConfigPolicyOlaOutputFileCleanUp <Object>] [-ConfigPolicyOlaOutputFileCleanupenabled <Object>]
+ [-ConfigPolicyOlaOutputFileCleanupscheduled <Object>] [-ConfigPolicyOlaPurgeJobHistoryCleanUp <Object>]
+ [-ConfigPolicyOlaPurgeJobHistoryenabled <Object>] [-ConfigPolicyOlaPurgeJobHistoryscheduled <Object>]
+ [-ConfigPolicyOlaSystemfullenabled <Object>] [-ConfigPolicyOlaSystemfullretention <Object>]
+ [-ConfigPolicyOlaSystemfullscheduled <Object>] [-ConfigPolicyOlaSystemIntegrityCheckenabled <Object>]
  [-ConfigPolicyOlaSystemIntegrityCheckscheduled <Object>] [-ConfigPolicyOlaUserdiffenabled <Object>]
  [-ConfigPolicyOlaUserdiffretention <Object>] [-ConfigPolicyOlaUserdiffscheduled <Object>]
  [-ConfigPolicyOlaUserfullenabled <Object>] [-ConfigPolicyOlaUserfullretention <Object>]
@@ -296,10 +296,9 @@ Imports configuration file, \\\\share\repo\prod.json, prior to executing checks.
 ### EXAMPLE 4
 ```
 # Set the servers you'll be working with
-```
-
 Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sql2008, sql2008\express
 Set-DbcConfig -Name app.computername -Value sql2016, sql2017, sql2008
+```
 
 # Look at the current configs
 Get-DbcConfig
@@ -1986,6 +1985,21 @@ Accept wildcard characters: False
 
 ### -ConfigPolicyDatabaseLogfilecount
 {{ Fill ConfigPolicyDatabaseLogfilecount Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigPolicyDatabaseLogfilepercentused
+{{ Fill ConfigPolicyDatabaseLogfilepercentused Description }}
 
 ```yaml
 Type: Object
