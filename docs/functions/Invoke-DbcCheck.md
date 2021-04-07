@@ -269,14 +269,16 @@ Extended description about Pester: Get-Help -Name Invoke-Pester
 ## EXAMPLES
 
 ### EXAMPLE 1
-```
+
+```powershell
 Invoke-DbcCheck -Tag Backup -SqlInstance sql2016
 ```
 
 Runs all of the checks tagged Backup against the sql2016 instance
 
 ### EXAMPLE 2
-```
+
+```powershell
 Invoke-DbcCheck -Tag RecoveryModel -SqlInstance sql2017, sqlcluster -SqlCredential (Get-Credential sqladmin)
 ```
 
@@ -284,7 +286,8 @@ Runs the Recovery model check against the SQL instances sql2017, sqlcluster
 using the sqladmin SQL login with the password provided interactively
 
 ### EXAMPLE 3
-```
+
+```powershell
 Invoke-DbcCheck -Check Database -ExcludeCheck AutoShrink -ConfigFile \\share\repo\prod.json
 ```
 
@@ -294,27 +297,29 @@ the SQL Instances set in the config under app.sqlinstance
 Imports configuration file, \\\\share\repo\prod.json, prior to executing checks.
 
 ### EXAMPLE 4
-```
+
+```powershell
 # Set the servers you'll be working with
 Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sql2008, sql2008\express
 Set-DbcConfig -Name app.computername -Value sql2016, sql2017, sql2008
-```
 
 # Look at the current configs
 Get-DbcConfig
 
 # Invoke a few tests
 Invoke-DbcCheck -Tags SuspectPage, LastBackup
+```
 
 Runs the Suspect Pages and Last Backup checks against the SQL Instances sql2016,
 sql2017, sql2008, sql2008\express after setting them in the configuration
 
 ### EXAMPLE 5
-```
+
+```powershell
 Invoke-DbcCheck -SqlInstance sql2017 -Tags SuspectPage, LastBackup -Show Summary -PassThru | Update-DbcPowerBiDataSource
-```
 
 Start-DbcPowerBi
+```
 
 Runs the Suspect Page and Last Backup checks against the SQL Instances set in
 the config under app.sqlinstance only showing the summary of the results of the
@@ -323,7 +328,8 @@ It then updates the source json for the XML which is stored at
 C:\Windows\temp\dbachecks\ and then opens the PowerBi report in PowerBi Desktop
 
 ### EXAMPLE 6
-```
+
+```powershell
 Get-Help -Name Invoke-Pester -Examples
 ```
 
