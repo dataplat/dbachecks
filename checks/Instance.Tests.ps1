@@ -292,7 +292,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 if (-not $IsLInux) {
                     It "Max Memory setting should be correct on $psitem" {
                         @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
-                            $psitem.MaxValue  | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
+                            $psitem.MaxValue  | Should -BeLessThan ($psitem.RecommendedValue + 379) -Because 'You do not want to exhaust server memory'
                         }
                     }
                 }
