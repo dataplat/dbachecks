@@ -358,7 +358,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
             }
         }
         It "Should fail for one duplicate index" {
-            {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory, but got 1.'
+            {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory - Use Find-DbaDbDuplicateIndex to find them, but got 1.'
         }
         #Mock for failing for 2 indexes
         Mock Find-DbaDbDuplicateIndex {
@@ -392,7 +392,7 @@ Describe "Checking Database.Assertions.ps1 assertions" -Tag UnitTest, Assertions
         }
 
         It "Should fail for more than one duplicate index" {
-            {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory, but got 2.'
+            {Assert-DatabaseDuplicateIndex -Instance Dummy -Database Dummy1 } | Should -Throw -ExpectedMessage 'Expected 0, because Duplicate indexes waste disk space and cost you extra IO, CPU, and Memory - Use Find-DbaDbDuplicateIndex to find them, but got 2.'
         }
     }
     Context "Testing Assert-DatabaseExists" {
