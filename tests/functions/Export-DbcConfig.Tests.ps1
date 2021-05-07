@@ -17,6 +17,11 @@ Describe "$commandname Unit Tests" -Tags "IntegrationTests" {
         It "output a file" {
             (Get-ChildItem "$script:localapp\config.json") -ne $null | Should -BeTrue
         }
+
+        It "output an object" {
+            $o = Export-DbcConfig
+            $o | Get-Member -Name Open | Should -Not -BeNullOrEmpty
+        }
     }
 }
 # SIG # Begin signature block

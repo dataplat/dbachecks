@@ -22,6 +22,11 @@ Using this switch turns this "nice by default" feature off and enables you to ca
 
     Exports config to \\nfs\projects\config.json
 
+.EXAMPLE
+    $config = Export-DbcConfig | Invoke-Item
+    
+    Exports config to "$script:localapp\config.json" as and opens it in a default application. 
+
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Export-DbcConfig/
 #>
@@ -34,8 +39,10 @@ function Export-DbcConfig {
 
     try {
         Get-DbcConfig | Select-Object * | ConvertTo-Json -Depth 10 | Out-File -FilePath $Path -ErrorAction Stop
+        
+        # support for Invoke-Item
         Get-ChildItem -Path $Path
-        Write-Message -Message "Wrote file to $Path" -Level Verbose
+        Write-PSFMessage -Message "Wrote file to $Path" -Level Verbose
     }
     catch {
         Stop-PSFFunction -Message $_ -Target $Path
