@@ -34,7 +34,8 @@ function Export-DbcConfig {
 
     try {
         Get-DbcConfig | Select-Object * | ConvertTo-Json -Depth 10 | Out-File -FilePath $Path -ErrorAction Stop
-        Write-PSFMessage -Message "Wrote file to $Path" -Level Output
+        Get-ChildItem -Path $Path
+        Write-Message -Message "Wrote file to $Path" -Level Verbose
     }
     catch {
         Stop-PSFFunction -Message $_ -Target $Path
