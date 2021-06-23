@@ -6,6 +6,9 @@ Sets values for CIS tests.
 Sets CIS checks to defaults values that were different than normals values.  Then sets CIS
 test that are set to skip by default to run.
 
+.PARAMETER SqlInstance
+List of SqlInstances to run cehcks against.
+
 .PARAMETER EnableException
 By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
 This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -19,8 +22,11 @@ Set-DbcCisConfig
 #>
 
 function Set-DbcCisConfig {
-    [CmdletBinding(DefaultParameterSetName = "FullName", SupportsShouldProcess)]
-    Param ()
+    [CmdletBinding(DefaultParameterSetName = "Name", SupportsShouldProcess)]
+    Param (
+    )
+
+    Reset-DbcConfig
 
     #set CIS to what they need to be
     if ($PSCmdlet.ShouldProcess("$name" , "Setting the value to $NewValue on ")) {
