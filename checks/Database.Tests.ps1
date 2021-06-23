@@ -285,7 +285,8 @@ $ExcludedDatabases += $ExcludeDatabase
     }
 
     Describe "Duplicate Index" -Tags DuplicateIndex, $filename {
-        $Excludeddbs = $ExcludedDatabases + 'msdb'
+        $Excludeddbs = Get-DbcConfigValue policy.database.duplicateindexexcludedb
+        $Excludeddbs += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing duplicate indexes on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -323,7 +324,9 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Unused indexes on $psitem" {
                 try {
-                    @($results = Find-DbaDbUnusedIndex -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases -EnableException).ForEach{
+                    $Instance = $Psitem
+                    (Get-Database -Instance $Instance -RequiredInfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $Excludeddbs).ForEach{
+                        $results = Find-DbaDbUnusedIndex -SqlInstance $psitem -Database $Database -ExcludeDatabase $ExcludedDatabases -EnableException
                         It "Database $psitem should return 0 Unused indexes on $($psitem.SQLInstance)" {
                             @($results).Count | Should -Be 0 -Because "You should have indexes that are used"
                         }
@@ -360,6 +363,13 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Database Growth Event" -Tags DatabaseGrowthEvent, Low, $filename {
         $exclude = Get-DbcConfigValue policy.database.filegrowthexcludedb
+        $daystocheck = Get-DbcConfigValue policy.database.filegrowthdaystocheck
+        if ($null -eq $daystocheck) {
+            $datetocheckfrom = '0001-01-01'
+        }
+        else {
+            $datetocheckfrom = (Get-Date).ToUniversalTime().AddDays( - $daystocheck)
+        }
         if ($NotContactable -contains $psitem) {
             Context "Testing database growth event on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -370,7 +380,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing database growth event on $psitem" {
                 $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $PSItem.Name -notin $exclude -and ($ExcludedDatabases -notcontains $PsItem.Name) }) }.ForEach{
-                    $results = Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name
+                    $results = @(Find-DbaDbGrowthEvent -SqlInstance $psitem.Parent -Database $psitem.Name).Where{ $_.StartTime -gt $datetocheckfrom }
                     It "Database $($psitem.Name) should return 0 database growth events on $($psitem.Parent.Name)" {
                         @($results).Count | Should -Be 0 -Because "You want to control how your database files are grown"
                     }
@@ -466,6 +476,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $maxfull = Get-DbcConfigValue policy.backup.fullmaxdays
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
+        $skipsecondaries = Get-DbcConfigValue skip.backup.secondaries
         if ($NotContactable -contains $psitem) {
             Context "Testing last full backups on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -475,8 +486,14 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing last full backups on $psitem" {
-                $InstanceSMO.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }.ForEach{
-                    $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                $InstanceSMO.Databases.Where{ ($psitem.Name -ne 'tempdb') -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database } else { $ExcludedDatabases -notcontains $PsItem.Name }) }.ForEach{
+                    if ($psitem.AvailabilityGroupName) {
+                        $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
+                    }
+                    else {
+                        $agReplicaRole = $null
+                    }
+                    $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
                     It -Skip:$skip "Database $($psitem.Name) should have full backups less than $maxfull days old on $($psitem.Parent.Name)" {
                         $psitem.LastBackupDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddDays( - ($maxfull)) -Because "Taking regular backups is extraordinarily important"
                     }
@@ -490,6 +507,8 @@ $ExcludedDatabases += $ExcludeDatabase
             $maxdiff = Get-DbcConfigValue policy.backup.diffmaxhours
             $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
             $skipreadonly = Get-DbcConfigValue skip.backup.readonly
+            $skipsecondaries = Get-DbcConfigValue skip.backup.secondaries
+
             if ($NotContactable -contains $psitem) {
                 Context "Testing last diff backups on $psitem" {
                     It "Can't Connect to $Psitem" {
@@ -500,9 +519,15 @@ $ExcludedDatabases += $ExcludeDatabase
             else {
                 Context "Testing last diff backups on $psitem" {
                     @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
-                        $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
+                        if ($psitem.AvailabilityGroupName) {
+                            $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
+                        }
+                        else {
+                            $agReplicaRole = $null
+                        }
+                        $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
                         It -Skip:$skip "Database $($psitem.Name) diff backups should be less than $maxdiff hours old on $($psitem.Parent.Name)" {
-                            $psitem.LastDifferentialBackupDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
+                            ($psitem.LastBackupDate.ToUniversalTime(), $psitem.LastDifferentialBackupDate.ToUniversalTime() | Measure-Object -Max).Maximum | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddHours( - ($maxdiff)) -Because 'Taking regular backups is extraordinarily important'
                         }
                     }
                 }
@@ -514,6 +539,9 @@ $ExcludedDatabases += $ExcludeDatabase
         $maxlog = Get-DbcConfigValue policy.backup.logmaxminutes
         $graceperiod = Get-DbcConfigValue policy.backup.newdbgraceperiod
         $skipreadonly = Get-DbcConfigValue skip.backup.readonly
+        $skipsecondaries = Get-DbcConfigValue skip.backup.secondaries
+        [DateTime]$sqlinstancedatetime = $InstanceSMO.Query("SELECT getutcdate() as getutcdate").getutcdate
+        [DateTime]$oldestbackupdateallowed = $sqlinstancedatetime.AddHours( - $graceperiod)
         if ($NotContactable -contains $psitem) {
             Context "Testing last log backups on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -523,12 +551,42 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing last log backups on $psitem" {
-                @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime().AddHours( - $graceperiod) -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
+                @($InstanceSMO.Databases.Where{ (-not $psitem.IsSystemObject) -and $Psitem.CreateDate.ToUniversalTime() -lt $oldestbackupdateallowed -and $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).ForEach{
                     if ($psitem.RecoveryModel -ne "Simple") {
-                        $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true)
-                        It -Skip:$skip  "Database $($psitem.Name) log backups should be less than $maxlog minutes old on $($psitem.Parent.Name)" {
-                            $psitem.LastLogBackupDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
+                        if ($psitem.AvailabilityGroupName) {
+                            $agReplicaRole = $InstanceSMO.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole
                         }
+                        else {
+                            $agReplicaRole = $null
+                        }
+                        $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
+                        It -Skip:$skip  "Database $($psitem.Name) log backups should be less than $maxlog minutes old on $($psitem.Parent.Name)" {
+                            $psitem.LastLogBackupDate | Should -BeGreaterThan $sqlinstancedatetime.AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    Describe "Log File percent used" -Tags LogfilePercentUsed, Medium, $filename {
+        $LogFilePercentage = Get-DbcConfigValue policy.database.logfilepercentused
+        if ($NotContactable -contains $psitem) {
+            Context "Testing Log File percent used for $psitem" {
+                It "Can't Connect to $Psitem" {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing Log File percent used for $psitem" {
+                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
+                    $LogFiles = Get-DbaDbSpace -SqlInstance $psitem.Parent.Name -Database $psitem.Name | Where-Object { $_.FileType -eq "LOG" } 
+                    $DatabaseName = $psitem.Name
+                    $CurrentLogFilePercentage = ($LogFiles | Measure-Object -Property PercentUsed -Maximum).Maximum
+                    It "Database $DatabaseName Should have a percentage used lower than $LogFilePercentage% on $($psitem.Parent.Name)" {
+                        $CurrentLogFilePercentage | Should -BeLessThan $LogFilePercentage -Because "Check backup strategy, open transactions, CDC, Replication and HADR solutions "
                     }
                 }
             }
@@ -678,12 +736,18 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Checking that encryption certificates have not expired on $psitem" {
-                @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database | Where-Object { $_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude) }).ForEach{
+                @(Get-DbaDbEncryption -SqlInstance $psitem -IncludeSystemDBs -Database $Database -ExcludeDatabase $exclude | Where-Object { $_.Encryption -eq "Certificate" -and ($_.Database -notin $exclude) }).ForEach{
                     It "Database $($psitem.Database) certificate $($psitem.Name) has not expired on $($psitem.SqlInstance)" {
                         $psitem.ExpirationDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime() -Because "this certificate should not be expired"
                     }
-                    It "Database $($psitem.Database) certificate $($psitem.Name) does not expire for more than $CertificateWarning months on $($psitem.SqlInstance)" {
-                        $psitem.ExpirationDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning"
+                    if ($psitem.ExpirationDate.ToUniversalTime() -lt (Get-Date).ToUniversalTime()) {
+                        $skip = $true
+                    }
+                    else {
+                        $skip = $false
+                    }
+                    It "Database $($psitem.Database) certificate $($psitem.Name) does not expire for more than $CertificateWarning months on $($psitem.SqlInstance)" -Skip:$skip {
+                        $psitem.ExpirationDate.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddMonths($CertificateWarning) -Because "expires inside the warning window of $CertificateWarning months"
                     }
                 }
             }
@@ -764,7 +828,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing datafile growth type on $psitem" {
-                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
+                $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $exclude -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
                     $Files = Get-DbaDbFile -SqlInstance $InstanceSMO -Database $psitem.Name
                     @($Files).ForEach{
                         if (-Not (($psitem.Growth -eq 0) -and (Get-DbcConfigValue skip.database.filegrowthdisabled))) {
@@ -789,6 +853,8 @@ $ExcludedDatabases += $ExcludeDatabase
     }
 
     Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, CIS, $filename {
+        $exclude = Get-DbcConfigValue policy.database.trustworthyexcludedb
+        $exclude += $ExcludedDatabases
         if ($NotContactable -contains $psitem) {
             Context "Testing database trustworthy option on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -798,7 +864,7 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing database trustworthy option on $psitem" {
-                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
+                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and ($(if ($Database) { $PsItem.Name -in $Database }else { $exclude -notcontains $PsItem.Name })) }).ForEach{
                     It "Database $($psitem.Name) should have Trustworthy set to false on $($psitem.Parent.Name)" {
                         $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
                     }
@@ -977,9 +1043,9 @@ $ExcludedDatabases += $ExcludeDatabase
         }
         else {
             Context "Testing contained database auto close option on $psitem" {
-                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
-                    It "Database $($psitem.Name) should have auto close set to true on $($psitem.Parent.Name)" -Skip:$skip {
-                        $psitem.AutoClose | Should -BeTrue -Because "Contained Databases should have auto close set to true for CIS compliance"
+                @($InstanceSMO.Databases.Where{ $psitem.Name -ne 'msdb' -and $psItem.ContainmentType -ne "NONE" -and $psItem.ContainmentType -ne $null -and ($(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name })) }).ForEach{
+                    It "Database $($psitem.Name) should have auto close set to false on $($psitem.Parent.Name)" -Skip:$skip {
+                        $psitem.AutoClose | Should -BeFalse -Because "Contained Databases should have auto close set to false for CIS compliance"
                     }
                 }
             }
@@ -988,6 +1054,8 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "CLR Assemblies SAFE_ACCESS" -Tags CLRAssembliesSafe, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.clrassembliessafe
+        [string[]]$exclude = Get-DbcConfigValue policy.database.clrassembliessafeexcludedb
+        $ExcludedDatabases += $exclude
         if ($NotContactable -contains $psitem) {
             Context "Testing that all user-defined CLR assemblies are set to SAFE_ACCESS on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
@@ -1009,7 +1077,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Guest User" -Tags GuestUserConnect, Security, CIS, Medium, $filename {
         $exclude = "master", "tempdb", "msdb"
-        $ExcludedDatabases += $exclude
+        $ExcludedDatabases = $ExcludedDatabases + $exclude
         $skip = Get-DbcConfigValue skip.security.guestuserconnect
 
         if ($NotContactable -contains $psitem) {
@@ -1022,9 +1090,9 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             $instance = $Psitem
             Context "Testing Guest user has CONNECT permission on $psitem" {
-                @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
-                    It "Database Guest user should return no CONNECT permissions in $($psitem.Name) on $Instance" -Skip:$skip {
-                        Assert-GuestUserConnect -Instance $instance -Database $($psitem.Name)
+                @(Get-Database -Instance $Instance -Requiredinfo Name -Exclusions NotAccessible -Database $Database -ExcludedDbs $ExcludedDatabases).ForEach{
+                    It "Database Guest user should return no CONNECT permissions in $psitem on $Instance" -Skip:$skip {
+                        Assert-GuestUserConnect -Instance $instance -Database $psitem
                     }
                 }
             }
@@ -1032,7 +1100,7 @@ $ExcludedDatabases += $ExcludeDatabase
     }
     Describe "AsymmetricKeySize" -Tags AsymmetricKeySize, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.asymmetrickeysize
-        $ExcludedDatabases += "master", "tempdb", "msdb"
+        $ExcludedDatabases = $ExcludedDatabases + "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Asymmetric Key Size is 2048 or higher on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -1053,7 +1121,7 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "SymmetricKeyEncryptionLevel" -Tags SymmetricKeyEncryptionLevel, CIS, $filename {
         $skip = Get-DbcConfigValue skip.security.symmetrickeyencryptionlevel
-        $ExcludedDatabases += "master", "tempdb", "msdb"
+        $ExcludedDatabases = $ExcludedDatabases + "master", "tempdb", "msdb"
         if ($NotContactable -contains $psitem) {
             Context "Testing Symmetric Key Encryption Level at least AES_128 or higher on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
@@ -1094,10 +1162,14 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
         $QSExcludedDatabases = Get-DbcConfigValue database.querystoreenabled.excludedb
-        $exclude = "master", "tempdb" , "msdb"
+        $exclude = "master", "tempdb" , "model"
         $ExcludedDatabases += $exclude
         $QSExcludedDatabases += $ExcludedDatabases
-        $Skip = ($InstanceSMO.Version.Major -ge 13 )
+        $Skip = Get-DbcConfigValue skip.security.querystoreenabled
+        if (!$skip -and $InstanceSMO.Version.Major -lt 13) {
+            $Skip = $true
+        }
+
         if ($NotContactable -contains $psitem) {
             Context "Testing to see if Query Store is enabled on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
@@ -1109,7 +1181,7 @@ $ExcludedDatabases += $ExcludeDatabase
             $instance = $Psitem
             Context "Testing to see if Query Store is enabled on $psitem" {
                 @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $QSExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
-                    It "Database $($psitem.Name) should have Query Store enabled on $Instance" -Skip:($version -lt 13 ) {
+                    It "Database $($psitem.Name) should have Query Store enabled on $Instance" -Skip:$skip {
                         Assert-QueryStoreEnabled -Instance $InstanceSMO -Database $($psitem.Name)
                     }
                 }
@@ -1118,10 +1190,14 @@ $ExcludedDatabases += $ExcludeDatabase
     }
     Describe "Query Store Disabled" -Tags QueryStoreDisabled, Medium, $filename {
         $QSExcludedDatabases = Get-DbcConfigValue database.querystoredisabled.excludedb
-        $exclude = "master", "tempdb" , "msdb"
+        $exclude = "master", "tempdb" , "model"
         $ExcludedDatabases += $exclude
         $QSExcludedDatabases += $ExcludedDatabases
-        $Skip = ($InstanceSMO.Version.Major -ge 13 )
+        $Skip = Get-DbcConfigValue skip.security.querystoredisabled
+        if (!$skip -and $InstanceSMO.Version.Major -lt 13) {
+            $Skip = $true
+        }
+
         if ($NotContactable -contains $psitem) {
             Context "Testing to see if Query Store is disabled on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
@@ -1133,7 +1209,7 @@ $ExcludedDatabases += $ExcludeDatabase
             $instance = $Psitem
             Context "Testing to see if Query Store is disabled on $psitem" {
                 @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $QSExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
-                    It "Database $($psitem.Name) should have Query Store disabled on $Instance" -Skip:($version -lt 13 ) {
+                    It "Database $($psitem.Name) should have Query Store disabled on $Instance" -Skip:$skip {
                         Assert-QueryStoreDisabled -Instance $InstanceSMO -Database $($psitem.Name)
                     }
                 }

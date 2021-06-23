@@ -39,6 +39,7 @@ Set-PSFConfig -Module dbachecks -Name app.cluster -Value $null -Initialize -Desc
 #instance
 Set-PSFConfig -Module dbachecks -Name policy.instance.sqlenginestart -Value 'Automatic' -Initialize -Description "The expected start type of the SQL Engine Service - Automatic, Manual, Disabled - Defaults to Automatic"
 Set-PSFConfig -Module dbachecks -Name policy.instance.sqlenginestate -Value 'Running' -Initialize -Description "The expected state of the SQL Engine Service - Running, Stopped - Defaults to Running"
+Set-PSFConfig -Module dbachecks -Name policy.instance.memorydumpsdaystocheck -Value $null -Initialize -Description "The number of days to go back and check for memory dumps"
 
 #Storage
 Set-PSFConfig -Module dbachecks -Name policy.storage.backuppath -Value $null -Initialize -Description "Enables tests to check if servers have access to centralized backup location"
@@ -107,14 +108,22 @@ Set-PSFConfig -Module dbachecks -Name policy.oleautomation -Validation bool -Val
 Set-PSFConfig -Module dbachecks -Name policy.twodigityearcutoff -Value 2049 -Initialize -Description "The value for 'Two Digit Year Cutoff' configuration. Default is 2049. "
 
 #Connectivity
-Set-PSFConfig -Module dbachecks -Name policy.connection.authscheme  -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
+Set-PSFConfig -Module dbachecks -Name policy.connection.authscheme -Value "Kerberos" -Initialize -Description "Auth requirement (Kerberos, NTLM, etc)"
 Set-PSFConfig -Module dbachecks -Name policy.connection.pingmaxms -Value 10 -Initialize -Description "Maximum response time in ms"
 Set-PSFConfig -Module dbachecks -Name policy.connection.pingcount -Value 3 -Initialize -Description "Number of times to ping a server to establish average response time"
 
 #HADR
 Set-PSFConfig -Module dbachecks -Name policy.hadr.agtcpport -Value "" -Initialize -Description "The TCPPort for the HADR listener check"
 Set-PSFConfig -Module dbachecks -Name policy.hadr.tcpport -Value "1433" -Initialize -Description "The TCPPort for the HADR replica check"
-
+Set-PSFConfig -Module dbachecks -Name policy.hadr.endpointname -Value "Hadr_Endpoint" -Initialize -Description "The name for the HADR Endpoint check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.endpointport -Value 5022 -Initialize -Description "The TCPPort for the HADR endpoint check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.failureconditionlevel -Value 3 -Initialize -Description "Availability Group flexible automatic failover policy for the HADR cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.healthchecktimeout -Value 30000 -Initialize -Description "Availability Group healthcheck timeout for the HADR cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.leasetimeout -Value 20000 -Initialize -Description "Availability Group Lease timeout for the HADR cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.hadr.sessiontimeout -Value 10 -Initialize -Description "Availability Group Replica Session timeout for the HADR replica check"
+Set-PSFConfig -Module dbachecks -Name policy.cluster.NetworkProtocolsIPV4 -Value @('Internet Protocol Version 4 (TCP/IPv4)','Client for Microsoft Networks','File and Printer Sharing for Microsoft Networks') -Initialize -Description "Minimum Private Cluster Network protocols for the HADR Cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.cluster.hostrecordttl -Value 1200 -Initialize -Description "Cluster Network Resource - HostRecordTTL for the HADR Cluster check"
+Set-PSFConfig -Module dbachecks -Name policy.cluster.registerallprovidersIP -Value 0 -Initialize -Description "Cluster Network Resource - RegisterAllProvidersIP for the HADR Cluster check"
 
 #Dump Files
 Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize -Description "Maximum number of expected dumps"
@@ -150,6 +159,11 @@ Set-PSFConfig -Module dbachecks -Name policy.database.status.excludeoffline -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -Value @() -Initialize -Description "Database names that we expect to be restoring"
 Set-PSFConfig -Module dbachecks -Name database.querystoreenabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store enabled"
 Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store disabled"
+Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Value $null -Initialize -Description "The number of days to go back to check for growth events"
+Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
+Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb','ReportServer','ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
+Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description " A List of database what we do not want to check for SAFE CLR Assemblies"
+Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description " The % log used we should stay below"
 
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
@@ -217,6 +231,7 @@ Set-PSFConfig -Module dbachecks -Name policy.build.behind -Value $null -Initiali
 Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
 Set-PSFConfig -Module dbachecks -Name skip.backup.readonly -Validation bool -Value $false -Initialize -Description "Check read-only databases for last backup"
+Set-PSFConfig -Module dbachecks -Name skip.backup.secondaries -Validation bool -Value $false -Initialize -Description "Check hadr secondary databases for last backup"
 Set-PSFConfig -Module dbachecks -Name skip.tempdb1118 -Validation bool -Value $false -Initialize -Description "Don't run test for Trace Flag 1118"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilecount -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Count"
 Set-PSFConfig -Module dbachecks -Name skip.tempdbfilegrowthpercent -Validation bool -Value $false -Initialize -Description "Don't run test for Temp Database File Growth in Percent"
@@ -232,6 +247,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validati
 Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
+Set-PSFConfig -Module dbachecks -Name skip.cluster.netclusterinterface -Validation bool -Value $false -Initialize -Description "Skip cluster private network interface checks"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR AG Listener TCP port number (If port number is not standard across the entire AG architecture)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.replica.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR Replica TCP port number (If port number is not standard across the entire AG architecture)"
@@ -243,6 +259,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.oleautomationproceduresdisab
 Set-PSFConfig -Module dbachecks -Name skip.instance.remoteaccessdisabled -Validation bool -Value $false -Initialize -Description "Skip the remote access check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.scanforstartupproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip the scan for startup procedures disabled check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool -Value $false -Initialize -Description "Skip the scan the latest build of SQL Server check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.suspectpagelimit -Validation bool -Value $false -Initialize -Description "Skip the check for whether the suspect_pages table is nearing the row limit of 1000"
 Set-PSFConfig -Module dbachecks -Name skip.security.sadisabled -Validation bool -Value $true -Initialize -Description "Skip the check for if the sa login is disabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip the check for a login named sa does not exist"
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
@@ -254,6 +271,8 @@ Set-PSFConfig -Module dbachecks -Name skip.security.clrassembliessafe -Validatio
 Set-PSFConfig -Module dbachecks -Name skip.security.engineserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Engine account is a local administrator"
 Set-PSFConfig -Module dbachecks -Name skip.security.agentserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Agent account is a local administrator"
 Set-PSFConfig -Module dbachecks -Name skip.security.fulltextserviceadmin -Validation bool -Value $true -Initialize -Description "Skips the scan for the SQL Server Full Text account is a local administrator"
+Set-PSFConfig -Module dbachecks -Name skip.security.querystoredisabled -Validation bool -Value $true -Initialize -Description "Skips the check for if Query Store is disabled"
+Set-PSFConfig -Module dbachecks -Name skip.security.querystoreenabled -Validation bool -Value $false -Initialize -Description "Skips the check for if Query Store is enabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelfailed -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.loginauditlevelsuccessful -Validation bool -Value $true -Initialize -Description "Skips the scan for if server login level records successful and failed logins"
 Set-PSFConfig -Module dbachecks -Name skip.security.localwindowsgroup -Validation bool -Value $true -Initialize -Description "Skips the scan for if local windows groups have SQL Logins"
@@ -302,6 +321,9 @@ Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludedatabases -V
 
 # config for integration testing
 Set-PSFConfig -Module dbachecks -Name testing.integration.instance -Value @("localhost") -Initialize -Description "Default SQL Server instances to be used by integration tests"
+
+# Suspect pages
+Set-PSFConfig -Module dbachecks -Name policy.suspectpages.threshold -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit of 1000"
 
 # Server
 Set-PSFConfig -Module dbachecks -Name policy.server.cpuprioritisation -Value $true -Initialize -Description "Shall we skip the CPU Prioritisation check"

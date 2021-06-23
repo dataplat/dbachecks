@@ -98,7 +98,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
-            $IsClustered = $Psitem.IsClustered
+            $IsClustered = $InstanceSMO.IsClustered
             Context "Testing SQL Engine Service on $psitem" {
                 if ( -not $IsLInux) {
                     @(Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue).ForEach{
@@ -292,7 +292,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
                 if (-not $IsLInux) {
                     It "Max Memory setting should be correct on $psitem" {
                         @(Test-DbaMaxMemory -SqlInstance $psitem).ForEach{
-                            $psitem.SqlMaxMB | Should -BeLessThan ($psitem.RecommendedMB + 379) -Because 'You do not want to exhaust server memory'
+                            $psitem.MaxValue  | Should -BeLessThan ($psitem.RecommendedValue + 379) -Because 'You do not want to exhaust server memory'
                         }
                     }
                 }
@@ -359,7 +359,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking that dumps on $psitem do not exceed $maxdumps for $psitem" {
-                It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" -Skip:($InstanceSMO.Version.Major -lt 10 ) {
+                It "dump count of $count is less than or equal to the $maxdumps dumps on $psitem" -Skip:($InstanceSMO.Version.Major -lt 11 -and (-not ($InstanceSMO.Version.Major -eq 10 -and $InstanceSMO.Version.Minor -eq 50)) ) {
                     Assert-MaxDump -AllInstanceInfo $AllInstanceInfo -maxdumps $maxdumps
                 }
             }
@@ -704,6 +704,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
 
     Describe "Error Log Entries" -Tags ErrorLog, Medium, $filename {
+        $logwindow = Get-DbcConfigValue policy.errorlog.warningwindow
         if ($NotContactable -contains $psitem) {
             Context "Checking error log on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -713,7 +714,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Checking error log on $psitem" {
-                It "Error log should be free of error severities 17-24 on $psitem" {
+                It "Error log should be free of error severities 17-24 within the window of $logwindow days on $psitem" {
                     Assert-ErrorLogEntry -AllInstanceInfo $AllInstanceInfo
                 }
             }
@@ -796,6 +797,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     }
     Describe "Trace Flags Not Expected" -Tags TraceFlagsNotExpected, TraceFlag, Medium, $filename {
         $NotExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.notexpected
+        $ExpectedTraceFlags = Get-DbcConfigValue policy.traceflags.expected
         if ($NotContactable -contains $psitem) {
             Context "Testing Not Expected Trace Flags on $psitem" {
                 It "Can't Connect to $Psitem" {
@@ -806,7 +808,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing Not Expected Trace Flags on $psitem" {
                 It "Expected Trace Flags $NotExpectedTraceFlags to not exist on $psitem" {
-                    Assert-NotTraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags
+                    Assert-NotTraceFlag -SQLInstance $psitem -NotExpectedTraceFlag $NotExpectedTraceFlags -ExpectedTraceFlag $ExpectedTraceFlags
                 }
             }
         }
@@ -882,6 +884,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
     Describe "Scan For Startup Procedures" -Tags ScanForStartupProceduresDisabled, Security, CIS, Medium, $filename {
         $skip = Get-DbcConfigValue skip.instance.scanforstartupproceduresdisabled
+        $ScanForStartupProcsDisabled = Get-DbcConfigValue policy.security.scanforstartupproceduresdisabled
         if ($NotContactable -contains $psitem) {
             Context "Testing Scan For Startup Procedures on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
@@ -891,8 +894,8 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         }
         else {
             Context "Testing Scan For Startup Procedures on $psitem" {
-                It "Scan For Startup Procedures should be disabled on $psitem" -Skip:$skip {
-                    Assert-ScanForStartupProcedures -AllInstanceInfo $AllInstanceInfo
+                It "Scan For Startup Procedures is set to $ScanForStartupProcsDisabled on $psitem" -Skip:$skip {
+                    Assert-ScanForStartupProcedures -AllInstanceInfo $AllInstanceInfo -ScanForStartupProcsDisabled $ScanForStartupProcsDisabled
                 }
             }
         }
@@ -1187,9 +1190,28 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "Suspect Page Limit Nearing" -Tags SuspectPageLimit, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.instance.suspectpagelimit
+        $thresholdPercent = Get-DbcConfigValue policy.suspectpages.threshold
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if the suspect_pages table is nearing the limit of 1000 rows on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if the suspect_pages table is nearing the limit of 1000 rows on $psitem" {
+                It "The suspect_pages table in msdb shouldn't be nearing the limit of 1000 rows on $psitem" -Skip:$skip {
+                    (((Get-DbaSuspectPage -SqlInstance $psitem | Measure-Object).Count)/1000)*100 | Should -BeLessThan $thresholdPercent
+                }
+            }
+        }
+    }
 }
 
-Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, High, $filename {
+Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, CIS, High, $filename {
     @(Get-ComputerName).ForEach{
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Browser Service on $psitem" {
@@ -1205,20 +1227,20 @@ Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, H
                     if (-not $IsLinux) {
                         $Services = Get-DbaService -ComputerName $psitem
                         if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                            It "SQL browser service should be Stopped as only one instance is installed on $psitem" {
+                            It "SQL Browser service should be Stopped as only one instance is installed on $psitem" {
                                 $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Stopped" -Because 'Unless there are multiple instances you dont need the browser service'
                             }
                         }
                         else {
-                            It "SQL browser service should be Running as multiple instances are installed on $psitem" {
+                            It "SQL Browser service should be Running as multiple instances are installed on $psitem" {
                                 $Services.Where{ $_.ServiceType -eq 'Browser' }.State | Should -Be "Running" -Because 'You need the browser service with multiple instances' }
                         }
                         if ($Services.Where{ $_.ServiceType -eq 'Engine' }.Count -eq 1) {
-                            It "SQL browser service startmode should be Disabled as only one instance is installed on $psitem" {
+                            It "SQL Browser service startmode should be Disabled as only one instance is installed on $psitem" {
                                 $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Disabled" -Because 'Unless there are multiple instances you dont need the browser service' }
                         }
                         else {
-                            It "SQL browser service startmode should be Automatic as multiple instances are installed on $psitem" {
+                            It "SQL Browser service startmode should be Automatic as multiple instances are installed on $psitem" {
                                 $Services.Where{ $_.ServiceType -eq 'Browser' }.StartMode | Should -Be "Automatic"
                             }
                         }

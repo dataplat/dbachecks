@@ -1,3 +1,94 @@
+## Latest
+## April 7th 2021
+
+Thank you [@mikedavem](https://www.github.com/mikedavem) Fixed rogue verbose when importing [#834](https://github.com/sqlcollaborative/dbachecks/issues/834)
+
+Thank you [@mikedavem](https://www.github.com/mikedavem) Test NetBios Over TCP/IP should be disabled for cluster network interface [#833](https://github.com/sqlcollaborative/dbachecks/issues/833)
+
+Thank you [@conseilit](https://www.github.com/conseilit) Add LogfilePercentUsed check. Log might fill even if simple recovery model or full recovery model + Tlog backup in case of replication, CDC, HADR issues. [#831](https://github.com/sqlcollaborative/dbachecks/issues/831) [#832](https://github.com/sqlcollaborative/dbachecks/issues/832)
+
+Thank you [@conseilit](https://www.github.com/conseilit) Getting SQL Server instance DateTime prevent Log Backup checks to fail if the instance is not in the same timezone than the computer running dbaChecks scripts. [#830](https://github.com/sqlcollaborative/dbachecks/issues/830)
+
+Thank you [@MikeyBronowski](https://www.github.com/MikeyBronowski) Get-DbcConfig Adding support to multiple names [#829](https://github.com/sqlcollaborative/dbachecks/issues/829)
+
+Thank you [@MikeyBronowski](https://www.github.com/MikeyBronowski) Spellings [#827](https://github.com/sqlcollaborative/dbachecks/issues/827)
+
+Thank you [@TheAntGreen](https://www.github.com/TheAntGreen) updated variables to make errors obvious [#825](https://github.com/sqlcollaborative/dbachecks/issues/825)
+
+Thank you [@MrBlueSky](https://www.github.com/MrBlueSky) - add info to suggest using Duplicate index command [#807](https://github.com/sqlcollaborative/dbachecks/issues/807)
+
+Thank you [@PsPsam](https://www.github.com/PsPsam) - Ping check to work on core and 5.1 [#763](https://github.com/sqlcollaborative/dbachecks/issues/763)
+
+Thank you [@zikato](https://www.github.com/zikato) - certificate expiration gives two failures if in the past [#785](https://github.com/sqlcollaborative/dbachecks/issues/785)
+
+Thank you [@mikedavem](https://www.github.com/mikedavem) - allow more than 99 days for retention for Olas jobs [#835](https://github.com/sqlcollaborative/dbachecks/issues/835)
+
+Thank you [@Shashtsoh](https://www.github.com/Shashtsoh) - Remove aliases to work in core [#837](https://github.com/sqlcollaborative/dbachecks/issues/837)
+
+Thank you [@a4ic6n](https://www.github.com/a4ic6n) - Max Memory check false succeeds [#836](https://github.com/sqlcollaborative/dbachecks/issues/836)
+
+
+## December 14th 2020
+
+Thank you tboggiano Browser check altered for instance count #758
+Thank you zikato - Fixing datafile auto growth #786
+Thank you fatherjack Typos #767
+Thank you tboggiano Query Store enabled and disabled test improvements #791
+Thank you relsna fixed issue with error log window #814
+Thank you @TheAntGreen Typos #815
+Thank you @TheAntGreen Add additional filter to filter out negative run_durations #816
+Thank you @TheAntGreen Add policy for additional excluded dbs from the SAFE CLR check #817
+Thank you @MikeyBronowski Fix the check for enabled alerts #819
+Thank you @MikeyBronowski Updating the link in documentation #820
+Thank you @mikedavem Updated HADR checks with additional checks #822
+Thank you @mikedavem Database backup diff check - fix issue #812 #824
+
+## Date November 23rd 2020
+
+Finally Rob gets around to working on PRs - Really sorry it has taken so long
+
+Fixes for bug 780 & 783 #784 - Thank you @TheAntGreen
+Fix local windows groups, additional filter needed on the object filter #789 - Thank you @TheAntGreen
+$null check for anything running SQL2008R2 or below as containment doesnt exist in those versions. #790 - Thank you @TheAntGreen
+
+Fix for IsClustered checks for service startup types #792  - Thank you @TheAntGreen
+
+CertCheck took ages to run, was still checking excluded DB's then filtering, change to not query the excluded DBs #793  - Thank you @TheAntGreen
+
+Fixed few typos in docs #799 - Thank you @jpomfret
+
+Fixed few typos in docs #799 - Thank you @TheAntGreen
+
+DuplicateIndex Check - Added new configuration option to allow people to filter out databases, as SSRS DB's have duplicate indexes and names are configuration in older versions, defaults to ReportServer & ReportServerTempDB
+
+GuestUserConnect - Changes method to Get-Database instead of InstanceSMO so its easier to filter out none accessable databases as the check would report false positives for offline or restoring databases
+
+NotExpectedTraceFlag - added a filter to filter out any trace flags which WHERE expected to prevent false positive alerts #801 - Thank you @TheAntGreen
+
+Add policy to exclude databases on the trustworthy check #806  - Thank you @TheAntGreen
+
+Unused Index Check wasn't executing correctly #808   - Thank you @TheAntGreen
+
+#803 Addition of the date filter for File Autogrowth detection #809   - Thank you @TheAntGreen
+
+New Check - Agent Mail Profile #811   - Thank you @TheAntGreen
+
+Scan for startup procs, use config option to override the value in use #813  - Thank you @TheAntGreen
+
+##Latest
+
+## Date September 22nd 2020
+
+Only Importing Pester v4 and lower to reduce Pester v5 errors
+
+## Date July 13th 2020
+
+Thank you jpomfret Added skip.backup.readonly config  #777
+Thank you jpomfret typos  #771
+Thank you jpomfret Added MSDB suspect pages table check  #768
+Thank you markaugust Added instance name to Agent Service ACcount checks #766
+Thank you tboggiano fixed Agent Run time calculation #746
+
 ## Date 9th May 2020
 
 UPDATED TO VERSION 2
@@ -8,7 +99,7 @@ New Commands
     Set-DbcFile - To save the parsed results to a file json, csv or xml
     Write-DbcTable - to add results to a database
 
-New Parameter 
+New Parameter
     -FromDatabase on Star-DbcPowerBi - to open new Power Bi template file
 
 New PowerBi template file for reporting on results from the database
@@ -83,7 +174,7 @@ Thank you Tracey tboggiano
     New CIS Check public role permissions #729
     New CIS Check local windows groups do not have logins #731
     Update sa login check #730
-    
+
 Thank you Rob
     Added Tag parameter to Get-DbcCheck
     Updated tests to work with PowerShell 7
@@ -92,14 +183,14 @@ Thank you Rob
 Thank you Tracey tboggiano
     Two New CIS Checks Contained databases should be auto-closed #721
     sa login disabled and should not exist #719
-    
+
 Thank you Rob
     Fix bug in Agent Tests #723
 
 ## Date 28th November
 Thank you Tracey tboggiano
     Added new CIS Check for the latest SQL build #716
-    
+
 Thank you Rob
     Making the SQL Engine Service Check configurable #706
 
@@ -125,14 +216,14 @@ Thank you Rob
 Fixed some merge issues with a load of code :-(
 Created GitHub Action to run Pester Checks on PR
 Thank you @TracyBoggiano
-Added New Checks 
+Added New Checks
     RemoteAccessDisabled
     ScanForStartUpProcedures
 Thank you Gareth Newman
     Improved wording in tests #700 , #697
     Fix incorrect calculation in last agent run time #696 #698
 Fixed bug in AllInstanceInfo
-Thank you Richard Imenes 
+Thank you Richard Imenes
     Fixed dead links in readme #702
 Thank you Benjamin Schenk
     Fixed Send-MailMessage in readme #705
@@ -191,16 +282,16 @@ added default environment #596
 altered configuration validation for mail to stop errors
 Ensured database status check doesnt fail as readonly for snapshots
 
-## Date 31/01/2019 
+## Date 31/01/2019
 Thank you Chrissy!
 add support for inline config file, fixes #501 #594
 
-## Date 29/01/2019 
+## Date 29/01/2019
 Added skip for authentication scheme #587
 Added WhatIf to Update-DbcPowerBiDataSource Thank you @shaneis #590
-$null to the left Thank you @jwmoss #588 
+$null to the left Thank you @jwmoss #588
 
-## Date 19/01/2019 
+## Date 19/01/2019
 Thank you Claudio
 Added extra check for Job History Settings #582
 Added extra check for Error Log Count #583
@@ -209,13 +300,13 @@ Added integration test code and docker compose file
 ##Latest
 
 ## Date 22/11/2018
-Spelling - Thanks RonaldHensbergen 
+Spelling - Thanks RonaldHensbergen
 Fix for #576 When calling just Invoke-DbcCheck without a Check it fails to run the Server Tests correctly
 
 
 ## Date 12/11/2018
 Added more information to the output - thanks @ClaudioESSilva
-Spelling - Thanks ChrisTuckerNM 
+Spelling - Thanks ChrisTuckerNM
 Fix for #564 - Error Importing DbcConfig in PowerShell 4 - Thanks @niphod
 
 ## Date 29/10/2018
@@ -251,13 +342,13 @@ Renamed all dbatools commands to new naming convention
 Fixed Bug with JSON file naming
 Improved Server Checks to remove Red and improve speed for none contactable servers
 Altered all server checks to use assertions and added pester Tests
-Removed left over ogv entry 
+Removed left over ogv entry
 
 ## Date 05/09/2018
 New Check for 2 digit cut off thanks @CláudioESSilva
 https://claudioessilva.eu/2018/09/04/dont-cutoff-yourself-when-dealing-with-dates-in-t-sql-did-you-know/
 Fixed bug with adding NoneContactable Instances to variable
-Improved error handling for HADR checks 
+Improved error handling for HADR checks
 
 ## Date 28/08/2018
 Added MaxBehind to SupportedBuild Tests - Thank you @LowlyDBA
@@ -294,7 +385,7 @@ Added New Check for tempdb data file sizes to be the same - Thank you @garethnew
 Altered Services Check so that clustered instances start mode is checked correctly thank you @kylejdoyle #516
 Skip PowerPlan test if no connection thanks @cl #490
 Fixed bug with XESession and PSv4 thank you @kylejdoyle #517
-Error silently on failing Service check (thanks Rob ;-) ) 
+Error silently on failing Service check (thanks Rob ;-) )
 Fixed dbatools command names
 Fixed PSv4 support for importing the module also
 

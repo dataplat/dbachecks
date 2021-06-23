@@ -17,7 +17,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
             if ($null -eq $InstanceSMO.version) {
                 $NotContactable += $Instance
             }
-            elseif (($connectioncheck).Edition -like "Express Edition*") { }
+            elseif (($InstanceSMO).Edition -like "Express Edition*") { }
             else {
                 Describe "Database Mail XPs" -Tags DatabaseMailEnabled, CIS, security, $filename {
                     $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
@@ -51,16 +51,16 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
 
                             Context "Testing SQL Agent is running on $psitem" {
                                 @(Get-DbaService -ComputerName $psitem -Type Agent).ForEach{
-                                    It "SQL Agent should be running on $($psitem.ComputerName)" {
+                                    It "SQL Agent should be running for $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                         $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
                                     }
-                                    if ($connectioncheck.IsClustered) {
-                                        It "SQL Agent service should have a start mode of Manual on FailOver Clustered Instance $($psitem.ComputerName)" {
+                                    if ($InstanceSMO.IsClustered) {
+                                        It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                             $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
                                         }
                                     }
                                     else {
-                                        It "SQL Agent service should have a start mode of Automatic on standalone instance $($psitem.ComputerName)" {
+                                        It "SQL Agent service should have a start mode of Automatic for standalone instance $($psitem.InstanceName) on $($psitem.ComputerName)" {
                                             $psitem.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
                                         }
                                     }
@@ -135,7 +135,25 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         Context "Testing database mail profile is set on $psitem" {
                             $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
                             It "The Database Mail profile $databasemailprofile exists on $psitem" {
-                                (Get-DbaDbMailProfile -SqlInstance $InstanceSMO).Name | Should -Be $databasemailprofile -Because 'The database mail profile is required to send emails'
+                                ((Get-DbaDbMailProfile -SqlInstance $InstanceSMO).Name -contains $databasemailprofile) | Should -Be $true -Because 'The database mail profile is required to send emails'
+                            }
+                        }
+                    }
+                }
+
+                Describe "Agent Mail Profile" -Tags AgentMailProfile, $filename {
+                    if ($NotContactable -contains $psitem) {
+                        Context "Testing SQL Agent Alert System database mail profile is set on $psitem" {
+                            It "Can't Connect to $Psitem" {
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                            }
+                        }
+                    }
+                    else {
+                        Context "Testing SQL Agent Alert System database mail profile is set on $psitem" {
+                            $agentmailprofile = Get-DbcConfigValue  agent.databasemailprofile
+                            It "The SQL Server Agent Alert System should have an enabled database mail profile on $psitem" {
+                                (Get-DbaAgentServer -SqlInstance $InstanceSMO).DatabaseMailProfile | Should -Be $agentmailprofile -Because 'The SQL Agent Alert System needs an enabled database mail profile to send alert emails'
                             }
                         }
                     }
@@ -223,7 +241,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                                     ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
                                 }
                                 It "Severity $sev Alert should be enabled on $psitem" -Skip:$skip {
-                                    ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Configured alerts should be enabled"
+                                    ($alerts.Where{ $psitem.Severity -eq $sev }).IsEnabled | Should -be $true -Because "Configured alerts should be enabled"
                                 }
                                 if ($AgentAlertJob) {
                                     It "A job name for Severity $sev Alert on $psitem" -Skip:$skip {
@@ -318,6 +336,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
         WHERE start_execution_date is not null
         AND stop_execution_date is null
         AND run_duration < 235959
+        AND run_duration >= 0
         AND ja.start_execution_date > DATEADD(day,-1,GETDATE())
         GROUP BY j.name,j.job_id,start_execution_date,stop_execution_date,ja.job_id
         ) AS t
@@ -360,7 +379,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         SELECT
                         j.job_id,
                         j.name AS JobName,
-                        jh.run_duration AS Duration
+                        DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' + CONVERT(VARCHAR(6),jh.run_duration),6),5,0,':'),3,0,':')) AS Duration
                         FROM msdb.dbo.sysjobs j
                         INNER JOIN
                             (
@@ -387,6 +406,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         FROM msdb.dbo.sysjobhistory hist
                         WHERE msdb.dbo.agent_datetime(run_date, run_time) > DATEADD(DAY,- $maxdays,GETDATE())
                         AND Step_id = 0
+                        AND run_duration >= 0
                         GROUP BY job_id
                         ) as art
 

@@ -1,4 +1,5 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 
+<#
 Install-Module PlatyPs -Scope CurrentUser -Force
 Import-Module PlatyPs
 
@@ -6,14 +7,13 @@ Import-Module PlatyPs
 Install-Module Configuration -RequiredVersion 1.3.0 -Scope CurrentUser -Force
 $Modules = Get-ManifestValue -Path .\dbachecks.psd1 -PropertyName RequiredModules
 
-$PesterVersion = $Modules.Where{$_.Get_Item('ModuleName') -eq 'Pester'}[0].Get_Item('ModuleVersion')
 $PSFrameworkVersion = $Modules.Where{$_.Get_Item('ModuleName') -eq 'PSFramework'}[0].Get_Item('ModuleVersion')
 $dbatoolsVersion = $Modules.Where{$_.Get_Item('ModuleName') -eq 'dbatools'}[0].Get_Item('ModuleVersion')
 
 # Install Pester
 try {
     Write-Output "Installing Pester"
-    Install-Module Pester  -RequiredVersion $PesterVersion  -Scope CurrentUser -Force -SkipPublisherCheck
+    Install-Module Pester  -RequiredVersion 4.10.0  -Scope CurrentUser -Force -SkipPublisherCheck
     Write-Output "Installed Pester"
 
 }
@@ -21,16 +21,7 @@ catch {
     Write-Error "Failed to Install Pester $($_)"
 }
 
-# Install Latest version of pester as well
-try {
-    Write-Output "Installing Latest Pester"
-    Install-Module Pester  -Scope CurrentUser -Force -SkipPublisherCheck
-    Write-Output "Installed Latest Pester"
 
-}
-catch {
-    Write-Error "Failed to Install Pester $($_)"
-}
 # Install dbatools
 try {
     Write-Output "Installing PSFramework"
@@ -52,6 +43,7 @@ try {
 catch {
     Write-Error "Failed to Install dbatools $($_)"
 }
+#>
 
 # Add current folder to PSModulePath
 try {
