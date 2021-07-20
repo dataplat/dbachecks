@@ -296,10 +296,9 @@ Imports configuration file, \\\\share\repo\prod.json, prior to executing checks.
 ### EXAMPLE 4
 ```
 # Set the servers you'll be working with
-```
-
 Set-DbcConfig -Name app.sqlinstance -Value sql2016, sql2017, sql2008, sql2008\express
 Set-DbcConfig -Name app.computername -Value sql2016, sql2017, sql2008
+```
 
 # Look at the current configs
 Get-DbcConfig

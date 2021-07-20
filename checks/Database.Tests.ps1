@@ -561,7 +561,7 @@ $ExcludedDatabases += $ExcludeDatabase
                         }
                         $skip = ($psitem.Status -match "Offline") -or ($psitem.IsAccessible -eq $false) -or ($psitem.Readonly -eq $true -and $skipreadonly -eq $true) -or ($agReplicaRole -eq 'Secondary' -and $skipsecondaries -eq $true)
                         It -Skip:$skip  "Database $($psitem.Name) log backups should be less than $maxlog minutes old on $($psitem.Parent.Name)" {
-                            $psitem.LastLogBackupDate | Should -BeGreaterThan $sqlinstancedatetime.AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
+                            $psitem.LastLogBackupDate.ToUniversalTime() | Should -BeGreaterThan $sqlinstancedatetime.AddMinutes( - ($maxlog) + 1) -Because "Taking regular backups is extraordinarily important"
                         }
                     }
                 }

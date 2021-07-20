@@ -69,9 +69,8 @@ Runs the DatabaseStatus checks against $Instance then saves to json to  C:\Windo
 ### EXAMPLE 7
 ```
 Invoke-DbcCheck -SqlInstance sql2017 -Tag Backup -Show Summary -PassThru | Update-DbcPowerBiDataSource -Path \\nas\projects\dbachecks.json
+Start-DbcPowerBi -Path \\nas\projects\dbachecks.json
 ```
-
-Start-DbcPowerBi -Path \\\\nas\projects\dbachecks.json
 
 Runs tests, saves to json to \\\\nas\projects\dbachecks.json
 Opens the PowerBi using that file
@@ -81,9 +80,8 @@ points to C:\Windows\Temp (limitation of Power BI)
 ### EXAMPLE 8
 ```
 Set-DbcConfig -Name app.checkrepos -Value \\SharedPath\CustomPesterChecks
+Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus, CustomCheckTag -PassThru | Update-DbcPowerBiDataSource -Path \\SharedPath\CheckResults -Name CustomCheckResults -Append
 ```
-
-Invoke-DbcCheck -SqlInstance $Instance -Check DatabaseStatus, CustomCheckTag -PassThru | Update-DbcPowerBiDataSource -Path \\\\SharedPath\CheckResults -Name CustomCheckResults -Append
 
 Because we are using a custom check repository you MUSTR use the Append parameter for Update-DbcPowerBiDataSource
 otherwise the json file will be overwritten
