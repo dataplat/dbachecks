@@ -553,5 +553,9 @@
     {
         "UniqueTag": "PublicPermission",
         "Description": "Tests to see if public role has extra permissions based on CIS requirements."
+    },
+    {
+        "UniqueTag": "ServerProtocol",
+        "Description": "Tests to see if the SQL Server Instances are running other protocols besides TCP/IP."
     }
 ]
