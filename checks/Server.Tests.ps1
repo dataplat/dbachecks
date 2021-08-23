@@ -97,6 +97,16 @@ Return
             }
         }
     }
+
+    Describe "Server Protocols" -Tags ServerProtocol, Medium, CIS, $filename {
+        $skip = Get-DbcConfigValue skip.security.serverprotocol
+        Context "Checking SQL Server protocols on $psitem" {
+            It  "All SQL Server Instances should be configured to run only TCP/IP protocol on $psitem" -skip:$skip {
+                Assert-ServerProtocol -AllServerInfo $AllServerInfo
+            }
+        }
+    }
+
 }
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
