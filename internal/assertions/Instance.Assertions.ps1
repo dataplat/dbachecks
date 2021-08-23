@@ -953,6 +953,8 @@ function Assert-TraceFlag {
     }
 }
 function Assert-NotTraceFlag {
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'ExpectedTraceFlag')]
     Param(
         [string]$SQLInstance,
         [int[]]$NotExpectedTraceFlag,
