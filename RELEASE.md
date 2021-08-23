@@ -7,6 +7,7 @@ Thank you [@MikeyBronowski](https://www.github.com/MikeyBronowski) Get the file 
 Thank you [@MikeyBronowski](https://www.github.com/MikeyBronowski) spelling and full stops #842
 Thank you [ashdar](https://github.com/ashdar) Check for existence in the Tag list before adding a Tag to the Tag list #853
 Thank you [ashdar](https://github.com/ashdar) Updated PowerPlan Assertion #850
+Thank you [tboggiano](https://github.com/tboggiano) CIS check for SQL Mail XPS for SQL Server 2008 and below (was) #779 now 
 
 ## April 7th 2021
 
