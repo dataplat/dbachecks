@@ -10,6 +10,7 @@ It starts with the Get-AllServerInfo which uses all of the unique
  The long term aim is to make Get-AllServerInfo as performant as
  possible
 #>
+
 function Get-AllServerInfo {
     # Using the unique tags gather the information required
     # 2018/09/04 - Added PowerPlan Tag - RMS
@@ -179,6 +180,8 @@ function Get-AllServerInfo {
 }
 
 function Assert-CPUPrioritisation {
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'ComputerName')]
     Param(
         [string]$ComputerName
     )
