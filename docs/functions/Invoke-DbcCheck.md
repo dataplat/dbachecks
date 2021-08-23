@@ -123,10 +123,11 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
  [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityLoginCheckPolicy <Object>]
  [-ConfigSkipSecurityLoginMustChange <Object>] [-ConfigSkipSecurityLoginPasswordExpiration <Object>]
- [-ConfigSkipSecurityNonstandardport <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
- [-ConfigSkipSecurityQuerystoredisabled <Object>] [-ConfigSkipSecurityQuerystoreenabled <Object>]
- [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
- [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
+ [-ConfigSkipSecurityNonstandardport <Object>] [-ConfigSkipSecurityPublicPermission <Object>]
+ [-ConfigSkipSecurityPublicrolepermission <Object>] [-ConfigSkipSecurityQuerystoredisabled <Object>]
+ [-ConfigSkipSecurityQuerystoreenabled <Object>] [-ConfigSkipSecuritySadisabled <Object>]
+ [-ConfigSkipSecuritySaexist <Object>] [-ConfigSkipSecurityServerprotocol <Object>]
+ [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>] [-ConfigSkipSecuritySQLMailXPsDisabled <Object>]
  [-ConfigSkipSecuritySymmetrickeyencryptionlevel <Object>] [-ConfigSkipTempdb1118 <Object>]
  [-ConfigSkipTempdbfilecount <Object>] [-ConfigSkipTempdbfilegrowthpercent <Object>]
  [-ConfigSkipTempdbfilesizemax <Object>] [-ConfigSkipTempdbfilesonc <Object>]
@@ -251,10 +252,11 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ConfigSkipSecurityLocalwindowsgroup <Object>] [-ConfigSkipSecurityLoginauditlevelfailed <Object>]
  [-ConfigSkipSecurityLoginauditlevelsuccessful <Object>] [-ConfigSkipSecurityLoginCheckPolicy <Object>]
  [-ConfigSkipSecurityLoginMustChange <Object>] [-ConfigSkipSecurityLoginPasswordExpiration <Object>]
- [-ConfigSkipSecurityNonstandardport <Object>] [-ConfigSkipSecurityPublicrolepermission <Object>]
- [-ConfigSkipSecurityQuerystoredisabled <Object>] [-ConfigSkipSecurityQuerystoreenabled <Object>]
- [-ConfigSkipSecuritySadisabled <Object>] [-ConfigSkipSecuritySaexist <Object>]
- [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>]
+ [-ConfigSkipSecurityNonstandardport <Object>] [-ConfigSkipSecurityPublicPermission <Object>]
+ [-ConfigSkipSecurityPublicrolepermission <Object>] [-ConfigSkipSecurityQuerystoredisabled <Object>]
+ [-ConfigSkipSecurityQuerystoreenabled <Object>] [-ConfigSkipSecuritySadisabled <Object>]
+ [-ConfigSkipSecuritySaexist <Object>] [-ConfigSkipSecurityServerprotocol <Object>]
+ [-ConfigSkipSecuritySqlagentproxiesnopublicrole <Object>] [-ConfigSkipSecuritySQLMailXPsDisabled <Object>]
  [-ConfigSkipSecuritySymmetrickeyencryptionlevel <Object>] [-ConfigSkipTempdb1118 <Object>]
  [-ConfigSkipTempdbfilecount <Object>] [-ConfigSkipTempdbfilegrowthpercent <Object>]
  [-ConfigSkipTempdbfilesizemax <Object>] [-ConfigSkipTempdbfilesonc <Object>]
@@ -4053,6 +4055,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigSkipSecurityPublicPermission
+{{ Fill ConfigSkipSecurityPublicPermission Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigSkipSecurityPublicrolepermission
 {{ Fill ConfigSkipSecurityPublicrolepermission Description }}
 
@@ -4128,8 +4145,38 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ConfigSkipSecurityServerprotocol
+{{ Fill ConfigSkipSecurityServerprotocol Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ConfigSkipSecuritySqlagentproxiesnopublicrole
 {{ Fill ConfigSkipSecuritySqlagentproxiesnopublicrole Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigSkipSecuritySQLMailXPsDisabled
+{{ Fill ConfigSkipSecuritySQLMailXPsDisabled Description }}
 
 ```yaml
 Type: Object

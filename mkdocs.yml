@@ -21,6 +21,7 @@ pages:
     - Invoke-DbcConfigFile: functions/Invoke-DbcConfigFile.md
     - Reset-DbcConfig: functions/Reset-DbcConfig.md
     - Save-DbcRequiredModules: functions/Save-DbcRequiredModules.md
+    - Set-DbcCisConfig: functions/Set-DbcCisConfig.md
     - Set-DbcConfig: functions/Set-DbcConfig.md
     - Set-DbcFile: functions/Set-DbcFile.md
     - Start-DbcPowerBi: functions/Start-DbcPowerBi.md

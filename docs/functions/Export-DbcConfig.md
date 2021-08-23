@@ -6,7 +6,7 @@ Exports dbachecks configs to a json file to make it easier to modify or be used 
 ## SYNTAX
 
 ```
-Export-DbcConfig [[-Path] <String>] [-EnableException] [<CommonParameters>]
+Export-DbcConfig [[-Path] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -28,6 +28,13 @@ Export-DbcConfig -Path \\nfs\projects\config.json
 
 Exports config to \\\\nfs\projects\config.json
 
+### EXAMPLE 3
+```
+$config = Export-DbcConfig | Invoke-Item
+```
+
+Exports config to "$script:localapp\config.json" as and opens it in a default application.
+
 ## PARAMETERS
 
 ### -Path
@@ -41,23 +48,6 @@ Aliases:
 Required: False
 Position: 1
 Default value: "$script:localapp\config.json"
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -EnableException
-By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
-This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
-Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
