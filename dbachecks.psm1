@@ -22,7 +22,7 @@ else {
     try {
         $CompatibleInstalledPester = Get-Module Pester -ListAvailable | Where-Object { $Psitem.Version.Major -le 4 } | Sort-Object Version -Descending | Select-Object -First 1
         Write-PSFMessage -Message "Trying to import version $($CompatibleInstalledPester.Version.ToString())"
-        Import-Module $CompatibleInstalledPester.Path -Verbose -Scope Global
+        Import-Module $CompatibleInstalledPester.Path -Scope Global
     }
     catch {
         Write-PSFMessage -Level Significant -Message "Failed to import suitable version - Do you have Version 4* installed ?"
