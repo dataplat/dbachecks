@@ -36,7 +36,8 @@
             TargetVersions = @(
                 '5.1'
                 '6.1',
-                '6.2'
+                '6.2',
+                '7.0'
             )
         }
     }
@@ -45,5 +46,5 @@
     # the default rules except for those you exclude below.
     # Note: if a rule is in both c and ExcludeRules, the rule
     # will be excluded.
-    # ExcludeRules = @('PSAvoidTrailingWhitespace')
+     ExcludeRules = @('PSAvoidAssignmentToAutomaticVariable')
 }
