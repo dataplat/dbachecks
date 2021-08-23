@@ -9,7 +9,7 @@ Thank you [tboggiano](https://github.com/tboggiano) CIS check for SQL Mail XPS f
 Thank you [tboggiano](https://github.com/tboggiano) Added function to set CIS config (was) #776
 Thank you [tboggiano](https://github.com/tboggiano) CIS check for TCP IP Protocols (was) #775
 
-## Latest
+##Latest
 
 ## April 7th 2021
 
