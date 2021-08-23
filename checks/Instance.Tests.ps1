@@ -1209,6 +1209,42 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
     }
+
+    Describe "SQL Mail XPs Disabled" -Tags SQLMailXPsDisabled, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.SQLMailXPsDisabled
+        if ($NotContactable -contains $psitem) {
+            Context "Testing SQL Mail XPs on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:($skip -or $InstanceSMO.VersionMajor -gt 10){
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing SQL Mail XPs on $psitem" {
+                It "The SQL Mail XPs should be disabled on $psitem" -Skip:($skip -or $InstanceSMO.VersionMajor -gt 10){
+                    Assert-SQLMailXPs -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
+
+    Describe "Public Role Permissions" -Tags PublicPermission, Security, CIS, Medium, $filename {
+        $skip = Get-DbcConfigValue skip.security.PublicPermission
+        if ($NotContactable -contains $psitem) {
+            Context "Testing if the public role permissions don't have permissions on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing if the public role permissions don't have permissions  on $psitem" {
+                It "All permissions should be set to CIS standards on the public role on $psitem"  -Skip:$skip {
+                    Assert-PublicPermission -AllInstanceInfo $AllInstanceInfo
+                }
+            }
+        }
+    }
 }
 
 Describe "SQL Browser Service" -Tags SqlBrowserServiceAccount, ServiceAccount, CIS, High, $filename {

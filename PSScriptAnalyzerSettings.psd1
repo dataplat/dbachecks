@@ -8,8 +8,8 @@
 
             # Lists the PowerShell platforms we want to check compatibility with
             TargetProfiles = @(
-                'win-8_x64_10.0.17763.0_6.1.3_x64_4.0.30319.42000_core',
-                'ubuntu_x64_18.04_6.1.3_x64_4.0.30319.42000_core',
+                'win-8_x64_10.0.17763.0_7.0.0_x64_3.1.2_core.json',
+                'ubuntu_x64_18.04_7.0.0_x64_3.1.2_core.json',
                 'win-8_x64_10.0.17763.0_5.1.17763.316_x64_4.0.30319.42000_framework'
              #   'win-8_x64_6.2.9200.0_3.0_x64_4.0.30319.42000_framework'
             )
@@ -36,7 +36,8 @@
             TargetVersions = @(
                 '5.1'
                 '6.1',
-                '6.2'
+                '6.2',
+                '7.0'
             )
         }
     }
@@ -45,5 +46,5 @@
     # the default rules except for those you exclude below.
     # Note: if a rule is in both c and ExcludeRules, the rule
     # will be excluded.
-    # ExcludeRules = @('PSAvoidTrailingWhitespace')
+     ExcludeRules = @('PSAvoidAssignmentToAutomaticVariable')
 }

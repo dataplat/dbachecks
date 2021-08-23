@@ -10,6 +10,7 @@ It starts with the Get-AllServerInfo which uses all of the unique
  The long term aim is to make Get-AllServerInfo as performant as
  possible
 #>
+
 function Get-AllServerInfo {
     # Using the unique tags gather the information required
     # 2018/09/04 - Added PowerPlan Tag - RMS
@@ -66,19 +67,11 @@ function Get-AllServerInfo {
                     $PowerPlan = (Test-DbaPowerPlan -ComputerName $ComputerName -EnableException -WarningVariable PowerWarning -WarningAction SilentlyContinue).IsBestPractice
                 }
                 catch {
-                    $There = $false
-                    if ($PowerWarning) {
-                        if ($PowerWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
-                            $PowerPlan = 'Could not connect'
-                        }
-                    }
-                    else {
-                        $PowerPlan = 'An Error occurred'
-                    }
+                    $PowerPlan = $false
                 }
             }
             else {
-                $PowerPlan = 'An Error occurred'
+                $PowerPlan = $false
             }
         }
         'SPN' {
@@ -174,19 +167,44 @@ function Get-AllServerInfo {
                 }
             }
         }
+        'ServerProtocol' {
+            if ($There) {
+                try {
+                    $count = (Get-DbaInstanceProtocol -ComputerName $ComputerName | Where-Object {$_.DisplayName -ne "TCP/IP" -and $_.IsEnabled -eq $true}).Count
+                    $ServerProtocol = [pscustomobject] @{
+                        Count = $count
+                    }
+                }
+                catch {
+                    $There = $false
+                    $ServerProtocol = [pscustomobject] @{
+                        Count = 'We Could not Connect to $Instance'
+                    }
+                }
+            }
+            else {
+                $There = $false
+                $ServerProtocol = [pscustomobject] @{
+                    Count = 'We Could not Connect to $Instance'
+                }
+            }
+        }
         Default {}
     }
     [PSCustomObject]@{
-        PowerPlan      = $PowerPlan
-        SPNs           = $SPNs
-        DiskSpace      = $DiskSpace
-        PingComputer   = $PingComputer
-        DiskAllocation = $DiskAllocation
+        PowerPlan         = $PowerPlan
+        SPNs              = $SPNs
+        DiskSpace         = $DiskSpace
+        PingComputer      = $PingComputer
+        DiskAllocation    = $DiskAllocation
         StandardPortCount = $StandardPortCount
+        ServerProtocol = $ServerProtocol
     }
 }
 
 function Assert-CPUPrioritisation {
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'ComputerName')]
     Param(
         [string]$ComputerName
     )
@@ -232,9 +250,9 @@ function Assert-Ping {
             ($AllServerInfo.PingComputer).Count | Should -Be $pingcount -Because "We expect the server to respond to ping"
         }
         Average {
-            if($IsCoreCLR){
+            if ($IsCoreCLR) {
             }
-            else{
+            else {
                 ($AllServerInfo.PingComputer | Measure-Object -Property ResponseTime -Average).Average / $pingcount | Should -BeLessThan $pingmsmax -Because "We expect the server to respond within $pingmsmax"
             }
         }
@@ -246,6 +264,12 @@ function Assert-NonStandardPort {
     Param($AllServerInfo)
     $AllServerInfo.StandardPortCount.count | Should -Be 0 -Because "SQL Server should be configured to not use the standard port of 1433"
 }
+
+function Assert-ServerProtocol {
+    Param($AllServerInfo)
+    $AllServerInfo.ServerProtocol.Count | Should -Be 0 -Because "SQL Server should be configured to use only the TCP/IP protocol"
+}
+
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

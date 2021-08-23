@@ -1,4 +1,16 @@
+## 23rd August 2021
+
+Removed the Verbose for the Pester load - Apologies, this was Rob!
+Thank you [@MikeyBronowski](https://www.github.com/MikeyBronowski) Get the file at the end so Export-DbcConfig can be used with Invoke-Item addresses #843 #845
+Thank you [@MikeyBronowski](https://www.github.com/MikeyBronowski) spelling and full stops #842
+Thank you [ashdar](https://github.com/ashdar) Check for existence in the Tag list before adding a Tag to the Tag list #853
+Thank you [ashdar](https://github.com/ashdar) Updated PowerPlan Assertion #850
+Thank you [tboggiano](https://github.com/tboggiano) CIS check for SQL Mail XPS for SQL Server 2008 and below (was) #779
+Thank you [tboggiano](https://github.com/tboggiano) Added function to set CIS config (was) #776
+Thank you [tboggiano](https://github.com/tboggiano) CIS check for TCP IP Protocols (was) #775
+
 ## Latest
+
 ## April 7th 2021
 
 Thank you [@mikedavem](https://www.github.com/mikedavem) Fixed rogue verbose when importing [#834](https://github.com/sqlcollaborative/dbachecks/issues/834)

@@ -2,6 +2,7 @@
 #Set-PSFConfig -Handler { if (Get-PSFTaskEngineCache -Module dbachecks -Name module-imported) { Write-PSFMessage -Level Warning -Message "This setting will only take effect on the next console start" } }
 
 #Add some validation for values with limited options
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', 'input')]
 $LogFileComparisonValidationssb = { param ([string]$input) if ($input -in ('average', 'maximum')) { [PsCustomObject]@{Success = $true; value = $input} } else { [PsCustomObject]@{Success = $false; message = "must be average or maximum - $input"}
     } }
 Register-PSFConfigValidation -Name validation.LogFileComparisonValidations -ScriptBlock $LogFileComparisonValidationssb
@@ -285,6 +286,9 @@ Set-PSFConfig -Module dbachecks -Name skip.security.LoginCheckPolicy -Validation
 Set-PSFConfig -Module dbachecks -Name skip.security.LoginPasswordExpiration -Validation bool -Value $true -Initialize -Description "Skips the scan for password expiration on for all logins in sysadmin role"
 Set-PSFConfig -Module dbachecks -Name skip.security.LoginMustChange -Validation bool -Value $true -Initialize -Description "Skips the scan for new logins must have password change turned on"
 Set-PSFConfig -Module dbachecks -Name skip.security.nonstandardport -Validation bool -Value $true -Initialize -Description "Skips the check for whether SQL Server should be configured with a non standard port"
+Set-PSFConfig -Module dbachecks -Name skip.security.SQLMailXPsDisabled -Validation bool -Value $true -Initialize -Description "Skip the check for Sql Mail XPs being disabled"
+Set-PSFConfig -Module dbachecks -Name skip.security.PublicPermission -Validation bool -Value $true -Initialize -Description "Skips the check for whether public role has permissions"
+Set-PSFConfig -Module dbachecks -Name skip.security.serverprotocol -Validation bool -Value $true -Initialize -Description "Skips the check for whether SQL Server is running on any other protocols but TCP/IP"
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
