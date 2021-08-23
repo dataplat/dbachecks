@@ -1,5 +1,4 @@
-[
-    {
+[{
         "UniqueTag": "AgentServiceAccount",
         "Description": "Tests that the SQL Agent Account is running and set to automatic."
     },
@@ -463,7 +462,8 @@
         "UniqueTag": "SqlAgentProxiesNoPublicRole",
         "Description": "Tests that the public role does not have access to SQL Agent Proxies."
     },
-    {    "UniqueTag": "SymmetricKeyEncryptionLevel",
+    {
+        "UniqueTag": "SymmetricKeyEncryptionLevel",
         "Description": "Tests that Symmetric Key Encryption Level is at least AES_128 in non-system databases."
     },
     {
@@ -545,5 +545,9 @@
     {
         "UniqueTag": "AgentMailProfile",
         "Description": "Tests to see if the SQL Server Agent Alert System has an enabled database mail profile."
+    },
+    {
+        "UniqueTag": "SQLMailXPsDisabled",
+        "Description": "Tests to see SQL Mail XPs are disabled."
     }
 ]
