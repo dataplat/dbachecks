@@ -66,19 +66,11 @@ function Get-AllServerInfo {
                     $PowerPlan = (Test-DbaPowerPlan -ComputerName $ComputerName -EnableException -WarningVariable PowerWarning -WarningAction SilentlyContinue).IsBestPractice
                 }
                 catch {
-                    $There = $false
-                    if ($PowerWarning) {
-                        if ($PowerWarning[1].ToString().Contains('Couldn''t resolve hostname')) {
-                            $PowerPlan = 'Could not connect'
-                        }
-                    }
-                    else {
-                        $PowerPlan = 'An Error occurred'
-                    }
+                    $PowerPlan = $false
                 }
             }
             else {
-                $PowerPlan = 'An Error occurred'
+                $PowerPlan = $false
             }
         }
         'SPN' {
@@ -177,11 +169,11 @@ function Get-AllServerInfo {
         Default {}
     }
     [PSCustomObject]@{
-        PowerPlan      = $PowerPlan
-        SPNs           = $SPNs
-        DiskSpace      = $DiskSpace
-        PingComputer   = $PingComputer
-        DiskAllocation = $DiskAllocation
+        PowerPlan         = $PowerPlan
+        SPNs              = $SPNs
+        DiskSpace         = $DiskSpace
+        PingComputer      = $PingComputer
+        DiskAllocation    = $DiskAllocation
         StandardPortCount = $StandardPortCount
     }
 }
@@ -206,7 +198,7 @@ function Assert-DiskAllocationUnit {
 
 function Assert-PowerPlan {
     Param($AllServerInfo)
-    $AllServerInfo.PowerPlan | Should -BeTrue -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"
+    $AllServerInfo.PowerPlan | Should -Be 'True' -Because "You want your SQL Server to not be throttled by the Power Plan settings - See https://support.microsoft.com/en-us/help/2207548/slow-performance-on-windows-server-when-using-the-balanced-power-plan"
 }
 
 function Assert-SPN {
@@ -232,9 +224,9 @@ function Assert-Ping {
             ($AllServerInfo.PingComputer).Count | Should -Be $pingcount -Because "We expect the server to respond to ping"
         }
         Average {
-            if($IsCoreCLR){
+            if ($IsCoreCLR) {
             }
-            else{
+            else {
                 ($AllServerInfo.PingComputer | Measure-Object -Property ResponseTime -Average).Average / $pingcount | Should -BeLessThan $pingmsmax -Because "We expect the server to respond within $pingmsmax"
             }
         }
