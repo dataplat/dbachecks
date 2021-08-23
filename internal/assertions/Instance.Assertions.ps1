@@ -1093,3 +1093,9 @@ function Assert-SQLMailXPsDisabled {
     param ($AllInstanceInfo)
     $AllInstanceInfo.SQLMailXPsDisabled.ConfiguredValue | Should -Be 0 -Because "We expected Sql Mail XPs to be disabled"
 }
+
+function Assert-PublicPermission {
+    Param($AllInstanceInfo)
+    $AllInstanceInfo.PublicPermission.Count | Should -Be 0 -Because "We expected the public role to have no permissions for CIS compliance."
+}
+

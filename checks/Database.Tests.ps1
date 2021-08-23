@@ -582,7 +582,7 @@ $ExcludedDatabases += $ExcludeDatabase
         else {
             Context "Testing Log File percent used for $psitem" {
                 $InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) -and ($Psitem.IsAccessible -eq $true) }.ForEach{
-                    $LogFiles = Get-DbaDbSpace -SqlInstance $psitem.Parent.Name -Database $psitem.Name | Where-Object { $_.FileType -eq "LOG" } 
+                    $LogFiles = Get-DbaDbSpace -SqlInstance $psitem.Parent.Name -Database $psitem.Name | Where-Object { $_.FileType -eq "LOG" }
                     $DatabaseName = $psitem.Name
                     $CurrentLogFilePercentage = ($LogFiles | Measure-Object -Property PercentUsed -Maximum).Maximum
                     It "Database $DatabaseName Should have a percentage used lower than $LogFilePercentage% on $($psitem.Parent.Name)" {
@@ -1036,7 +1036,7 @@ $ExcludedDatabases += $ExcludeDatabase
         $skip = Get-DbcConfigValue skip.security.containedbautoclose
         if ($NotContactable -contains $psitem) {
             Context "Testing contained database auto close option on $psitem" {
-                It "Can't Connect to $Psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip{
                     $true | Should -BeFalse -Because "The instance should be available to be connected to!"
                 }
             }

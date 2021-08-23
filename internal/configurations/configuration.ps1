@@ -287,6 +287,7 @@ Set-PSFConfig -Module dbachecks -Name skip.security.LoginPasswordExpiration -Val
 Set-PSFConfig -Module dbachecks -Name skip.security.LoginMustChange -Validation bool -Value $true -Initialize -Description "Skips the scan for new logins must have password change turned on"
 Set-PSFConfig -Module dbachecks -Name skip.security.nonstandardport -Validation bool -Value $true -Initialize -Description "Skips the check for whether SQL Server should be configured with a non standard port"
 Set-PSFConfig -Module dbachecks -Name skip.security.SQLMailXPsDisabled -Validation bool -Value $true -Initialize -Description "Skip the check for Sql Mail XPs being disabled"
+Set-PSFConfig -Module dbachecks -Name skip.security.PublicPermission -Validation bool -Value $true -Initialize -Description "Skips the check for whether public role has permissions"
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
