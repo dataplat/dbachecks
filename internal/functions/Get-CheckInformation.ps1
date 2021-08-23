@@ -16,7 +16,9 @@ function Get-CheckInformation {
             if ($checkitem -eq $Group) {}
             elseif ($ExcludeCheck -match $Checkitem) {}
             else {
-                $GroupChecks += $checkitem
+                if (-not $GroupChecks.Contains($checkitem)) {
+                    $GroupChecks += $checkitem
+                }
             }
         }
     }
@@ -43,7 +45,9 @@ function Get-CheckInformation {
             if($GroupChecks -contains $psitem){
     ## BUT - This falls flat when you use a tag for a number of Checks that is not a group (like CIS) in that case all you get in $CheckInfo is CIS and not the relevant unique tags
                 @(Get-DbcCheck -Tag $psitem).ForEach{
-                    $CheckInfo += $psitem.UniqueTag
+                    if (-not $CheckInfo.Contains($psitem.UniqueTag)) {
+                        $CheckInfo += $psitem.UniqueTag
+                    }
                 }
             }
         }

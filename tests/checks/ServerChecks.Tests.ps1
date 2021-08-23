@@ -652,7 +652,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskAllocation[0].isSqlDisk| Should -BeTrue
         }
         It "Should get the right results for PowerPlan" {
-            $serverInfo.PowerPlan | Should -Be 'An Error occurred'
+            $serverInfo.PowerPlan | Should -BeFalse
         }
         It "Should get the right results for SPN" {
             $serverInfo.SPNs[0].Error | Should -Be 'An Error occurred'
@@ -771,7 +771,7 @@ Describe "Checking ServerChecks.Tests" {
             $serverInfo.DiskAllocation | Should -BeNullOrEmpty
         }
         It "Should get the right results for PowerPlan" {
-            $serverInfo.PowerPlan | Should -Be 'An Error occurred'
+            $serverInfo.PowerPlan | Should -BeFalse
         }
         It "Should have no results for SPN" {
             $serverInfo.SPNs | Should -BeNullOrEmpty
