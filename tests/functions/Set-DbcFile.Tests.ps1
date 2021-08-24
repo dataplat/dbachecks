@@ -6,7 +6,7 @@ Remove-Module dbachecks -ErrorAction SilentlyContinue
 . "$PSScriptRoot\..\constants.ps1"
 
 
-Describe "$commandname Unit Tests" -Tags UnitTest {
+Describe "$commandname Unit Tests" -Tags UnitTest, Set-DbcFile {
     Context "Parameters and parameter sets" {
         $ParametersList =  'InputObject','FilePath', 'FileName', 'FileType', 'Append', 'Force'
 
@@ -27,7 +27,7 @@ Describe "$commandname Unit Tests" -Tags UnitTest {
     }
 }
 
-Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
+Describe "$commandname Unit Tests - Execution" -Tags UnitTest, Set-DbcFile {
     Context "Execution" {
         # So that we dont get any output in the tests but can test for It
         Mock Write-PSFMessage { } -ParameterFilter { $Level -and $Level -eq 'Significant' }
@@ -367,7 +367,7 @@ Describe "$commandname Unit Tests - Execution" -Tags UnitTest {
     }
 }
 
-Describe "$commandname integration tests" -Tag UnitTest {
+Describe "$commandname integration tests" -Tag UnitTest ,Set-DbcFile {
     $TheTestResults = Get-Content $PSScriptRoot\results.json -raw | ConvertFrom-Json | Convert-DbcResult -Label 'Testing'
      # So that we dont get any output in the tests but can test for It
      Mock Write-PSFMessage { } -ParameterFilter { $Level -and $Level -eq 'Output' }
@@ -409,18 +409,6 @@ $JsonFileContent = @"
             "Label":  "Testing",
             "Describe":  "Last Good DBCC CHECKDB",
             "Context":  "Testing Last Good DBCC CHECKDB",
-            "Name":  "Database master last good integrity check should be less than 3 days old",
-            "Database":  "master",
-            "ComputerName":  "localhost,15592",
-            "Instance":  "localhost,15592",
-            "Result":  "Failed",
-            "FailureMessage":  "Expected the actual value to be greater than .*, because You should have run a DBCC CheckDB inside that time, but got .*"
-        },
-        {
-            "Date":  ".*",
-            "Label":  "Testing",
-            "Describe":  "Last Good DBCC CHECKDB",
-            "Context":  "Testing Last Good DBCC CHECKDB",
             "Name":  "Database master has Data Purity Enabled",
             "Database":  "master",
             "ComputerName":  "localhost,15592",
@@ -428,10 +416,23 @@ $JsonFileContent = @"
             "Result":  "Passed",
             "FailureMessage":  ""
         },
+        {
+            "Date":  ".*",
+            "Label":  "Testing",
+            "Describe":  "Last Good DBCC CHECKDB",
+            "Context":  "Testing Last Good DBCC CHECKDB",
+            "Name":  "Database master last good integrity check should be less than 3 days old",
+            "Database":  "master",
+            "ComputerName":  "localhost,15592",
+            "Instance":  "localhost,15592",
+            "Result":  "Failed",
+            "FailureMessage":  "Expected the actual value to be greater than .*, because You should have run a DBCC CheckDB inside that time, but got .*"
+        },
     ]
 "@
 $CSVFileContent = @"
-".*","Testing","Last Good DBCC CHECKDB","Testing Last Good DBCC CHECKDB","Database master last good integrity check should be less than 3 days old","master","localhost,15592","localhost,15592","Failed","Expected the actual value to be greater than .*, because You should have run a DBCC CheckDB inside that time, but got .*"
+"Date","Label","Describe","Context","Name","Database","ComputerName","Instance","Result","FailureMessage"
+".*","Testing","Last Good DBCC CHECKDB","Testing Last Good DBCC CHECKDB","Database master last good integrity check should be less than 3 days old","master","localhost,15592","localhost,15592","Failed","Expected the actual value to be greater than 2019-12-21T15:21:38.3892727Z, because You should have run a DBCC CheckDB inside that time, but got 2019-12-21T14:41:58.0230000."
 ".*","Testing","Last Good DBCC CHECKDB","Testing Last Good DBCC CHECKDB","Database master has Data Purity Enabled","master","localhost,15592","localhost,15592","Passed",""
 "@
 $XMLFileContent = @"
@@ -494,8 +495,10 @@ $XMLFileContent = @"
         }
         It "<FileType> File should have the correct contents" -TestCases $TestCases{
             Param($FileName1,$FileType, $FileContent)
-            Set-DbcFile -InputObject $TheTestResults -FilePath $TestDrive -FileName $FileName1 -FileType $Filetype
             $FileName = "$TestDrive\$filename1" + '.' + $FileType
+            $TheTestResults | Set-DbcFile -FilePath $TestDrive -FileName $FileName1 -FileType $Filetype -Verbose
+            $FileName5 = "c:\temp\$filename1" + '.' + $FileType
+            Get-Content $FileName |Set-Content $FileName5
             $FileName | Should -FileContentMatchMultiline $FileContent
         }
     }
