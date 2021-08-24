@@ -1,5 +1,12 @@
 ## 23rd August 2021
 
+Fixed bug where custom tests left an empty DbcResult #846
+Added feature to overwrite config file if it already exists for Export-DbcConfig #844
+Enabled ping latency testing in PowerShell Core
+
+##Latest
+## 23rd August 2021
+
 Removed the Verbose for the Pester load - Apologies, this was Rob!
 Thank you [@MikeyBronowski](https://www.github.com/MikeyBronowski) Get the file at the end so Export-DbcConfig can be used with Invoke-Item addresses #843 #845
 Thank you [@MikeyBronowski](https://www.github.com/MikeyBronowski) spelling and full stops #842
@@ -8,8 +15,6 @@ Thank you [ashdar](https://github.com/ashdar) Updated PowerPlan Assertion #850
 Thank you [tboggiano](https://github.com/tboggiano) CIS check for SQL Mail XPS for SQL Server 2008 and below (was) #779
 Thank you [tboggiano](https://github.com/tboggiano) Added function to set CIS config (was) #776
 Thank you [tboggiano](https://github.com/tboggiano) CIS check for TCP IP Protocols (was) #775
-
-##Latest
 
 ## April 7th 2021
 
