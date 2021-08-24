@@ -12,14 +12,14 @@ Describe "$commandname Unit Tests" -Tags "IntegrationTests" {
             Remove-Item "$script:localapp\config.json" -ErrorAction SilentlyContinue
         }
 
-        Export-DbcConfig *>$null
+        Export-DbcConfig -Force *>$null
 
         It "output a file" {
             (Get-ChildItem "$script:localapp\config.json") -ne $null | Should -BeTrue
         }
 
         It "output an object" {
-            $o = Export-DbcConfig
+            $o = Export-DbcConfig -Force
             $o | Get-Member -Name Open | Should -Not -BeNullOrEmpty
         }
     }

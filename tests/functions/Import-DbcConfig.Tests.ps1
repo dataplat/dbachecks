@@ -4,7 +4,7 @@
 Describe "$commandname Unit Tests" -Tags UnitTest {
     Context "Command executes properly and returns proper info" {
         BeforeAll {
-            Export-DbcConfig *>$null
+            Export-DbcConfig -Force *>$null
         }
         AfterAll {
             Remove-Item "$script:localapp\config.json" -ErrorAction SilentlyContinue
