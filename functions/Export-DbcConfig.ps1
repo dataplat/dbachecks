@@ -35,8 +35,10 @@ https://dbachecks.readthedocs.io/en/latest/functions/Export-DbcConfig/
 #>
 function Export-DbcConfig {
     [CmdletBinding()]
+    [OutputType('System.String')]
     param (
-        [string]$Path = "$script:localapp\config.json"
+        [string]$Path = "$script:localapp\config.json",
+        [switch]$Force
     )
 
     Write-PSFMessage "Testing if $Path exists" -Level Verbose
@@ -53,7 +55,7 @@ function Export-DbcConfig {
         Get-DbcConfig | Select-Object * | ConvertTo-Json -Depth 10 | Out-File -FilePath $Path -Force -ErrorAction Stop
         # support for Invoke-Item
         Get-Item -Path $Path
-        Write-PSFMessage -Message "Wrote file to $Path" -Level Host
+        Write-PSFMessage -Message "Wrote file to $Path" -Level Verbose
     }
     catch {
         Stop-PSFFunction -Message $_ -Target $Path
