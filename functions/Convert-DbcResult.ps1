@@ -43,7 +43,7 @@ function Convert-DbcResult {
         # the label for the Tests
         [string]$Label
     )
-    
+
     begin {
         Write-PSFMessage "Creating a datatable" -Level Verbose
 
@@ -96,7 +96,7 @@ function Convert-DbcResult {
             }
             $Date = Get-Date # -Format "yyyy-MM-dd"
             if ($Label) {
-    
+
             }
             else {
                 $Label = 'NoLabel'
