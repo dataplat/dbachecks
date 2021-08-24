@@ -251,6 +251,7 @@ function Assert-Ping {
         }
         Average {
             if ($IsCoreCLR) {
+                ($AllServerInfo.PingComputer | Measure-Object -Property Latency -Average).Average / $pingcount | Should -BeLessThan $pingmsmax -Because "We expect the server to respond within $pingmsmax"
             }
             else {
                 ($AllServerInfo.PingComputer | Measure-Object -Property ResponseTime -Average).Average / $pingcount | Should -BeLessThan $pingmsmax -Because "We expect the server to respond within $pingmsmax"
