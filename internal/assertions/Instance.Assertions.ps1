@@ -206,8 +206,22 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     $SpConfig = Get-DbaSpConfigure -SqlInstance $Instance -ConfigName 'ScanForStartupProcedures'
+
+                    $query = "
+                        SELECT name
+                        FROM sys.procedures
+                        WHERE OBJECTPROPERTY(OBJECT_ID, 'ExecIsStartup') = 1
+                            AND name <> 'sp_MSrepl_startup'"
+                    $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
+
+                    if ($null -eq $results)  {
+                        $Value = 0
+                    } else {
+                        $Value = $SpConfig.ConfiguredValue
+                    }
+
                     $ScanForStartupProceduresDisabled = [pscustomobject] @{
-                        ConfiguredValue = $SpConfig.ConfiguredValue
+                        ConfiguredValue = $Value
                     }
                 }
                 catch {
