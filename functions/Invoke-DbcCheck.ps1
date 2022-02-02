@@ -216,7 +216,7 @@ function Invoke-DbcCheck {
         [switch]$AllChecks,
         [switch]$Quiet,
         [object]$PesterOption,
-        [Pester.OutputTypes]$Show = 'All'
+        [string]$Show = 'All'
     )
 
     dynamicparam {
