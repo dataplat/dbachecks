@@ -12,7 +12,7 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-ComputerName <DbaInstanceParameter[]>] [-SqlCredential <PSCredential>] [-Credential <PSCredential>]
  [-Database <Object[]>] [-ExcludeDatabase <Object[]>] [-Value <String[]>] [-ConfigFile <String>]
  [-CodeCoverage <Object[]>] [-CodeCoverageOutputFile <String>] [-CodeCoverageOutputFileFormat <String>]
- [-Strict] [-OutputFormat <String>] [-AllChecks] [-Quiet] [-PesterOption <Object>] [-Show <OutputTypes>]
+ [-Strict] [-OutputFormat <String>] [-AllChecks] [-Quiet] [-PesterOption <Object>] [-Show <String>]
  [-ConfigAgentAlertJob <Object>] [-ConfigAgentAlertMessageid <Object>] [-ConfigAgentAlertNotification <Object>]
  [-ConfigAgentAlertSeverity <Object>] [-ConfigAgentDatabasemailprofile <Object>]
  [-ConfigAgentDbaoperatoremail <Object>] [-ConfigAgentDbaoperatorname <Object>]
@@ -142,7 +142,7 @@ Invoke-DbcCheck [-Script <Object[]>] [-TestName <String[]>] [-EnableExit] [[-Che
  [-Database <Object[]>] [-ExcludeDatabase <Object[]>] [-Value <String[]>] [-ConfigFile <String>]
  [-CodeCoverage <Object[]>] [-CodeCoverageOutputFile <String>] [-CodeCoverageOutputFileFormat <String>]
  [-Strict] -OutputFile <String> [-OutputFormat <String>] [-AllChecks] [-Quiet] [-PesterOption <Object>]
- [-Show <OutputTypes>] [-ConfigAgentAlertJob <Object>] [-ConfigAgentAlertMessageid <Object>]
+ [-Show <String>] [-ConfigAgentAlertJob <Object>] [-ConfigAgentAlertMessageid <Object>]
  [-ConfigAgentAlertNotification <Object>] [-ConfigAgentAlertSeverity <Object>]
  [-ConfigAgentDatabasemailprofile <Object>] [-ConfigAgentDbaoperatoremail <Object>]
  [-ConfigAgentDbaoperatorname <Object>] [-ConfigAgentFailedjobExcludecancelled <Object>]
@@ -743,10 +743,9 @@ A common setting is also Failed, Summary, to write only failed tests and test su
 This parameter does not affect the PassThru custom object or the XML output that is written when you use the Output parameters.
 
 ```yaml
-Type: OutputTypes
+Type: String
 Parameter Sets: (All)
 Aliases:
-Accepted values: None, Default, Passed, Failed, Pending, Skipped, Inconclusive, Describe, Context, Summary, Header, Fails, All
 
 Required: False
 Position: Named
