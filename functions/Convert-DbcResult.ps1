@@ -75,10 +75,10 @@ function Convert-DbcResult {
         $table.columns.add($col10)
 
         Write-PSFMessage "Testing we have a Test Results object" -Level Verbose
-        if (-not $TestResults) {
-            Write-PSFMessage "Uh-Oh - I'm really sorry - We don't have a Test Results Object" -Level Significant
+        if (-not $TestResults -or $TestResult) {
+            Write-PSFMessage "It may be that we don't have a Test Results Object" -Level Significant
             Write-PSFMessage "It might be that you have custom checks in which case we will move on. Otherwise......." -Level Significant
-            Write-PSFMessage "Did You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
+            Write-PSFMessage "It is possible You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
             Return ''
         }
     }
@@ -94,7 +94,7 @@ function Convert-DbcResult {
             else {
                 $Database = $null
             }
-            $Date = Get-Date # -Format "yyyy-MM-dd"
+            $Date = Get-Date
             if ($Label) {
 
             }
@@ -104,7 +104,7 @@ function Convert-DbcResult {
             # Create a new Row
             $row = $table.NewRow()
             # Add values to new row
-            $Row.Date = $Date
+            $Row.Date = [datetime]$Date
             $Row.Label = $Label
             $Row.Describe = $PSitem.Describe
             $Row.Context = $ContextSplit[0..($ContextSplit.Count - 3)] -join ' '
