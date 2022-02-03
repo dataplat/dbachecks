@@ -74,13 +74,6 @@ function Convert-DbcResult {
         $table.columns.add($col9)
         $table.columns.add($col10)
 
-        Write-PSFMessage "Testing we have a Test Results object" -Level Verbose
-        if (-not $TestResults -or $TestResult) {
-            Write-PSFMessage "It may be that we don't have a Test Results Object" -Level Significant
-            Write-PSFMessage "It might be that you have custom checks in which case we will move on. Otherwise......." -Level Significant
-            Write-PSFMessage "It is possible You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
-            Return ''
-        }
     }
     process {
         Write-PSFMessage "Processing the test results" -Level Verbose
@@ -120,5 +113,13 @@ function Convert-DbcResult {
     }
     end {
         Write-Output -NoEnumerate -InputObject $table
+
+        Write-PSFMessage "Testing we have a Test Results object" -Level Verbose
+        if (-not $TestResults -or $TestResult) {
+            Write-PSFMessage "It may be that we don't have a Test Results Object" -Level Significant
+            Write-PSFMessage "It might be that you have custom checks in which case we will move on. Otherwise......." -Level Significant
+            Write-PSFMessage "It is possible You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
+            Return ''
+        }
     }
 }
