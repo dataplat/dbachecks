@@ -163,8 +163,9 @@ Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Value $null -Initialize -Description "The number of days to go back to check for growth events"
 Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
 Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb','ReportServer','ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
-Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description " A List of database what we do not want to check for SAFE CLR Assemblies"
-Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description " The % log used we should stay below"
+Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description "A List of database what we do not want to check for SAFE CLR Assemblies"
+Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description "The % log used we should stay below"
+Set-PSFConfig -Module dbachecks -Name policy.database.snapshotretention -Value 0 -Initialize -Description "There should be no database snapshots older than this number of days"
 
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
@@ -289,6 +290,7 @@ Set-PSFConfig -Module dbachecks -Name skip.security.nonstandardport -Validation 
 Set-PSFConfig -Module dbachecks -Name skip.security.SQLMailXPsDisabled -Validation bool -Value $true -Initialize -Description "Skip the check for Sql Mail XPs being disabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.PublicPermission -Validation bool -Value $true -Initialize -Description "Skips the check for whether public role has permissions"
 Set-PSFConfig -Module dbachecks -Name skip.security.serverprotocol -Validation bool -Value $true -Initialize -Description "Skips the check for whether SQL Server is running on any other protocols but TCP/IP"
+Set-PSFConfig -Module dbachecks -Name skip.database.snapshot -Validation bool -Value $false -Initialize -Description "Skips the check for whether there are database snapshots past the retention period"
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
