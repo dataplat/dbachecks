@@ -1216,7 +1216,31 @@ $ExcludedDatabases += $ExcludeDatabase
             }
         }
     }
+
+    Describe "Database Snapshots" -Tags Snapshot, $filename {
+        $SnapshotRetentionDays = Get-DbcConfigValue policy.database.snapshotretention
+        $Skip = Get-DbcConfigValue skip.database.snapshot
+
+        if ($NotContactable -contains $psitem) {
+            Context "Testing to see if there are database snapshots on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            $instance = $Psitem
+            Context "Testing to see if there are database snapshots on $psitem" {
+                @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
+                    It "Database $($psitem.Name) should not have database snapshots older than $($SnapshotRetentionDays) days on $Instance" -Skip:$skip {
+                        Assert-DatabaseSnaphot -Instance $InstanceSMO -Database $($psitem.Name) -SnapshotRetentionDays $SnapshotRetentionDays
+                    }
+                }
+            }
+        }
+    }
 }
+
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
 

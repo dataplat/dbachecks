@@ -126,6 +126,15 @@ function Assert-ContainedDBSQLAuth {
     )
     @(Get-DbaDbUser -SQLInstance $Instance -Database $Database | Where-Object {$_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true}).Count | Should -Be 0 -Because "We expect there to be no sql authenticated users in contained database $Database on $Instance"
 }
+
+function Assert-DatabaseSnaphot {
+    Param (
+        [string]$Instance,
+        [string]$Database,
+        [int]$SnapshotRetentionDays
+    )
+    @(Get-DbaDbSnapshot -SQLInstance $Instance -Database $Database | Where-Object {$_.CreateDate -lt (Get-Date).AddDays(-$SnapshotRetentionDays)}).Count | Should -Be 0 -Because "We expect there to be no database snapshots older than the retention period on database $Database on $Instance"
+}
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
