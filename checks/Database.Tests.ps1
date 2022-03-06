@@ -1162,7 +1162,11 @@ $ExcludedDatabases += $ExcludeDatabase
 
     Describe "Query Store Enabled" -Tags QueryStoreEnabled, Medium, $filename {
         $QSExcludedDatabases = Get-DbcConfigValue database.querystoreenabled.excludedb
-        $exclude = "master", "tempdb" , "model"
+        if ($InstanceSMO.DatabaseEngineType -eq "SqlAzureDatabase") {
+            $exclude = "master", "tempdb" , "model", "msdb"
+        } else {
+            $exclude = "master", "tempdb" , "model"
+        }
         $ExcludedDatabases += $exclude
         $QSExcludedDatabases += $ExcludedDatabases
         $Skip = Get-DbcConfigValue skip.security.querystoreenabled
@@ -1190,7 +1194,11 @@ $ExcludedDatabases += $ExcludeDatabase
     }
     Describe "Query Store Disabled" -Tags QueryStoreDisabled, Medium, $filename {
         $QSExcludedDatabases = Get-DbcConfigValue database.querystoredisabled.excludedb
-        $exclude = "master", "tempdb" , "model"
+        if ($InstanceSMO.DatabaseEngineType -eq "SqlAzureDatabase") {
+            $exclude = "master", "tempdb" , "model", "msdb"
+        } else {
+            $exclude = "master", "tempdb" , "model"
+        }
         $ExcludedDatabases += $exclude
         $QSExcludedDatabases += $ExcludedDatabases
         $Skip = Get-DbcConfigValue skip.security.querystoredisabled
@@ -1211,6 +1219,40 @@ $ExcludedDatabases += $ExcludeDatabase
                 @($InstanceSMO.Databases.Where{ $(if ($Database) { $PsItem.Name -in $Database }else { $QSExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
                     It "Database $($psitem.Name) should have Query Store disabled on $Instance" -Skip:$skip {
                         Assert-QueryStoreDisabled -Instance $InstanceSMO -Database $($psitem.Name)
+                    }
+                }
+            }
+        }
+    }
+
+    Describe "Query Store Config" -Tags QueryStoreConfigured, Medium, $filename {
+        $QSExcludedDatabases = Get-DbcConfigValue database.querystoreenabled.excludedb
+        if ($InstanceSMO.DatabaseEngineType -eq "SqlAzureDatabase") {
+            $exclude = "master", "tempdb" , "model", "msdb"
+        } else {
+            $exclude = "master", "tempdb" , "model"
+        }
+        $ExcludedDatabases += $exclude
+        $QSExcludedDatabases += $ExcludedDatabases
+        $Skip = ($InstanceSMO.Version.Major -lt 13)
+
+        if ($NotContactable -contains $psitem) {
+            Context "Testing to see if Query Store is enabled on $psitem" {
+                It "Can't Connect to $Psitem" -Skip:$skip {
+                    $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                }
+            }
+        }
+        else {
+            Context "Testing to see if Query Store is enabled and configure correctly on $psitem" {
+                @($InstanceSMO.Databases.Where{ $_.IsAccessible -eq $true }.Where{ $(if ($Database) { $PsItem.Name -in $Database } else { $QSExcludedDatabases -notcontains $PsItem.Name }) }).Foreach{
+                    $database = $psitem
+                    $results = Test-DbaDbQueryStore -SqlInstance $InstanceSMO -Database $database.Name
+
+                    $results.where{ $null -ne $psitem.Database }.foreach{
+                        It "Database $($database.Name) - $($psitem.Name) should be $($psitem.RecommendedValue)" {
+                            $psitem.Value | Should -Be $psitem.RecommendedValue -Because $psitem.Justification
+                        }
                     }
                 }
             }
