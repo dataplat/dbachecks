@@ -522,6 +522,10 @@
         "UniqueTag": "QueryStoreDisabled",
         "Description": "Tests to see Query Store is disabled on each database except those specified."
     },
+	{
+        "UniqueTag": "QueryStoreConfigured",
+        "Description": "Tests to see Query Store meets recommended configuration."
+    },
     {
         "UniqueTag": "Snapshot",
         "Description": "Tests to see if there are database snapshots older than the retention period."

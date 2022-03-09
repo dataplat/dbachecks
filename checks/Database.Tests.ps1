@@ -1250,7 +1250,7 @@ $ExcludedDatabases += $ExcludeDatabase
                     $results = Test-DbaDbQueryStore -SqlInstance $InstanceSMO -Database $database.Name
 
                     $results.where{ $null -ne $psitem.Database }.foreach{
-                        It "Database $($database.Name) - $($psitem.Name) should be $($psitem.RecommendedValue)" {
+                        It "Database $($database.Name) - $($psitem.Name) should be $($psitem.RecommendedValue) on $($Instance)" {
                             $psitem.Value | Should -Be $psitem.RecommendedValue -Because $psitem.Justification
                         }
                     }
