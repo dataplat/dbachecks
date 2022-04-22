@@ -1,4 +1,4 @@
-## pull the dbatools docker repo and cd to the samples/stackoverflow Directory
+## To Test pull the dbatools docker repo and cd to the samples/stackoverflow Directory
 
 ## I changed the ports because I have some of them already running SQL
 
@@ -8,7 +8,21 @@
 
 #then docker compose up -d
 
-# cd to teh root of dbachecks and checkout the pesterv5 branch
+# cd to the root of dbachecks and checkout the pesterv5 branch
+
+
+<#
+What Is here
+So I have removed the check for Pester v5 from the psm1 load
+
+and created 2 internal functions Invoke-DbcCheckv4 and Invoke-DbcCheckv5
+
+and added a legacy param to Invoke-DbcCheck
+by default it passes everything on to Invoke-DbcCheckv4 which is still the same as the original Invoke-DbcCheck so it shouldnt break anything
+
+So If you can test original work with Pester v4 that would be great.
+
+#>
 
  ipmo ./dbachecks.psd1 # -Verbose
 
