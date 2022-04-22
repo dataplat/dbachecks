@@ -1,32 +1,46 @@
-## # ipmo Pester -Req 4.10.1
-## ipmo ./dbachecks.psd1 # -Verbose
-## # Get-MOdule Pester
-## $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
-## $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
-## 
-## 
-## $Sqlinstances = 'localhost,7401','localhost,7402','localhost,7403'
-## 
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check ValidJobOwner -SqlCredential $cred  -Verbose
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check DatabaseCollation -SqlCredential $cred  
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check DatabaseStatus -SqlCredential $cred  
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check AdHocDistributedQueriesEnabled -SqlCredential $cred
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check AgentAlert -SqlCredential $cred
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check AgentServiceAccount -SqlCredential $cred
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check Backup -SqlCredential $cred
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check CIS -SqlCredential $cred
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check ExtendedEvent -SqlCredential $cred
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check VirtualLogFile -SqlCredential $cred
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check TempDbConfiguration -SqlCredential $cred
-## Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check InstanceConnection -SqlCredential $cred
-## 
-## ###############################endregion
+## pull the dbatools docker repo and cd to the samples/stackoverflow Directory
 
-ipmo ./dbachecks.psd1 # -Verbose
-# Get-MOdule Pester
+## I changed the ports because I have some of them already running SQL
+
+##     line 17   - "7401:1433"
+##     line 34   - "7402:1433"
+##     line 52   - "7403:1433"
+
+#then docker compose up -d
+
+# cd to teh root of dbachecks and checkout the pesterv5 branch
+
+ ipmo ./dbachecks.psd1 # -Verbose
+
+ # We run Pester V4 here because the -legacy parameter of Invoke-DbcCheck is set to true by default
 $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
 
+
+$Sqlinstances = 'localhost,7401','localhost,7402','localhost,7403'
+
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check ValidJobOwner -SqlCredential $cred  -Verbose
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check DatabaseCollation -SqlCredential $cred  
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check DatabaseStatus -SqlCredential $cred  
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check AdHocDistributedQueriesEnabled -SqlCredential $cred
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check AgentAlert -SqlCredential $cred
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check AgentServiceAccount -SqlCredential $cred
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check Backup -SqlCredential $cred
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check CIS -SqlCredential $cred
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check ExtendedEvent -SqlCredential $cred
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check VirtualLogFile -SqlCredential $cred
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check TempDbConfiguration -SqlCredential $cred
+Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check InstanceConnection -SqlCredential $cred
+
+###############################
+
+ # We run Pester V5 here because the -legacy parameter of Invoke-DbcCheck is set to false as a default param
+
+ # You dont have to reimport 
+ipmo ./dbachecks.psd1 # -Verbose
+
+$password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
+$cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
 
 $Sqlinstances = 'localhost,7401','localhost,7402','localhost,7403'
 
