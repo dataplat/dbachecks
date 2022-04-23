@@ -30,11 +30,23 @@ So If you can test original work with Pester v4 that would be great.
 $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
 
+$PSDefaultParameterValues = @{
+
+    "Invoke-DbcCheck:SqlInstance" = 'localhost,7401','localhost,7409'
+    "Invoke-DbcCheck:SqlCredential" = $cred
+}
 
 $Sqlinstances = 'localhost,7401','localhost,7402','localhost,7403'
 
-Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check ValidJobOwner -SqlCredential $cred  -Verbose
+$broken = 'localhost,7401','localhost,7409'
+
+# check not contactable instances
+Invoke-DbcCheck -SqlInstance $broken  -Check ValidJobOwner -SqlCredential $cred  -Verbose
+Invoke-DbcCheck -Check DatabaseCollation -SqlCredential $cred
+# especially check both default params and specified - also need to check config too
+Invoke-DbcCheck -SqlInstance $broken -Check DatabaseCollation -SqlCredential $cred  
 Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check DatabaseCollation -SqlCredential $cred  
+Invoke-DbcCheck -SqlInstance $Sqlinstances -Check DatabaseCollation -SqlCredential $cred  
 Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check DatabaseStatus -SqlCredential $cred  
 Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check AdHocDistributedQueriesEnabled -SqlCredential $cred
 Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check AgentAlert -SqlCredential $cred
@@ -55,18 +67,40 @@ Invoke-DbcCheck -SqlInstance $Sqlinstances[0] -Check InstanceConnection -SqlCred
 
  # AutoClose, AutoSHrink
  # You dont have to reimport 
+
 ipmo ./dbachecks.psd1 # -Verbose
+Reset-DbcConfig
 
 $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
 
 $Sqlinstances = 'localhost,7401','localhost,7402','localhost,7403'
 
+$PSDefaultParameterValues.Clear()
+# set default params for single instance and v5
+
 $PSDefaultParameterValues = @{
     "Invoke-DbcCheck:legacy" = $false
     "Invoke-DbcCheck:SqlInstance" = $Sqlinstances[0]
     "Invoke-DbcCheck:SqlCredential" = $cred
 }
+
+# set default params for multiple instances
+
+$PSDefaultParameterValues = @{
+    "Invoke-DbcCheck:legacy" = $false
+    "Invoke-DbcCheck:SqlInstance" = $Sqlinstances[0..1]
+    "Invoke-DbcCheck:SqlCredential" = $cred
+}
+
+# set default params for multiple instances with a broken one
+
+$PSDefaultParameterValues = @{
+    "Invoke-DbcCheck:legacy" = $false
+    "Invoke-DbcCheck:SqlInstance" = 'localhost,7401','localhost,7409'
+    "Invoke-DbcCheck:SqlCredential" = $cred
+}
+
 
 # a single tag from each of the groups
 
@@ -145,7 +179,8 @@ Invoke-DbcCheck -Check SqlBrowserServiceAccount -Show Detailed
 #endregion
 #region Database
 
-Invoke-DbcCheck -Check DatabaseCollation -Show Detailed
+Invoke-DbcCheck -Check Database -Show Detailed -Verbose
+Invoke-DbcCheck -Check DatabaseCollation,SuspectPage
 Invoke-DbcCheck -Check SuspectPage -Show Detailed
 Invoke-DbcCheck -Check TestLastBackup -Show Detailed
 Invoke-DbcCheck -Check TestLastBackupVerifyOnly -Show Detailed
