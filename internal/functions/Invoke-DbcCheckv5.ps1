@@ -68,17 +68,19 @@ function Invoke-DbcCheckv5 {
             Set-DbatoolsConfig -FullName message.consoleoutput.disable -Value $true
         }
 
-
+        # validation (could this be done only in Invoke-DbcCheck ?)
         if (-not $Script -and -not $TestName -and -not $Check -and -not $ExcludeCheck -and -not $AllChecks) {
             Stop-PSFFunction -Message "Please specify Check, ExcludeCheck, Script, TestName or AllChecks"
             return
         }
+        # validition (could this be done only in Invoke-DbcCheck ?)
 
         if (-not $SqlInstance.InputObject -and -not $ComputerName.InputObject -and -not (Get-PSFConfigValue -FullName dbachecks.app.sqlinstance) -and -not (Get-PSFConfigValue -FullName dbachecks.app.computername) -and -not (Get-PSFConfigValue -FullName dbachecks.app.cluster)) {
             Stop-PSFFunction -Message "No servers set to run against. Use Get/Set-DbcConfig to setup your servers or Get-Help Invoke-DbcCheck for additional options."
             return
         }
 
+        # set these parameters as default parameters to make less writing (and more troubleshooting ;-) )
         $customparam = 'SqlInstance', 'ComputerName', 'SqlCredential', 'Credential', 'Database', 'ExcludeDatabase', 'Value'
 
         foreach ($param in $customparam) {
@@ -95,6 +97,7 @@ function Invoke-DbcCheckv5 {
         }
 
 
+        # Another bit of validation here that could be in Invoke-DbcCheck I think
         # Lil bit of cleanup here, for a switcharoo
         $null = $PSBoundParameters.Remove('AllChecks')
         $null = $PSBoundParameters.Remove('Check')
@@ -123,6 +126,7 @@ function Invoke-DbcCheckv5 {
 
         # Then we'll need a generic param passer that doesn't require global params
         # cuz global params are hard
+        # We so shuld have done this :-)
 
         $finishedAllTheChecks = $false
         try {
@@ -137,16 +141,24 @@ function Invoke-DbcCheckv5 {
 
                     if ($Check.Count -gt 0) {
                         # specific checks were listed. find the necessary script files.
-                        $Configuration.Run.Path = (Get-CheckFile -Repo $repo -Check $check)
+
+                        # We are only going to check the files named v5 here is this a good idea?
+                        # Anyone have any better ideas here ? - Remember we need to be able to run under both conditions
+
+                        $Configuration.Run.Path = (Get-CheckFile -Repo $repo -Check $check -v5)
                     }
 
                     Push-Location -Path $repo
                     ## remove any previous entries ready for this run
                     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @()
+
                     $config = $Configuration | ConvertTo-Json -Depth 5
-                    Write-PSFMessage -Message "Config = $Config" -Level Significant 
+                    Write-PSFMessage -Message "Config = $Config" -Level Significant
                     Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Significant
+
+                    # Because we have all these bound params :-(
                     $null = $PSBoundParameters.Remove('configuration')
+
                     Invoke-Pester -Configuration $configuration
                     Pop-Location
                 }
