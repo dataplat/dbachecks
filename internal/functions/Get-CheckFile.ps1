@@ -1,3 +1,29 @@
+<#
+.SYNOPSIS
+This will return all of the files that match a Check name - either by name or by pester tag
+
+.DESCRIPTION
+This will return all of the files that match a Check name - either by name or by pester tag
+
+for either v4 or v5 Pester checks using the v5 switch
+
+.PARAMETER Repo
+The repo paths to check - normally defined by Get-CheckRepo
+
+.PARAMETER Check
+The Check
+
+.PARAMETER v5
+Are we looking for Pester v5 files or not
+
+.EXAMPLE
+Get-CheckFile -Check AutoClose
+
+Gets the files for the AutoClose check
+
+.NOTES
+Internal - used in Invoke-DbcCheckv4 and Invoke-DbcCheckv5
+#>
 function Get-CheckFile {
     param(
         [Parameter(Mandatory = $true)]
