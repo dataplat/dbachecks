@@ -153,9 +153,10 @@ function Invoke-DbcCheckv5 {
                     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @()
 
                     $config = $Configuration | ConvertTo-Json -Depth 5
-                    Write-PSFMessage -Message "Config = $Config" -Level Significant
-                    Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Significant
+                    Write-PSFMessage -Message "Config = $Config" -Level Verbose
+                    Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Verbose
 
+                    Write-PSFMessage -Message "SqlInstance is $SqlInstance" -Level Verbose
                     # Because we have all these bound params :-(
                     $null = $PSBoundParameters.Remove('configuration')
 
