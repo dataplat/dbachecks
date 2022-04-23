@@ -660,7 +660,7 @@ $ExcludedDatabases += $ExcludeDatabase
                     $LogFileSize = ($LogFiles | Measure-Object -Property Size -Maximum).Maximum
                     $DataFileSize = ($Files | Where-Object { $_.TypeDescription -eq "ROWS" } | Measure-Object @Splat).$LogFileSizeComparison
                     It "Database $DatabaseName Should have no log files larger than $LogFileSizePercentage% of the $LogFileSizeComparison of DataFiles on $($psitem.Parent.Name)" {
-                        $LogFileSize | Should -BeLessThan ($DataFileSize * $LogFileSizePercentage) -Because "If your log file is this large you are not maintaining it well enough"
+                        $LogFileSize | Should -BeLessThan ($DataFileSize * ($LogFileSizePercentage / 100.0)) -Because "If your log file is this large you are not maintaining it well enough"
                     }
                 }
             }
