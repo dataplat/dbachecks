@@ -41,19 +41,22 @@ function Get-CheckFile {
             if ($Check.Count -gt 0) {
                 # specific checks were requested. find them.
                 @(Get-ChildItem -Path "$Repo\*.Tests.ps1").ForEach{
-                    $script:checksFile = $psitem.FullName
+                    # we do not want v5 files here
+                    if ($psitem.Name -notmatch 'v5') {
+                        $script:checksFile = $psitem.FullName
 
-                    if ($Check -contains ($PSItem.Name -replace ".Tests.ps1", "")) {
-                        # file matches by name
-                        if (!($script:selectedFiles -contains $script:checksFile)) {
-                            $script:selectedFiles.Add($script:checksFile)
-                        }
-                    } else {
-                        @($check).ForEach{
-                            if (@(Get-Content -Path $script:checksFile | Select-String -Pattern "^\s*Describe.*-Tags\s+.*($psitem)").Matches.Count) {
-                                # file matches by one of the tags
-                                if (!($script:selectedFiles -contains $script:checksFile)) {
-                                    $script:selectedFiles.Add($script:checksFile)
+                        if ($Check -contains ($PSItem.Name -replace ".Tests.ps1", "")) {
+                            # file matches by name
+                            if (!($script:selectedFiles -contains $script:checksFile)) {
+                                $script:selectedFiles.Add($script:checksFile)
+                            }
+                        } else {
+                            @($check).ForEach{
+                                if (@(Get-Content -Path $script:checksFile | Select-String -Pattern "^\s*Describe.*-Tags\s+.*($psitem)").Matches.Count) {
+                                    # file matches by one of the tags
+                                    if (!($script:selectedFiles -contains $script:checksFile)) {
+                                        $script:selectedFiles.Add($script:checksFile)
+                                    }
                                 }
                             }
                         }
@@ -66,7 +69,7 @@ function Get-CheckFile {
                 # specific checks were requested. find them.
                 @(Get-ChildItem -Path "$Repo\*.Tests.ps1").ForEach{
                     # but we only want v5 files
-                    if($psitem.Name -match 'v5'){
+                    if ($psitem.Name -match 'v5') {
                         $script:checksFile = $psitem.FullName
 
                         if ($Check -contains ($PSItem.Name -replace "v5.Tests.ps1", "")) {
