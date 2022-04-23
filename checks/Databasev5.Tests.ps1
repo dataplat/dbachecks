@@ -1,3 +1,5 @@
+# So the v5 files need to be handled differently.
+# Ww will start with a BeforeDiscovery which for the Database Checks will need to gather the Instances up front
 BeforeDiscovery {
     . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1
     [array]$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
@@ -25,6 +27,9 @@ BeforeDiscovery {
     Write-PSFMessage -Message "Instances = $InstancesToTest" -Level Significant
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 }
+
+# Each Test will have a -ForEach for the Instances and the InstancesToTest object will have a 
+# lot of information gathered up front to reduce trips and connections to the database
 Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $InstancesToTest {
     BeforeAll {
         $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
@@ -34,11 +39,9 @@ Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $I
 
     }
 
-    Context "Testing database collation on <_.Name>"  {
-        @(Test-DbaDbCollation -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude).ForEach{
-            It "Database $($psitem.Database) collation ($($psitem.DatabaseCollation)) should match server collation ($($psitem.ServerCollation)) on $($psitem.SqlInstance)" {
-                $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation -Because "You will get collation conflict errors in tempdb"
-            }
+    Context "Testing database collation on <_.Name>" {
+        It "Database <_.Database> collation <_.DatabaseCollation> should match server collation <_.ServerCollation> on <_.SqlInstance>" -ForEach @(Test-DbaDbCollation -SqlInstance $psitem -Database $Database -ExcludeDatabase $exclude) {
+            $psitem.ServerCollation | Should -Be $psitem.DatabaseCollation -Because "You will get collation conflict errors in tempdb"
         }
         if ($Wrongcollation) {
             @(Test-DbaDbCollation -SqlInstance $psitem -Database $Wrongcollation ).ForEach{
@@ -52,7 +55,7 @@ Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $I
 
 Describe "Suspect Page" -Tags SuspectPage, High , Database -ForEach $InstancesToTest {
     Context "Testing suspect pages on <_.Name>" {
-        It "Database <_.Parent.Name> should return 0 suspect pages on <_.Name>" -Foreach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name } } {
+        It "Database <_.Name> should return 0 suspect pages on <_.Parent.Name>" -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name } } {
             $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
             @($results).Count | Should -Be 0 -Because "You do not want suspect pages - $results"
         }
