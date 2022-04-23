@@ -1,0 +1,62 @@
+# run from dataplat/docker
+version: '3.7'
+services:
+  mssql1:
+    restart: on-failure
+    networks:
+      - localnet
+    container_name: mssql1
+    hostname: mssql1
+    image: dbatools/sqlinstance
+    build:
+      context: .
+      labels:
+        org.label-schema.docker.cmd: "docker run -p 7401:1433  --volume shared:/shared:z --name mssql1 --hostname mssql1 --network localnet -d dbatools/sqlinstance"
+      args:
+        PRIMARYSQL: "TRUE"
+    ports:
+      - "7401:1433"
+    env_file:
+      - sql/sapassword.env
+    volumes:
+      - shared:/shared:z
+  mssql2:
+    restart: on-failure
+    networks:
+      - localnet
+    container_name: mssql2
+    hostname: mssql2
+    image: dbatools/sqlinstance2
+    build:
+      context: .
+      labels:
+        org.label-schema.docker.cmd: "docker run -p 7402:1433 --volume shared:/shared:z --name mssql2 --hostname mssql2 --network localnet -d dbatools/sqlinstance2"
+    ports:
+      - "7402:1433"
+    env_file:
+      - sql/sapassword.env
+    volumes:
+      - shared:/shared:z
+  mssql3:
+    restart: on-failure
+    networks:
+      - localnet
+    container_name: mssql3
+    hostname: mssql3
+    image: dbatools/sqlinstance3
+    build:
+      context: .
+      dockerfile: Dockerfile.third
+      labels:
+        org.label-schema.docker.cmd: "docker run -p 7403:1433 --volume shared:/shared:z --name mssql3 --hostname mssql3 --network localnet -d dbatools/sqlinstance2"
+    ports:
+      - "7403:1433"
+    env_file:
+      - sql/sapassword.env
+    volumes:
+      - shared:/shared:z
+
+networks:
+  localnet: null
+volumes:
+  shared: null
