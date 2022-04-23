@@ -1,6 +1,6 @@
 function Invoke-DbcCheckv5 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='Because scoping is hard')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='Because its set to the global var')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Because scoping is hard')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Because its set to the global var')]
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
         [Alias('Path', 'relative_path')]
@@ -88,8 +88,7 @@ function Invoke-DbcCheckv5 {
                     Set-Variable -Scope 0 -Name $param -Value $value.InputObject -ErrorAction SilentlyContinue
                     $PSDefaultParameterValues.Add( { "*-Dba*:$param", $value.InputObject })
                 }
-            }
-            else {
+            } else {
                 $PSDefaultParameterValues.Remove( { "*-Dba*:$param" })
             }
             $null = $PSBoundParameters.Remove($param)
@@ -132,7 +131,7 @@ function Invoke-DbcCheckv5 {
                 if ((Test-Path $repo -ErrorAction SilentlyContinue)) {
                     if ($OutputFormat -eq "NUnitXml" -and -not $OutputFile) {
                         $number = $repos.IndexOf($repo)
-                        $timestamp = Get-Date -format "yyyyMMddHHmmss"
+                        $timestamp = Get-Date -Format "yyyyMMddHHmmss"
                         $PSBoundParameters['OutputFile'] = "$script:maildirectory\report-$number-$pid-$timestamp.xml"
                     }
 
@@ -144,7 +143,8 @@ function Invoke-DbcCheckv5 {
                     Push-Location -Path $repo
                     ## remove any previous entries ready for this run
                     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value @()
-                   
+                    $config = $Configuration | ConvertTo-Json -Depth 5
+                    Write-PSFMessage -Message "Config = $Config" -Level Significant 
                     Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Significant
                     $null = $PSBoundParameters.Remove('configuration')
                     Invoke-Pester -Configuration $configuration
@@ -152,11 +152,9 @@ function Invoke-DbcCheckv5 {
                 }
             }
             $finishedAllTheChecks = $true
-        }
-        catch {
+        } catch {
             Stop-PSFFunction -Message "There was a problem executing Invoke-Pester" -ErrorRecord $psitem
-        }
-        finally {
+        } finally {
             # reset the config to original value
             Set-DbatoolsConfig -FullName message.consoleoutput.disable -Value $dbatoolsoutputconfig
 
