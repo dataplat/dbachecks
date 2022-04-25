@@ -295,6 +295,7 @@ Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initi
 Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.databasemailprofile -Value $null -Initialize -Description "Name of the Database Mail Profile in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.validjobowner.name -Value "sa" -Initialize -Description "Agent job owner account should be this user"
+Set-PSFConfig -Module dbachecks -Name agent.invalidjobowner.name -Value $null -Initialize -Description "Agent job owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name agent.alert.messageid -Value @('823', '824', '825') -Initialize -Description "Agent alert messageid to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
 Set-PSFConfig -Module dbachecks -Name agent.alert.severity -Value @('16', '17', '18', '19', '20', '21', '22', '23', '24', '25') -Initialize -Description "Agent alert severity to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"
 Set-PSFConfig -Module dbachecks -Name agent.alert.job -Value $false -Initialize -Description "Should we check for an agent job for the Agent Alert checks?"

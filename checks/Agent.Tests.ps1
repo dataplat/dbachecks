@@ -214,6 +214,26 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                     }
                 }
+                Describe "Invalid Job Owner" -Tags InValidJobOwner, $filename {
+                    [string[]]$targetowner = Get-DbcConfigValue agent.invalidjobowner.name
+                
+                    if ($NotContactable -contains $psitem) {
+                        Context "Testing job owners on $psitem" {
+                            It "Can't Connect to $Psitem" {
+                                $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+                            }
+                        }
+                    }
+                    else {
+                        Context "Testing job owners on $psitem" {
+                            @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
+                                It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
+                                    $psitem.OwnerLoginName | Should -Not -BeIn $TargetOwner -Because "The account that is the job owner has been defined as not valid"
+                                }
+                            }
+                        }
+                    }
+                }
 
                 Describe "Agent Alerts" -Tags AgentAlert, $filename {
                     $severity = Get-DbcConfigValue agent.alert.Severity

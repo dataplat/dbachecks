@@ -23,6 +23,10 @@
         "Description": "Tests that all Agent Jobs have a Job Owner in the list specified (default sa)."
     },
     {
+        "UniqueTag": "InvalidJobOwner",
+        "Description": "Tests that all Agent Jobs do not have a Job Owner in the list specified (default null)."
+    },
+    {
         "UniqueTag": "AgentAlert",
         "Description": "Tests that there are Agent Alerts set up for the specified (default 16-25) alert severities and ids (default 823-825) and if specified Agent Jobs and/or notifications."
     },
