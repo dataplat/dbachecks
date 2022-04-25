@@ -82,7 +82,7 @@ $justdbatools = {
 
 # so the initial load doesnt skew the figures
 ipmo dbatools
-
+function prompt { Write-Host "pwsh >" -NoNewline; ' '}
 
 $justdbatoolstrace = Trace-Script -ScriptBlock $justdbatools
 $WithoutInittrace = Trace-Script -ScriptBlock $WithoutInitFieldsSMO 
