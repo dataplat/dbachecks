@@ -62,7 +62,22 @@ $justdbatools = {
     $Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
     $smos = Connect-DbaInstance -SqlInstance $Sqlinstances -SqlCredential $cred
 
-    Test-DbaDbCollation -SqlInstance $smos 
+    foreach($smo in $smos){
+        $collation = Test-DbaDbCollation -SqlInstance $smo
+
+        [PSCustomObject]@{
+            ComputerName = $smo.ComputerName
+            InstanceName = $smo.DbaInstanceName
+            Collation    = $collation[0].ServerCollation
+            Databases    = $collation.ForEach{
+                [PSCustomObject]@{
+                    Name      = $_.Database
+                    Collation = $_.DatabaseCollation
+                }
+            }
+        }
+    }
+    
 }
 
 # so the initial load doesnt skew the figures
