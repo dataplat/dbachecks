@@ -183,6 +183,9 @@
                 $configuration.Output.Verbosity = $NewShow
                 $configuration.Filter.Tag = $check
                 $configuration.Filter.ExcludeTag = $ExcludeCheck
+                if($PassThru){
+                    $configuration.Run.PassThru = $true
+                }
             }
             catch {
                 Write-PsfMessage -Message "Something Went wrong" -Level Warning -ErrorRecord $_ 
@@ -190,6 +193,7 @@
             }
             $null = $PSBoundParameters.Remove('legacy')
             $null = $PSBoundParameters.Remove('Show')
+            $null = $PSBoundParameters.Remove('PassThru')
             Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Significant
             Invoke-DbcCheckv5 @PSBoundParameters -configuration $configuration
         }
