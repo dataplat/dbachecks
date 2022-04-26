@@ -111,3 +111,12 @@ Describe "Ad Hoc Workload Optimization" -Tag AdHocWorkload, Medium, Instance -Fo
         }
     }
 }
+
+Describe "Ad Hoc Distributed Queries" -Tag AdHocDistributedQueriesEnabled, security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.AdHocDistributedQueriesEnabled
+    Context "Checking Ad Hoc Distributed Queries on <_.Name>" {
+        It "Ad Hoc Distributed Queries is set to <_.ConfigValues.AdHocDistributedQueriesEnabled> on <_.Name>"  -Skip:$skip {
+            $PSItem.Configuration.AdHocDistributedQueriesEnabled.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.AdHocDistributedQueriesEnabled -Because 'This is the setting you have chosen for AdHoc Distributed Queries Enabled'
+        }
+    }
+}

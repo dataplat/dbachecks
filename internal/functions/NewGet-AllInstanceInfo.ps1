@@ -60,6 +60,10 @@ function NewGet-AllInstanceInfo {
         'AdHocWorkload' {
             $configurations = $true
         }
+        'AdHocDistributedQueriesEnabled' {
+            $configurations = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AdHocDistributedQueriesEnabled' -Value  (Get-DbcConfigValue policy.security.AdHocDistributedQueriesEnabled)
+        }
 
         Default { }
     }
