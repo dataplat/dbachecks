@@ -18,14 +18,14 @@ $Checks = 'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipCh
 Compare-CheckRuns -Checks $checks
 
 # Load the function below and then you can keep running the checks defined above in v4 and v5 and compare the performance
-# You can keep updating the .Tests.ps1 files and rereunning the function without needing to re-import hte module
+# You can keep updating the .Tests.ps1 files and rerunning the function without needing to re-import hte module
 
 # If you change any of the functions you WILL need to re-import or better still use a new session
 
 # If you get odd results - or you dont get any checks run
 
 # run the import module and the Invoke Dbc Check with Verbose and that might show you New-Json messing 
-# with your files or that you are lookign in PSMOdulePath instead of Git Repo path (run Reset-dbcConfig to fix that)
+# with your files or that you are looking in PSMOdulePath instead of Git Repo path (run Reset-dbcConfig to fix that)
 
 function Compare-CheckRuns {
 param($Checks)
