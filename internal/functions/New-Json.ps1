@@ -14,10 +14,11 @@ function New-Json {
     $errors = $null
     foreach ($file in $repofiles) {
         $Check = $null
-        $filename = $file.Name.Replace(".Tests.ps1", "")
-
         # We dont want to mess with v5 files - although we will need to write the json for them
-        if ($filename -notmatch 'v5') {
+        if ($file.Name -notmatch 'v5') {
+            $message = "We are going to look at this file {0}" -f $file.Name
+            Write-PSFMessage -Message $message -Level Verbose
+            $filename = $file.Name.Replace(".Tests.ps1", "")
             #  Write-Verbose "Processing $FileName"
             #  Write-Verbose "Getting Content of File"
             $Check = Get-Content $file -Raw
@@ -102,17 +103,22 @@ function New-Json {
                 # CHoose the type
                 if ($Describe.Parent -match "Get-Instance") {
                     $type = "Sqlinstance"
-                } elseif ($Describe.Parent -match "Get-ComputerName" -or $Describe.Parent -match "AllServerInfo") {
+                }
+                elseif ($Describe.Parent -match "Get-ComputerName" -or $Describe.Parent -match "AllServerInfo") {
                     $type = "ComputerName"
-                } elseif ($Describe.Parent -match "Get-ClusterObject") {
+                }
+                elseif ($Describe.Parent -match "Get-ClusterObject") {
                     $Type = "ClusterNode"
-                } else {
+                }
+                else {
                     #Choose the type from the new way from inside the foreach
                     if ($ComputerNameForEach -match $title) {
                         $type = "ComputerName"
-                    } elseif ($InstanceNameForEach -match $title) {
+                    }
+                    elseif ($InstanceNameForEach -match $title) {
                         $type = "Sqlinstance"
-                    } else {
+                    }
+                    else {
                         $type = $null
                     }
                 }
@@ -120,7 +126,8 @@ function New-Json {
                 if ($filename -eq 'HADR') {
                     ## HADR configs are outside of describe
                     $configs = [regex]::matches($check, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{ $_.Name -eq 1 }.Value
-                } else {
+                }
+                else {
                     $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{ $_.Name -eq 1 }.Value
                 }
                 $Config = ''
@@ -206,7 +213,8 @@ function New-Json {
         if ($PSCmdlet.ShouldProcess("$script:localapp\checks.json" , "Convert Json and write to file")) {
             ConvertTo-Json -InputObject $collection | Out-File "$script:localapp\checks.json"
         }
-    } catch {
+    }
+    catch {
         Write-PSFMessage "Failed to create the json, something weird might happen now with tags and things" -Level Significant
     }
 
