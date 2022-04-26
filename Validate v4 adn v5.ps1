@@ -14,7 +14,7 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'AdHocWorkload', 'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
 
 Compare-v4andv5Results -Checks $Checks
 
@@ -66,6 +66,7 @@ For v4 We ran
 and
 For v5 we ran 
 {1} tests
+The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block
     " -f $v4code.TotalCount, $v5code.TotalCount
         Write-PSFMessage -Message $Message -Level Warning
     }
