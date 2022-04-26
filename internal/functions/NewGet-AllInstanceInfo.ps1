@@ -57,6 +57,9 @@ function NewGet-AllInstanceInfo {
             $configurations = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'OLEAutomation' -Value (Get-DbcConfigValue policy.oleautomation)
         }
+        'AdHocWorkload' {
+            $configurations = $true
+        }
 
         Default { }
     }

@@ -103,3 +103,11 @@ Describe "OLE Automation" -Tag OLEAutomation, Security, CIS, Low, Instance -ForE
         }
     }
 }
+Describe "Ad Hoc Workload Optimization" -Tag AdHocWorkload, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.AdHocWorkload
+    Context "Checking Ad Hoc Workload Optimization on <_.Name>" {
+        It "Ad Hoc Workload Optimization is enabled on <_.Name>"  -Skip:($skip -or $psitem.VersionMajor -lt 10) {
+            $PSItem.Configuration.OptimizeAdhocWorkloads.ConfigValue -eq 1 | Should -Be 1 -Because "Optimize for ad hoc workloads is a recommended setting"
+        }
+    }
+}
