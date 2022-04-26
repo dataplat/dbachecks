@@ -129,3 +129,11 @@ For v5 we ran
     }
  
 }
+
+<#e
+$password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
+$cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
+$Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
+Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $false 
+Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $true -Show Fails
+#>
