@@ -14,7 +14,7 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'AdHocWorkload','DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
 Compare-CheckRuns -Checks $checks
 
 # Load the function below and then you can keep running the checks defined above in v4 and v5 and compare the performance
