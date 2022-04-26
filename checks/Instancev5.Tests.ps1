@@ -120,3 +120,14 @@ Describe "Ad Hoc Distributed Queries" -Tag AdHocDistributedQueriesEnabled, secur
         }
     }
 }
+Describe "Default File Path" -Tag DefaultFilePath, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.DefaultFilePath
+    Context "Checking Default Data File Path on <_.Name>" {
+        It "Default Data File Path should not be on the C Drive on <_.Name>"  -Skip:$skip {
+            $PSItem.Settings.DefaultFile.substring(0, 1) | Should -Not -Be "C" -Because 'Default Data file path should not be your C:\ drive'
+        }
+        It "Default Log File Path should not be on the C Drive on <_.Name>"  -Skip:$skip {
+            $PSItem.Settings.DefaultLog.substring(0, 1) | Should -Not -Be "C" -Because 'Default Log file path should not be your C:\ drive'
+        }
+    }
+}

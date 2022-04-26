@@ -8,6 +8,9 @@ function NewGet-AllInstanceInfo {
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $false)
+    $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Information], $false)
+    $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $false)
+
     
     # Server Initial fields
     $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server])
@@ -17,6 +20,11 @@ function NewGet-AllInstanceInfo {
     # Stored Procedure Initial Fields
     $StoredProcedureInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure])
     $StoredProcedureInitFields.Add("Startup") | Out-Null # So we can check SPs start up for the CIS checks
+
+    # Information Initial Fields
+
+    # Settings Initial Fields
+    $SettingsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings])
 
     # Configuration cannot have default init fields :-)
     $configurations = $false
@@ -64,7 +72,12 @@ function NewGet-AllInstanceInfo {
             $configurations = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AdHocDistributedQueriesEnabled' -Value  (Get-DbcConfigValue policy.security.AdHocDistributedQueriesEnabled)
         }
-
+        'DefaultFilePath' {
+            $SettingsInitFields.Add("DefaultFile") | Out-Null # so we can check file paths
+            $SettingsInitFields.Add("DefaultLog") | Out-Null # so we can check file paths
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $SettingsInitFields)
+        }
+       
         Default { }
     }
 
@@ -78,11 +91,12 @@ function NewGet-AllInstanceInfo {
         Name          = $Instance.Name
         ConfigValues  = $ConfigValues
         VersionMajor  = $Instance.VersionMajor
-        Configuration = if ($configurations) { $Instance.Configuration }else { $null }
+        Configuration = if ($configurations) { $Instance.Configuration } else { $null }
+        Settings      = $Instance.Settings
     }
-    if($ScanForStartupProceduresDisabled){
-        $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{$_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true}.count
-        if ($StartUpSPs -eq 0)  {
+    if ($ScanForStartupProceduresDisabled) {
+        $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
+        if ($StartUpSPs -eq 0) {
             $testInstanceObject.Configuration.ScanForStartupProcedures.ConfigValue = 0
         } 
     }
