@@ -15,7 +15,7 @@ ipmo ./dbachecks.psd1
 # 
 
 $Checks = 'AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-
+$Checks = 'AdHocDistributedQueriesEnabled'
 Compare-v4andv5Results -Checks $Checks
 
 # Load the function below and then you can keep running the checks defined above in v4 and v5 and compare the performance
@@ -58,7 +58,7 @@ For v5 we returned
         Write-PSFMessage -Message $Message -Level Output
     }
 
-    If ($v5code.TotalCount -ne $v4code.TotalCount) {
+    If (($v5code.TotalCount - $v5code.NotRunCount) -ne $v4code.TotalCount) {
         $Message = "
 Uh-Oh - The total tests run between v4 and v5 are not the same somehow.
 For v4 We ran 
