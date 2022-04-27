@@ -14,8 +14,8 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'DefaultBackupCompression'
+$Checks = 'ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'ModelDbGrowth'
 Compare-CheckRuns -Checks $checks
 
 <#
@@ -60,16 +60,20 @@ $originalCodeMessage = "With original Code it takes {0} MilliSeconds" -f $origin
 
 
 $savingMessage = "
-Running with {3} Checks against 3 SQL Containers
+Running with 
+
+{3} 
+
+Checks against 3 SQL Containers
 
 With original Code it takes {1} Seconds
 With New Code it takes {4} Seconds
 
-New Code for these 
-checks is saving {0} seconds
+New Code for these {5} checks 
+is saving {0} seconds
 from a run of {1} seconds
 New Code runs in {2} % of the time
-" -f ('{0:N2}' -f ($originalCodetrace.StopwatchDuration.TotalSeconds - $NewCodetrace.StopwatchDuration.TotalSeconds)),('{0:N2}' -f $originalCodetrace.StopwatchDuration.TotalSeconds),('{0:N2}' -f (($NewCodetrace.StopwatchDuration.TotalSeconds/$originalCodetrace.StopwatchDuration.TotalSeconds) * 100)),($Checks -split ',' -join ',') ,('{0:N2}' -f $NewCodetrace.StopwatchDuration.TotalSeconds)
+" -f ('{0:N2}' -f ($originalCodetrace.StopwatchDuration.TotalSeconds - $NewCodetrace.StopwatchDuration.TotalSeconds)),('{0:N2}' -f $originalCodetrace.StopwatchDuration.TotalSeconds),('{0:N2}' -f (($NewCodetrace.StopwatchDuration.TotalSeconds/$originalCodetrace.StopwatchDuration.TotalSeconds) * 100)),($Checks -split ',' -join ',') ,('{0:N2}' -f $NewCodetrace.StopwatchDuration.TotalSeconds), $Checks.Count
 cls
 
 Write-PSFMessage -Message $savingMessage -Level Output

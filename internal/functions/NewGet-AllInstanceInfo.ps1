@@ -10,16 +10,20 @@ function NewGet-AllInstanceInfo {
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Information], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $false)
+    $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile], $false)
+    $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile], $false)
 
-    
+
     # Server Initial fields
     $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server])
     $ServerInitFields.Add("VersionMajor") | Out-Null # so we can check versions
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $ServerInitFields)
 
+    # Database Initial Fields
+    $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
+
     # Stored Procedure Initial Fields
     $StoredProcedureInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure])
-    $StoredProcedureInitFields.Add("Startup") | Out-Null # So we can check SPs start up for the CIS checks
 
     # Information Initial Fields
 
@@ -28,6 +32,12 @@ function NewGet-AllInstanceInfo {
 
     # Login Initial Fields
     $LoginInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login])
+
+    # Log File Initial Fields
+    $LogFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile])
+
+    # Data File Initial Fields
+    $DataFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile])
 
     # Configuration cannot have default init fields :-)
     $configurations = $false
@@ -51,6 +61,7 @@ function NewGet-AllInstanceInfo {
             # we have to check the spconfigure and we have to check that any stored procedurees in master have startup set to true
             $configurations = $true
             $ScanForStartupProceduresDisabled = $true
+            $StoredProcedureInitFields.Add("Startup") | Out-Null # So we can check SPs start up for the CIS checks
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $StoredProcedureInitFields)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'scanforstartupproceduresdisabled' -Value (Get-DbcConfigValue policy.security.scanforstartupproceduresdisabled)
         }
@@ -92,6 +103,16 @@ function NewGet-AllInstanceInfo {
             $LoginInitFields.Add("ID") | Out-Null # so we can check if sa is disabled even if it has been renamed
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $LoginInitFields)
         }
+        'ModelDbGrowth' {
+            $LogFileInitFields.Add("Growth") | Out-Null # So we can check the model file growth settings
+            $LogFileInitFields.Add("GrowthType") | Out-Null # So we can check the model file growth settings
+            $LogFileInitFields.Add("Name") | Out-Null # So we can check the model file growth settings
+            $DataFileInitFields.Add("Growth") | Out-Null # So we can check the model file growth settings
+            $DataFileInitFields.Add("GrowthType") | Out-Null # So we can check the model file growth settings
+            $DataFileInitFields.Add("Name") | Out-Null # So we can check the model file growth settings
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile], $LogFileInitFields)
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile], $DataFileInitFields)
+        }
        
         Default { }
     }
@@ -109,6 +130,7 @@ function NewGet-AllInstanceInfo {
         Configuration = if ($configurations) { $Instance.Configuration } else { $null }
         Settings      = $Instance.Settings
         Logins        = $Instance.Logins
+        Databases     = $Instance.Databases
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count

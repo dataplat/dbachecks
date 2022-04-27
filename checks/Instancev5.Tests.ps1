@@ -152,7 +152,7 @@ Describe "SA Login Disabled" -Tag SaDisabled, DISA, CIS, Medium, Instance -ForEa
 
 Describe "Login SA cannot exist" -Tag SaExist, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.security.saexist
-    Context "Checking that a login named sa does not exist on <_.Name>"  {
+    Context "Checking that a login named sa does not exist on <_.Name>" {
         It "sa login does not exist on <_.Name>" -Skip:$Skip {
             $PsItem.Logins['sa'].Count | Should -Be 0 -Because "We expected no login to exist with the name sa"
         }
@@ -167,3 +167,24 @@ Describe "Default Backup Compression" -Tag DefaultBackupCompression, Low, Instan
         }
     }
 }
+
+Describe "Model Database Growth" -Tag ModelDbGrowth, Low, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.modeldbgrowth
+    Context "Testing model database growth setting is not default on <_.Name>" {
+        It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files  {
+            $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
+        }
+        It "Growth settings should not be 1Mb for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files  {
+            $psitem.Growth | Should -Not -Be 1024 -Because 'New databases use the model database as a template and growing for each Mb will have a performance impact'
+        }
+        It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Name>" -Skip:$skip -ForEach @($PsItem.Databases['model'].LogFiles) {
+            $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
+        }
+        It "Growth settings should not be 1Mb for file <_.Name> on <_.Parent.Parent.Name>" -Skip:$skip -ForEach @($PsItem.Databases['model'].LogFiles) {
+            $psitem.Growth | Should -Not -Be 1024 -Because 'New databases use the model database as a template and growing for each Mb will have a performance impact'
+        }
+    }
+}
+
+
+
