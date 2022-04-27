@@ -186,5 +186,13 @@ Describe "Model Database Growth" -Tag ModelDbGrowth, Low, Instance -ForEach $Ins
     }
 }
 
+Describe "Error Log Count" -Tag ErrorLogCount, CIS, Low, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.ErrorLogCount
+    Context "Checking error log count on <_.Name>" {
+        It "Error log count should be greater or equal to <_.ConfigValues.errorLogCount> on <_.Name>" -Skip:$skip{
+           $psitem.NumberOfLogFiles | Should -BeGreaterOrEqual $psitem.ConfigValues.errorLogCount -Because "We expect to have at least $($psitem.ConfigValues.errorLogCount) number of error log files"
+        }
+    }
+}
 
 

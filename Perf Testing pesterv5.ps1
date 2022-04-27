@@ -15,7 +15,7 @@ ipmo ./dbachecks.psd1
 # 
 
 $Checks = 'ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'ModelDbGrowth'
+$Checks = 'ErrorLogCount'
 Compare-CheckRuns -Checks $checks
 
 <#

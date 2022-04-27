@@ -63,6 +63,7 @@ function NewGet-AllInstanceInfo {
             $ScanForStartupProceduresDisabled = $true
             $StoredProcedureInitFields.Add("Startup") | Out-Null # So we can check SPs start up for the CIS checks
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $StoredProcedureInitFields)
+            $StoredProcedureInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure]) #  I think we need to re-initialise here
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'scanforstartupproceduresdisabled' -Value (Get-DbcConfigValue policy.security.scanforstartupproceduresdisabled)
         }
         'RemoteAccessDisabled' {
@@ -96,7 +97,6 @@ function NewGet-AllInstanceInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $SettingsInitFields)
         }
         'SaRenamed' {
-
         }
         'SaDisabled' {
             $LoginInitFields.Add("IsDisabled") | Out-Null # so we can check if sa is disabled
@@ -112,6 +112,18 @@ function NewGet-AllInstanceInfo {
             $DataFileInitFields.Add("Name") | Out-Null # So we can check the model file growth settings
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile], $LogFileInitFields)
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile], $DataFileInitFields)
+            $LogFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile]) #  I think we need to re-initialise here
+            $DataFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile]) #  I think we need to re-initialise here
+
+        }
+        'ErrorlogCount' {
+            $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server])
+            $ServerInitFields.Add("NumberOfLogFiles") | Out-Null # so we can check versions
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $ServerInitFields)
+            $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server]) #  I think we need to re-initialise here
+        
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'errorLogCount' -Value (Get-DbcConfigValue policy.errorlog.logcount)
+
         }
        
         Default { }
@@ -122,15 +134,16 @@ function NewGet-AllInstanceInfo {
     #build the object
 
     $testInstanceObject = [PSCustomObject]@{
-        ComputerName  = $Instance.ComputerName
-        InstanceName  = $Instance.DbaInstanceName
-        Name          = $Instance.Name
-        ConfigValues  = $ConfigValues
-        VersionMajor  = $Instance.VersionMajor
-        Configuration = if ($configurations) { $Instance.Configuration } else { $null }
-        Settings      = $Instance.Settings
-        Logins        = $Instance.Logins
-        Databases     = $Instance.Databases
+        ComputerName     = $Instance.ComputerName
+        InstanceName     = $Instance.DbaInstanceName
+        Name             = $Instance.Name
+        ConfigValues     = $ConfigValues
+        VersionMajor     = $Instance.VersionMajor
+        Configuration    = if ($configurations) { $Instance.Configuration } else { $null }
+        Settings         = $Instance.Settings
+        Logins           = $Instance.Logins
+        Databases        = $Instance.Databases
+        NumberOfLogFiles = $Instance.NumberOfLogFiles
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
