@@ -68,7 +68,7 @@ Describe "Cross Database Ownership Chaining" -Tag CrossDBOwnershipChaining, Secu
     }
 }
 
-Describe "Scan For Startup Procedures" -Tag ScanForStartupProceduresDisabled,  Security, CIS, Low, Instance -ForEach $InstancesToTest {
+Describe "Scan For Startup Procedures" -Tag ScanForStartupProceduresDisabled, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.instance.scanforstartupproceduresdisabled
     Context "Checking Scan For Startup Procedures on <_.Name>" {
         It "Scan For Startup Procedures is set to <_.ConfigValues.scanforstartupproceduresdisabled> on <_.Name>"  -Skip:$skip {
@@ -77,7 +77,7 @@ Describe "Scan For Startup Procedures" -Tag ScanForStartupProceduresDisabled,  S
     }
 }
 
-Describe "SQL Mail XPs Disabled" -Tag SQLMailXPsDisabled,  Security, CIS, Low, Instance -ForEach $InstancesToTest {
+Describe "SQL Mail XPs Disabled" -Tag SQLMailXPsDisabled, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.instance.SQLMailXPsDisabled
     Context "Checking SQL Mail XPs on <_.Name>" {
         It "SQL Mail XPs should be disabled on <_.Name>"  -Skip:($skip -or $psitem.VersionMajor -gt 10) {
@@ -131,3 +131,12 @@ Describe "Default File Path" -Tag DefaultFilePath, Instance -ForEach $InstancesT
         }
     }
 }
+
+Describe "SA Login Renamed" -Tag SaRenamed, DISA, CIS, Medium, Instance -ForEach $InstancesToTest {
+    Context "Checking that sa login has been renamed on <_.Name>" {
+        It "sa login has been renamed on <_.Name>" {
+            ($PsItem.Logins.Name)  | Should -Not -BeIn 'sa' -Because "Renaming the sa account is a requirement"
+        }
+    }
+}
+

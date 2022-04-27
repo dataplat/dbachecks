@@ -26,6 +26,9 @@ function NewGet-AllInstanceInfo {
     # Settings Initial Fields
     $SettingsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings])
 
+    # Login Initial Fields
+    $LoginInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login])
+
     # Configuration cannot have default init fields :-)
     $configurations = $false
 
@@ -77,6 +80,9 @@ function NewGet-AllInstanceInfo {
             $SettingsInitFields.Add("DefaultLog") | Out-Null # so we can check file paths
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $SettingsInitFields)
         }
+        'SaRenamed' {
+
+        }
        
         Default { }
     }
@@ -93,6 +99,7 @@ function NewGet-AllInstanceInfo {
         VersionMajor  = $Instance.VersionMajor
         Configuration = if ($configurations) { $Instance.Configuration } else { $null }
         Settings      = $Instance.Settings
+        Logins        = $Instance.Logins
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
