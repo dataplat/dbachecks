@@ -83,6 +83,11 @@ function NewGet-AllInstanceInfo {
         'SaRenamed' {
 
         }
+        'SaDisabled' {
+            $LoginInitFields.Add("IsDisabled") | Out-Null # so we can check if sa is disabled
+            $LoginInitFields.Add("ID") | Out-Null # so we can check if sa is disabled even if it has been renamed
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $LoginInitFields)
+        }
        
         Default { }
     }

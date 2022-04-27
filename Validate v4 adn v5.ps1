@@ -14,9 +14,17 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'SaRenamed'
+$Checks = 'SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'SaDisabled'
 Compare-v4andv5Results -Checks $Checks
+
+<#
+When there are default skips (some of the CIS checks) we need to set the configs and check
+
+Set-DbcConfig skip.security.sadisabled -Value $false
+Set-DbcConfig skip.security.sadisabled -Value $true
+Get-DbcConfigValue skip.security.sadisabled
+#>
 
 # Load the function below and then you can keep running the checks defined above in v4 and v5 and compare the performance
 # You can keep updating the .Tests.ps1 files and rerunning the function without needing to re-import hte module
@@ -28,7 +36,8 @@ Compare-v4andv5Results -Checks $Checks
 # If you get odd results - or you dont get any checks run
 
 # run the import module and the Invoke Dbc Check with Verbose and that might show you New-Json messing 
-# with your files or that you are lookign in PSMOdulePath instead of Git Repo path (run Reset-dbcConfig to fix that)
+# with your files or that you are looking in PSModulePath instead of Git Repo path (run Reset-dbcConfig to fix that)
+
 
 function Compare-v4andv5Results {
     param($Checks)
@@ -136,4 +145,6 @@ $cred = New-Object -TypeName System.Management.Automation.PSCredential -Argument
 $Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
 Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $false
 Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $true 
+
+$smo = $Instance = Connect-DbaInstance -Sqlinstance $SqlInstances[0] -SqlCredential $cred
 #>

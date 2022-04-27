@@ -133,6 +133,7 @@ Describe "Default File Path" -Tag DefaultFilePath, Instance -ForEach $InstancesT
 }
 
 Describe "SA Login Renamed" -Tag SaRenamed, DISA, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.SaRenamed
     Context "Checking that sa login has been renamed on <_.Name>" {
         It "sa login has been renamed on <_.Name>" {
             ($PsItem.Logins.Name)  | Should -Not -BeIn 'sa' -Because "Renaming the sa account is a requirement"
@@ -140,3 +141,11 @@ Describe "SA Login Renamed" -Tag SaRenamed, DISA, CIS, Medium, Instance -ForEach
     }
 }
 
+Describe "SA Login Disabled" -Tag SaDisabled, DISA, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.security.sadisabled
+    Context "Checking that sa login has been disabled on <_.Name>" {
+        It "sa login is disabled on <_.Name>" -Skip:$Skip {
+            ($PsItem.Logins | Where-Object ID -eq 1).IsDisabled | Should -Be $true -Because "We expected the original sa login to be disabled"
+        }
+    }
+}

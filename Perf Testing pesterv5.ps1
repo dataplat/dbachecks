@@ -14,9 +14,17 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'SaRenamed'
+$Checks = 'SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'SaDisabled'
 Compare-CheckRuns -Checks $checks
+
+<#
+When there are default skips (some of the CIS checks) we need to set the configs and check
+
+Set-DbcConfig skip.security.sadisabled -Value $false
+Set-DbcConfig skip.security.sadisabled -Value $true
+Get-DbcConfigValue skip.security.sadisabled
+#>
 
 # Load the function below and then you can keep running the checks defined above in v4 and v5 and compare the performance
 # You can keep updating the .Tests.ps1 files and rerunning the function without needing to re-import hte module
