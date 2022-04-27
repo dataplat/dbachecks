@@ -14,8 +14,8 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'ErrorLogCount'
+$Checks = 'MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'MaxDopInstance'
 Compare-v4andv5Results -Checks $Checks
 
 <#
@@ -28,6 +28,18 @@ Get-DbcConfigValue skip.security.sadisabled
 Set-DbcConfig skip.security.saexist -Value $false
 Set-DbcConfig skip.security.saexist -Value $true
 Get-DbcConfigValue skip.security.saexist
+
+
+Get-DbcConfigValue policy.instancemaxdop.userecommended
+Get-DbcConfigValue policy.instancemaxdop.maxdop
+Get-DbcConfigValue policy.instancemaxdop.excludeinstance
+
+Set-DbcConfig policy.instancemaxdop.userecommended -Value $false
+Set-DbcConfig policy.instancemaxdop.userecommended -Value $true
+Set-DbcConfig policy.instancemaxdop.maxdop -Value 0
+Set-DbcConfig policy.instancemaxdop.excludeinstance -Value $null
+Set-DbcConfig policy.instancemaxdop.excludeinstance -Value 'localhost,7402'
+
 #>
 
 # Load the function below and then you can keep running the checks defined above in v4 and v5 and compare the performance

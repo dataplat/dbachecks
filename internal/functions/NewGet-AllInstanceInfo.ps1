@@ -13,7 +13,8 @@ function NewGet-AllInstanceInfo {
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile], $false)
 
-
+    # set the default init fields for all the tags
+    
     # Server Initial fields
     $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server])
     $ServerInitFields.Add("VersionMajor") | Out-Null # so we can check versions
@@ -117,7 +118,7 @@ function NewGet-AllInstanceInfo {
 
         }
         'ErrorlogCount' {
-            $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server])
+
             $ServerInitFields.Add("NumberOfLogFiles") | Out-Null # so we can check versions
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $ServerInitFields)
             $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server]) #  I think we need to re-initialise here
@@ -125,12 +126,26 @@ function NewGet-AllInstanceInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'errorLogCount' -Value (Get-DbcConfigValue policy.errorlog.logcount)
 
         }
+        'MaxDopInstance' {
+            #Test-DbaMaxDop needs these because it checks every database as well
+            $DatabaseInitFields.Add("IsAccessible") | Out-Null # so we can check if its accessible
+            $DatabaseInitFields.Add("IsSystemObject ") | Out-Null # so we can check if its accessible
+            $DatabaseInitFields.Add("MaxDop ") | Out-Null # so we can check if its accessible
+            $DatabaseInitFields.Add("Name ") | Out-Null # so we can check if its accessible
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $DatabaseInitFields)
+            $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
+            
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'UseRecommendedMaxDop' -Value (Get-DbcConfigValue policy.instancemaxdop.userecommended)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'InstanceMaxDop' -Value (Get-DbcConfigValue policy.instancemaxdop.maxdop)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'ExcludeInstanceMaxDop' -Value (Get-DbcConfigValue policy.instancemaxdop.excludeinstance)
+            if ($Instance.Name -notin $ConfigValues.ExcludeInstanceMaxDop) {
+                $MaxDopSettings = (Test-DbaMaxDop -SqlInstance $Instance)[0] # because we dont care about the database maxdops here - potentially we could store it and use it for DatabaseMaxDop ?
+            }
+        }
        
         Default { }
     }
 
-    # set the default init fields for all the tags
-    
     #build the object
 
     $testInstanceObject = [PSCustomObject]@{
@@ -144,6 +159,7 @@ function NewGet-AllInstanceInfo {
         Logins           = $Instance.Logins
         Databases        = $Instance.Databases
         NumberOfLogFiles = $Instance.NumberOfLogFiles
+        MaxDopSettings   = $MaxDopSettings 
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
