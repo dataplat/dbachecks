@@ -14,8 +14,8 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'SaDisabled'
+$Checks = 'SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'SaExist'
 Compare-v4andv5Results -Checks $Checks
 
 <#
@@ -24,6 +24,10 @@ When there are default skips (some of the CIS checks) we need to set the configs
 Set-DbcConfig skip.security.sadisabled -Value $false
 Set-DbcConfig skip.security.sadisabled -Value $true
 Get-DbcConfigValue skip.security.sadisabled
+
+Set-DbcConfig skip.security.saexist -Value $false
+Set-DbcConfig skip.security.saexist -Value $true
+Get-DbcConfigValue skip.security.saexist
 #>
 
 # Load the function below and then you can keep running the checks defined above in v4 and v5 and compare the performance

@@ -149,3 +149,12 @@ Describe "SA Login Disabled" -Tag SaDisabled, DISA, CIS, Medium, Instance -ForEa
         }
     }
 }
+
+Describe "Login SA cannot exist" -Tag SaExist, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.security.saexist
+    Context "Checking that a login named sa does not exist on <_.Name>"  {
+        It "sa login does not exist on <_.Name>" -Skip:$Skip {
+            $PsItem.Logins['sa'].Count | Should -Be 0 -Because "We expected no login to exist with the name sa"
+        }
+    }
+}

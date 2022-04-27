@@ -14,8 +14,8 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'SaDisabled'
+$Checks = 'SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'SaExist'
 Compare-CheckRuns -Checks $checks
 
 <#
@@ -24,8 +24,11 @@ When there are default skips (some of the CIS checks) we need to set the configs
 Set-DbcConfig skip.security.sadisabled -Value $false
 Set-DbcConfig skip.security.sadisabled -Value $true
 Get-DbcConfigValue skip.security.sadisabled
-#>
 
+Set-DbcConfig skip.security.saexist -Value $false
+Set-DbcConfig skip.security.saexist -Value $true
+Get-DbcConfigValue skip.security.saexist
+#>
 # Load the function below and then you can keep running the checks defined above in v4 and v5 and compare the performance
 # You can keep updating the .Tests.ps1 files and rerunning the function without needing to re-import hte module
 
@@ -62,8 +65,9 @@ Running with {3} Checks against 3 SQL Containers
 With original Code it takes {1} Seconds
 With New Code it takes {4} Seconds
 
-New Code for these checks is saving 
-{0} seconds from a run of {1} seconds
+New Code for these 
+checks is saving {0} seconds
+from a run of {1} seconds
 New Code runs in {2} % of the time
 " -f ('{0:N2}' -f ($originalCodetrace.StopwatchDuration.TotalSeconds - $NewCodetrace.StopwatchDuration.TotalSeconds)),('{0:N2}' -f $originalCodetrace.StopwatchDuration.TotalSeconds),('{0:N2}' -f (($NewCodetrace.StopwatchDuration.TotalSeconds/$originalCodetrace.StopwatchDuration.TotalSeconds) * 100)),($Checks -split ',' -join ',') ,('{0:N2}' -f $NewCodetrace.StopwatchDuration.TotalSeconds)
 cls
