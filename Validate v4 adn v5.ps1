@@ -67,12 +67,12 @@ and
 For v5 we ran 
 {1} tests
 The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block
-    " -f $v4code.TotalCount, $v5code.TotalCount
+    " -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
         Write-PSFMessage -Message $Message -Level Warning
     }
     else {
         $message = "
-    The Total Tests Run are the same"
+    The Total Tests Run are the same {0} {1} " -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
         Write-PSFMessage -Message $Message -Level Output
     }
 
@@ -89,7 +89,7 @@ For v5 we ran
     }
     else {
         $message = "
-    The Total Tests Passed are the same"
+    The Total Tests Passed are the same {0} {1} " -f $v4code.PassedCount, $v5code.PassedCount
         Write-PSFMessage -Message $Message -Level Output
     }
  
@@ -107,7 +107,7 @@ For v5 we ran
     }
     else {
         $message = "
-    The Total Tests Failed are the same"
+    The Total Tests Failed are the same {0} {1} " -f $v4code.FailedCount, $v5code.FailedCount
         Write-PSFMessage -Message $Message -Level Output
     }
 
@@ -124,7 +124,7 @@ For v5 we ran
     }
     else {
         $message = "
-    The Total Tests Skipped are the same"
+    The Total Tests Skipped are the same {0} {1} "-f $v4code.SkippedCount, $v5code.SkippedCount
         Write-PSFMessage -Message $Message -Level Output
     }
  
