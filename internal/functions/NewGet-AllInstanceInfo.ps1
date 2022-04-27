@@ -73,7 +73,11 @@ function NewGet-AllInstanceInfo {
         }
         'AdHocDistributedQueriesEnabled' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AdHocDistributedQueriesEnabled' -Value  (Get-DbcConfigValue policy.security.AdHocDistributedQueriesEnabled)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AdHocDistributedQueriesEnabled' -Value (Get-DbcConfigValue policy.security.AdHocDistributedQueriesEnabled)
+        }
+        'DefaultBackupCompression' {
+            $configurations = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DefaultBackupCompression' -Value (Get-DbcConfigValue policy.backup.defaultbackupcompression)
         }
         'DefaultFilePath' {
             $SettingsInitFields.Add("DefaultFile") | Out-Null # so we can check file paths

@@ -158,3 +158,12 @@ Describe "Login SA cannot exist" -Tag SaExist, CIS, Medium, Instance -ForEach $I
         }
     }
 }
+
+Describe "Default Backup Compression" -Tag DefaultBackupCompression, Low, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.DefaultBackupCompression
+    Context "Checking Default Backup Compression on <_.Name>" {
+        It "Default Backup Compression is set to <_.ConfigValues.DefaultBackupCompression> on <_.Name>"  -Skip:$skip {
+            $PSItem.Configuration.DefaultBackupCompression.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.DefaultBackupCompression -Because 'This is the setting you have chosen the default backup compression'
+        }
+    }
+}
