@@ -29,7 +29,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                         }
                     }
                     else {
-                        Context "Testing Testing Database Mail XPs on $psitem" {
+                        Context "Testing Database Mail XPs on $psitem" {
                             It "Testing Database Mail XPs is set to $DatabaseMailEnabled on $psitem" {
                                 Assert-DatabaseMailEnabled -SQLInstance $Psitem -DatabaseMailEnabled $DatabaseMailEnabled
                             }
@@ -216,7 +216,7 @@ Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactab
                 }
                 Describe "Invalid Job Owner" -Tags InValidJobOwner, $filename {
                     [string[]]$targetowner = Get-DbcConfigValue agent.invalidjobowner.name
-                
+
                     if ($NotContactable -contains $psitem) {
                         Context "Testing job owners on $psitem" {
                             It "Can't Connect to $Psitem" {
