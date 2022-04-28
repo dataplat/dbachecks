@@ -1,11 +1,12 @@
 # So the v5 files need to be handled differently.
 # Ww will start with a BeforeDiscovery which for the Database Checks will need to gather the Instances up front
 BeforeDiscovery {
+    <#
     . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1
     [array]$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
     $ExcludedDatabases += $ExcludeDatabase
     [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
-
+    
     $InstancesToTest = @(Get-Instance).ForEach{
         # just add it to the Not Contactable list
         if ($NotContactable -notcontains $psitem) {
@@ -26,10 +27,43 @@ BeforeDiscovery {
     }
     Write-PSFMessage -Message "Instances = $InstancesToTest" -Level Significant
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
+    #>
+
+        # Gather the instances we know are not contactable
+        [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
+        # Get all the tags in use in this run
+        $Tags = Get-CheckInformation -Check $Check -Group Database -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
+
+
+        $InstancesToTest = @(Get-Instance).ForEach{
+            # just add it to the Not Contactable list
+            if ($NotContactable -notcontains $psitem) {
+                $Instance = $psitem
+                try {
+                    $InstanceSMO = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                }
+                catch {
+                    $NotContactable += $Instance
+                }
+                if ($NotContactable -notcontains $psitem) {
+                    if ($null -eq $InstanceSMO.version) {
+                        $NotContactable += $Instance
+                    }
+                    else {
+                        # Get the relevant information for the checks in one go to save repeated trips to the instance and set values for Not Contactable tests if required
+                        Get-AllDatabaseInfo -Instance $InstanceSMO -Tags $Tags
+                    }
+                }
+            }
+        }
+        Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Significant
+        Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 }
 
 # Each Test will have a -ForEach for the Instances and the InstancesToTest object will have a 
 # lot of information gathered up front to reduce trips and connections to the database
+<#
+
 Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $InstancesToTest {
     BeforeAll {
         $Wrongcollation = Get-DbcConfigValue policy.database.wrongcollation
@@ -53,7 +87,7 @@ Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $I
     }
 }
 
-Describe "Suspect Page" -Tags SuspectPage, High , Database -ForEach $InstancesToTest {
+Describe "Suspect Page" -Tag SuspectPage, High , Database -ForEach $InstancesToTest {
     Context "Testing suspect pages on <_.Name>" {
         It "Database <_.Name> should return 0 suspect pages on <_.Parent.Name>" -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name } } {
             $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
@@ -61,22 +95,19 @@ Describe "Suspect Page" -Tags SuspectPage, High , Database -ForEach $InstancesTo
         }
     }
 }
+#>
 
-Describe "Valid Database Owner" -Tags ValidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
+Describe "Valid Database Owner" -Tag ValidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
     BeforeAll {
-        [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
         $ExcludedDatabases += Get-DbcConfigValue policy.validdbowner.excludedb
     }
+    #add skip but where
+    #$skip = Get-DbcConfigValue skip.instance.scanforstartupproceduresdisabled
+
     Context "Testing Database Owners on <_.Name>" {
         #TODO fix the it text - needs commas --> should be in this list ( sqladmin sa ) )
-        #It "Database <_.Name> - owner should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on  <_.Parent.Name>" -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name } } {
-        It "Database <_.Name> - owner '<_.Owner>' should be in this list ( <targetowner> ) ) on  <_.Parent.Name>" -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name } } {
-            [string[]]$targetowner = Get-DbcConfigValue policy.validdbowner.name
-            $psitem.Owner | Should -BeIn $targetowner -Because "The account that is the database owner is not what was expected"
+            It "Database <_.Name> - owner '<_.Owner>' should be in this list ( <_.ConfigValues.validdbownername> ) ) on  <_.Parent.Name>" -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name } } {
+            $psitem.Owner | Should -BeIn $psitem.ConfigValues.validdbownername -Because "The account that is the database owner is not what was expected"
         }
     }
 }
-
-# how to we get config data to use in its? like $TargetOwner
-
-
