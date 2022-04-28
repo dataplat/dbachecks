@@ -14,8 +14,8 @@ ipmo ./dbachecks.psd1
 
 # 
 
-$Checks = 'MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'MaxDopInstance'
+$Checks = 'TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'TraceFlagsExpected'
 Compare-CheckRuns -Checks $checks
 
 <#
@@ -39,6 +39,15 @@ Set-DbcConfig policy.instancemaxdop.userecommended -Value $true
 Set-DbcConfig policy.instancemaxdop.maxdop -Value 0
 Set-DbcConfig policy.instancemaxdop.excludeinstance -Value $null
 Set-DbcConfig policy.instancemaxdop.excludeinstance -Value 'localhost,7401'
+
+Get-DbcConfigValue policy.traceflags.expected
+Get-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred
+Set-DbcConfig policy.traceflags.expected -Value 1117,1118
+Set-DbcConfig policy.traceflags.expected -Value $null
+
+Enable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 1117,1118
+Disable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 1117,1118
+Disable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 1118
 
 #>
 
