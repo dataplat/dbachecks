@@ -147,24 +147,41 @@ function NewGet-AllInstanceInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TwoDigitYearCutoff' -Value (Get-DbcConfigValue policy.twodigityearcutoff)
 
         }
-       
+        'TraceFlagsExpected' {
+            $TraceFlagsExpected = Get-DbcConfigValue policy.traceflags.expected
+            $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
+            $ExpectedTraceFlags = $TraceFlagsExpected.Foreach{
+                [PSCustomObject]@{
+                    InstanceName       = $Instance.Name
+                    ExpectedTraceFlag = $PSItem
+                    ActualTraceFlags   = $TraceFlagsActual
+                }
+            }
+            $ExpectedTraceFlags += [PSCustomObject]@{
+                InstanceName       = $Instance.Name
+                ExpectedTraceFlag = 'null'
+                ActualTraceFlags   = $TraceFlagsActual
+            }
+        }
         Default { }
     }
 
     #build the object
 
     $testInstanceObject = [PSCustomObject]@{
-        ComputerName     = $Instance.ComputerName
-        InstanceName     = $Instance.DbaInstanceName
-        Name             = $Instance.Name
-        ConfigValues     = $ConfigValues
-        VersionMajor     = $Instance.VersionMajor
-        Configuration    = if ($configurations) { $Instance.Configuration } else { $null }
-        Settings         = $Instance.Settings
-        Logins           = $Instance.Logins
-        Databases        = $Instance.Databases
-        NumberOfLogFiles = $Instance.NumberOfLogFiles
-        MaxDopSettings   = $MaxDopSettings 
+        ComputerName       = $Instance.ComputerName
+        InstanceName       = $Instance.DbaInstanceName
+        Name               = $Instance.Name
+        ConfigValues       = $ConfigValues
+        VersionMajor       = $Instance.VersionMajor
+        Configuration      = if ($configurations) { $Instance.Configuration } else { $null }
+        Settings           = $Instance.Settings
+        Logins             = $Instance.Logins
+        Databases          = $Instance.Databases
+        NumberOfLogFiles   = $Instance.NumberOfLogFiles
+        MaxDopSettings     = $MaxDopSettings 
+        ExpectedTraceFlags = $ExpectedTraceFlags
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count

@@ -212,8 +212,21 @@ Describe "Instance MaxDop" -Tag MaxDopInstance, MaxDop, Medium, Instance -ForEac
 Describe "Two Digit Year Cutoff" -Tag TwoDigitYearCutoff, Low, Instance -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.instance.TwoDigitYearCutoff
     Context "Testing Two Digit Year Cutoff on <_.Name>" {
-        It "Two Digit Year Cutoff is set to <_.ConfigValues.TwoDigitYearCutoff> on <_.Name>"  -Skip:$skip {
+        It "Two Digit Year Cutoff is set to <_.ConfigValues.TwoDigitYearCutoff> on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.TwoDigitYearCutoff.ConfigValue | Should -Be $psitem.ConfigValues.TwoDigitYearCutoff -Because 'This is the value that you have chosen for Two Digit Year Cutoff configuration'
         }
     }
 }
+
+Describe "Trace Flags Expected" -Tag TraceFlagsExpected, TraceFlag, High, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.TraceFlagsExpected
+    Context "Testing Expected Trace Flags on <_.Name>" {
+        It "Expected No Trace Flags to exist on <_.Name>" -Skip:$skip -ForEach ($Psitem | Where-Object { $null -eq $psitem.ConfigValues.TraceFlagsExpected }) {
+            $PsItem.ExpectedTraceFlags.ActualTraceFlags.TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $($Psitem.Name) "
+        }
+        It "Expected Trace Flags <_.ExpectedTraceFlag> to exist on <_.InstanceName>" -Skip:$skip -ForEach ($PsItem.ExpectedTraceFlags | Where-Object { $psitem.ExpectedTraceFlag -ne 'null' }) {
+            $PsItem.ActualTraceFlags.TraceFlag | Should -Contain $PsItem.ExpectedTraceFlag -Because "We expect that Trace Flag $($PsItem.ExpectedTraceFlag)  will be set on $($Psitem.InstanceName) "
+        }
+    }
+}
+
