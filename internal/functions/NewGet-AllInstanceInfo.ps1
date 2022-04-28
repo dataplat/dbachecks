@@ -142,6 +142,11 @@ function NewGet-AllInstanceInfo {
                 $MaxDopSettings = (Test-DbaMaxDop -SqlInstance $Instance)[0] # because we dont care about the database maxdops here - potentially we could store it and use it for DatabaseMaxDop ?
             }
         }
+        'TwoDigitYearCutoff' {
+            $configurations = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TwoDigitYearCutoff' -Value (Get-DbcConfigValue policy.twodigityearcutoff)
+
+        }
        
         Default { }
     }

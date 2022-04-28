@@ -208,3 +208,12 @@ Describe "Instance MaxDop" -Tag MaxDopInstance, MaxDop, Medium, Instance -ForEac
         }
     }
 }
+
+Describe "Two Digit Year Cutoff" -Tag TwoDigitYearCutoff, Low, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.TwoDigitYearCutoff
+    Context "Testing Two Digit Year Cutoff on <_.Name>" {
+        It "Two Digit Year Cutoff is set to <_.ConfigValues.TwoDigitYearCutoff> on <_.Name>"  -Skip:$skip {
+            $PSItem.Configuration.TwoDigitYearCutoff.ConfigValue | Should -Be $psitem.ConfigValues.TwoDigitYearCutoff -Because 'This is the value that you have chosen for Two Digit Year Cutoff configuration'
+        }
+    }
+}
