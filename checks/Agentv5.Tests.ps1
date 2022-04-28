@@ -38,7 +38,7 @@ BeforeDiscovery {
 
 Describe "Database Mail XPs" -Tag DatabaseMailEnabled, CIS, security -ForEach $InstancesToTest {
     $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
-    $skip = Get-DbcConfigValue skip.instance.databasemailenabled
+    $skip = Get-DbcConfigValue skip.agent.databasemailenabled
     Context "Testing Database Mail XPs on <_.Name>" {
         It "Testing Database Mail XPs is set to $DatabaseMailEnabled on <_.Name>"  -Skip:$skip {
             $PSItem.Configuration.DatabaseMailEnabled | Should -Be $PSItem.ConfigValues.DatabaseMailEnabled -Because 'The Database Mail XPs setting should be set correctly'
