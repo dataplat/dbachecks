@@ -541,29 +541,29 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
     Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, Medium, $filename {
         $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
         if ((Get-Version -SQLInstance $psitem) -gt 10) {
-        # no point running if we dont have something to check
-        if ($xesession) {
-            if ($NotContactable -contains $psitem) {
-                Context "Checking running sessions allowed on $psitem" {
-                    It "Can't Connect to $Psitem" {
-                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+            # no point running if we dont have something to check
+            if ($xesession) {
+                if ($NotContactable -contains $psitem) {
+                    Context "Checking running sessions allowed on $psitem" {
+                        It "Can't Connect to $Psitem" {
+                            $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                        }
                     }
                 }
-            }
-            else {
-                Context "Checking running sessions allowed on $psitem" {
-                    @(Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.ForEach{
-                        It "Session $($Psitem.Name) is allowed to be running on $Instance" {
-                            $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
+                else {
+                    Context "Checking running sessions allowed on $psitem" {
+                        @(Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.ForEach{
+                            It "Session $($Psitem.Name) is allowed to be running on $Instance" {
+                                $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
+                            }
                         }
                     }
                 }
             }
+            else {
+                Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
+            }
         }
-        else {
-            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
-        }
-    }
         else {
             Context "Checking running sessions allowed on $psitem" {
                 It "Version does not support XE sessions on $Instance" -skip {
@@ -788,9 +788,20 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
             }
         }
         else {
+            if ($null -eq $ExpectedTraceFlags) { $ExpectedTraceFlags = 0 }
+            $ActualTraceflags = (Get-DbaTraceFlag -SqlInstance $psitem).TraceFlag
             Context "Testing Expected Trace Flags on $psitem" {
-                It "Expected Trace Flags $ExpectedTraceFlags exist on $psitem" {
-                    Assert-TraceFlag -SQLInstance $psitem -ExpectedTraceFlag $ExpectedTraceFlags
+                foreach ($ExpectedTraceFlag in $ExpectedTraceFlags) {
+                    if ($ExpectedTraceFlag -ne 0) {
+                        It "Expected Trace Flag $ExpectedTraceFlag to exist on $psitem" {
+                            Assert-TraceFlag -ActualTraceflags $ActualTraceflags -ExpectedTraceFlag $ExpectedTraceFlag
+                        }
+                    }
+                    else {
+                        It "Expected No Trace Flag to exist on $psitem" {
+                            Assert-TraceFlag -ActualTraceflags $ActualTraceflags -ExpectedTraceFlag $ExpectedTraceFlag
+                        }
+                    }
                 }
             }
         }
@@ -1204,7 +1215,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         else {
             Context "Testing if the suspect_pages table is nearing the limit of 1000 rows on $psitem" {
                 It "The suspect_pages table in msdb shouldn't be nearing the limit of 1000 rows on $psitem" -Skip:$skip {
-                    (((Get-DbaSuspectPage -SqlInstance $psitem | Measure-Object).Count)/1000)*100 | Should -BeLessThan $thresholdPercent
+                    (((Get-DbaSuspectPage -SqlInstance $psitem | Measure-Object).Count) / 1000) * 100 | Should -BeLessThan $thresholdPercent
                 }
             }
         }
@@ -1214,14 +1225,14 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
         $skip = Get-DbcConfigValue skip.security.SQLMailXPsDisabled
         if ($NotContactable -contains $psitem) {
             Context "Testing SQL Mail XPs on $psitem" {
-                It "Can't Connect to $Psitem" -Skip:($skip -or $InstanceSMO.VersionMajor -gt 10){
+                It "Can't Connect to $Psitem" -Skip:($skip -or $InstanceSMO.VersionMajor -gt 10) {
                     $false	| Should -BeTrue -Because "The instance should be available to be connected to!"
                 }
             }
         }
         else {
             Context "Testing SQL Mail XPs on $psitem" {
-                It "The SQL Mail XPs should be disabled on $psitem" -Skip:($skip -or $InstanceSMO.VersionMajor -gt 10){
+                It "The SQL Mail XPs should be disabled on $psitem" -Skip:($skip -or $InstanceSMO.VersionMajor -gt 10) {
                     Assert-SQLMailXPs -AllInstanceInfo $AllInstanceInfo
                 }
             }

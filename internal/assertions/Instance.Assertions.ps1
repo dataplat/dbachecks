@@ -214,9 +214,10 @@ function Get-AllInstanceInfo {
                             AND name <> 'sp_MSrepl_startup'"
                     $results = Invoke-DbaQuery -SqlInstance $Instance -Query $query
 
-                    if ($null -eq $results)  {
+                    if ($null -eq $results) {
                         $Value = 0
-                    } else {
+                    }
+                    else {
                         $Value = $SpConfig.ConfiguredValue
                     }
 
@@ -251,7 +252,7 @@ function Get-AllInstanceInfo {
                     $MaxDump = [pscustomobject] @{
                         # Warning Action removes dbatools output for version too low from test results
                         # Skip on the it will show in the results
-                        Count = (@(Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Where{ $_.CreationTime -gt $datetocheckfrom}).Count
+                        Count = (@(Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Where{ $_.CreationTime -gt $datetocheckfrom }).Count
                     }
                 }
                 catch {
@@ -446,10 +447,10 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     $ComputerName, $InstanceName = $Instance.Name.Split('\')
-                    if ($null -eq $InstanceName){
+                    if ($null -eq $InstanceName) {
                         $InstanceName = 'MSSQLSERVER'
                     }
-                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object {$_.LoginType -eq 'WindowsGroup' -and $_.Name.Split('\') -eq $ComputerName}
+                    $logins = Get-DbaLogin -SqlInstance $Instance | Where-Object { $_.LoginType -eq 'WindowsGroup' -and $_.Name.Split('\') -eq $ComputerName }
                     if ($null -ne $logins) {
                         $LocalWindowsGroup = [pscustomobject] @{
                             Exist = $true
@@ -727,7 +728,7 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     $LoginCheckPolicy = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance $instance -Type SQL | Where-Object { $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false}).Count
+                        Count = @(Get-DbaLogin -SQLInstance $instance -Type SQL | Where-Object { $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false }).Count
                     }
                 }
                 catch {
@@ -751,7 +752,7 @@ function Get-AllInstanceInfo {
                     $role = Get-DbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
 
                     $LoginPasswordExpiration = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.PasswordExpirationEnabled -eq $false -and $_.IsDisabled -eq $false}).Count
+                        Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.PasswordExpirationEnabled -eq $false -and $_.IsDisabled -eq $false }).Count
                     }
                 }
                 catch {
@@ -842,7 +843,7 @@ function Get-AllInstanceInfo {
         LoginCheckPolicy                 = $LoginCheckPolicy
         LoginPasswordExpiration          = $LoginPasswordExpiration
         LoginMustChange                  = $LoginMustChange
-        SQLMailXPsDisabled = $SQLMailXPsDisabled
+        SQLMailXPsDisabled               = $SQLMailXPsDisabled
     }
 }
 
@@ -954,16 +955,15 @@ function Assert-TwoDigitYearCutoff {
 
 function Assert-TraceFlag {
     Param(
-        [string]$SQLInstance,
+        $ActualTraceflags,
         [int[]]$ExpectedTraceFlag
     )
-    if ($null -eq $ExpectedTraceFlag) {
-        (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
+
+    if ($ExpectedTraceFlag -ne 0) {
+        $ExpectedTraceFlag  | Should -BeIn  $ActualTraceflags -Because "We expect that Trace Flag $ExpectedTraceFlag will be set"
     }
     else {
-        @($ExpectedTraceFlag).ForEach{
-            (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag | Should -Contain $PSItem -Because "We expect that Trace Flag $PsItem will be set on $SQLInstance"
-        }
+        $ActualTraceflags | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set"
     }
 }
 function Assert-NotTraceFlag {
@@ -976,7 +976,7 @@ function Assert-NotTraceFlag {
     )
 
     if ($null -eq $NotExpectedTraceFlag) {
-        (@(Get-DbaTraceFlag -SqlInstance $SQLInstance).Where{ $_.TraceFlag -notin $ExpectedTraceFlag} | Select-Object).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
+        (@(Get-DbaTraceFlag -SqlInstance $SQLInstance).Where{ $_.TraceFlag -notin $ExpectedTraceFlag } | Select-Object).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
     }
     else {
         @($NotExpectedTraceFlag).ForEach{
