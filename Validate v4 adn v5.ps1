@@ -15,7 +15,7 @@ ipmo ./dbachecks.psd1
 # 
 
 $Checks = 'TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'TraceFlagsExpected'
+$Checks = 'ValidDatabaseOwner'
 Compare-v4andv5Results -Checks $Checks
 
 <#
@@ -71,7 +71,7 @@ function Compare-v4andv5Results {
     $Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
 
     # Run v4 checks
-    $v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -Show None -PassThru
+    $v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $true -Show None -PassThru
     # Run v5 checks 
     $v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $false -Show None -PassThru
 
@@ -113,10 +113,10 @@ The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe blo
     If ($v5code.PassedCount -ne $v4code.PassedCount) {
         $Message = "
 Uh-Oh - The total tests Passed between v4 and v5 are not the same somehow.
-For v4 We ran 
+For v4 We Passed 
 {0} tests
 and
-For v5 we ran 
+For v5 we Passed 
 {1} tests
     " -f $v4code.PassedCount, $v5code.PassedCount
         Write-PSFMessage -Message $Message -Level Warning
@@ -131,10 +131,10 @@ For v5 we ran
     If ($v5code.FailedCount -ne $v4code.FailedCount) {
         $Message = "
 Uh-Oh - The total tests Failed between v4 and v5 are not the same somehow.
-For v4 We ran 
+For v4 We Failed 
 {0} tests
 and
-For v5 we ran 
+For v5 we Failed 
 {1} tests
     " -f $v4code.FailedCount, $v5code.FailedCount
         Write-PSFMessage -Message $Message -Level Warning
@@ -148,10 +148,10 @@ For v5 we ran
     If ($v5code.SkippedCount -ne $v4code.SkippedCount) {
         $Message = "
 Uh-Oh - The total tests Skipped between v4 and v5 are not the same somehow.
-For v4 We ran 
+For v4 We Skipped 
 {0} tests
 and
-For v5 we ran 
+For v5 we Skipped 
 {1} tests
     " -f $v4code.SkippedCount, $v5code.SkippedCount
         Write-PSFMessage -Message $Message -Level Warning
