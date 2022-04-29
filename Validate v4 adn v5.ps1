@@ -9,15 +9,20 @@
 #then docker compose up -d
 
 # cd to the root of dbachecks and checkout the pesterv5 branch
+<#
 
-ipmo ./dbachecks.psd1
+RUN THIS SECTION MANUALLY IF YOU JUST IMPORT THE FUNCTION BELOW!
 
-# 
+    ipmo ./dbachecks.psd1
 
 $Checks = 'TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'ValidDatabaseOwner'
-Compare-v4andv5Results -Checks $Checks
+$Checks = 'DatabaseMailEnabled'
+Compare-v4andv5Results -Checks $Checks 
 
+# if you need to see the details to see why the results are different
+Compare-v4andv5Results -Checks $Checks -Details
+
+#>
 <#
 When there are default skips (some of the CIS checks) we need to set the configs and check
 
@@ -65,24 +70,35 @@ Disable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 
 
 
 function Compare-v4andv5Results {
-    param($Checks)
+    param(
+        $Checks, 
+        [switch]$details
+    )
+
+
     $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
     $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
     $Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
 
+    if ($details) {
+        $show = 'all'
+    } else {
+        $show = 'none'
+    }
+    
     # Run v4 checks
-    $v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $true -Show None -PassThru
-    # Run v5 checks 
-    $v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $false -Show None -PassThru
+    $v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $true -Show $show -PassThru
+    # Run v5 checks
+    $v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $false -Show $show -PassThru
 
     If (Compare-Object $v5code.Configuration.Filter.Tag.Value $v4code.TagFilter) {
         $Message = "
 Uh-Oh - The Tag filters between v4 and v5 are not the same somehow.
-For v4 We returned 
-{0} 
+For v4 We returned
+{0}
 and
-For v5 we returned 
-{1} 
+For v5 we returned
+{1}
     " -f ($v4code.TagFilter | Out-String), ($v5code.Configuration.Filter.Tag.Value | Out-String)
         Write-PSFMessage -Message $Message -Level Warning
     }
@@ -95,10 +111,10 @@ For v5 we returned
     If (($v5code.TotalCount - $v5code.NotRunCount) -ne $v4code.TotalCount) {
         $Message = "
 Uh-Oh - The total tests run between v4 and v5 are not the same somehow.
-For v4 We ran 
+For v4 We ran
 {0} tests
 and
-For v5 we ran 
+For v5 we ran
 {1} tests
 The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block
     " -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
