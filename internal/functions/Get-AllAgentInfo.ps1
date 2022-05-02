@@ -54,12 +54,6 @@ function Get-AllAgentInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'databasemailenabled' -Value (Get-DbcConfigValue policy.security.databasemailenabled)
         }
         'AgentServiceAccount' {
-<#
-    - IsLinux
-    - HostPlatform
-    - Agent.State
-    - Agent.StartMode
-#>
             if (($Instance.VersionMajor -ge 14) -or $IsLinux -or $Instance.HostPlatform -eq 'Linux') {
                 $Agent = @($Instance.Query("SELECT * FROM sys.dm_server_services") | Where-Object servicename -like '*Agent*').Foreach{
                     [PSCustomObject]@{
