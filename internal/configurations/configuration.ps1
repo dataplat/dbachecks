@@ -255,6 +255,8 @@ Set-PSFConfig -Module dbachecks -Name skip.hadr.replica.tcpport -Validation bool
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
 Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.databasemailenabled -Validation bool -Value $false -Initialize -Description "Skip the Database Mail Enabled agent check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.servicestartmode -Validation bool -Value $false -Initialize -Description "Skip the Agent Service State check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.servicestate -Validation bool -Value $false -Initialize -Description "Skip the Agent Service Start Mode check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.dac -Validation bool -Value $false -Initialize -Description "Skip Dedicated Administrator Connection (DAC) check"
