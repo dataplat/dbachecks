@@ -6,14 +6,14 @@ BeforeDiscovery {
     # Gather the instances we know are not contactable
     [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
     # Get all the tags in use in this run
-    $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
+    $Tags = Get-CheckInformation -Check $Check -Group Agent -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
 
     $InstancesToTest = @(Get-Instance).ForEach{
         # just add it to the Not Contactable list
         if ($NotContactable -notcontains $psitem) {
             $Instance = $psitem
             try {
-                $InstanceSMO = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                $InstanceSMO = Connect-DbaInstance -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
             }
             catch {
                 $NotContactable += $Instance
