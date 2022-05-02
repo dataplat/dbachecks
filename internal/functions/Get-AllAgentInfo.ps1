@@ -55,7 +55,7 @@ function Get-AllAgentInfo {
         }
         'AgentServiceAccount' {
             if (($Instance.VersionMajor -ge 14) -or $IsLinux -or $Instance.HostPlatform -eq 'Linux') {
-                $Agent = @($Instance.Query("SELECT * FROM sys.dm_server_services") | Where-Object servicename -like '*Agent*').Foreach{
+                $Agent = @($Instance.Query("SELECT status_desc, startup_type_desc FROM sys.dm_server_services") | Where-Object servicename -like '*Agent*').Foreach{
                     [PSCustomObject]@{
                         State = $PSItem.status_desc
                         StartMode = $PSItem.startup_type_desc
