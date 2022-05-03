@@ -257,6 +257,8 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation boo
 Set-PSFConfig -Module dbachecks -Name skip.agent.databasemailenabled -Validation bool -Value $false -Initialize -Description "Skip the Database Mail Enabled agent check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.servicestartmode -Validation bool -Value $false -Initialize -Description "Skip the Agent Service State check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.servicestate -Validation bool -Value $false -Initialize -Description "Skip the Agent Service Start Mode check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.operatorname -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Name check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.operatoremail -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Email check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.dac -Validation bool -Value $false -Initialize -Description "Skip Dedicated Administrator Connection (DAC) check"
