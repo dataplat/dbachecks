@@ -1,33 +1,6 @@
 # So the v5 files need to be handled differently.
 # Ww will start with a BeforeDiscovery , $Filename which for the Database Checks will need to gather the Instances up front
 BeforeDiscovery {
-    <#
-    . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1
-    [array]$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
-    $ExcludedDatabases += $ExcludeDatabase
-    [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
-    
-    $InstancesToTest = @(Get-Instance).ForEach{
-        # just add it to the Not Contactable list
-        if ($NotContactable -notcontains $psitem) {
-            $Instance = $psitem
-            try {
-                $InstanceSMO = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
-            } catch {
-                $NotContactable += $Instance
-            }
-            if ($NotContactable -notcontains $psitem) {
-                if ($null -eq $InstanceSMO.version) {
-                    $NotContactable += $Instance
-                } else {
-                    $InstanceSMO
-                }
-            }
-        }
-    }
-    Write-PSFMessage -Message "Instances = $InstancesToTest" -Level Significant
-    Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
-    #>
 
         # Gather the instances we know are not contactable
         [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
@@ -62,25 +35,28 @@ BeforeDiscovery {
 
 # Each Test will have a -ForEach for the Instances and the InstancesToTest object will have a 
 # lot of information gathered up front to reduce trips and connections to the database
+
+
 <#
 
+- copy in test
+- add skip  after describe
+    $skip = Get-DbcConfigValue skip.database.databasecollation
+    add to IT -Skip:$skip
+#>
 
-Describe "Suspect Page" -Tags SuspectPage, High , Database -ForEach $InstancesToTest {
+
+
+Describe "Suspect Page" -Tag SuspectPage, High , Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.suspectpage
     Context "Testing suspect pages on <_.Name>" {
-        It "Database <_.Name> should return 0 suspect pages on <_.Parent.Name>" -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database }else { $ExcludedDatabases -notcontains $PsItem.Name } } {
-
-            $results = Get-DbaSuspectPage -SqlInstance $psitem.Parent -Database $psitem.Name
-            @($results).Count | Should -Be 0 -Because "You do not want suspect pages - $results"
+        It "Database <_.Name> should return 0 suspect pages on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.suspectpageexclude -notcontains $PsItem.Name } } {
+            $psitem.SuspectPage | Should -Be 0 -Because "You do not want any suspect pages"
         }
     }
 }
 
-#>
-
 Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $InstancesToTest {
-        # TODO: just add reporting servers into config? rather than here?
-        #$exclude = "ReportingServer", "ReportingServerTempDB"
-
     Context "Testing database collation on <_.Name>" {
         $skip = Get-DbcConfigValue skip.database.databasecollation
         It "Database <_.Name> collation <_.Collation> should match server collation <_.ServerCollation> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.wrongcollation -notcontains $PsItem.Name } } {
@@ -100,7 +76,7 @@ Describe "Valid Database Owner" -Tag ValidDatabaseOwner, Medium, Database -ForEa
     $skip = Get-DbcConfigValue skip.database.validdatabaseowner
     Context "Testing Database Owners on <_.Name>" {
         #TODO fix the it text - needs commas --> should be in this list ( sqladmin sa ) )
-            It "Database <_.Name> - owner '<_.Owner>' should be in this list ( <_.ConfigValues.validdbownername> ) ) on  <_.Parent.Name>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database }else { $psitem.ConfigValues.validdbownerexclude -notcontains $PsItem.Name } } {
+            It "Database <_.Name> - owner '<_.Owner>' should be in this list ( <_.ConfigValues.validdbownername> ) ) on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.validdbownerexclude -notcontains $PsItem.Name } } {
             $psitem.Owner | Should -BeIn $psitem.ConfigValues.validdbownername -Because "The account that is the database owner is not what was expected"
         }
     }

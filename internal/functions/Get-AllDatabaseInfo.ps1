@@ -59,6 +59,12 @@ function Get-AllDatabaseInfo {
             $collation = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'wrongcollation' -Value (Get-DbcConfigValue policy.database.wrongcollation)
         }
+
+        'SuspectPage' {
+            $suspectPage = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'suspectpageexclude' -Value (Get-DbcConfigValue policy.suspectpage.excludedb)
+        }
+
         Default { }
     }
 
@@ -71,9 +77,11 @@ function Get-AllDatabaseInfo {
         Databases        = $Instance.Databases.Foreach{
             [PSCustomObject]@{
                 Name            = $psitem.Name
+                SqlInstance     = $Instance.Name
                 Owner           = if ($owner) { $psitem.owner }
                 ServerCollation = if ($collation) { $Instance.collation }
                 Collation       = if ($collation) { $psitem.collation }
+                SuspectPage     = if ($suspectPage) { (Get-DbaSuspectPage -SqlInstance $Instance -Database $psitem.Name | Measure-Object).Count }
                 ConfigValues    = $ConfigValues # can we move this out?
             }
         }
