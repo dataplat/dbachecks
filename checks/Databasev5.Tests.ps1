@@ -1,7 +1,6 @@
-$filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 # So the v5 files need to be handled differently.
 # Ww will start with a BeforeDiscovery , $Filename which for the Database Checks will need to gather the Instances up front
-BeforeDiscovery , $Filename {
+BeforeDiscovery {
     <#
     . $PSScriptRoot/../internal/assertions/Database.Assertions.ps1
     [array]$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases
@@ -78,7 +77,7 @@ Describe "Suspect Page" -Tags SuspectPage, High , Database -ForEach $InstancesTo
 
 #>
 
-Describe "Database Collation" -Tags DatabaseCollation, High, Database -ForEach $InstancesToTest {
+Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $InstancesToTest {
         # TODO: just add reporting servers into config? rather than here?
         #$exclude = "ReportingServer", "ReportingServerTempDB"
 
@@ -97,7 +96,7 @@ Describe "Database Collation" -Tags DatabaseCollation, High, Database -ForEach $
 }
 
 
-Describe "Valid Database Owner" -Tags ValidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
+Describe "Valid Database Owner" -Tag ValidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.database.validdatabaseowner
     Context "Testing Database Owners on <_.Name>" {
         #TODO fix the it text - needs commas --> should be in this list ( sqladmin sa ) )
