@@ -52,6 +52,12 @@ function Get-AllDatabaseInfo {
         'ValidDatabaseOwner' {
             $owner = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownername' -Value (Get-DbcConfigValue policy.validdbowner.name)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownerexclude' -Value (Get-DbcConfigValue policy.validdbowner.excludedb)
+        }
+
+        'DatabaseCollation' {
+            $collation = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'wrongcollation' -Value (Get-DbcConfigValue policy.database.wrongcollation)
         }
         Default { }
     }
@@ -61,13 +67,17 @@ function Get-AllDatabaseInfo {
         ComputerName     = $Instance.ComputerName
         InstanceName     = $Instance.DbaInstanceName
         Name             = $Instance.Name
+        ConfigValues    = $ConfigValues # can we move this out?
         Databases        = $Instance.Databases.Foreach{
             [PSCustomObject]@{
                 Name            = $psitem.Name
-                Owner           = $psitem.owner
-                ConfigValues    = $ConfigValues
+                Owner           = if ($owner) { $psitem.owner }
+                ServerCollation = if ($collation) { $Instance.collation }
+                Collation       = if ($collation) { $psitem.collation }
+                ConfigValues    = $ConfigValues # can we move this out?
             }
         }
     }
     return $testInstanceObject
 }
+
