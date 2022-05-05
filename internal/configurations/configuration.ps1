@@ -152,7 +152,7 @@ Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizepercentage -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizecomparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
 Set-PSFConfig -Module dbachecks -Name policy.database.filebalancetolerance -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthfreespacethreshold -Value 20 -Initialize -Description "Integer representing percentage of free space within a database file before warning"
-Set-PSFConfig -Module dbachecks -Name policy.database.wrongcollation -Value @() -Initialize -Description "Databases that doesnt match server collation check"
+Set-PSFConfig -Module dbachecks -Name policy.database.wrongcollation -Value @('ReportingServer', 'ReportingServerTempDB') -Initialize -Description "Databases that doesnt match server collation check"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxdopexcludedb -Value @() -Initialize -Description "Database Names that we don't want to check for maxdop"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxdop -Value 0 -Initialize -Description "The value for the database maxdop that we expect"
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excludereadonly -Value @() -Initialize -Description "Database names that we expect to be readonly"
@@ -246,6 +246,11 @@ Set-PSFConfig -Module dbachecks -Name skip.logfilecounttest -Validation bool -Va
 Set-PSFConfig -Module dbachecks -Name skip.diffbackuptest -Validation bool -Value $false -Initialize -Description "Skip the Differential backup test"
 Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
 Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
+Set-PSFConfig -Module dbachecks -Name skip.database.validdatabaseowner -Validation bool -Value $false -Initialize -Description "Skip the valid database owner test"
+Set-PSFConfig -Module dbachecks -Name skip.database.databasecollation -Validation bool -Value $false -Initialize -Description "Skip the database collation test"
+Set-PSFConfig -Module dbachecks -Name skip.database.suspectpage -Validation bool -Value $false -Initialize -Description "Skip the suspect pages test"
+
+
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
 Set-PSFConfig -Module dbachecks -Name skip.cluster.netclusterinterface -Validation bool -Value $false -Initialize -Description "Skip cluster private network interface checks"
@@ -254,7 +259,11 @@ Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.tcpport -Validation boo
 Set-PSFConfig -Module dbachecks -Name skip.hadr.replica.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR Replica TCP port number (If port number is not standard across the entire AG architecture)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
 Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
-Set-PSFConfig -Module dbachecks -Name skip.agent.databasemailenabled -Validation bool -Value $false -Initialize -Description "Skip the long Database Mail Enabled agent check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.databasemailenabled -Validation bool -Value $false -Initialize -Description "Skip the Database Mail Enabled agent check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.servicestartmode -Validation bool -Value $false -Initialize -Description "Skip the Agent Service State check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.servicestate -Validation bool -Value $false -Initialize -Description "Skip the Agent Service Start Mode check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.operatorname -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Name check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.operatoremail -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Email check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.dac -Validation bool -Value $false -Initialize -Description "Skip Dedicated Administrator Connection (DAC) check"
@@ -332,7 +341,8 @@ Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludedatabases -V
 Set-PSFConfig -Module dbachecks -Name testing.integration.instance -Value @("localhost") -Initialize -Description "Default SQL Server instances to be used by integration tests"
 
 # Suspect pages
-Set-PSFConfig -Module dbachecks -Name policy.suspectpages.threshold -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit of 1000"
+Set-PSFConfig -Module dbachecks -Name policy.suspectpage.excludedb -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit of 1000"
+Set-PSFConfig -Module dbachecks -Name policy.suspectpage.threshold -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit of 1000"
 
 # Server
 Set-PSFConfig -Module dbachecks -Name policy.server.cpuprioritisation -Value $true -Initialize -Description "Shall we skip the CPU Prioritisation check"

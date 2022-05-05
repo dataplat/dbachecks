@@ -7,6 +7,7 @@ function Get-AllAgentInfo {
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $false)
+    $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Operator], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Information], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $false)
@@ -19,6 +20,9 @@ function Get-AllAgentInfo {
     $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server])
     $ServerInitFields.Add("VersionMajor") | Out-Null # so we can check versions
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $ServerInitFields)
+
+    # Job Server Initial fields
+    $OperatorInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Operator])
 
     # Database Initial Fields
     $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
@@ -51,13 +55,47 @@ function Get-AllAgentInfo {
 
         'DatabaseMailEnabled' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'databasemailenabled' -Value (Get-DbcConfigValue policy.security.databasemailenabled)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DatabaseMailEnabled' -Value (Get-DbcConfigValue policy.security.databasemailenabled)
         }
         'AgentServiceAccount' {
-
+            if (($Instance.VersionMajor -ge 14) -or $IsLinux -or $Instance.HostPlatform -eq 'Linux') {
+                $Agent = @($Instance.Query("SELECT status_desc, startup_type_desc FROM sys.dm_server_services") | Where-Object servicename -like '*Agent*').ForEach{
+                    [PSCustomObject]@{
+                        State = $PSItem.status_desc
+                        StartMode = $PSItem.startup_type_desc
+                    }
+                }
+            } else { # Windows
+                $Agent = @(Get-DbaService -ComputerName $Instance.ComputerName -Type Agent)
+            }
         }
         'DbaOperator' {
+            $OperatorInitFields.Add("Name") | Out-Null # so we can check operators
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Operator], $OperatorInitFields)
+            $OperatorInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Operator])
 
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DbaOperatorName' -Value (Get-DbcConfigValue agent.dbaoperatorname)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DbaOperatorEmail' -Value (Get-DbcConfigValue agent.dbaoperatoremail)
+
+            $Operator = $ConfigValues.DbaOperatorName.ForEach{
+                [PSCustomObject]@{
+                    InstanceName            = $Instance.Name
+                    ExpectedOperatorName    = $PSItem
+                    ActualOperatorName      = $Instance.JobServer.Operators.Name
+                    ExpectedOperatorEmail   = 'null'
+                    ActualOperatorEmail     = 'null'
+                }
+            }
+
+            $Operator += $ConfigValues.DbaOperatorEmail.ForEach{
+                [PSCustomObject]@{
+                    InstanceName            = $Instance.Name
+                    ExpectedOperatorName    = 'null'
+                    ActualOperatorName      = 'null'
+                    ExpectedOperatorEmail   = $PSItem
+                    ActualOperatorEmail     = $Instance.JobServer.Operators.EmailAddress
+                }
+            }
         }
         'FailsafeOperator' {
 
@@ -97,7 +135,12 @@ function Get-AllAgentInfo {
         ComputerName        = $Instance.ComputerName
         InstanceName        = $Instance.DbaInstanceName
         Name                = $Instance.Name
-        DatabaseMailEnabled = $Instance.Configuration.DatabaseMailEnabled.RunValue
+        ConfigValues        = @($ConfigValues)
+        HostPlatform        = $Instance.HostPlatform
+        IsClustered         = $Instance.IsClustered
+        DatabaseMailEnabled = $Instance.Configuration.DatabaseMailEnabled.ConfigValue
+        Agent               = @($Agent)
+        Operator            = @($Operator)
     }
     return $testInstanceObject
 }

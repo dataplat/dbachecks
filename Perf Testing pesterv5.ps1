@@ -12,11 +12,10 @@
 
 ipmo ./dbachecks.psd1
 
-# 
+#
 
 $Checks = 'TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'TraceFlagsExpected'
-Compare-CheckRuns -Checks $checks
+
 
 <#
 When there are default skips (some of the CIS checks) we need to set the configs and check
@@ -58,14 +57,14 @@ Disable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 
 
 # If you get odd results - or you dont get any checks run
 
-# run the import module and the Invoke Dbc Check with Verbose and that might show you New-Json messing 
+# run the import module and the Invoke Dbc Check with Verbose and that might show you New-Json messing
 # with your files or that you are looking in PSMOdulePath instead of Git Repo path (run Reset-dbcConfig to fix that)
 
 function Compare-CheckRuns {
 param($Checks)
 $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
-$Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
+$Sqlinstances = 'localhost,14333', 'localhost,14334' #'localhost,7401', 'localhost,7402', 'localhost,7403'
 
 $originalCode = {
     Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $true -Show None
@@ -82,16 +81,16 @@ $originalCodeMessage = "With original Code it takes {0} MilliSeconds" -f $origin
 
 
 $savingMessage = "
-Running with 
+Running with
 
-{3} 
+{3}
 
-Checks against 3 SQL Containers
+Checks against $($Sqlinstances.Count) SQL Containers
 
 With original Code it takes {1} Seconds
 With New Code it takes {4} Seconds
 
-New Code for these {5} checks 
+New Code for these {5} checks
 is saving {0} seconds
 from a run of {1} seconds
 New Code runs in {2} % of the time
@@ -100,3 +99,7 @@ cls
 
 Write-PSFMessage -Message $savingMessage -Level Output
 }
+
+
+$Checks = 'DbaOperator'
+Compare-CheckRuns -Checks $checks

@@ -6,14 +6,14 @@ BeforeDiscovery {
     # Gather the instances we know are not contactable
     [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
     # Get all the tags in use in this run
-    $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
+    $Tags = Get-CheckInformation -Check $Check -Group Agent -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
 
     $InstancesToTest = @(Get-Instance).ForEach{
         # just add it to the Not Contactable list
         if ($NotContactable -notcontains $psitem) {
             $Instance = $psitem
             try {
-                $InstanceSMO = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                $InstanceSMO = Connect-DbaInstance -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
             }
             catch {
                 $NotContactable += $Instance
@@ -37,13 +37,38 @@ BeforeDiscovery {
 
 
 Describe "Database Mail XPs" -Tag DatabaseMailEnabled, CIS, security -ForEach $InstancesToTest {
-    $DatabaseMailEnabled = Get-DbcConfigValue policy.security.DatabaseMailEnabled
     $skip = Get-DbcConfigValue skip.agent.databasemailenabled
     Context "Testing Database Mail XPs on <_.Name>" {
-        It "Testing Database Mail XPs is set to $DatabaseMailEnabled on <_.Name>"  -Skip:$skip {
-            $PSItem.Configuration.DatabaseMailEnabled | Should -Be $PSItem.ConfigValues.DatabaseMailEnabled -Because 'The Database Mail XPs setting should be set correctly'
+        It "Testing Database Mail XPs is set to <_.DatabaseMailEnabled> on <_.Name>" -Skip:$skip {
+            $PSItem.DatabaseMailEnabled | Should -Be $PSItem.ConfigValues.DatabaseMailEnabled -Because 'The Database Mail XPs setting should be set correctly'
         }
     }
+}
+
+Describe "SQL Agent Account" -Tag AgentServiceAccount, ServiceAccount -ForEach $InstancesToTest {
+    #can't check agent on container - hmm does this actually work with instance need to check
+    #if (-not $IsLinux -and ($PSItem.HostPlatform -ne 'Linux')) {
+        $skipServiceState = Get-DbcConfigValue skip.agent.servicestate
+        $skipServiceStartMode = Get-DbcConfigValue skip.agent.servicestartmode
+
+        Write-PSFMessage -Message "Agent = $($PSItem | Out-String)" -Level Verbose
+
+        Context "Testing SQL Agent is running on <_.Name>" {
+            It "SQL Agent should be running for <_.InstanceName> on <_.Name>" -Skip:$skipServiceState {
+                $PSItem.Agent.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
+            }
+        }
+        if ($PSItem.IsClustered) {
+            It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
+                $PSItem.Agent.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
+            }
+        }
+        else {
+            It "SQL Agent service should have a start mode of Automatic for standalone instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
+                $PSItem.Agent.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
+            }
+        }
+    #}
 }
 
 # Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
@@ -467,3 +492,6 @@ Describe "Database Mail XPs" -Tag DatabaseMailEnabled, CIS, security -ForEach $I
 #         }
 #     }
 # }
+
+
+
