@@ -188,6 +188,10 @@ function NewGet-AllInstanceInfo {
                 ActualTraceFlags     = $TraceFlagsActual
             }
         }
+        'CLREnabled' {
+            $configurations = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'CLREnabled' -Value (Get-DbcConfigValue policy.security.clrenabled)
+        }
         Default { }
     }
 

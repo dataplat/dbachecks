@@ -241,3 +241,12 @@ Describe "Trace Flags Not Expected" -Tag TraceFlagsNotExpected, TraceFlag, Mediu
         }
     }
 }
+
+Describe "CLR Enabled" -Tag CLREnabled, security, CIS, High, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.CLREnabled
+    Context "Testing CLR Enabled on <_.Name>" {
+        It "CLR Enabled is set to <_.ConfigValues.CLREnabled> on <_.Name>"  -Skip:$skip {
+            $PSItem.Configuration.IsSqlClrEnabled.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.CLREnabled -Because 'This is the setting you have chosen for CLR Enabled'
+        }
+    }
+}
