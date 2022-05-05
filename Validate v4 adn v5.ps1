@@ -15,8 +15,8 @@ RUN THIS SECTION MANUALLY IF YOU JUST IMPORT THE FUNCTION BELOW!
 
     ipmo ./dbachecks.psd1
 
-$Checks = 'TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'DatabaseMailEnabled'
+$Checks = 'TraceFlagsNotExpected','TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'TraceFlagsNotExpected'
 Compare-v4andv5Results -Checks $Checks 
 
 # if you need to see the details to see why the results are different
@@ -49,6 +49,18 @@ Get-DbcConfigValue policy.traceflags.expected
 Get-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred
 Set-DbcConfig policy.traceflags.expected -Value 1117,1118
 Set-DbcConfig policy.traceflags.expected -Value $null
+
+Enable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 1117,1118
+Disable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 1117,1118
+Disable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 1118
+
+Get-DbcConfigValue policy.traceflags.expected
+Get-DbcConfigValue policy.traceflags.notexpected
+Get-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred
+Set-DbcConfig policy.traceflags.expected -Value 1117,1118
+Set-DbcConfig policy.traceflags.notexpected -Value 1117,1118
+Set-DbcConfig policy.traceflags.expected -Value $null
+Set-DbcConfig policy.traceflags.notexpected -Value $null
 
 Enable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 1117,1118
 Disable-DbaTraceFlag -SqlInstance $Sqlinstances -SqlCredential $cred -TraceFlag 1117,1118
