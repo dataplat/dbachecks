@@ -150,7 +150,9 @@ function NewGet-AllInstanceInfo {
         'TraceFlagsExpected' {
             $TraceFlagsExpected = Get-DbcConfigValue policy.traceflags.expected
             $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
+            if (-not $ConfigValues.TraceFlagsExpected) {
+                $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
+            } 
             $ExpectedTraceFlags = $TraceFlagsExpected.Foreach{
                 [PSCustomObject]@{
                     InstanceName      = $Instance.Name
@@ -170,7 +172,7 @@ function NewGet-AllInstanceInfo {
             if ($null -eq $TraceFlagsExpected) { $TraceFlagsExpected = 'none expected' }
             $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsNotExpected' -Value $TraceFlagsNotExpected
-            if (-not $ConfigValues.ExpectedTraceFlag) {
+            if (-not $ConfigValues.TraceFlagsExpected) {
                 $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
             } 
             $NotExpectedTraceFlags = $TraceFlagsNotExpected.Where{ $_ -notin $TraceFlagsExpected }.Foreach{
@@ -191,6 +193,11 @@ function NewGet-AllInstanceInfo {
         'CLREnabled' {
             $configurations = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'CLREnabled' -Value (Get-DbcConfigValue policy.security.clrenabled)
+        }
+        'WhoIsActiveInstalled' {
+            $configurations = $true
+            $WhoIsActiveInstalled = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'whoisactivedatabase' -Value (Get-DbcConfigValue policy.whoisactive.database)
         }
         Default { }
     }
@@ -217,6 +224,11 @@ function NewGet-AllInstanceInfo {
         if ($StartUpSPs -eq 0) {
             $testInstanceObject.Configuration.ScanForStartupProcedures.ConfigValue = 0
         } 
+    }
+    if ($WhoIsActiveInstalled) {
+        $whoisdatabase = Get-DbcConfigValue policy.whoisactive.database
+        $WhoIsActiveInstalled = $Instance.Databases[$whoisdatabase].StoredProcedures.Where{ $_.Name -eq 'sp_WhoIsActive' }.count
+        $testInstanceObject.ConfigValues | Add-Member -MemberType NoteProperty -Name 'WhoIsActiveInstalled' -Value $whoIsActiveInstalled
     }
     return $testInstanceObject
 }

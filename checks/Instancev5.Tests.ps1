@@ -250,3 +250,12 @@ Describe "CLR Enabled" -Tag CLREnabled, security, CIS, High, Instance -ForEach $
         }
     }
 }
+
+Describe "sp_whoisactive is Installed" -Tag WhoIsActiveInstalled, Low, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.WhoIsActiveInstalled
+    Context "Testing WhoIsActive exists on <_.Name>" {
+        It "WhoIsActive should exist on <_.ConfigValues.whoisactivedatabase> on <_.Name>"  -Skip:$skip {
+            $Psitem.ConfigValues.WhoIsActiveInstalled |  Should -Be 1 -Because "The sp_WhoIsActive stored procedure should be installed in $($psitem.ConfigValues.whoisactivedatabase)"
+        }
+    }
+}
