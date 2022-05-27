@@ -83,7 +83,24 @@ Describe "Valid Database Owner" -Tag ValidDatabaseOwner, Medium, Database -ForEa
 }
 
 
-#and can evey check have a skip policy.GROUP.UNIQUETAG - if it doesnt have one already and that will live on the line below the describe
+Describe "Invalid Database Owner" -Tag InvalidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.invaliddatabaseowner
+    Context "Testing Database Owners on <_.Name>" {
 
+        It "Database <_.Name> - owner '<_.Owner>' should not be in this list ( <_.ConfigValues.invaliddbownername> ) ) on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.invaliddbownerexclude -notcontains $PsItem.Name } } {
+            $psitem.Owner | Should -Not -BeIn $psitem.ConfigValues.invaliddbownername -Because "The database owner was one specified as incorrect"
+        }
+    }
+}
+
+Describe "AsymmetricKeySize" -Tag AsymmetricKeySize, CIS, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.security.asymmetrickeysize
+    Context "Testing Asymmetric Key Size is 2048 or higher on <_.Name>" {
+        It "Database <_.Name> asymmetric key size should be at least 2048 on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.asymmetrickeysizeexclude -notcontains $PsItem.Name } } {
+            $psitem.AsymmetricKeySize | Should -Be 0 -Because "Asymmetric keys should have a key length greater than or equal to 2048"
+            #$psitem.AsymmetricKeySize | Should -BeGreaterOrEqual 2048 -Because "Asymmetric keys should have a key length greater than or equal to 2048"
+        }
+    }
+}
 
 

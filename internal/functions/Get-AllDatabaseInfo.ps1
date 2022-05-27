@@ -49,10 +49,21 @@ function Get-AllDatabaseInfo {
     # Using there so that if the instance is not contactable, no point carrying on with gathering more information
     switch ($tags) {
 
+        'AsymmetricKeySize' {
+            $asymmetrickey = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'asymmetrickeysizeexclude' -Value (Get-DbcConfigValue policy.asymmetrickeysize.excludedb)
+        }
+
         'ValidDatabaseOwner' {
             $owner = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownername' -Value (Get-DbcConfigValue policy.validdbowner.name)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownerexclude' -Value (Get-DbcConfigValue policy.validdbowner.excludedb)
+        }
+
+        'InvalidDatabaseOwner' {
+            $owner = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'invaliddbownername' -Value (Get-DbcConfigValue policy.invaliddbowner.name)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'invaliddbownerexclude' -Value (Get-DbcConfigValue policy.invaliddbowner.excludedb)
         }
 
         'DatabaseCollation' {
@@ -73,16 +84,18 @@ function Get-AllDatabaseInfo {
         ComputerName     = $Instance.ComputerName
         InstanceName     = $Instance.DbaInstanceName
         Name             = $Instance.Name
-        ConfigValues    = $ConfigValues # can we move this out?
+        ConfigValues    = $ConfigValues # can we move this out to here?
         Databases        = $Instance.Databases.Foreach{
             [PSCustomObject]@{
-                Name            = $psitem.Name
-                SqlInstance     = $Instance.Name
-                Owner           = if ($owner) { $psitem.owner }
-                ServerCollation = if ($collation) { $Instance.collation }
-                Collation       = if ($collation) { $psitem.collation }
-                SuspectPage     = if ($suspectPage) { (Get-DbaSuspectPage -SqlInstance $Instance -Database $psitem.Name | Measure-Object).Count }
-                ConfigValues    = $ConfigValues # can we move this out?
+                Name                = $psitem.Name
+                SqlInstance         = $Instance.Name
+                Owner               = if ($owner) { $psitem.owner }
+                ServerCollation     = if ($collation) { $Instance.collation }
+                Collation           = if ($collation) { $psitem.collation }
+                SuspectPage         = if ($suspectPage) { (Get-DbaSuspectPage -SqlInstance $Instance -Database $psitem.Name | Measure-Object).Count }
+                ConfigValues        = $ConfigValues # can we move this out?
+                AsymmetricKeySize   = if ($asymmetrickey) { ($psitem.AsymmetricKeys | Where-Object { $_.KeyLength -lt 2048} | Measure-Object).Count }
+                #AsymmetricKeySize   = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key 
             }
         }
     }

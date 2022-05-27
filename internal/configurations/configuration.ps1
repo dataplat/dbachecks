@@ -228,6 +228,11 @@ Set-PSFConfig -Module dbachecks -Name policy.build.behind -Value $null -Initiali
 # for full options
 # 1 for Sunday 127 for every day
 
+# exclude databases
+Set-PSFConfig -Module dbachecks -Name policy.asymmetrickeysize.excludedb -Value @('master', 'msdb', 'tempdb')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
+
+
+
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
@@ -247,6 +252,7 @@ Set-PSFConfig -Module dbachecks -Name skip.diffbackuptest -Validation bool -Valu
 Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
 Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.database.validdatabaseowner -Validation bool -Value $false -Initialize -Description "Skip the valid database owner test"
+Set-PSFConfig -Module dbachecks -Name skip.database.invaliddatabaseowner -Validation bool -Value $false -Initialize -Description "Skip the invalid database owner test"
 Set-PSFConfig -Module dbachecks -Name skip.database.databasecollation -Validation bool -Value $false -Initialize -Description "Skip the database collation test"
 Set-PSFConfig -Module dbachecks -Name skip.database.suspectpage -Validation bool -Value $false -Initialize -Description "Skip the suspect pages test"
 
