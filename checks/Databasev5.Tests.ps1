@@ -111,3 +111,12 @@ Describe "Auto Close" -Tag AutoClose, High, Database -ForEach $InstancesToTest {
         }
     }
 }
+
+Describe "Auto Shrink" -Tag AutoShrink, High, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autoshrink
+    Context "Testing Auto Shrink on <_.Name>" {
+        It "Database <_.Name> should have Auto Shrink set to <_.ConfigValues.autoshrink> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoshrinkexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoShrink | Should -Be $psitem.ConfigValues.autoshrink -Because "Shrinking databases causes fragmentation and performance issues"
+        }
+    }
+}

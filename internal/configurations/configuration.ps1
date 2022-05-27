@@ -231,6 +231,7 @@ Set-PSFConfig -Module dbachecks -Name policy.build.behind -Value $null -Initiali
 # exclude databases
 Set-PSFConfig -Module dbachecks -Name policy.asymmetrickeysize.excludedb -Value @('master', 'msdb', 'tempdb')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
 Set-PSFConfig -Module dbachecks -Name policy.autoclose.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoshrink.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
 
 
 
