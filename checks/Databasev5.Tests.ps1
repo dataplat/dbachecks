@@ -103,4 +103,11 @@ Describe "AsymmetricKeySize" -Tag AsymmetricKeySize, CIS, Database -ForEach $Ins
     }
 }
 
-
+Describe "Auto Close" -Tag AutoClose, High, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autoclose
+    Context "Testing Auto Close on <_.Name>" {
+        It "Database <_.Name> should have Auto Close set to <_.ConfigValues.autoclose> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autocloseexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoClose | Should -Be $psitem.ConfigValues.autoclose -Because "Because!"
+        }
+    }
+}

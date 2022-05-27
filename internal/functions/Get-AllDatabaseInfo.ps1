@@ -54,6 +54,12 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'asymmetrickeysizeexclude' -Value (Get-DbcConfigValue policy.asymmetrickeysize.excludedb)
         }
 
+        'AutoClose' {
+            $autoclose = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoclose' -Value (Get-DbcConfigValue policy.database.autoclose)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocloseexclude' -Value (Get-DbcConfigValue policy.autoclose.excludedb)
+        }
+
         'ValidDatabaseOwner' {
             $owner = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownername' -Value (Get-DbcConfigValue policy.validdbowner.name)
@@ -96,6 +102,7 @@ function Get-AllDatabaseInfo {
                 ConfigValues        = $ConfigValues # can we move this out?
                 AsymmetricKeySize   = if ($asymmetrickey) { ($psitem.AsymmetricKeys | Where-Object { $_.KeyLength -lt 2048} | Measure-Object).Count }
                 #AsymmetricKeySize   = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key 
+                AutoClose           = if ($autoclose) { $psitem.AutoClose}
             }
         }
     }
