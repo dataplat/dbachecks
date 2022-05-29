@@ -225,8 +225,37 @@ Describe "Trace Flags Expected" -Tag TraceFlagsExpected, TraceFlag, High, Instan
             $PsItem.ExpectedTraceFlags.ActualTraceFlags.TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $($Psitem.Name) "
         }
         It "Expected Trace Flags <_.ExpectedTraceFlag> to exist on <_.InstanceName>" -Skip:$skip -ForEach ($PsItem.ExpectedTraceFlags | Where-Object { $psitem.ExpectedTraceFlag -ne 'null' }) {
-            $PsItem.ActualTraceFlags.TraceFlag | Should -Contain $PsItem.ExpectedTraceFlag -Because "We expect that Trace Flag $($PsItem.ExpectedTraceFlag)  will be set on $($Psitem.InstanceName) "
+            $PsItem.ActualTraceFlags.TraceFlag | Should -Contain $PsItem.ExpectedTraceFlag -Because "We expect that Trace Flag $($PsItem.ExpectedTraceFlag) will be set on $($Psitem.InstanceName) "
         }
     }
 }
 
+Describe "Trace Flags Not Expected" -Tag TraceFlagsNotExpected, TraceFlag, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.TraceFlagsNotExpected
+    Context "Testing Not Expected Trace Flags on <_.Name>" {
+        It "Expected No Trace Flags except for <_.ConfigValues.TraceFlagsExpected> to exist on <_.Name>" -Skip:$skip -ForEach ($Psitem | Where-Object { $null -eq $psitem.ConfigValues.TraceFlagsNotExpected }) {
+            $PsItem.NotExpectedTraceFlags.ActualTraceFlags.TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $($Psitem.Name) except for $($psitem.ConfigValues.ExpectedTraceFlag)"
+        }
+        It "Expected <_.NotExpectedTraceFlag> Trace Flag to not exist on <_.InstanceName>" -Skip:$skip -ForEach ($PsItem.NotExpectedTraceFlags | Where-Object { $psitem.NotExpectedTraceFlag -ne 'null' }) {
+            $PsItem.ActualTraceFlags.TraceFlag | Should -Not -Contain $PsItem.NotExpectedTraceFlag -Because "We expect that Trace Flag $($PsItem.NotExpectedTraceFlag) will not be set on $($Psitem.InstanceName) except for $($psitem.ConfigValues.ExpectedTraceFlag)"
+        }
+    }
+}
+
+Describe "CLR Enabled" -Tag CLREnabled, security, CIS, High, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.CLREnabled
+    Context "Testing CLR Enabled on <_.Name>" {
+        It "CLR Enabled is set to <_.ConfigValues.CLREnabled> on <_.Name>"  -Skip:$skip {
+            $PSItem.Configuration.IsSqlClrEnabled.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.CLREnabled -Because 'This is the setting you have chosen for CLR Enabled'
+        }
+    }
+}
+
+Describe "sp_whoisactive is Installed" -Tag WhoIsActiveInstalled, Low, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.WhoIsActiveInstalled
+    Context "Testing WhoIsActive exists on <_.Name>" {
+        It "WhoIsActive should exist on <_.ConfigValues.whoisactivedatabase> on <_.Name>"  -Skip:$skip {
+            $Psitem.ConfigValues.WhoIsActiveInstalled |  Should -Be 1 -Because "The sp_WhoIsActive stored procedure should be installed in $($psitem.ConfigValues.whoisactivedatabase)"
+        }
+    }
+}

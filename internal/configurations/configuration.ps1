@@ -49,7 +49,7 @@ Set-PSFConfig -Module dbachecks -Name policy.storage.backuppath -Value $null -In
 Set-PSFConfig -Module dbachecks -Name policy.backup.testserver -Value $null -Initialize -Description "Destination server for backuptests"
 Set-PSFConfig -Module dbachecks -Name policy.backup.datadir -Value $null -Initialize -Description "Destination server data directory"
 Set-PSFConfig -Module dbachecks -Name policy.backup.logdir -Value $null -Initialize -Description "Destination server log directory"
-Set-PSFConfig -Module dbachecks -Name policy.backup.fullmaxdays -Value 1 -Initialize -Description "Maximum number of days before Full Backups are considered outdated"
+Set-PSFConfig -Module dbachecks -Name policy.backup.fullmaxdays -Value 7 -Initialize -Description "Maximum number of days before Full Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backup.diffmaxhours -Value 25 -Initialize -Description "Maximum number of hours before Diff Backups are considered outdated"
 Set-PSFConfig -Module dbachecks -Name policy.backup.logmaxminutes -Value 15 -Initialize -Description "Maximum number of minutes before Log Backups are considered outdated"
 Set-PsFConfig -Module dbachecks -Name policy.backup.newdbgraceperiod -Value 0 -Initialize -Description "The number of hours a newly created database is allowed to not have backups"
@@ -152,7 +152,7 @@ Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizepercentage -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilesizecomparison -Validation validation.logfilecomparisonvalidations -Value 'average' -Initialize -Description "How to compare data and log file size, options are maximum or average"
 Set-PSFConfig -Module dbachecks -Name policy.database.filebalancetolerance -Value 5 -Initialize -Description "Percentage for Tolerance for checking for balanced files in a filegroups"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthfreespacethreshold -Value 20 -Initialize -Description "Integer representing percentage of free space within a database file before warning"
-Set-PSFConfig -Module dbachecks -Name policy.database.wrongcollation -Value @() -Initialize -Description "Databases that doesnt match server collation check"
+Set-PSFConfig -Module dbachecks -Name policy.database.wrongcollation -Value @('ReportingServer', 'ReportingServerTempDB') -Initialize -Description "Databases that doesnt match server collation check"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxdopexcludedb -Value @() -Initialize -Description "Database Names that we don't want to check for maxdop"
 Set-PSFConfig -Module dbachecks -Name policy.database.maxdop -Value 0 -Initialize -Description "The value for the database maxdop that we expect"
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excludereadonly -Value @() -Initialize -Description "Database names that we expect to be readonly"
@@ -228,6 +228,13 @@ Set-PSFConfig -Module dbachecks -Name policy.build.behind -Value $null -Initiali
 # for full options
 # 1 for Sunday 127 for every day
 
+# exclude databases
+Set-PSFConfig -Module dbachecks -Name policy.asymmetrickeysize.excludedb -Value @('master', 'msdb', 'tempdb')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoclose.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoshrink.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
+
+
+
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
@@ -246,6 +253,13 @@ Set-PSFConfig -Module dbachecks -Name skip.logfilecounttest -Validation bool -Va
 Set-PSFConfig -Module dbachecks -Name skip.diffbackuptest -Validation bool -Value $false -Initialize -Description "Skip the Differential backup test"
 Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
 Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
+Set-PSFConfig -Module dbachecks -Name skip.database.validdatabaseowner -Validation bool -Value $false -Initialize -Description "Skip the valid database owner test"
+Set-PSFConfig -Module dbachecks -Name skip.database.invaliddatabaseowner -Validation bool -Value $false -Initialize -Description "Skip the invalid database owner test"
+Set-PSFConfig -Module dbachecks -Name skip.database.databasecollation -Validation bool -Value $false -Initialize -Description "Skip the database collation test"
+Set-PSFConfig -Module dbachecks -Name skip.database.suspectpage -Validation bool -Value $false -Initialize -Description "Skip the suspect pages test"
+Set-PSFConfig -Module dbachecks -Name skip.database.autoclose -Validation bool -Value $false -Initialize -Description "Skip the autoclose test"
+
+
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
 Set-PSFConfig -Module dbachecks -Name skip.cluster.netclusterinterface -Validation bool -Value $false -Initialize -Description "Skip cluster private network interface checks"
@@ -336,7 +350,8 @@ Set-PSFConfig -Module dbachecks -Name command.invokedbccheck.excludedatabases -V
 Set-PSFConfig -Module dbachecks -Name testing.integration.instance -Value @("localhost") -Initialize -Description "Default SQL Server instances to be used by integration tests"
 
 # Suspect pages
-Set-PSFConfig -Module dbachecks -Name policy.suspectpages.threshold -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit of 1000"
+Set-PSFConfig -Module dbachecks -Name policy.suspectpage.excludedb -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit of 1000"
+Set-PSFConfig -Module dbachecks -Name policy.suspectpage.threshold -Value 90 -Initialize -Description "Default threshold (%) to check whether suspect_pages is nearing row limit of 1000"
 
 # Server
 Set-PSFConfig -Module dbachecks -Name policy.server.cpuprioritisation -Value $true -Initialize -Description "Shall we skip the CPU Prioritisation check"

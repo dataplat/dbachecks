@@ -150,19 +150,54 @@ function NewGet-AllInstanceInfo {
         'TraceFlagsExpected' {
             $TraceFlagsExpected = Get-DbcConfigValue policy.traceflags.expected
             $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
+            if (-not $ConfigValues.TraceFlagsExpected) {
+                $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
+            } 
             $ExpectedTraceFlags = $TraceFlagsExpected.Foreach{
                 [PSCustomObject]@{
-                    InstanceName       = $Instance.Name
+                    InstanceName      = $Instance.Name
                     ExpectedTraceFlag = $PSItem
-                    ActualTraceFlags   = $TraceFlagsActual
+                    ActualTraceFlags  = $TraceFlagsActual
                 }
             }
             $ExpectedTraceFlags += [PSCustomObject]@{
-                InstanceName       = $Instance.Name
+                InstanceName      = $Instance.Name
                 ExpectedTraceFlag = 'null'
-                ActualTraceFlags   = $TraceFlagsActual
+                ActualTraceFlags  = $TraceFlagsActual
             }
+        }
+        'TraceFlagsNotExpected' {
+            $TraceFlagsNotExpected = Get-DbcConfigValue policy.traceflags.notexpected
+            $TraceFlagsExpected = Get-DbcConfigValue policy.traceflags.expected
+            if ($null -eq $TraceFlagsExpected) { $TraceFlagsExpected = 'none expected' }
+            $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsNotExpected' -Value $TraceFlagsNotExpected
+            if (-not $ConfigValues.TraceFlagsExpected) {
+                $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
+            } 
+            $NotExpectedTraceFlags = $TraceFlagsNotExpected.Where{ $_ -notin $TraceFlagsExpected }.Foreach{
+                [PSCustomObject]@{
+                    InstanceName         = $Instance.Name
+                    NotExpectedTraceFlag = $PSItem
+                    TraceFlagsExpected   = $TraceFlagsExpected
+                    ActualTraceFlags     = $TraceFlagsActual
+                }
+            }
+            $NotExpectedTraceFlags += [PSCustomObject]@{
+                InstanceName         = $Instance.Name
+                TraceFlagsExpected   = $TraceFlagsExpected
+                NotExpectedTraceFlag = 'null'
+                ActualTraceFlags     = $TraceFlagsActual
+            }
+        }
+        'CLREnabled' {
+            $configurations = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'CLREnabled' -Value (Get-DbcConfigValue policy.security.clrenabled)
+        }
+        'WhoIsActiveInstalled' {
+            $configurations = $true
+            $WhoIsActiveInstalled = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'whoisactivedatabase' -Value (Get-DbcConfigValue policy.whoisactive.database)
         }
         Default { }
     }
@@ -170,24 +205,30 @@ function NewGet-AllInstanceInfo {
     #build the object
 
     $testInstanceObject = [PSCustomObject]@{
-        ComputerName       = $Instance.ComputerName
-        InstanceName       = $Instance.DbaInstanceName
-        Name               = $Instance.Name
-        ConfigValues       = $ConfigValues
-        VersionMajor       = $Instance.VersionMajor
-        Configuration      = if ($configurations) { $Instance.Configuration } else { $null }
-        Settings           = $Instance.Settings
-        Logins             = $Instance.Logins
-        Databases          = $Instance.Databases
-        NumberOfLogFiles   = $Instance.NumberOfLogFiles
-        MaxDopSettings     = $MaxDopSettings 
-        ExpectedTraceFlags = $ExpectedTraceFlags
+        ComputerName          = $Instance.ComputerName
+        InstanceName          = $Instance.DbaInstanceName
+        Name                  = $Instance.Name
+        ConfigValues          = $ConfigValues
+        VersionMajor          = $Instance.VersionMajor
+        Configuration         = if ($configurations) { $Instance.Configuration } else { $null }
+        Settings              = $Instance.Settings
+        Logins                = $Instance.Logins
+        Databases             = $Instance.Databases
+        NumberOfLogFiles      = $Instance.NumberOfLogFiles
+        MaxDopSettings        = $MaxDopSettings 
+        ExpectedTraceFlags    = $ExpectedTraceFlags
+        NotExpectedTraceFlags = $NotExpectedTraceFlags
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
         if ($StartUpSPs -eq 0) {
             $testInstanceObject.Configuration.ScanForStartupProcedures.ConfigValue = 0
         } 
+    }
+    if ($WhoIsActiveInstalled) {
+        $whoisdatabase = Get-DbcConfigValue policy.whoisactive.database
+        $WhoIsActiveInstalled = $Instance.Databases[$whoisdatabase].StoredProcedures.Where{ $_.Name -eq 'sp_WhoIsActive' }.count
+        $testInstanceObject.ConfigValues | Add-Member -MemberType NoteProperty -Name 'WhoIsActiveInstalled' -Value $whoIsActiveInstalled
     }
     return $testInstanceObject
 }

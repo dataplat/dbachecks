@@ -14,8 +14,8 @@ ipmo ./dbachecks.psd1
 
 #
 
-$Checks = 'TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-
+$Checks = 'XpCmdShellDisabled','WhoIsActiveInstalled','CLREnabled','TraceFlagsNotExpected','TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'XpCmdShellDisabled'
 
 <#
 When there are default skips (some of the CIS checks) we need to set the configs and check
@@ -64,7 +64,7 @@ function Compare-CheckRuns {
 param($Checks)
 $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
-$Sqlinstances = 'localhost,14333', 'localhost,14334' #'localhost,7401', 'localhost,7402', 'localhost,7403'
+$Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
 
 $originalCode = {
     Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $true -Show None
@@ -101,5 +101,5 @@ Write-PSFMessage -Message $savingMessage -Level Output
 }
 
 
-$Checks = 'DbaOperator'
+# $Checks = 'DbaOperator'
 Compare-CheckRuns -Checks $checks
