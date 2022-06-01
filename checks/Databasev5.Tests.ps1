@@ -130,3 +130,13 @@ Describe "Virtual Log Files" -Tag VirtualLogFile, Medium, Database -ForEach $Ins
         }
     }
 }
+
+Describe "Log File Count Checks" -Tag LogfileCount, Medium, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.logfilecounttest
+
+    Context "Testing Log File count for <_.Name>" {
+        It "Database <_.Name> should have <_.ConfigValues.logfilecount> or less log files on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.logfilecountexclude -notcontains $PsItem.Name } } {
+            $psitem.LogFileCount | Should -BeLessOrEqual $psitem.ConfigValues.logfilecount -Because "You want the correct number of log files"
+        }
+    }
+}

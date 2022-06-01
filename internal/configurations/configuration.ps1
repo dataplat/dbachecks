@@ -233,6 +233,7 @@ Set-PSFConfig -Module dbachecks -Name policy.asymmetrickeysize.excludedb -Value 
 Set-PSFConfig -Module dbachecks -Name policy.autoclose.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
 Set-PSFConfig -Module dbachecks -Name policy.autoshrink.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
 Set-PSFConfig -Module dbachecks -Name policy.vlf.excludedb -Value @('master', 'msdb', 'tempdb', 'model')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.logfilecount.excludedb -Value @()  -Initialize -Description "Databases to exclude from log file count checks"
 
 
 

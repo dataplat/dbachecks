@@ -92,7 +92,11 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'maxvlf' -Value (Get-DbcConfigValue policy.database.maxvlf)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'vlfexclude' -Value (Get-DbcConfigValue policy.vlf.excludedb)
         }
-
+        'LogFileCount' {
+            $logfilecount = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'logfilecount' -Value (Get-DbcConfigValue policy.database.logfilecount)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'logfilecountexclude' -Value (Get-DbcConfigValue policy.logfilecount.excludedb)
+        }
         Default { }
     }
 
@@ -116,6 +120,7 @@ function Get-AllDatabaseInfo {
                 AutoClose           = if ($autoclose) { $psitem.AutoClose}
                 AutoShrink          = if ($autoshrink) { $psitem.AutoShrink}
                 VLF                 = if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count }
+                LogFileCount        = if ($logfilecount) { ($psitem.LogFiles | Measure-Object).Count }
             }
         }
     }
