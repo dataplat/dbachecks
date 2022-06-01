@@ -232,6 +232,7 @@ Set-PSFConfig -Module dbachecks -Name policy.build.behind -Value $null -Initiali
 Set-PSFConfig -Module dbachecks -Name policy.asymmetrickeysize.excludedb -Value @('master', 'msdb', 'tempdb')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
 Set-PSFConfig -Module dbachecks -Name policy.autoclose.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
 Set-PSFConfig -Module dbachecks -Name policy.autoshrink.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.vlf.excludedb -Value @('master', 'msdb', 'tempdb', 'model')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
 
 
 
@@ -258,6 +259,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.invaliddatabaseowner -Valida
 Set-PSFConfig -Module dbachecks -Name skip.database.databasecollation -Validation bool -Value $false -Initialize -Description "Skip the database collation test"
 Set-PSFConfig -Module dbachecks -Name skip.database.suspectpage -Validation bool -Value $false -Initialize -Description "Skip the suspect pages test"
 Set-PSFConfig -Module dbachecks -Name skip.database.autoclose -Validation bool -Value $false -Initialize -Description "Skip the autoclose test"
+Set-PSFConfig -Module dbachecks -Name skip.database.vlf -Validation bool -Value $false -Initialize -Description "Skip the virtual log file test"
 
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"

@@ -87,6 +87,11 @@ function Get-AllDatabaseInfo {
             $suspectPage = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'suspectpageexclude' -Value (Get-DbcConfigValue policy.suspectpage.excludedb)
         }
+        'VirtualLogFile' {
+            $vlf = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'maxvlf' -Value (Get-DbcConfigValue policy.database.maxvlf)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'vlfexclude' -Value (Get-DbcConfigValue policy.vlf.excludedb)
+        }
 
         Default { }
     }
@@ -110,6 +115,7 @@ function Get-AllDatabaseInfo {
                 #AsymmetricKeySize   = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key 
                 AutoClose           = if ($autoclose) { $psitem.AutoClose}
                 AutoShrink          = if ($autoshrink) { $psitem.AutoShrink}
+                VLF                 = if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count }
             }
         }
     }

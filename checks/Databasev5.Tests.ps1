@@ -120,3 +120,13 @@ Describe "Auto Shrink" -Tag AutoShrink, High, Database -ForEach $InstancesToTest
         }
     }
 }
+
+Describe "Virtual Log Files" -Tag VirtualLogFile, Medium, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.vlf
+
+    Context "Testing Database VLFs on <_.Name>" {
+        It "Database <_.Name> VLF count should be less than <_.ConfigValues.maxvlf> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.vlfexclude -notcontains $PsItem.Name } } {
+            $psitem.VLF | Should -BeLessThan $psitem.ConfigValues.maxvlf -Because "Too many VLFs can impact performance and slow down backup/restore"
+        }
+    }
+}
