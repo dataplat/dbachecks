@@ -140,3 +140,13 @@ Describe "Log File Count Checks" -Tag LogfileCount, Medium, Database -ForEach $I
         }
     }
 }
+
+Describe "Auto Create Statistics" -Tag AutoCreateStatistics, Low, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autocreatestats
+
+    Context "Testing Auto Create Statistics for <_.Name>" {
+        It "Database <_.Name> should have Auto Create Statistics set to <_.ConfigValues.autocreatestats> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autocreatestatsexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoCreateStatistics | Should -Be $psitem.ConfigValues.autocreatestats -Because "This value is expected for autocreate statistics"
+        }
+    }
+}
