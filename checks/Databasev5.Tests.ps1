@@ -173,10 +173,27 @@ Describe "Auto Update Statistics Asynchronously" -Tag AutoUpdateStatisticsAsynch
 
 Describe "Trustworthy Option" -Tag Trustworthy, DISA, Varied, CIS, Database -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.database.trustworthy
-
+    
     Context "Testing database trustworthy option on <_.Name>" {
         It "Database <_.Name> should have Trustworthy set to false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.trustworthyexclude -notcontains $PsItem.Name } } {
             $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
+        }
+    }
+}
+
+Describe "Database Status" -Tag DatabaseStatus, High, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.status
+
+    Context "Database status is correct on <_.Name>" {
+        It "Database <_.Name> has the expected status on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.statusexclude -notcontains $PsItem.Name } } {
+            $psitem.Where{$_.Name -notin $psitem.ConfigValues.excludereadonly -and $psitem.IsDatabaseSnapshot -eq $false}.Readonly | Should -Not -Contain True -Because "We expect that there will be no Read-Only databases except for those specified"
+            $psitem.Where{$_.Name -notin $psitem.ConfigValues.excludeoffline}.Status | Should -Not -Match 'Offline' -Because "We expect that there will be no offline databases except for those specified"
+            $psitem.Where{$_.Name -notin $psitem.ConfigValues.excluderestoring}.Status | Should -Not -Match 'Restoring' -Because "We expect that there will be no databases in a restoring state except for those specified"
+            $psitem.Where{$_.Name -notin $psitem.ConfigValues.excludeoffline}.Status | Should -Not -Match 'AutoClosed' -Because "We expect that there will be no databases that have been auto closed"
+            $psitem.Status | Should -Not -Match 'Recover' -Because "We expect that there will be no databases going through the recovery process or in a recovery pending state"
+            $psitem.Status | Should -Not -Match 'Emergency' -Because "We expect that there will be no databases in EmergencyMode"
+            $psitem.Status | Should -Not -Match 'Standby' -Because "We expect that there will be no databases in Standby"
+            $psitem.Status | Should -Not -Match 'Suspect' -Because "We expect that there will be no databases in a Suspect state"
         }
     }
 }

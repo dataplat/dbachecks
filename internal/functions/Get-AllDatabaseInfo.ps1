@@ -114,7 +114,15 @@ function Get-AllDatabaseInfo {
         }
         'Trustworthy' {
             $trustworthy = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'trustworthyexclude' -Value (Get-DbcConfigValue  policy.database.trustworthyexcludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'trustworthyexclude' -Value (Get-DbcConfigValue policy.database.trustworthyexcludedb)
+        }
+        'DatabaseStatus' {
+            $status = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excludereadonly' -Value (Get-DbcConfigValue  policy.database.status.excludereadonly)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excludeoffline' -Value (Get-DbcConfigValue  policy.database.status.excludeoffline)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excluderestoring' -Value (Get-DbcConfigValue  policy.database.status.excluderestoring)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'statusexclude' -Value (Get-DbcConfigValue policy.database.statusexcludedb)
+
         }
         Default { }
     }
@@ -144,6 +152,10 @@ function Get-AllDatabaseInfo {
                 VLF                         = if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count }
                 LogFileCount                = if ($logfilecount) { ($psitem.LogFiles | Measure-Object).Count }
                 Trustworthy                 = if ($trustworthy) { $psitem.Trustworthy }
+                Status                      = if ($status) { $psitem.Status }
+                IsDatabaseSnapshot          = if ($status) { $psitem.IsDatabaseSnapshot } # needed for status test
+                Readonly                    = if ($status) { $psitem.Readonly } # needed for status test
+
             }
         }
     }

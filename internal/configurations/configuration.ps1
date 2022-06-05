@@ -237,6 +237,7 @@ Set-PSFConfig -Module dbachecks -Name policy.logfilecount.excludedb -Value @()  
 Set-PSFConfig -Module dbachecks -Name policy.autocreatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto create stats checks"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats checks"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats asynchronously checks"
+Set-PSFConfig -Module dbachecks -Name policy.database.statusexcludedb -Value @()  -Initialize -Description "Databases to exclude from the database status checks"
 
 
 
@@ -268,6 +269,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.autocreatestatistics -Valida
 Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics test"
 Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics asynchronously test"
 Set-PSFConfig -Module dbachecks -Name skip.database.trustworthy -Validation bool -Value $false -Initialize -Description "Skip the trustworthy database test"
+Set-PSFConfig -Module dbachecks -Name skip.database.status -Validation bool -Value $false -Initialize -Description "Skip the database status test"
 
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
