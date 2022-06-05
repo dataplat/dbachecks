@@ -163,10 +163,20 @@ Describe "Auto Update Statistics" -Tag AutoUpdateStatistics, Low, Database -ForE
 
 Describe "Auto Update Statistics Asynchronously" -Tag AutoUpdateStatisticsAsynchronously, Low, Database -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.database.autoupdatestatisticsasynchronously
-
+    
     Context "Testing Auto Update Statistics Asynchronously on <_.Name>" {
         It "Database <_.Name> should have Auto Update Statistics Asynchronously set to <_.ConfigValues.autoupdatestatsasync> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoupdatestatsasyncexclude -notcontains $PsItem.Name } } {
             $psitem.AutoUpdateStatisticsAsync | Should -Be $psitem.ConfigValues.autoupdatestatsasync  -Because "This value is expected for autoupdate statistics asynchronously"
+        }
+    }
+}
+
+Describe "Trustworthy Option" -Tag Trustworthy, DISA, Varied, CIS, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.trustworthy
+
+    Context "Testing database trustworthy option on <_.Name>" {
+        It "Database <_.Name> should have Trustworthy set to false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.trustworthyexclude -notcontains $PsItem.Name } } {
+            $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
         }
     }
 }

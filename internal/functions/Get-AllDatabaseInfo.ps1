@@ -112,6 +112,10 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsasync' -Value (Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsasyncexclude' -Value (Get-DbcConfigValue policy.autoupdatestatisticsasynchronously.excludedb)
         }
+        'Trustworthy' {
+            $trustworthy = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'trustworthyexclude' -Value (Get-DbcConfigValue  policy.database.trustworthyexcludedb)
+        }
         Default { }
     }
 
@@ -139,6 +143,7 @@ function Get-AllDatabaseInfo {
                 AutoShrink                  = if ($autoshrink) { $psitem.AutoShrink}
                 VLF                         = if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count }
                 LogFileCount                = if ($logfilecount) { ($psitem.LogFiles | Measure-Object).Count }
+                Trustworthy                 = if ($trustworthy) { $psitem.Trustworthy }
             }
         }
     }
