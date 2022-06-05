@@ -142,11 +142,21 @@ Describe "Log File Count Checks" -Tag LogfileCount, Medium, Database -ForEach $I
 }
 
 Describe "Auto Create Statistics" -Tag AutoCreateStatistics, Low, Database -ForEach $InstancesToTest {
-    $skip = Get-DbcConfigValue skip.database.autocreatestats
+    $skip = Get-DbcConfigValue skip.database.autocreatestatistics
 
     Context "Testing Auto Create Statistics for <_.Name>" {
         It "Database <_.Name> should have Auto Create Statistics set to <_.ConfigValues.autocreatestats> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autocreatestatsexclude -notcontains $PsItem.Name } } {
             $psitem.AutoCreateStatistics | Should -Be $psitem.ConfigValues.autocreatestats -Because "This value is expected for autocreate statistics"
+        }
+    }
+}
+
+Describe "Auto Update Statistics" -Tag AutoUpdateStatistics, Low, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autoupdatestatistics
+
+    Context "Testing Auto Update Statistics on <_.Name>" {
+        It "Database <_.Name> should have Auto Update Statistics set to <_.ConfigValues.autoupdatestats> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoupdatestatsexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoUpdateStatistics | Should -Be $psitem.ConfigValues.autoupdatestats  -Because "This value is expected for autoupdate statistics"
         }
     }
 }

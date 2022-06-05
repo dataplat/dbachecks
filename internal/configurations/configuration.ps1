@@ -235,6 +235,7 @@ Set-PSFConfig -Module dbachecks -Name policy.autoshrink.excludedb -Value @()  -I
 Set-PSFConfig -Module dbachecks -Name policy.vlf.excludedb -Value @('master', 'msdb', 'tempdb', 'model')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
 Set-PSFConfig -Module dbachecks -Name policy.logfilecount.excludedb -Value @()  -Initialize -Description "Databases to exclude from log file count checks"
 Set-PSFConfig -Module dbachecks -Name policy.autocreatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from log file count checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from log file count checks"
 
 
 
@@ -262,7 +263,8 @@ Set-PSFConfig -Module dbachecks -Name skip.database.databasecollation -Validatio
 Set-PSFConfig -Module dbachecks -Name skip.database.suspectpage -Validation bool -Value $false -Initialize -Description "Skip the suspect pages test"
 Set-PSFConfig -Module dbachecks -Name skip.database.autoclose -Validation bool -Value $false -Initialize -Description "Skip the autoclose test"
 Set-PSFConfig -Module dbachecks -Name skip.database.vlf -Validation bool -Value $false -Initialize -Description "Skip the virtual log file test"
-Set-PSFConfig -Module dbachecks -Name skip.database.autocreatestats -Validation bool -Value $false -Initialize -Description "Skip the auto create statistics test"
+Set-PSFConfig -Module dbachecks -Name skip.database.autocreatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto create statistics test"
+Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics test"
 
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"

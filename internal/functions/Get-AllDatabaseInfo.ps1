@@ -102,6 +102,11 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocreatestats' -Value (Get-DbcConfigValue policy.database.autocreatestatistics)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocreatestatsexclude' -Value (Get-DbcConfigValue policy.autocreatestats.excludedb)
         }
+        'AutoUpdateStatistics' {
+            $autoupdatestats = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestats' -Value (Get-DbcConfigValue policy.database.autoupdatestatistics)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsexclude' -Value (Get-DbcConfigValue policy.autoupdatestats.excludedb)
+        }
         Default { }
     }
 
@@ -124,6 +129,7 @@ function Get-AllDatabaseInfo {
                 #AsymmetricKeySize   = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key so counting ones that are too short
                 AutoClose            = if ($autoclose) { $psitem.AutoClose}
                 AutoCreateStatistics = if ($autocreatestats) { $psitem.AutoCreateStatisticsEnabled }
+                AutoUpdateStatistics = if ($autoupdatestats) { $psitem.AutoUpdateStatisticsEnabled }
                 AutoShrink           = if ($autoshrink) { $psitem.AutoShrink}
                 VLF                  = if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count }
                 LogFileCount         = if ($logfilecount) { ($psitem.LogFiles | Measure-Object).Count }
