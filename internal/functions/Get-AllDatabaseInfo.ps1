@@ -107,6 +107,11 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestats' -Value (Get-DbcConfigValue policy.database.autoupdatestatistics)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsexclude' -Value (Get-DbcConfigValue policy.autoupdatestats.excludedb)
         }
+        'AutoUpdateStatisticsAsynchronously' {
+            $autoupdatestatsasync = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsasync' -Value (Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsasyncexclude' -Value (Get-DbcConfigValue policy.autoupdatestatisticsasynchronously.excludedb)
+        }
         Default { }
     }
 
@@ -118,21 +123,22 @@ function Get-AllDatabaseInfo {
         ConfigValues    = $ConfigValues # can we move this out to here?
         Databases        = $Instance.Databases.Foreach{
             [PSCustomObject]@{
-                Name                 = $psitem.Name
-                SqlInstance          = $Instance.Name
-                Owner                = if ($owner) { $psitem.owner }
-                ServerCollation      = if ($collation) { $Instance.collation }
-                Collation            = if ($collation) { $psitem.collation }
-                SuspectPage          = if ($suspectPage) { (Get-DbaSuspectPage -SqlInstance $Instance -Database $psitem.Name | Measure-Object).Count }
-                ConfigValues         = $ConfigValues # can we move this out?
-                AsymmetricKeySize    = if ($asymmetrickey) { ($psitem.AsymmetricKeys | Where-Object { $_.KeyLength -lt 2048} | Measure-Object).Count }
-                #AsymmetricKeySize   = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key so counting ones that are too short
-                AutoClose            = if ($autoclose) { $psitem.AutoClose}
-                AutoCreateStatistics = if ($autocreatestats) { $psitem.AutoCreateStatisticsEnabled }
-                AutoUpdateStatistics = if ($autoupdatestats) { $psitem.AutoUpdateStatisticsEnabled }
-                AutoShrink           = if ($autoshrink) { $psitem.AutoShrink}
-                VLF                  = if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count }
-                LogFileCount         = if ($logfilecount) { ($psitem.LogFiles | Measure-Object).Count }
+                Name                        = $psitem.Name
+                SqlInstance                 = $Instance.Name
+                Owner                       = if ($owner) { $psitem.owner }
+                ServerCollation             = if ($collation) { $Instance.collation }
+                Collation                   = if ($collation) { $psitem.collation }
+                SuspectPage                 = if ($suspectPage) { (Get-DbaSuspectPage -SqlInstance $Instance -Database $psitem.Name | Measure-Object).Count }
+                ConfigValues                = $ConfigValues # can we move this out?
+                AsymmetricKeySize           = if ($asymmetrickey) { ($psitem.AsymmetricKeys | Where-Object { $_.KeyLength -lt 2048} | Measure-Object).Count }
+                #AsymmetricKeySize          = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key so counting ones that are too short
+                AutoClose                   = if ($autoclose) { $psitem.AutoClose}
+                AutoCreateStatistics        = if ($autocreatestats) { $psitem.AutoCreateStatisticsEnabled }
+                AutoUpdateStatistics        = if ($autoupdatestats) { $psitem.AutoUpdateStatisticsEnabled }
+                AutoUpdateStatisticsAsync   = if ($autoupdatestatsasync) { $psitem.AutoUpdateStatisticsAsync }
+                AutoShrink                  = if ($autoshrink) { $psitem.AutoShrink}
+                VLF                         = if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count }
+                LogFileCount                = if ($logfilecount) { ($psitem.LogFiles | Measure-Object).Count }
             }
         }
     }

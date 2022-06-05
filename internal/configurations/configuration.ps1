@@ -234,8 +234,9 @@ Set-PSFConfig -Module dbachecks -Name policy.autoclose.excludedb -Value @()  -In
 Set-PSFConfig -Module dbachecks -Name policy.autoshrink.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
 Set-PSFConfig -Module dbachecks -Name policy.vlf.excludedb -Value @('master', 'msdb', 'tempdb', 'model')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
 Set-PSFConfig -Module dbachecks -Name policy.logfilecount.excludedb -Value @()  -Initialize -Description "Databases to exclude from log file count checks"
-Set-PSFConfig -Module dbachecks -Name policy.autocreatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from log file count checks"
-Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from log file count checks"
+Set-PSFConfig -Module dbachecks -Name policy.autocreatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto create stats checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats asynchronously checks"
 
 
 
@@ -265,6 +266,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.autoclose -Validation bool -
 Set-PSFConfig -Module dbachecks -Name skip.database.vlf -Validation bool -Value $false -Initialize -Description "Skip the virtual log file test"
 Set-PSFConfig -Module dbachecks -Name skip.database.autocreatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto create statistics test"
 Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics test"
+Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics asynchronously test"
 
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
