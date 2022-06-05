@@ -161,7 +161,7 @@ Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -V
 Set-PSFConfig -Module dbachecks -Name database.querystoreenabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store enabled"
 Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store disabled"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Value $null -Initialize -Description "The number of days to go back to check for growth events"
-Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
+Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @('msdb') -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
 Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb','ReportServer','ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
 Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description " A List of database what we do not want to check for SAFE CLR Assemblies"
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description " The % log used we should stay below"
@@ -267,6 +267,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.vlf -Validation bool -Value 
 Set-PSFConfig -Module dbachecks -Name skip.database.autocreatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto create statistics test"
 Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics test"
 Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics asynchronously test"
+Set-PSFConfig -Module dbachecks -Name skip.database.trustworthy -Validation bool -Value $false -Initialize -Description "Skip the trustworthy database test"
 
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
