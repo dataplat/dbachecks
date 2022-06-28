@@ -33,14 +33,14 @@ Remove-Item '/shared' -Recurse -Force -ErrorAction SilentlyContinue
 Import-Module Pansies
 $ShallWePlayAGameSetting = Get-PSFConfigValue -Name JessAndBeard.shallweplayagame
 
-if ($Host.Name -eq 'ConsoleHost') {
-    if ($ShallWePlayAGameSetting ) {
-        Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $false
-        Start-Game
-    } else {
-        Get-Index
-    }
-}
+# if ($Host.Name -eq 'ConsoleHost') {
+#     if ($ShallWePlayAGameSetting ) {
+#         Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $false
+#         Start-Game
+#     } else {
+#         Get-Index
+#     }
+# }
 
 ######## POSH-GIT
 # with props to https://bradwilson.io/blog/prompt/powershell
