@@ -24,11 +24,11 @@ RUN echo "export HISTFILE=/commandhistory/.bash_history" >> "/root/.bashrc" \
 
 # Install Pester, 4.10.1
 SHELL ["/usr/bin/pwsh", "-c"]
-RUN $ErrorActionPreference='Stop'; Install-Module -Name Pester -Force -SkipPublisherCheck;
+RUN $ErrorActionPreference='Stop'; Install-Module -Name Pester -Force -SkipPublisherCheck -MaximumVersion 4.10.1;
 
 # Install dbatools,PSFramework,dbachecks,posh-git,ImportExcel, Pansies
 SHELL ["/usr/bin/pwsh", "-c"]
-RUN $ErrorActionPreference='Stop'; Install-Module -Name dbatools,PSFramework,posh-git,Microsoft.PowerShell.ConsoleGuiTools,ImportExcel,Pansies,Profiler -Force -SkipPublisherCheck;
+RUN $ErrorActionPreference='Stop'; Install-Module -Name dbatools,PSFramework,posh-git,Microsoft.PowerShell.ConsoleGuiTools,ImportExcel,Pansies,Profiler,Pester -Force -SkipPublisherCheck;
 
 # Copy Profile
 
