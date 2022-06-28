@@ -46,98 +46,40 @@ Describe "Database Mail XPs" -Tag DatabaseMailEnabled, CIS, security -ForEach $I
 }
 
 Describe "SQL Agent Account" -Tag AgentServiceAccount, ServiceAccount -ForEach $InstancesToTest {
-    #can't check agent on container - hmm does this actually work with instance need to check
-    #if (-not $IsLinux -and ($PSItem.HostPlatform -ne 'Linux')) {
-        $skipServiceState = Get-DbcConfigValue skip.agent.servicestate
-        $skipServiceStartMode = Get-DbcConfigValue skip.agent.servicestartmode
+    $skipServiceState = Get-DbcConfigValue skip.agent.servicestate
+    $skipServiceStartMode = Get-DbcConfigValue skip.agent.servicestartmode
 
-        Write-PSFMessage -Message "Agent = $($PSItem | Out-String)" -Level Verbose
-
-        Context "Testing SQL Agent is running on <_.Name>" {
-            It "SQL Agent should be running for <_.InstanceName> on <_.Name>" -Skip:$skipServiceState {
-                $PSItem.Agent.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
-            }
+    Context "Testing SQL Agent is running on <_.Name>" {
+        It "SQL Agent should be running for <_.InstanceName> on <_.Name>" -Skip:$skipServiceState {
+            $PSItem.Agent.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
         }
-        if ($PSItem.IsClustered) {
-            It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
-                $PSItem.Agent.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
-            }
+    }
+    if ($PSItem.IsClustered) {
+        It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
+            $PSItem.Agent.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
         }
-        else {
-            It "SQL Agent service should have a start mode of Automatic for standalone instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
-                $PSItem.Agent.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
-            }
+    }
+    else {
+        It "SQL Agent service should have a start mode of Automatic for standalone instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
+            $PSItem.Agent.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
         }
-    #}
+    }
 }
 
-# Describe "SQL Agent Account" -Tags AgentServiceAccount, ServiceAccount, $filename {
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing SQL Agent is running on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         # cant check agent on container - hmm does this actually work with instance need to check
-#         if (-not $IsLinux -and ($InstanceSMO.HostPlatform -ne 'Linux')) {
+Describe "DBA Operators" -Tag DbaOperator, Operator -ForEach $InstancesToTest {
+    $skipOperatorName = Get-DbcConfigValue skip.agent.operatorname
+    $skipOperatorEamil = Get-DbcConfigValue skip.agent.operatoremail
 
-#             Context "Testing SQL Agent is running on $psitem" {
-#                 @(Get-DbaService -ComputerName $psitem -Type Agent).ForEach{
-#                     It "SQL Agent should be running for $($psitem.InstanceName) on $($psitem.ComputerName)" {
-#                         $psitem.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
-#                     }
-#                     if ($InstanceSMO.IsClustered) {
-#                         It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance $($psitem.InstanceName) on $($psitem.ComputerName)" {
-#                             $psitem.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
-#                         }
-#                     }
-#                     else {
-#                         It "SQL Agent service should have a start mode of Automatic for standalone instance $($psitem.InstanceName) on $($psitem.ComputerName)" {
-#                             $psitem.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
-#                         }
-#                     }
-#                 }
-#             }
-#         }
-#         else {
-#             Context "Testing SQL Agent is running on $psitem" {
-#                 It "Running on Linux or connecting to container so can't check Services on $Psitem" -skip {
-#                 }
-#             }
-#         }
-#     }
-# }
+    Context "Testing DBA Operators exists on <_.Name>" {
+        It "The Operator <_.ExpectedOperatorName> exists on <_.Name>" -Skip:$skipOperatorName -ForEach ($PSItem.Operator | Where-Object ExpectedOperatorName -ne 'null') {
+            $PSItem.ExpectedOperatorName | Should -BeIn $PSItem.ActualOperatorName -Because 'This Operator is expected to exist'
+        }
 
-# Describe "DBA Operators" -Tags DbaOperator, Operator, $filename {
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing DBA Operators exists on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         Context "Testing DBA Operators exists on $psitem" {
-#             $operatorname = Get-DbcConfigValue agent.dbaoperatorname
-#             $operatoremail = Get-DbcConfigValue agent.dbaoperatoremail
-#             $results = Get-DbaAgentOperator -SqlInstance $psitem -Operator $operatorname
-#             @($operatorname).ForEach{
-#                 It "The Operator exists on $psitem" {
-#                     $psitem | Should -BeIn $Results.Name -Because 'This Operator is expected to exist'
-#                 }
-#             }
-#             @($operatoremail).ForEach{
-#                 if ($operatoremail) {
-#                     It "The Operator email $operatoremail is correct on $psitem" {
-#                         $psitem | Should -BeIn $results.EmailAddress -Because 'This operator email is expected to exist'
-#                     }
-#                 }
-#             }
-#         }
-#     }
-# }
+        It "The Operator email <_.ExpectedOperatorEmail> is correct on <_.Name>" -Skip:$skipOperatorEamil -ForEach ($PSItem.Operator | Where-Object ExpectedOperatorEmail -ne 'null') {
+            $PSItem.ExpectedOperatorEmail | Should -BeIn $PSItem.ActualOperatorEmail -Because 'This operator email is expected to exist'
+        }
+    }
+}
 
 # Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
 #     if ($NotContactable -contains $psitem) {

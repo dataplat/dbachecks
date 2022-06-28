@@ -161,7 +161,7 @@ Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -V
 Set-PSFConfig -Module dbachecks -Name database.querystoreenabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store enabled"
 Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Query Store disabled"
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Value $null -Initialize -Description "The number of days to go back to check for growth events"
-Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @() -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
+Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @('msdb') -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
 Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb','ReportServer','ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
 Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description " A List of database what we do not want to check for SAFE CLR Assemblies"
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description " The % log used we should stay below"
@@ -229,6 +229,19 @@ Set-PSFConfig -Module dbachecks -Name policy.build.behind -Value $null -Initiali
 # for full options
 # 1 for Sunday 127 for every day
 
+# exclude databases
+Set-PSFConfig -Module dbachecks -Name policy.asymmetrickeysize.excludedb -Value @('master', 'msdb', 'tempdb')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoclose.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoshrink.excludedb -Value @()  -Initialize -Description "Databases to exclude from autoclose key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.vlf.excludedb -Value @('master', 'msdb', 'tempdb', 'model')  -Initialize -Description "Databases to exclude from asymmetric key size checks"
+Set-PSFConfig -Module dbachecks -Name policy.logfilecount.excludedb -Value @()  -Initialize -Description "Databases to exclude from log file count checks"
+Set-PSFConfig -Module dbachecks -Name policy.autocreatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto create stats checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats checks"
+Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats asynchronously checks"
+Set-PSFConfig -Module dbachecks -Name policy.database.statusexcludedb -Value @()  -Initialize -Description "Databases to exclude from the database status checks"
+
+
+
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
@@ -248,8 +261,16 @@ Set-PSFConfig -Module dbachecks -Name skip.diffbackuptest -Validation bool -Valu
 Set-PSFConfig -Module dbachecks -Name skip.database.filegrowthdisabled -Validation bool -Value $true -Initialize -Description "Skip validation of datafiles which have growth value equal to zero."
 Set-PSFConfig -Module dbachecks -Name skip.database.logfilecounttest -Validation bool -Value $false -Initialize -Description "Skip the logfilecount test"
 Set-PSFConfig -Module dbachecks -Name skip.database.validdatabaseowner -Validation bool -Value $false -Initialize -Description "Skip the valid database owner test"
+Set-PSFConfig -Module dbachecks -Name skip.database.invaliddatabaseowner -Validation bool -Value $false -Initialize -Description "Skip the invalid database owner test"
 Set-PSFConfig -Module dbachecks -Name skip.database.databasecollation -Validation bool -Value $false -Initialize -Description "Skip the database collation test"
 Set-PSFConfig -Module dbachecks -Name skip.database.suspectpage -Validation bool -Value $false -Initialize -Description "Skip the suspect pages test"
+Set-PSFConfig -Module dbachecks -Name skip.database.autoclose -Validation bool -Value $false -Initialize -Description "Skip the autoclose test"
+Set-PSFConfig -Module dbachecks -Name skip.database.vlf -Validation bool -Value $false -Initialize -Description "Skip the virtual log file test"
+Set-PSFConfig -Module dbachecks -Name skip.database.autocreatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto create statistics test"
+Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatistics -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics test"
+Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics asynchronously test"
+Set-PSFConfig -Module dbachecks -Name skip.database.trustworthy -Validation bool -Value $false -Initialize -Description "Skip the trustworthy database test"
+Set-PSFConfig -Module dbachecks -Name skip.database.status -Validation bool -Value $false -Initialize -Description "Skip the database status test"
 
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"

@@ -83,7 +83,117 @@ Describe "Valid Database Owner" -Tag ValidDatabaseOwner, Medium, Database -ForEa
 }
 
 
-#and can evey check have a skip policy.GROUP.UNIQUETAG - if it doesnt have one already and that will live on the line below the describe
+Describe "Invalid Database Owner" -Tag InvalidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.invaliddatabaseowner
+    Context "Testing Database Owners on <_.Name>" {
 
+        It "Database <_.Name> - owner '<_.Owner>' should not be in this list ( <_.ConfigValues.invaliddbownername> ) ) on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.invaliddbownerexclude -notcontains $PsItem.Name } } {
+            $psitem.Owner | Should -Not -BeIn $psitem.ConfigValues.invaliddbownername -Because "The database owner was one specified as incorrect"
+        }
+    }
+}
 
+Describe "AsymmetricKeySize" -Tag AsymmetricKeySize, CIS, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.security.asymmetrickeysize
+    Context "Testing Asymmetric Key Size is 2048 or higher on <_.Name>" {
+        It "Database <_.Name> asymmetric key size should be at least 2048 on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.asymmetrickeysizeexclude -notcontains $PsItem.Name } } {
+            $psitem.AsymmetricKeySize | Should -Be 0 -Because "Asymmetric keys should have a key length greater than or equal to 2048"
+            #$psitem.AsymmetricKeySize | Should -BeGreaterOrEqual 2048 -Because "Asymmetric keys should have a key length greater than or equal to 2048"
+        }
+    }
+}
 
+Describe "Auto Close" -Tag AutoClose, High, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autoclose
+    Context "Testing Auto Close on <_.Name>" {
+        It "Database <_.Name> should have Auto Close set to <_.ConfigValues.autoclose> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autocloseexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoClose | Should -Be $psitem.ConfigValues.autoclose -Because "Because!"
+        }
+    }
+}
+
+Describe "Auto Shrink" -Tag AutoShrink, High, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autoshrink
+    Context "Testing Auto Shrink on <_.Name>" {
+        It "Database <_.Name> should have Auto Shrink set to <_.ConfigValues.autoshrink> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoshrinkexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoShrink | Should -Be $psitem.ConfigValues.autoshrink -Because "Shrinking databases causes fragmentation and performance issues"
+        }
+    }
+}
+
+Describe "Virtual Log Files" -Tag VirtualLogFile, Medium, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.vlf
+
+    Context "Testing Database VLFs on <_.Name>" {
+        It "Database <_.Name> VLF count should be less than <_.ConfigValues.maxvlf> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.vlfexclude -notcontains $PsItem.Name } } {
+            $psitem.VLF | Should -BeLessThan $psitem.ConfigValues.maxvlf -Because "Too many VLFs can impact performance and slow down backup/restore"
+        }
+    }
+}
+
+Describe "Log File Count Checks" -Tag LogfileCount, Medium, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.logfilecounttest
+
+    Context "Testing Log File count for <_.Name>" {
+        It "Database <_.Name> should have <_.ConfigValues.logfilecount> or less log files on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.logfilecountexclude -notcontains $PsItem.Name } } {
+            $psitem.LogFileCount | Should -BeLessOrEqual $psitem.ConfigValues.logfilecount -Because "You want the correct number of log files"
+        }
+    }
+}
+
+Describe "Auto Create Statistics" -Tag AutoCreateStatistics, Low, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autocreatestatistics
+
+    Context "Testing Auto Create Statistics for <_.Name>" {
+        It "Database <_.Name> should have Auto Create Statistics set to <_.ConfigValues.autocreatestats> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autocreatestatsexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoCreateStatistics | Should -Be $psitem.ConfigValues.autocreatestats -Because "This value is expected for autocreate statistics"
+        }
+    }
+}
+
+Describe "Auto Update Statistics" -Tag AutoUpdateStatistics, Low, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autoupdatestatistics
+
+    Context "Testing Auto Update Statistics on <_.Name>" {
+        It "Database <_.Name> should have Auto Update Statistics set to <_.ConfigValues.autoupdatestats> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoupdatestatsexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoUpdateStatistics | Should -Be $psitem.ConfigValues.autoupdatestats  -Because "This value is expected for autoupdate statistics"
+        }
+    }
+}
+
+Describe "Auto Update Statistics Asynchronously" -Tag AutoUpdateStatisticsAsynchronously, Low, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.autoupdatestatisticsasynchronously
+    
+    Context "Testing Auto Update Statistics Asynchronously on <_.Name>" {
+        It "Database <_.Name> should have Auto Update Statistics Asynchronously set to <_.ConfigValues.autoupdatestatsasync> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoupdatestatsasyncexclude -notcontains $PsItem.Name } } {
+            $psitem.AutoUpdateStatisticsAsync | Should -Be $psitem.ConfigValues.autoupdatestatsasync  -Because "This value is expected for autoupdate statistics asynchronously"
+        }
+    }
+}
+
+Describe "Trustworthy Option" -Tag Trustworthy, DISA, Varied, CIS, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.trustworthy
+    
+    Context "Testing database trustworthy option on <_.Name>" {
+        It "Database <_.Name> should have Trustworthy set to false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.trustworthyexclude -notcontains $PsItem.Name } } {
+            $psitem.Trustworthy | Should -BeFalse -Because "Trustworthy has security implications and may expose your SQL Server to additional risk"
+        }
+    }
+}
+
+Describe "Database Status" -Tag DatabaseStatus, High, Database -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.database.status
+
+    Context "Database status is correct on <_.Name>" {
+        It "Database <_.Name> has the expected status on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.statusexclude -notcontains $PsItem.Name } } {
+            $psitem.Where{$_.Name -notin $psitem.ConfigValues.excludereadonly -and $psitem.IsDatabaseSnapshot -eq $false}.Readonly | Should -Not -Contain True -Because "We expect that there will be no Read-Only databases except for those specified"
+            $psitem.Where{$_.Name -notin $psitem.ConfigValues.excludeoffline}.Status | Should -Not -Match 'Offline' -Because "We expect that there will be no offline databases except for those specified"
+            $psitem.Where{$_.Name -notin $psitem.ConfigValues.excluderestoring}.Status | Should -Not -Match 'Restoring' -Because "We expect that there will be no databases in a restoring state except for those specified"
+            $psitem.Where{$_.Name -notin $psitem.ConfigValues.excludeoffline}.Status | Should -Not -Match 'AutoClosed' -Because "We expect that there will be no databases that have been auto closed"
+            $psitem.Status | Should -Not -Match 'Recover' -Because "We expect that there will be no databases going through the recovery process or in a recovery pending state"
+            $psitem.Status | Should -Not -Match 'Emergency' -Because "We expect that there will be no databases in EmergencyMode"
+            $psitem.Status | Should -Not -Match 'Standby' -Because "We expect that there will be no databases in Standby"
+            $psitem.Status | Should -Not -Match 'Suspect' -Because "We expect that there will be no databases in a Suspect state"
+        }
+    }
+}
