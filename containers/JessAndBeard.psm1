@@ -156,18 +156,18 @@ function Start-Game {
   Remove-Item '/var/opt/backups/dbatools1' -Recurse -Force -ErrorAction SilentlyContinue
   
   $securePassword = ('dbatools.IO' | ConvertTo-SecureString -asPlainText -Force)
-  $continercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
+  $containercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
 
-  New-DbaDatabase -SqlInstance $dbatools1 -SqlCredential $continercredential -Name Validation -RecoveryModel Full -WarningAction SilentlyContinue | Out-Null
+  New-DbaDatabase -SqlInstance $dbatools1 -SqlCredential $containercredential -Name Validation -RecoveryModel Full -WarningAction SilentlyContinue | Out-Null
 
   # we need an app login
   $Password = ConvertTo-SecureString PubsAdmin -AsPlainText -Force
-  New-DbaLogin -SqlInstance $dbatools1 -SqlCredential $continercredential  -Login PubsAdmin -SecurePassword $Password -WarningAction SilentlyContinue | Out-Null
-  New-DbaDbUser -SqlInstance $dbatools1 -SqlCredential $continercredential -Database Pubs -Login PubsAdmin -Username PubsAdmin -WarningAction SilentlyContinue  | Out-Null
-  Add-DbaDbRoleMember -SqlInstance $dbatools1 -SqlCredential $continercredential -Database Pubs -User PubsAdmin -Role db_owner -Confirm:$false  | Out-Null
+  New-DbaLogin -SqlInstance $dbatools1 -SqlCredential $containercredential  -Login PubsAdmin -SecurePassword $Password -WarningAction SilentlyContinue | Out-Null
+  New-DbaDbUser -SqlInstance $dbatools1 -SqlCredential $containercredential -Database Pubs -Login PubsAdmin -Username PubsAdmin -WarningAction SilentlyContinue  | Out-Null
+  Add-DbaDbRoleMember -SqlInstance $dbatools1 -SqlCredential $containercredential -Database Pubs -User PubsAdmin -Role db_owner -Confirm:$false  | Out-Null
 
   # Let's add some things to find
-  Invoke-DbaQuery -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Northwind -WarningAction SilentlyContinue -Query "
+  Invoke-DbaQuery -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Northwind -WarningAction SilentlyContinue -Query "
   CREATE PROCEDURE SP_FindMe AS BEGIN 
     with cte as (
       select top 1 OrderID, ProductID
@@ -198,9 +198,9 @@ function Start-Game {
   END"
 
   # Add a failed job
-  $job = New-DbaAgentJob -SqlInstance $dbatools2 -SqlCredential $continercredential -Job IamBroke -WarningAction SilentlyContinue
+  $job = New-DbaAgentJob -SqlInstance $dbatools2 -SqlCredential $containercredential -Job IamBroke -WarningAction SilentlyContinue
   if ($job) {
-    $null = New-DbaAgentJobStep -SqlInstance $dbatools2 -SqlCredential $continercredential -Job $job.Name -Subsystem TransactSql -Command 'Select * from MissingTable' -StepName 'Step One'
+    $null = New-DbaAgentJobStep -SqlInstance $dbatools2 -SqlCredential $containercredential -Job $job.Name -Subsystem TransactSql -Command 'Select * from MissingTable' -StepName 'Step One'
     $null = $job | Start-DbaAgentJob
   }
 
@@ -431,15 +431,15 @@ function Get-Index {
 function Set-ConnectionInfo {
   #region Set up connection
   $securePassword = ('dbatools.IO' | ConvertTo-SecureString -asPlainText -Force)
-  $continercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
+  $containercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
 
   $Global:PSDefaultParameterValues = @{
-    "*dba*:SqlCredential"            = $continercredential
-    "*dba*:SourceSqlCredential"      = $continercredential
-    "*dba*:DestinationSqlCredential" = $continercredential
-    "*dba*:DestinationCredential"    = $continercredential
-    "*dba*:PrimarySqlCredential"     = $continercredential
-    "*dba*:SecondarySqlCredential"   = $continercredential
+    "*dba*:SqlCredential"            = $containercredential
+    "*dba*:SourceSqlCredential"      = $containercredential
+    "*dba*:DestinationSqlCredential" = $containercredential
+    "*dba*:DestinationCredential"    = $containercredential
+    "*dba*:PrimarySqlCredential"     = $containercredential
+    "*dba*:SecondarySqlCredential"   = $containercredential
   }
 
 
@@ -492,14 +492,14 @@ function Assert-Correct {
       Set-DbcConfig -Name app.sqlinstance -Value $containers
       Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       Set-DbcConfig -Name skip.connection.remoting -Value $true
-      Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection -Verbose
+      Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection -Verbose
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2'
-      Invoke-DbcCheck -SqlCredential $continercredential -Check DatabaseExists
+      Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1'
       Set-DbcConfig -Name database.exists -Value 'pubs', 'NorthWind' -Append
-      Invoke-DbcCheck -SqlCredential $continercredential -Check DatabaseExists
+      Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists
 
       $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false  # reset
     }
@@ -511,17 +511,17 @@ function Assert-Correct {
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label Intro -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label Intro -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       $null = Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2'
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check DatabaseExists -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label Intro -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label Intro -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       $null = Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1'
       $null = Set-DbcConfig -Name database.exists -Value 'pubs', 'NorthWind' -Append
-      $check3 = Invoke-DbcCheck -SqlCredential $continercredential -Check DatabaseExists -Show Summary -PassThru
-      $check3 | Convert-DbcResult -Label Intro -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists -Show Summary -PassThru
+      $check3 | Convert-DbcResult -Label Intro -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
@@ -540,14 +540,14 @@ function Assert-Correct {
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true 
       $null = Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' 
 
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label Backup -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label Backup -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       $null = Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' 
       $null = Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'tempdb' 
 
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn1, NoBackupFiles -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label Backup -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn1, NoBackupFiles -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label Backup -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       $results = @($check1, $check2)
       Set-FailedTestMessage
@@ -569,13 +569,13 @@ function Assert-Correct {
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
 
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, NeedNoLogins -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label Copy -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, NeedNoLogins -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label Copy -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'pubs-0', 'pubs-1', 'pubs-10', 'pubs-2', 'pubs-3', 'pubs-4', 'pubs-5', 'pubs-6', 'pubs-7', 'pubs-8', 'pubs-9', 'tempdb' | Out-Null
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label Copy -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label Copy -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       $results = @($check1, $check2)
       Set-FailedTestMessage
@@ -593,13 +593,13 @@ function Assert-Correct {
       Set-DbcConfig -Name skip.connection.remoting -Value $true  | Out-Null
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, DatabaseStatus, NoSnapshots -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label SnapShots -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, DatabaseStatus, NoSnapshots -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label SnapShots -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'tempdb' | Out-Null
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label SnapShots -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label SnapShots -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
       $results = @($check1, $check2)
       Set-FailedTestMessage
       $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false # reset
@@ -612,17 +612,17 @@ function Assert-Correct {
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label Export -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label Export -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       $null = Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2'
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check DatabaseExists -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label Export -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label Export -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       $null = Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1'
       $null = Set-DbcConfig -Name database.exists -Value 'pubs', 'NorthWind' -Append
-      $check3 = Invoke-DbcCheck -SqlCredential $continercredential -Check DatabaseExists -Show Summary -PassThru
-      $check3 | Convert-DbcResult -Label Export -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists -Show Summary -PassThru
+      $check3 | Convert-DbcResult -Label Export -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
       $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false
@@ -636,18 +636,18 @@ function Assert-Correct {
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label AvailabilityGroups -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label AvailabilityGroups -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, DatabaseStatus, NoSnapshots, NoAgs -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label AvailabilityGroups -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, DatabaseStatus, NoSnapshots, NoAgs -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label AvailabilityGroups -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'pubs-0', 'pubs-1', 'pubs-10', 'pubs-2', 'pubs-3', 'pubs-4', 'pubs-5', 'pubs-6', 'pubs-7', 'pubs-8', 'pubs-9', 'tempdb' | Out-Null
-      $check3 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
-      $check3 | Convert-DbcResult -Label AvailabilityGroups -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
+      $check3 | Convert-DbcResult -Label AvailabilityGroups -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
       Write-PSFHostColor -String "If you get database missing failures - Chapter 2 will be your friend" -DefaultColor Magenta
@@ -662,18 +662,18 @@ function Assert-Correct {
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label AdvancedMigration -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label AdvancedMigration -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, DatabaseStatus, NoSnapshots, NoAgs -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label AdvancedMigration -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, DatabaseStatus, NoSnapshots, NoAgs -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label AdvancedMigration -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'tempdb' | Out-Null
-      $check3 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
-      $check3 | Convert-DbcResult -Label AdvancedMigration -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
+      $check3 | Convert-DbcResult -Label AdvancedMigration -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
       
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
@@ -688,18 +688,18 @@ function Assert-Correct {
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label Found -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label Found -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists,NeedJobs, NeedFailedJobs  -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label Found -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists,NeedJobs, NeedFailedJobs  -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label Found -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'tempdb' | Out-Null
-      $check3 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus, NeedSps,NeedUDfs,NeedTriggers,NeedLogins -Show Summary -PassThru
-      $check3 | Convert-DbcResult -Label Found -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus, NeedSps,NeedUDfs,NeedTriggers,NeedLogins -Show Summary -PassThru
+      $check3 | Convert-DbcResult -Label Found -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
       
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
@@ -714,18 +714,18 @@ function Assert-Correct {
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label Masking -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label Masking -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label Masking -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label Masking -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'tempdb' | Out-Null
-      $check3 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
-      $check3 | Convert-DbcResult -Label Masking -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
+      $check3 | Convert-DbcResult -Label Masking -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
       
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
@@ -740,18 +740,18 @@ function Assert-Correct {
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection -Show Summary -PassThru
-      $check1 | Convert-DbcResult -Label Logins -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection -Show Summary -PassThru
+      $check1 | Convert-DbcResult -Label Logins -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists -Show Summary -PassThru
-      $check2 | Convert-DbcResult -Label Logins -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists -Show Summary -PassThru
+      $check2 | Convert-DbcResult -Label Logins -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'tempdb' | Out-Null
-      $check3 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
-      $check3 | Convert-DbcResult -Label Logins -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $continercredential  -Database Validation 
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus -Show Summary -PassThru
+      $check3 | Convert-DbcResult -Label Logins -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation 
       
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
@@ -763,28 +763,28 @@ function Assert-Correct {
       $null = Reset-DbcConfig 
 
       $null = Import-DbcConfig /workspace/Demos/dbachecksconfigs/initial-config.json
-      $check3 = Invoke-DbcCheck -SqlCredential $continercredential -Check InstanceConnection  -Show Summary -PassThru
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection  -Show Summary -PassThru
 
       $null = Reset-DbcConfig 
 
       $null = Import-DbcConfig /workspace/Demos/dbachecksconfigs/initial-dbatools1-config.json
-      $check2 = Invoke-DbcCheck -SqlCredential $continercredential -Check DatabaseExists -Show Summary -PassThru
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists -Show Summary -PassThru
 
       $null = Reset-DbcConfig 
 
       $null = Import-DbcConfig /workspace/Demos/dbachecksconfigs/initial-dbatools2-config.json
-      $check1 = Invoke-DbcCheck -SqlCredential $continercredential -Check DatabaseExists -Show Summary -PassThru
+      $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists -Show Summary -PassThru
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
     }
   }
   $Global:PSDefaultParameterValues = @{
-    "*dba*:SqlCredential"            = $continercredential
-    "*dba*:SourceSqlCredential"      = $continercredential
-    "*dba*:DestinationSqlCredential" = $continercredential
-    "*dba*:DestinationCredential"    = $continercredential
-    "*dba*:PrimarySqlCredential"     = $continercredential
-    "*dba*:SecondarySqlCredential"   = $continercredential
+    "*dba*:SqlCredential"            = $containercredential
+    "*dba*:SourceSqlCredential"      = $containercredential
+    "*dba*:DestinationSqlCredential" = $containercredential
+    "*dba*:DestinationCredential"    = $containercredential
+    "*dba*:PrimarySqlCredential"     = $containercredential
+    "*dba*:SecondarySqlCredential"   = $containercredential
   }
 }
 
@@ -794,8 +794,8 @@ Function Compare-SPConfig {
     $Source,
     $Destination
   )
-  $SourceSpConfigure = Get-DbaSpConfigure  -SqlInstance $Source -SqlCredential $continercredential
-  $DestSPConfigure = Get-DbaSpConfigure -SqlInstance $Destination -SqlCredential  $continercredential
+  $SourceSpConfigure = Get-DbaSpConfigure  -SqlInstance $Source -SqlCredential $containercredential
+  $DestSPConfigure = Get-DbaSpConfigure -SqlInstance $Destination -SqlCredential  $containercredential
 
   $propcompare = foreach ($prop in $SourceSpConfigure) {
     [pscustomobject]@{
