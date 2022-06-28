@@ -1,5 +1,13 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Because this is just for testing and developing')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Because this is for the prompt and it is required')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'containers', Justification = 'Because it is a global variable used later')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'SQLInstances', Justification = 'Because it is a global variable used later')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'currentAccountName', Justification = 'Because silly script analyuser cant see it is used')]
+[CmdletBinding()]
+param()
 
 Import-Module /workspace/containers/JessAndBeard.psm1
+Import-Module dbatools
 $VerbosePreference = 'Continue' # So we can see ALL of the verbose in the psm1 file if we need to!
 Import-Module /workspace/dbachecks.psd1 -Verbose
 $VerbosePreference = 'SilentlyContinue'
@@ -8,7 +16,6 @@ $containers = $SQLInstances = $dbachecks1, $dbachecks2 , $dbachecks3 = 'dbacheck
 #region Set up connection
 $securePassword = ('dbatools.IO' | ConvertTo-SecureString -AsPlainText -Force)
 $containercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
- 
 
 
 $Global:PSDefaultParameterValues = @{
@@ -19,31 +26,26 @@ $Global:PSDefaultParameterValues = @{
     "*dba*:PrimarySqlCredential"     = $containercredential
     "*dba*:SecondarySqlCredential"   = $containercredential
 }
- 
 #endregion
 
 Remove-Item '/var/opt/backups/dbachecks1' -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item '/shared' -Recurse -Force -ErrorAction SilentlyContinue
 Import-Module Pansies
-$ShallWePlayAGameSetting = Get-PSFConfigValue -Name JessAndBeard.shallweplayagame 
+$ShallWePlayAGameSetting = Get-PSFConfigValue -Name JessAndBeard.shallweplayagame
 
 if ($Host.Name -eq 'ConsoleHost') {
     if ($ShallWePlayAGameSetting ) {
-        Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $false 
+        Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $false
         Start-Game
     } else {
         Get-Index
     }
-} 
+}
 
 ######## POSH-GIT
 # with props to https://bradwilson.io/blog/prompt/powershell
 # ... Import-Module for posh-git here ...
 Import-Module posh-git
-
-Import-Module dbatools
-
-
 
 # maybe we can add something here if we want a path?if (-not (Get-PSDrive -Name Git -ErrorAction SilentlyContinue)) {
 # maybe we can add something here if we want a path?    $Error.Clear()
@@ -151,7 +153,7 @@ Set-Content Function:prompt {
             $currentContext = (& kubectl config current-context 2> $null)
             $nodes = kubectl get nodes -o json | ConvertFrom-Json
 
-            $nodename = ($nodes.items.metadata | where labels  -Like '*master*').name
+            $nodename = ($nodes.items.metadata | Where-Object labels  -Like '*master*').name
             Write-Host " " -NoNewline
             Write-Host "" -NoNewline -BackgroundColor DarkGray -ForegroundColor Green
             #Write-Host " $currentContext " -NoNewLine -BackgroundColor DarkYellow -ForegroundColor Black
@@ -174,7 +176,7 @@ Set-Content Function:prompt {
                 if ($null -ne $currentAccount) {
                     Write-Host " " -NoNewline
                     Write-Host "" -NoNewline -BackgroundColor DarkCyan -ForegroundColor Yellow
-                    $currentAccountName = ($currentAccount.Name.Split(' ') | foreach { $_[0..5] -join '' }) -join ' '
+                    $currentAccountName = ($currentAccount.Name.Split(' ') | ForEach-Object { $_[0..5] -join '' }) -join ' '
                     Write-Host "$([char]27)[38;5;227;48;5;30m  $([char]27)[38;5;254m$($currentAccount.name) $([char]27)[0m"  -NoNewline -BackgroundColor DarkBlue -ForegroundColor Yellow
                 }
             }
@@ -224,7 +226,7 @@ Set-Content Function:prompt {
                 }
             }
             Write-Host " " -ForegroundColor DarkBlue -NoNewline
-        } catch { }
+        } catch { "" }
     }
     # Write one + for each level of the pushd stack
     if ((Get-Location -Stack).Count -gt 0) {
