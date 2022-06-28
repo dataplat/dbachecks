@@ -1,6 +1,6 @@
 
 Import-Module /workspace/containers/JessAndBeard.psm1
-Import-Module /workspace/dbachecks.psd1
+Import-Module /workspace/dbachecks.psd1 -Verbose
 
 $containers = $SQLInstances = $dbachecks1, $dbachecks2 , $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3'
 #region Set up connection
