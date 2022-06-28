@@ -464,14 +464,14 @@ function Set-ConnectionInfo {
   $securePassword = ('dbatools.IO' | ConvertTo-SecureString -AsPlainText -Force)
   $containercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
 
-  $Global:PSDefaultParameterValues = @{
-    "*dba*:SqlCredential"            = $containercredential
-    "*dba*:SourceSqlCredential"      = $containercredential
-    "*dba*:DestinationSqlCredential" = $containercredential
-    "*dba*:DestinationCredential"    = $containercredential
-    "*dba*:PrimarySqlCredential"     = $containercredential
-    "*dba*:SecondarySqlCredential"   = $containercredential
-  }
+  #$Global:PSDefaultParameterValues = @{
+  #  "*dba*:SqlCredential"            = $containercredential
+  #  "*dba*:SourceSqlCredential"      = $containercredential
+  #  "*dba*:DestinationSqlCredential" = $containercredential
+  #  "*dba*:DestinationCredential"    = $containercredential
+  #  "*dba*:PrimarySqlCredential"     = $containercredential
+  #  "*dba*:SecondarySqlCredential"   = $containercredential
+  #}
 
 
   $containers = $SQLInstances = $dbachecks1, $dbachecks2, $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3'
@@ -526,7 +526,7 @@ function Assert-Correct {
     [string]
     $chapter = 'initial'
   )
-  $Global:PSDefaultParameterValues.CLear()
+ # $Global:PSDefaultParameterValues.CLear()
   switch ($chapter) {
     'initial' {
       # Valid estate is as we expect
@@ -823,14 +823,14 @@ function Assert-Correct {
       Set-FailedTestMessage
     }
   }
-  $Global:PSDefaultParameterValues = @{
-    "*dba*:SqlCredential"            = $containercredential
-    "*dba*:SourceSqlCredential"      = $containercredential
-    "*dba*:DestinationSqlCredential" = $containercredential
-    "*dba*:DestinationCredential"    = $containercredential
-    "*dba*:PrimarySqlCredential"     = $containercredential
-    "*dba*:SecondarySqlCredential"   = $containercredential
-  }
+  #$Global:PSDefaultParameterValues = @{
+  #  "*dba*:SqlCredential"            = $containercredential
+  #  "*dba*:SourceSqlCredential"      = $containercredential
+  #  "*dba*:DestinationSqlCredential" = $containercredential
+  #  "*dba*:DestinationCredential"    = $containercredential
+  #  "*dba*:PrimarySqlCredential"     = $containercredential
+  #  "*dba*:SecondarySqlCredential"   = $containercredential
+  #}
 }
 
 Function Compare-SPConfig {
@@ -2239,7 +2239,6 @@ function Invoke-PerfAndValidateCheck {
   param($Checks)
   $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
   $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
-  $Global:PSDefaultParameterValues.CLear()
   $Sqlinstances = $dbachecks1, $dbachecks2, $dbachecks3
 
   $originalCode = {

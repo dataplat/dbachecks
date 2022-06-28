@@ -18,14 +18,14 @@ $securePassword = ('dbatools.IO' | ConvertTo-SecureString -AsPlainText -Force)
 $containercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
 
 
-$Global:PSDefaultParameterValues = @{
-    "*dba*:SqlCredential"            = $containercredential
-    "*dba*:SourceSqlCredential"      = $containercredential
-    "*dba*:DestinationSqlCredential" = $containercredential
-    "*dba*:DestinationCredential"    = $containercredential
-    "*dba*:PrimarySqlCredential"     = $containercredential
-    "*dba*:SecondarySqlCredential"   = $containercredential
-}
+# $Global:PSDefaultParameterValues = @{
+#     "*dba*:SqlCredential"            = $containercredential   
+#     "*dba*:SourceSqlCredential"      = $containercredential
+#     "*dba*:DestinationSqlCredential" = $containercredential
+#     "*dba*:DestinationCredential"    = $containercredential
+#     "*dba*:PrimarySqlCredential"     = $containercredential
+#     "*dba*:SecondarySqlCredential"   = $containercredential
+# }
 #endregion
 
 Remove-Item '/var/opt/backups/dbachecks1' -Recurse -Force -ErrorAction SilentlyContinue
