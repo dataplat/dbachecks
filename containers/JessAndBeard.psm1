@@ -6,6 +6,7 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'v4code', Justification = 'Because silly script analyuser cant see it is used')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'v5code', Justification = 'Because silly script analyuser cant see it is used')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'originalCodeMessage', Justification = 'Because silly script analyuser cant see it is used')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'cred', Justification = 'Because silly script analyuser cant see it is used')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', 'Global:allofTheThings', Justification = 'Dont tell me what to do')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', 'Global:Italwaysis', Justification = 'Dont tell me what to do')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', 'Global:v4code', Justification = 'Dont tell me what to do')]
@@ -174,7 +175,7 @@ function Start-Game {
   # Because we are using volumes for the restore demo, need to ensure they are clean before starting the game
   Remove-Item '/var/opt/backups/dbatools1' -Recurse -Force -ErrorAction SilentlyContinue
 
-  $securePassword = ('dbatools.IO' | ConvertTo-SecureString -asPlainText -Force)
+  $securePassword = ('dbatools.IO' | ConvertTo-SecureString -AsPlainText -Force)
   $containercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
 
   New-DbaDatabase -SqlInstance $dbatools1 -SqlCredential $containercredential -Name Validation -RecoveryModel Full -WarningAction SilentlyContinue | Out-Null
@@ -182,8 +183,8 @@ function Start-Game {
   # we need an app login
   $Password = ConvertTo-SecureString PubsAdmin -AsPlainText -Force
   New-DbaLogin -SqlInstance $dbatools1 -SqlCredential $containercredential  -Login PubsAdmin -SecurePassword $Password -WarningAction SilentlyContinue | Out-Null
-  New-DbaDbUser -SqlInstance $dbatools1 -SqlCredential $containercredential -Database Pubs -Login PubsAdmin -Username PubsAdmin -WarningAction SilentlyContinue  | Out-Null
-  Add-DbaDbRoleMember -SqlInstance $dbatools1 -SqlCredential $containercredential -Database Pubs -User PubsAdmin -Role db_owner -Confirm:$false  | Out-Null
+  New-DbaDbUser -SqlInstance $dbatools1 -SqlCredential $containercredential -Database Pubs -Login PubsAdmin -Username PubsAdmin -WarningAction SilentlyContinue | Out-Null
+  Add-DbaDbRoleMember -SqlInstance $dbatools1 -SqlCredential $containercredential -Database Pubs -User PubsAdmin -Role db_owner -Confirm:$false | Out-Null
 
   # Let's add some things to find
   Invoke-DbaQuery -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Northwind -WarningAction SilentlyContinue -Query "
@@ -240,8 +241,7 @@ function Start-Game {
     cls
     Start-Sleep -Milliseconds 250
     Write-Output $OhNo2
-  }
-  elseif ($result -eq 0) {
+  } elseif ($result -eq 0) {
     Clear-Host # Dont use cls here
     Get-Index
   }
@@ -461,7 +461,7 @@ function Set-ConnectionInfo {
   [CmdletBinding()]
   param()
   #region Set up connection
-  $securePassword = ('dbatools.IO' | ConvertTo-SecureString -asPlainText -Force)
+  $securePassword = ('dbatools.IO' | ConvertTo-SecureString -AsPlainText -Force)
   $containercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
 
   $Global:PSDefaultParameterValues = @{
@@ -492,7 +492,7 @@ function Set-FailedTestMessage {
   if ($FailedTests -gt 0) {
     Write-PSFHostColor -String "NARRATOR - A thing went wrong" -DefaultColor DarkMagenta
     Write-PSFHostColor -String "NARRATOR - It MUST be fixed before we can continue" -DefaultColor DarkMagenta
-    $Failures = $results.TestResult | Where-Object Result -eq 'Failed'  | Select-Object Describe, Context, Name, FailureMessage
+    $Failures = $results.TestResult | Where-Object Result -EQ 'Failed' | Select-Object Describe, Context, Name, FailureMessage
     $Failures.ForEach{
       $Message = '{0} at {1} in {2}' -f $_.FailureMessage, $_.Name, $_.Describe
       Write-PSFHostColor -String $Message -DefaultColor DarkCyan
@@ -532,7 +532,7 @@ function Assert-Correct {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
 
       Set-DbcConfig -Name app.sqlinstance -Value $containers
       Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
@@ -546,13 +546,13 @@ function Assert-Correct {
       Set-DbcConfig -Name database.exists -Value 'pubs', 'NorthWind' -Append
       Invoke-DbcCheck -SqlCredential $containercredential -Check DatabaseExists
 
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false  # reset
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false  # reset
     }
     'Intro' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
@@ -572,13 +572,13 @@ function Assert-Correct {
       Set-FailedTestMessage
 
       Write-PSFHostColor -String "Are you ready to begin your adventure?" -DefaultColor Blue
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false  # reset
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false  # reset
     }
     'Backup' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       $null = Set-DbcConfig -Name app.checkrepos -Value '/workspace/Demos/dbachecksconfigs' -Append
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
@@ -599,18 +599,18 @@ function Assert-Correct {
       Write-PSFHostColor -String "Should you create a save point before this chapter?" -DefaultColor Blue
       Start-Sleep -Seconds 5
       Write-PSFHostColor -String "Or can you make it to the end?" -DefaultColor DarkRed
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false # reset
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false # reset
 
     }
     'Copy' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       $null = Set-DbcConfig -Name app.checkrepos -Value '/workspace/Demos/dbachecksconfigs' -Append
-      Set-DbcConfig -Name app.sqlinstance -Value $containers  | Out-Null
-      Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'  | Out-Null
-      Set-DbcConfig -Name skip.connection.remoting -Value $true  | Out-Null
+      Set-DbcConfig -Name app.sqlinstance -Value $containers | Out-Null
+      Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL' | Out-Null
+      Set-DbcConfig -Name skip.connection.remoting -Value $true | Out-Null
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
 
@@ -625,17 +625,17 @@ function Assert-Correct {
       $results = @($check1, $check2)
       Set-FailedTestMessage
       Write-PSFHostColor -String "If you get database missing failures - Chapter 2 will be your friend" -DefaultColor Magenta
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false # reset
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false # reset
     }
     'Snapshots' {
       # Valid estate is as we expect
       Write-PSFHostColor -String "Running the SnapShot Chapter checks" -DefaultColor Green
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       Set-DbcConfig -Name app.checkrepos -Value '/workspace/Demos/dbachecksconfigs' -Append | Out-Null
-      Set-DbcConfig -Name app.sqlinstance -Value $containers  | Out-Null
-      Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'  | Out-Null
-      Set-DbcConfig -Name skip.connection.remoting -Value $true  | Out-Null
+      Set-DbcConfig -Name app.sqlinstance -Value $containers | Out-Null
+      Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL' | Out-Null
+      Set-DbcConfig -Name skip.connection.remoting -Value $true | Out-Null
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
       $check1 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, NoDatabasesOn2, DatabaseStatus, NoSnapshots -Show Summary -PassThru
@@ -647,13 +647,13 @@ function Assert-Correct {
       $check1 | Convert-DbcResult -Label SnapShots -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation
       $results = @($check1, $check2)
       Set-FailedTestMessage
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false # reset
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false # reset
     }
     'Export' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
       $null = Set-DbcConfig -Name skip.connection.remoting -Value $true
@@ -670,13 +670,13 @@ function Assert-Correct {
       $check3 | Convert-DbcResult -Label Export -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false
     }
     'Ags' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       $null = Set-DbcConfig -Name app.checkrepos -Value '/workspace/Demos/dbachecksconfigs' -Append | Out-Null
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
@@ -696,13 +696,13 @@ function Assert-Correct {
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
       Write-PSFHostColor -String "If you get database missing failures - Chapter 2 will be your friend" -DefaultColor Magenta
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false
     }
     'AdvMigration' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       Set-DbcConfig -Name app.checkrepos -Value '/workspace/Demos/dbachecksconfigs' -Append | Out-Null
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
@@ -722,13 +722,13 @@ function Assert-Correct {
 
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false
     }
     'Found' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       Set-DbcConfig -Name app.checkrepos -Value '/workspace/Demos/dbachecksconfigs' -Append | Out-Null
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
@@ -738,23 +738,23 @@ function Assert-Correct {
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools2' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'tempdb' | Out-Null
-      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists,NeedJobs, NeedFailedJobs  -Show Summary -PassThru
+      $check2 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, NeedJobs, NeedFailedJobs  -Show Summary -PassThru
       $check2 | Convert-DbcResult -Label Found -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation
 
       Set-DbcConfig -Name app.sqlinstance -Value 'dbatools1' | Out-Null
       Set-DbcConfig -Name database.exists -Value 'master', 'model', 'msdb', 'Northwind', 'pubs', 'tempdb' | Out-Null
-      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus, NeedSps,NeedUDfs,NeedTriggers,NeedLogins -Show Summary -PassThru
+      $check3 = Invoke-DbcCheck -SqlCredential $containercredential -Check InstanceConnection, DatabaseExists, DatabaseStatus, NeedSps, NeedUDfs, NeedTriggers, NeedLogins -Show Summary -PassThru
       $check3 | Convert-DbcResult -Label Found -warningaction SilentlyContinue | Write-DbcTable -SqlInstance $dbatools1 -SqlCredential $containercredential  -Database Validation
 
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false
     }
     'Masking' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       Set-DbcConfig -Name app.checkrepos -Value '/workspace/Demos/dbachecksconfigs' -Append | Out-Null
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
@@ -774,13 +774,13 @@ function Assert-Correct {
 
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false
     }
     'Logins' {
       # Valid estate is as we expect
 
       $null = Reset-DbcConfig
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $true  # so we dont get silly output from convert-dbcresult
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $true  # so we dont get silly output from convert-dbcresult
       Set-DbcConfig -Name app.checkrepos -Value '/workspace/Demos/dbachecksconfigs' -Append | Out-Null
       $null = Set-DbcConfig -Name app.sqlinstance -Value $containers
       $null = Set-DbcConfig -Name policy.connection.authscheme -Value 'SQL'
@@ -800,7 +800,7 @@ function Assert-Correct {
 
       $results = @($check1, $check2, $check3)
       Set-FailedTestMessage
-      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -value $false
+      $null = Set-PSFConfig -FullName PSFramework.Message.ConsoleOutput.Disable -Value $false
     }
     Default {
       # Valid estate is as we expect
@@ -851,14 +851,13 @@ Function Compare-SPConfig {
     [pscustomobject]@{
       Config                = $prop.DisplayName
       'Source setting'      = $prop.RunningValue
-      'Destination Setting' = $DestSPConfigure | Where-Object DisplayName -eq $prop.DisplayName | Select-Object -ExpandProperty RunningValue
+      'Destination Setting' = $DestSPConfigure | Where-Object DisplayName -EQ $prop.DisplayName | Select-Object -ExpandProperty RunningValue
     }
   }
 
   if ($IsCoreCLR) {
     $propcompare | Out-ConsoleGridView -Title "Comparing Sp_configure Settings Source - $Source With Destination $Destination"
-  }
-  else {
+  } else {
     $propcompare | Out-GridView -Title "Comparing Sp_configure Settings Source - $SourceWith Destination $Destination"
 
   }
@@ -872,24 +871,24 @@ function Invoke-PubsApplication {
 
 
   # app connection
-  $securePassword = ('PubsAdmin' | ConvertTo-SecureString -asPlainText -Force)
+  $securePassword = ('PubsAdmin' | ConvertTo-SecureString -AsPlainText -Force)
   $appCred = New-Object System.Management.Automation.PSCredential('PubsAdmin', $securePassword)
   $appConnection = Connect-DbaInstance -SqlInstance $dbatools1 -SqlCredential $appCred -ClientName 'PubsApplication'
 
   while ($true) {
-  Write-PSFHostColor -String "Pubs application is running...forever... Ctrl+C to get out of here" -DefaultColor Green
+    Write-PSFHostColor -String "Pubs application is running...forever... Ctrl+C to get out of here" -DefaultColor Green
 
     $newOrder = [PSCustomObject]@{
       stor_id  = Get-Random (Invoke-DbaQuery -SqlInstance $appConnection -Database pubs -Query 'select stor_id from stores').stor_id
       ord_num  = Get-DbaRandomizedValue -DataType int -Min 1000 -Max 99999
-      ord_date = get-date
+      ord_date = Get-Date
       qty      = Get-Random -Minimum 1 -Maximum 30
       payterms = Get-Random (Invoke-DbaQuery -SqlInstance $appConnection -Database pubs -Query 'select distinct payterms from pubs.dbo.sales').payterms
       title_id = Get-Random (Invoke-DbaQuery -SqlInstance $appConnection -Database pubs -Query 'select title_id from titles').title_id
     }
     Write-DbaDataTable -SqlInstance $appConnection -Database pubs -InputObject $newOrder -Table sales
 
-    Start-sleep -Seconds (Get-Random -Maximum 10)
+    Start-Sleep -Seconds (Get-Random -Maximum 10)
   }
 }
 
@@ -1224,7 +1223,7 @@ function pacman {
   '^^^'    '--'
   "
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
   $pac = "
     .-.      .--.
@@ -1233,7 +1232,7 @@ function pacman {
    '^^^'    '--'
   "
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1243,7 +1242,7 @@ function pacman {
     '^^^'    '--'
   "
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1253,7 +1252,7 @@ function pacman {
      '^^^'    '--'
   "
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1263,7 +1262,7 @@ function pacman {
       '^^^'    '--'
   "
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1274,7 +1273,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1285,7 +1284,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1296,7 +1295,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1307,7 +1306,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1318,7 +1317,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1329,7 +1328,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1341,7 +1340,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1352,7 +1351,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1363,7 +1362,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
   $pac = "
                  .-.      .--.
@@ -1373,7 +1372,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1384,7 +1383,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1396,7 +1395,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1407,7 +1406,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1418,7 +1417,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1429,7 +1428,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1440,7 +1439,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1451,7 +1450,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1462,7 +1461,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1474,7 +1473,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1485,7 +1484,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1497,7 +1496,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1507,7 +1506,7 @@ function pacman {
                             '^^^'    '--'
   "
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1518,7 +1517,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1529,7 +1528,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1540,7 +1539,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1551,7 +1550,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1562,7 +1561,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1573,7 +1572,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1584,7 +1583,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1595,7 +1594,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1606,7 +1605,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1618,7 +1617,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1629,7 +1628,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1640,7 +1639,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1651,7 +1650,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1662,7 +1661,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1673,7 +1672,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1684,7 +1683,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1695,7 +1694,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1706,7 +1705,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1717,7 +1716,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1728,7 +1727,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1739,7 +1738,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1750,7 +1749,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1761,7 +1760,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1773,7 +1772,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1785,7 +1784,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1797,7 +1796,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1808,7 +1807,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1819,7 +1818,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1830,7 +1829,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1842,7 +1841,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1853,7 +1852,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1865,7 +1864,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1877,7 +1876,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1888,7 +1887,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -1900,10 +1899,10 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
-      $pac = "
+  $pac = "
                                                                  .-.      .--.
                                                                 | OO|   / _.-' .-.   .-.
                                                                 |   |   \  '-. '-'   '-'
@@ -1911,11 +1910,11 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
-      $pac = "
+  $pac = "
                                                                   .-.      .--.
                                                                  | OO|   / _.-' .-.   .-.
                                                                  |   |   \  '-. '-'   '-'
@@ -1923,12 +1922,12 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
 
-      $pac = "
+  $pac = "
                                                                    .-.      .--.
                                                                   | OO|   / _.-' .-.   .-.
                                                                   |   |   \  '-. '-'   '-'
@@ -1936,10 +1935,10 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
-      $pac = "
+  $pac = "
                                                                     .-.      .--.
                                                                    | OO|   / _.-' .-.   .-
                                                                    |   |   \  '-. '-'   '-
@@ -1947,7 +1946,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1958,7 +1957,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1969,7 +1968,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1980,7 +1979,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -1991,7 +1990,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -2003,7 +2002,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2014,7 +2013,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2025,7 +2024,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2036,7 +2035,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2047,7 +2046,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2058,7 +2057,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2069,7 +2068,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2080,7 +2079,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2091,7 +2090,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2102,7 +2101,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2113,7 +2112,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2124,7 +2123,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2135,7 +2134,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2146,7 +2145,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2157,7 +2156,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2168,7 +2167,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2179,7 +2178,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
   $pac = "
@@ -2190,7 +2189,7 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
@@ -2202,33 +2201,52 @@ function pacman {
   "
 
   Write-Host $pac -ForegroundColor Yellow
-  start-sleep -Milliseconds $sleep
+  Start-Sleep -Milliseconds $sleep
   Clear-Host
 
 
 }
-New-Alias -Name cls -Value pacman -force
+New-Alias -Name cls -Value pacman -Force
 
 function Invoke-PerfAndValidateCheck {
+  <#
+  .SYNOPSIS
+  Function to help test that the v5 and v4 tests are doing the same thing & get the performance stats
+
+  .DESCRIPTION
+  Function to help test that the v5 and v4 tests are doing the same thing & get the performance stats
+
+  .PARAMETER Checks
+  Which checks shall we test
+
+  .EXAMPLE
+  Invoke-PerfAndValidateCheck -Check InvalidDatabaseOwner
+
+  Check validity and performance for InvalidDatabaseOwner test
+
+  .EXAMPLE
+  Invoke-PerfAndValidateCheck -Check ValidDatabaseOwner, InvalidDatabaseOwner
+
+  Check validity and performance for both the ValidDatabaseOwner and InvalidDatabaseOwner tests
+
+  #>
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', 'Clear-Host', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', 'Out-GridView', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', 'cls', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', 'cls', Justification = 'Dont tell me what to do')]
   [CmdletBinding()]
-  param()
-
   param($Checks)
   $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
   $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
-  $Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
+  $Sqlinstances = $dbachecks1, $dbachecks2, $dbachecks3
 
   $originalCode = {
-      $global:v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $true -Show None -PassThru
+    $global:v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -legacy $true -Show None -PassThru
   }
 
   $NewCode = {
-      $global:v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $false  -Show None -PassThru
+    $global:v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -legacy $false  -Show None -PassThru
   }
 
   $originalCodetrace = Trace-Script -ScriptBlock $originalCode
@@ -2237,7 +2255,7 @@ function Invoke-PerfAndValidateCheck {
   $originalCodeMessage = "With original Code it takes {0} MilliSeconds" -f $originalCodetrace.StopwatchDuration.TotalMilliseconds
 
 
-$savingMessage = "
+  $savingMessage = "
 Running with
 
 {3}
@@ -2251,15 +2269,15 @@ New Code for these {5} checks
 is saving {0} seconds
 from a run of {1} seconds
 New Code runs in {2} % of the time
-" -f ('{0:N2}' -f ($originalCodetrace.StopwatchDuration.TotalSeconds - $NewCodetrace.StopwatchDuration.TotalSeconds)),('{0:N2}' -f $originalCodetrace.StopwatchDuration.TotalSeconds),('{0:N2}' -f (($NewCodetrace.StopwatchDuration.TotalSeconds/$originalCodetrace.StopwatchDuration.TotalSeconds) * 100)),($Checks -split ',' -join ',') ,('{0:N2}' -f $NewCodetrace.StopwatchDuration.TotalSeconds), $Checks.Count
+" -f ('{0:N2}' -f ($originalCodetrace.StopwatchDuration.TotalSeconds - $NewCodetrace.StopwatchDuration.TotalSeconds)), ('{0:N2}' -f $originalCodetrace.StopwatchDuration.TotalSeconds), ('{0:N2}' -f (($NewCodetrace.StopwatchDuration.TotalSeconds / $originalCodetrace.StopwatchDuration.TotalSeconds) * 100)), ($Checks -split ',' -join ',') , ('{0:N2}' -f $NewCodetrace.StopwatchDuration.TotalSeconds), $Checks.Count
 
-Write-PSFMessage -Message $savingMessage -Level Output
+  Write-PSFMessage -Message $savingMessage -Level Output
 
 
-##validate we got the right answers too
+  ##validate we got the right answers too
 
-If (Compare-Object $v5code.Configuration.Filter.Tag.Value $v4code.TagFilter) {
-  $Message = "
+  If (Compare-Object $v5code.Configuration.Filter.Tag.Value $v4code.TagFilter) {
+    $Message = "
 Uh-Oh - The Tag filters between v4 and v5 are not the same somehow.
 For v4 We returned
 {0}
@@ -2267,16 +2285,15 @@ and
 For v5 we returned
 {1}
 " -f ($v4code.TagFilter | Out-String), ($v5code.Configuration.Filter.Tag.Value | Out-String)
-  Write-PSFMessage -Message $Message -Level Warning
-}
-else {
-  $message = "
+    Write-PSFMessage -Message $Message -Level Warning
+  } else {
+    $message = "
 The Tags are the same"
-  Write-PSFMessage -Message $Message -Level Output
-}
+    Write-PSFMessage -Message $Message -Level Output
+  }
 
-If (($v5code.TotalCount - $v5code.NotRunCount) -ne $v4code.TotalCount) {
-  $Message = "
+  If (($v5code.TotalCount - $v5code.NotRunCount) -ne $v4code.TotalCount) {
+    $Message = "
 Uh-Oh - The total tests run between v4 and v5 are not the same somehow.
 For v4 We ran
 {0} tests
@@ -2286,16 +2303,15 @@ For v5 we ran
 The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block
 but TraceFlagsNotExpected will change that also
 " -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
-  Write-PSFMessage -Message $Message -Level Warning
-}
-else {
-  $message = "
+    Write-PSFMessage -Message $Message -Level Warning
+  } else {
+    $message = "
 The Total Tests Run are the same {0} {1} " -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
-  Write-PSFMessage -Message $Message -Level Output
-}
+    Write-PSFMessage -Message $Message -Level Output
+  }
 
-If ($v5code.PassedCount -ne $v4code.PassedCount) {
-  $Message = "
+  If ($v5code.PassedCount -ne $v4code.PassedCount) {
+    $Message = "
 Uh-Oh - The total tests Passed between v4 and v5 are not the same somehow.
 For v4 We Passed
 {0} tests
@@ -2303,17 +2319,16 @@ and
 For v5 we Passed
 {1} tests
 " -f $v4code.PassedCount, $v5code.PassedCount
-  Write-PSFMessage -Message $Message -Level Warning
-}
-else {
-  $message = "
+    Write-PSFMessage -Message $Message -Level Warning
+  } else {
+    $message = "
 The Total Tests Passed are the same {0} {1} " -f $v4code.PassedCount, $v5code.PassedCount
-  Write-PSFMessage -Message $Message -Level Output
-}
+    Write-PSFMessage -Message $Message -Level Output
+  }
 
 
-If ($v5code.FailedCount -ne $v4code.FailedCount) {
-  $Message = "
+  If ($v5code.FailedCount -ne $v4code.FailedCount) {
+    $Message = "
 Uh-Oh - The total tests Failed between v4 and v5 are not the same somehow.
 For v4 We Failed
 {0} tests
@@ -2321,16 +2336,15 @@ and
 For v5 we Failed
 {1} tests
 " -f $v4code.FailedCount, $v5code.FailedCount
-  Write-PSFMessage -Message $Message -Level Warning
-}
-else {
-  $message = "
+    Write-PSFMessage -Message $Message -Level Warning
+  } else {
+    $message = "
 The Total Tests Failed are the same {0} {1} " -f $v4code.FailedCount, $v5code.FailedCount
-  Write-PSFMessage -Message $Message -Level Output
-}
+    Write-PSFMessage -Message $Message -Level Output
+  }
 
-If ($v5code.SkippedCount -ne $v4code.SkippedCount) {
-  $Message = "
+  If ($v5code.SkippedCount -ne $v4code.SkippedCount) {
+    $Message = "
 Uh-Oh - The total tests Skipped between v4 and v5 are not the same somehow.
 For v4 We Skipped
 {0} tests
@@ -2338,16 +2352,12 @@ and
 For v5 we Skipped
 {1} tests
 " -f $v4code.SkippedCount, $v5code.SkippedCount
-  Write-PSFMessage -Message $Message -Level Warning
-}
-else {
-  $message = "
+    Write-PSFMessage -Message $Message -Level Warning
+  } else {
+    $message = "
 The Total Tests Skipped are the same {0} {1} "-f $v4code.SkippedCount, $v5code.SkippedCount
-  Write-PSFMessage -Message $Message -Level Output
+    Write-PSFMessage -Message $Message -Level Output
+  }
 }
-
-
-}
-
 
 Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $true -Initialize -Description "Whether to ask or not" -ModuleExport
