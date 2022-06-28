@@ -4,7 +4,7 @@ $containers = $SQLInstances = $dbachecks1, $dbachecks2 , $dbachecks3 = 'dbacheck
 #region Set up connection
 $securePassword = ('dbatools.IO' | ConvertTo-SecureString -AsPlainText -Force)
 $continercredential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
-
+ 
 
 
 $Global:PSDefaultParameterValues = @{
