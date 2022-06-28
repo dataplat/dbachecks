@@ -25,6 +25,7 @@ BeforeDiscovery {
                 else {
                     # Get the relevant information for the checks in one go to save repeated trips to the instance and set values for Not Contactable tests if required
                     NewGet-AllInstanceInfo -Instance $InstanceSMO -Tags $Tags
+                    Write-Output "Argh"
                 }
             }
         }
@@ -135,7 +136,7 @@ Describe "Default File Path" -Tag DefaultFilePath, Instance -ForEach $InstancesT
 Describe "SA Login Renamed" -Tag SaRenamed, DISA, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.instance.SaRenamed
     Context "Checking that sa login has been renamed on <_.Name>" {
-        It "sa login has been renamed on <_.Name>" {
+        It "sa login has been renamed on <_.Name>" -Skip:$Skip {
             ($PsItem.Logins.Name)  | Should -Not -BeIn 'sa' -Because "Renaming the sa account is a requirement"
         }
     }
@@ -259,3 +260,106 @@ Describe "sp_whoisactive is Installed" -Tag WhoIsActiveInstalled, Low, Instance 
         }
     }
 }
+
+Describe "XP CmdShell" -Tag XpCmdShellDisabled, security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.XpCmdShellDisabled
+    Context "Testing XP CmdShell on <_.Name>" {
+        It "XpCmdShellDisabled is set to <_.ConfigValues.XpCmdShellDisabled> on <_.Name>" -Skip:$skip {
+            $PSItem.Configuration.XpCmdShellEnabled.ConfigValue -eq 0 | Should -Be $psitem.ConfigValues.XpCmdShellDisabled -Because 'This is the value that you have chosen for XPXmdShellDisabled configuration'
+        }
+    }
+}
+
+Describe "XE Sessions that should be Stopped" -Tag XESessionStopped, ExtendedEvent, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.XESessionStopped
+    Context "Checking sessions on <_.Name>" {
+        It "Session <_.SessionName> should not be running on <_.Name>" -Skip:$skip -ForEach $PsItem.XeSessions.RequiredStopped {
+            $psitem.SessionName | Should -Not -BeIn $PsItem.Running -Because "$($psitem.SessionName) session should be stopped on $($PsItem.Name)"
+        }
+    }
+}
+Describe "XE Sessions that should Exist" -Tag XESessionExists, ExtendedEvent, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.XESessionExists
+    Context "Checking sessions on <_.Name>" {
+        It "Session <_.SessionName> should exist on <_.Name>" -Skip:$skip -ForEach $PsItem.XeSessions.RequiredExists {
+            $psitem.SessionName | Should  -BeIn $PsItem.Sessions -Because "$($psitem.SessionName) session should exist on $($PsItem.Name)"
+        }
+    }
+}
+
+<#
+Describe "XE Sessions That should be Running" -Tags XESessionRunning, ExtendedEvent, Medium, $filename {
+    $xesession = Get-DbcConfigValue policy.xevent.requiredrunningsession
+    if ((Get-Version -SQLInstance $psitem) -gt 10) {
+        # no point running if we dont have something to check
+        if ($xesession) {
+            if ($NotContactable -contains $psitem) {
+                Context "Checking running sessions on $psitem" {
+                    It "Can't Connect to $Psitem" {
+                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                    }
+                }
+            }
+            else {
+                Context "Checking running sessions on $psitem" {
+                    $runningsessions = (Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.Name
+                    @($xesession).ForEach{
+                        It "session $psitem should be running on $Instance" {
+                            $psitem | Should -BeIn $runningsessions -Because "$psitem session should be running"
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value to add some Extended Events session names to run this check"
+        }
+    }
+    else {
+        Context "Checking running sessions on $psitem" {
+            It "Version does not support XE sessions on $Instance" -skip {
+                1 | Should -Be 3
+            }
+        }
+    }
+}
+#>
+
+<#
+
+Describe "XE Sessions That Are Allowed to Be Running" -Tags XESessionRunningAllowed, ExtendedEvent, Medium, $filename {
+    $xesession = Get-DbcConfigValue policy.xevent.validrunningsession
+    if ((Get-Version -SQLInstance $psitem) -gt 10) {
+        # no point running if we dont have something to check
+        if ($xesession) {
+            if ($NotContactable -contains $psitem) {
+                Context "Checking running sessions allowed on $psitem" {
+                    It "Can't Connect to $Psitem" {
+                        $true | Should -BeFalse -Because "The instance should be available to be connected to!"
+                    }
+                }
+            }
+            else {
+                Context "Checking running sessions allowed on $psitem" {
+                    @(Get-DbaXESession -SqlInstance $psitem).Where{ $_.Status -eq 'Running' }.ForEach{
+                        It "Session $($Psitem.Name) is allowed to be running on $Instance" {
+                            $psitem.name | Should -BeIn $xesession -Because "Only these sessions are allowed to be running"
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            Write-Warning "You need to use Set-DbcConfig -Name policy.xevent.validrunningsession -Value to add some Extended Events session names to run this check"
+        }
+    }
+    else {
+        Context "Checking running sessions allowed on $psitem" {
+            It "Version does not support XE sessions on $Instance" -skip {
+                1 | Should -Be 3
+            }
+        }
+    }
+}
+
+#>
