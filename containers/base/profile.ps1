@@ -1,5 +1,6 @@
 
 Import-Module /workspace/containers/JessAndBeard.psm1
+Import-Module dbatools
 $VerbosePreference = 'Continue' # So we can see ALL of the verbose in the psm1 file if we need to!
 Import-Module /workspace/dbachecks.psd1 -Verbose
 $VerbosePreference = 'SilentlyContinue'
@@ -19,31 +20,26 @@ $Global:PSDefaultParameterValues = @{
     "*dba*:PrimarySqlCredential"     = $containercredential
     "*dba*:SecondarySqlCredential"   = $containercredential
 }
- 
 #endregion
 
 Remove-Item '/var/opt/backups/dbachecks1' -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item '/shared' -Recurse -Force -ErrorAction SilentlyContinue
 Import-Module Pansies
-$ShallWePlayAGameSetting = Get-PSFConfigValue -Name JessAndBeard.shallweplayagame 
+$ShallWePlayAGameSetting = Get-PSFConfigValue -Name JessAndBeard.shallweplayagame
 
 if ($Host.Name -eq 'ConsoleHost') {
     if ($ShallWePlayAGameSetting ) {
-        Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $false 
+        Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $false
         Start-Game
     } else {
         Get-Index
     }
-} 
+}
 
 ######## POSH-GIT
 # with props to https://bradwilson.io/blog/prompt/powershell
 # ... Import-Module for posh-git here ...
 Import-Module posh-git
-
-Import-Module dbatools
-
-
 
 # maybe we can add something here if we want a path?if (-not (Get-PSDrive -Name Git -ErrorAction SilentlyContinue)) {
 # maybe we can add something here if we want a path?    $Error.Clear()
