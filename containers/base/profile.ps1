@@ -1,5 +1,7 @@
 
 Import-Module /workspace/containers/JessAndBeard.psm1
+Import-Module /workspace/dbachecks.psd1
+
 $containers = $SQLInstances = $dbachecks1, $dbachecks2 , $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3'
 #region Set up connection
 $securePassword = ('dbatools.IO' | ConvertTo-SecureString -AsPlainText -Force)
@@ -35,11 +37,9 @@ if ($Host.Name -eq 'ConsoleHost') {
 ######## POSH-GIT
 # with props to https://bradwilson.io/blog/prompt/powershell
 # ... Import-Module for posh-git here ...
-ipmo posh-git
+Import-Module posh-git
 
 Import-Module dbatools
-Import-Module dbachecks
-
 
 
 
@@ -52,7 +52,7 @@ $ShowError = $false
 $ShowKube = $false
 $ShowAzure = $false
 $ShowAzureCli = $false
-$ShowGit = $false
+$ShowGit = $true
 $ShowPath = $true
 $ShowDate = $true
 $ShowTime = $true
