@@ -1,8 +1,8 @@
 
 Import-Module /workspace/containers/JessAndBeard.psm1
-$VerbosePreference = 'Continue' # So we can see ALL of the verbose in the psm1 file if we need to!
 Import-Module /workspace/dbachecks.psd1 -Verbose
 
+$VerbosePreference = 'SilentlyContinue'
 $containers = $SQLInstances = $dbachecks1, $dbachecks2 , $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3'
 #region Set up connection
 $securePassword = ('dbatools.IO' | ConvertTo-SecureString -AsPlainText -Force)
