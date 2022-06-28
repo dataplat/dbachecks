@@ -11,6 +11,7 @@
     "service": "dbachecks1",
     "settings": {
         "editor.renderWhitespace": "all",
+        "git.autofetch": true,
         "#terminal.integrated.profiles.linux#": {
         "pwsh": {
             "path": "pwsh",
@@ -25,7 +26,10 @@
         "2gua.rainbow-brackets",
         "oderwat.indent-rainbow",
         "mhutchie.git-graph",
-        "usernamehw.errorlens"
+        "usernamehw.errorlens",
+        "GitHub.copilot",
+        "eamodio.gitlens",
+        "TylerLeonhardt.vscode-inline-values-powershell"
     ],
     "shutdownAction": "stopCompose",
     "remoteUser": "root"  // not ideal - prob need to setup a non-root user and use that instead. permissions issue without this!
