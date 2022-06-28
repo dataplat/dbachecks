@@ -1,6 +1,6 @@
 version: "3"
 services:
-    dbachecks1:v0.1.0-beta.4
+    dbachecks1:
       image: sqldbawithabeard/dbachecks1:v0.1.0-beta.4
       volumes:
         - mydata:/var/opt/backups
@@ -12,7 +12,7 @@ services:
       container_name: dbachecks1
       hostname: dbachecks1
       
-    dbachecks2:v0.1.0-beta.4
+    dbachecks2:
       image: sqldbawithabeard/dbachecks2:v0.1.0-beta.4
       volumes:
         - mydata:/var/opt/backups

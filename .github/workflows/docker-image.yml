@@ -15,7 +15,7 @@ on:
       - ".devcontainer/docker-compose.yml"
       - containers/**
   workflow_dispatch:
-  
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -62,15 +62,15 @@ jobs:
         name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@v2
         with:
-          find: "dbachecks1:.*"
-          replace: "dbachecks1:${{ steps.bump.outputs.new_tag }}"
+          find: "sqldbawithabeard/dbachecks1:.*"
+          replace: "sqldbawithabeard/dbachecks1:${{ steps.bump.outputs.new_tag }}"
           include: ".devcontainer/docker-compose.yml" 
       -
         name: Find and Replace Instance2
         uses: jacobtomlinson/gha-find-replace@v2
         with:
-          find: "dbachecks2:.*"
-          replace: "dbachecks2:${{ steps.bump.outputs.new_tag }}"
+          find: "sqldbawithabeard/dbachecks2:.*"
+          replace: "sqldbawithabeard/dbachecks2:${{ steps.bump.outputs.new_tag }}"
           include: ".devcontainer/docker-compose.yml" 
       -
         name: Add & Commit
@@ -79,6 +79,3 @@ jobs:
           author_name: Beardy McBeardFace
           author_email: mrrobsewell@outlook.com
           message: 'The Beard says we have another one - This is an automated message'
-
-
-
