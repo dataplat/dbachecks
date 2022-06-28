@@ -199,6 +199,40 @@ function NewGet-AllInstanceInfo {
             $WhoIsActiveInstalled = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'whoisactivedatabase' -Value (Get-DbcConfigValue policy.whoisactive.database)
         }
+
+        'XpCmdShellDisabled' {
+            $configurations = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'XpCmdShellDisabled' -Value (Get-DbcConfigValue policy.security.XpCmdShellDisabled)
+
+        }
+        'XESessionStopped' {
+            if (-not $xeSessions) {
+                $xeSessions = Get-DbaXESession -SqlInstance $Instance
+            }
+            $RequiredStopped = (Get-DbcConfigValue policy.xevent.requiredstoppedsession)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'requiredstoppedsession' -Value $RequiredStopped
+            if (-not $xeSessions) {
+                $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
+            }
+            if (-not $Sessions) {
+                $Sessions = $xeSessions.Name
+            }
+        }
+        'XESessionExists' {
+            Write-Host "IAM HERE"
+            if (-not $xeSessions) {
+                $xeSessions = Get-DbaXESession -SqlInstance $Instance
+            }
+            $RequiredExists = (Get-DbcConfigValue policy.xevent.requiredexists)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'requiredexistssessions' -Value $RequiredExists
+            if (-not $RunningSessions) {
+                $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
+            }
+            if (-not $Sessions) {
+                $Sessions = $xeSessions.Name
+            }
+        }
+
         Default { }
     }
 
@@ -218,6 +252,26 @@ function NewGet-AllInstanceInfo {
         MaxDopSettings        = $MaxDopSettings 
         ExpectedTraceFlags    = $ExpectedTraceFlags
         NotExpectedTraceFlags = $NotExpectedTraceFlags
+        XESessions            = [pscustomobject]@{
+            RequiredStopped = $RequiredStopped.ForEach{
+                [pscustomobject]@{
+                    Name        = $Instance.Name
+                    SessionName = $PSItem
+                    Running     = $RunningSessions
+                }
+            }
+            RequiredExists = $RequiredExists.ForEach{
+                [pscustomobject]@{
+                    Name        = $Instance.Name
+                    SessionName = $PSItem
+                    Sessions    = $Sessions
+                }
+            }
+            Name            = $Instance.Name
+            Sessions        = $Sessions
+            Running         = $RunningSessions
+            
+        }
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
