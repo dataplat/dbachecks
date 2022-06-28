@@ -2140,18 +2140,39 @@ function pacman {
 New-Alias -Name cls -Value pacman -force
 
 function Invoke-PerfAndValidateCheck {
-  
+  <#
+  .SYNOPSIS
+  Function to help test that the v5 and v4 tests are doing the same thing & get the performance stats
+
+  .DESCRIPTION
+  Function to help test that the v5 and v4 tests are doing the same thing & get the performance stats
+
+  .PARAMETER Checks
+  Which checks shall we test
+
+  .EXAMPLE
+  Invoke-PerfAndValidateCheck -Check InvalidDatabaseOwner
+
+  Check validity and performance for InvalidDatabaseOwner test
+
+  .EXAMPLE
+  Invoke-PerfAndValidateCheck -Check ValidDatabaseOwner, InvalidDatabaseOwner
+
+  Check validity and performance for both the ValidDatabaseOwner and InvalidDatabaseOwner tests
+
+  #>
+
   param($Checks)
   $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
   $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
-  $Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
+  $Sqlinstances = $dbachecks1,$dbachecks2,$dbachecks3
 
   $originalCode = {
-      $global:v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $true -Show None -PassThru
+      $global:v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -legacy $true -Show None -PassThru
   }
 
   $NewCode = {
-      $global:v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $false  -Show None -PassThru
+      $global:v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -legacy $false  -Show None -PassThru
   }
 
   $originalCodetrace = Trace-Script -ScriptBlock $originalCode
@@ -2271,6 +2292,5 @@ The Total Tests Skipped are the same {0} {1} "-f $v4code.SkippedCount, $v5code.S
 
 
 }
-
 
 Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $true -Initialize -Description "Whether to ask or not" -ModuleExport 
