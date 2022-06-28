@@ -29,7 +29,8 @@
         "usernamehw.errorlens",
         "GitHub.copilot",
         "eamodio.gitlens",
-        "TylerLeonhardt.vscode-inline-values-powershell"
+        "TylerLeonhardt.vscode-inline-values-powershell",
+        "cschleiden.vscode-github-actions"
     ],
     "shutdownAction": "stopCompose",
     "remoteUser": "root"  // not ideal - prob need to setup a non-root user and use that instead. permissions issue without this!
