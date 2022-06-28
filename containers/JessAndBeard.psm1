@@ -2139,5 +2139,138 @@ function pacman {
 }
 New-Alias -Name cls -Value pacman -force
 
+function Invoke-PerfAndValidateCheck {
+  
+  param($Checks)
+  $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
+  $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
+  $Sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
+
+  $originalCode = {
+      $global:v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $true -Show None -PassThru
+  }
+
+  $NewCode = {
+      $global:v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $false  -Show None -PassThru
+  }
+
+  $originalCodetrace = Trace-Script -ScriptBlock $originalCode
+  $NewCodetrace = Trace-Script -ScriptBlock $NewCode
+
+  $originalCodeMessage = "With original Code it takes {0} MilliSeconds" -f $originalCodetrace.StopwatchDuration.TotalMilliseconds
+
+
+$savingMessage = "
+Running with
+
+{3}
+
+Checks against $($Sqlinstances.Count) SQL Containers
+
+With original Code it takes {1} Seconds
+With New Code it takes {4} Seconds
+
+New Code for these {5} checks
+is saving {0} seconds
+from a run of {1} seconds
+New Code runs in {2} % of the time
+" -f ('{0:N2}' -f ($originalCodetrace.StopwatchDuration.TotalSeconds - $NewCodetrace.StopwatchDuration.TotalSeconds)),('{0:N2}' -f $originalCodetrace.StopwatchDuration.TotalSeconds),('{0:N2}' -f (($NewCodetrace.StopwatchDuration.TotalSeconds/$originalCodetrace.StopwatchDuration.TotalSeconds) * 100)),($Checks -split ',' -join ',') ,('{0:N2}' -f $NewCodetrace.StopwatchDuration.TotalSeconds), $Checks.Count
+
+Write-PSFMessage -Message $savingMessage -Level Output
+
+
+##validate we got the right answers too
+
+If (Compare-Object $v5code.Configuration.Filter.Tag.Value $v4code.TagFilter) {
+  $Message = "
+Uh-Oh - The Tag filters between v4 and v5 are not the same somehow.
+For v4 We returned
+{0}
+and
+For v5 we returned
+{1}
+" -f ($v4code.TagFilter | Out-String), ($v5code.Configuration.Filter.Tag.Value | Out-String)
+  Write-PSFMessage -Message $Message -Level Warning
+}
+else {
+  $message = "
+The Tags are the same"
+  Write-PSFMessage -Message $Message -Level Output
+}
+
+If (($v5code.TotalCount - $v5code.NotRunCount) -ne $v4code.TotalCount) {
+  $Message = "
+Uh-Oh - The total tests run between v4 and v5 are not the same somehow.
+For v4 We ran
+{0} tests
+and
+For v5 we ran
+{1} tests
+The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block
+but TraceFlagsNotExpected will change that also
+" -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
+  Write-PSFMessage -Message $Message -Level Warning
+}
+else {
+  $message = "
+The Total Tests Run are the same {0} {1} " -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
+  Write-PSFMessage -Message $Message -Level Output
+}
+
+If ($v5code.PassedCount -ne $v4code.PassedCount) {
+  $Message = "
+Uh-Oh - The total tests Passed between v4 and v5 are not the same somehow.
+For v4 We Passed 
+{0} tests
+and
+For v5 we Passed 
+{1} tests
+" -f $v4code.PassedCount, $v5code.PassedCount
+  Write-PSFMessage -Message $Message -Level Warning
+}
+else {
+  $message = "
+The Total Tests Passed are the same {0} {1} " -f $v4code.PassedCount, $v5code.PassedCount
+  Write-PSFMessage -Message $Message -Level Output
+}
+
+
+If ($v5code.FailedCount -ne $v4code.FailedCount) {
+  $Message = "
+Uh-Oh - The total tests Failed between v4 and v5 are not the same somehow.
+For v4 We Failed 
+{0} tests
+and
+For v5 we Failed 
+{1} tests
+" -f $v4code.FailedCount, $v5code.FailedCount
+  Write-PSFMessage -Message $Message -Level Warning
+}
+else {
+  $message = "
+The Total Tests Failed are the same {0} {1} " -f $v4code.FailedCount, $v5code.FailedCount
+  Write-PSFMessage -Message $Message -Level Output
+}
+
+If ($v5code.SkippedCount -ne $v4code.SkippedCount) {
+  $Message = "
+Uh-Oh - The total tests Skipped between v4 and v5 are not the same somehow.
+For v4 We Skipped 
+{0} tests
+and
+For v5 we Skipped 
+{1} tests
+" -f $v4code.SkippedCount, $v5code.SkippedCount
+  Write-PSFMessage -Message $Message -Level Warning
+}
+else {
+  $message = "
+The Total Tests Skipped are the same {0} {1} "-f $v4code.SkippedCount, $v5code.SkippedCount
+  Write-PSFMessage -Message $Message -Level Output
+}
+
+
+}
+
 
 Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $true -Initialize -Description "Whether to ask or not" -ModuleExport 
