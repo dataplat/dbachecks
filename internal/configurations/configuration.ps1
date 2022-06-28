@@ -212,6 +212,7 @@ Set-PSFConfig -Module dbachecks -name ola.JobName.DeleteBackupHistory -Value 'sp
 Set-PSFConfig -Module dbachecks -name ola.JobName.PurgeBackupHistory -Value 'sp_purge_jobhistory' -Initialize -Description "The name for the Ola Delete Purge History Job"
 
 # xevents
+Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredexists -Value $null -Initialize -Description "List of XE Sessions that should exist. This does not check if they are running"
 Set-PSFConfig -Module dbachecks -Name policy.xevent.validrunningsession -Value $null -Initialize -Description "List of XE Sessions that can be be running."
 Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredrunningsession -Value $null -Initialize -Description "List of XE Sessions that should be running."
 Set-PSFConfig -Module dbachecks -Name policy.xevent.requiredstoppedsession -Value $null -Initialize -Description "List of XE Sessions that should not be running."

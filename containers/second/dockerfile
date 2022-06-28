@@ -1,0 +1,10 @@
+FROM dbatools/sqlinstance2
+USER root
+# Install PowerShell
+RUN apt-get update && apt install -y powershell
+# install git
+RUN apt install -y git
+
+# some cleanup
+RUN apt-get autoremove -y \
+    && apt-get clean -y
