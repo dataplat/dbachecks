@@ -14,23 +14,23 @@ BeforeDiscovery {
             $Instance = $psitem
             try {
                 $InstanceSMO = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
-            }
-            catch {
+            } catch {
                 $NotContactable += $Instance
             }
             if ($NotContactable -notcontains $psitem) {
                 if ($null -eq $InstanceSMO.version) {
                     $NotContactable += $Instance
-                }
-                else {
+                } else {
                     # Get the relevant information for the checks in one go to save repeated trips to the instance and set values for Not Contactable tests if required
                     NewGet-AllInstanceInfo -Instance $InstanceSMO -Tags $Tags
-                    Write-Output "Argh"
                 }
             }
         }
     }
     Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Verbose
+    #if you ever need to see what is being tested uncomment and run in verbose
+    # $InstancesToTestJson = $InstancesToTest | ConvertTo-Json
+    # Write-PSFMessage -Message "InstancesToTest = $InstancesToTestJson" -Level Verbose
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 }
 
@@ -38,7 +38,7 @@ Describe "Default Trace" -Tag DefaultTrace, CIS, Low, Instance -ForEach $Instanc
     $skip = Get-DbcConfigValue skip.instance.defaulttrace
     Context "Checking Default Trace on <_.Name>" {
         It "The Default Trace should be enabled on <_.Name>"  -Skip:$skip {
-            $PSItem.Configuration.DefaultTraceEnabled.ConfigValue   | Should -Be 1 -Because "We expected the Default Trace to be enabled"
+            $PSItem.Configuration.DefaultTraceEnabled.ConfigValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
         }
     }
 }
@@ -46,7 +46,7 @@ Describe "OLE Automation Procedures Disabled" -Tag OleAutomationProceduresDisabl
     $skip = Get-DbcConfigValue skip.instance.oleautomationproceduresdisabled
     Context "Checking OLE Automation Procedures on <_.Name>" {
         It "The OLE Automation Procedures should be disabled on <_.Name>"  -Skip:$skip {
-            $PSItem.Configuration.OleAutomationProceduresEnabled.ConfigValue   | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
+            $PSItem.Configuration.OleAutomationProceduresEnabled.ConfigValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
         }
     }
 }
@@ -137,7 +137,7 @@ Describe "SA Login Renamed" -Tag SaRenamed, DISA, CIS, Medium, Instance -ForEach
     $skip = Get-DbcConfigValue skip.instance.SaRenamed
     Context "Checking that sa login has been renamed on <_.Name>" {
         It "sa login has been renamed on <_.Name>" -Skip:$Skip {
-            ($PsItem.Logins.Name)  | Should -Not -BeIn 'sa' -Because "Renaming the sa account is a requirement"
+            ($PsItem.Logins.Name) | Should -Not -BeIn 'sa' -Because "Renaming the sa account is a requirement"
         }
     }
 }
@@ -146,7 +146,7 @@ Describe "SA Login Disabled" -Tag SaDisabled, DISA, CIS, Medium, Instance -ForEa
     $skip = Get-DbcConfigValue skip.security.sadisabled
     Context "Checking that sa login has been disabled on <_.Name>" {
         It "sa login is disabled on <_.Name>" -Skip:$Skip {
-            ($PsItem.Logins | Where-Object ID -eq 1).IsDisabled | Should -Be $true -Because "We expected the original sa login to be disabled"
+            ($PsItem.Logins | Where-Object ID -EQ 1).IsDisabled | Should -Be $true -Because "We expected the original sa login to be disabled"
         }
     }
 }
@@ -169,23 +169,23 @@ Describe "Default Backup Compression" -Tag DefaultBackupCompression, Low, Instan
     }
 }
 
-#Describe "Model Database Growth" -Tag ModelDbGrowth, Low, Instance -ForEach $InstancesToTest {
-#    $skip = Get-DbcConfigValue skip.instance.modeldbgrowth
-#    Context "Testing model database growth setting is not default on <_.Name>" {
-#        It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files  {
-#            $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
-#        }
-#        It "Growth settings should not be 1Mb for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files  {
-#            $psitem.Growth | Should -Not -Be 1024 -Because 'New databases use the model database as a template and growing for each Mb will have a performance impact'
-#        }
-#        It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Name>" -Skip:$skip -ForEach @($PsItem.Databases['model'].LogFiles) {
-#            $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
-#        }
-#        It "Growth settings should not be 1Mb for file <_.Name> on <_.Parent.Parent.Name>" -Skip:$skip -ForEach @($PsItem.Databases['model'].LogFiles) {
-#            $psitem.Growth | Should -Not -Be 1024 -Because 'New databases use the model database as a template and growing for each Mb will have a performance impact'
-#        }
-#    }
-#}
+Describe "Model Database Growth" -Tag ModelDbGrowth, Low, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.modeldbgrowth
+    Context "Testing model database growth setting is not default on <_.Name>" {
+        It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files  {
+            $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
+        }
+        It "Growth settings should not be 1Mb for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files  {
+            $psitem.Growth | Should -Not -Be 1024 -Because 'New databases use the model database as a template and growing for each Mb will have a performance impact'
+        }
+        It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Name>" -Skip:$skip -ForEach @($PsItem.Databases['model'].LogFiles) {
+            $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
+        }
+        It "Growth settings should not be 1Mb for file <_.Name> on <_.Parent.Parent.Name>" -Skip:$skip -ForEach @($PsItem.Databases['model'].LogFiles) {
+            $psitem.Growth | Should -Not -Be 1024 -Because 'New databases use the model database as a template and growing for each Mb will have a performance impact'
+        }
+    }
+}
 
 Describe "Error Log Count" -Tag ErrorLogCount, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = Get-DbcConfigValue skip.instance.ErrorLogCount
@@ -256,7 +256,7 @@ Describe "sp_whoisactive is Installed" -Tag WhoIsActiveInstalled, Low, Instance 
     $skip = Get-DbcConfigValue skip.instance.WhoIsActiveInstalled
     Context "Testing WhoIsActive exists on <_.Name>" {
         It "WhoIsActive should exist on <_.ConfigValues.whoisactivedatabase> on <_.Name>"  -Skip:$skip {
-            $Psitem.ConfigValues.WhoIsActiveInstalled |  Should -Be 1 -Because "The sp_WhoIsActive stored procedure should be installed in $($psitem.ConfigValues.whoisactivedatabase)"
+            $Psitem.ConfigValues.WhoIsActiveInstalled | Should -Be 1 -Because "The sp_WhoIsActive stored procedure should be installed in $($psitem.ConfigValues.whoisactivedatabase)"
         }
     }
 }
