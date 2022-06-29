@@ -87,7 +87,7 @@ function Get-CheckFile {
                         $script:checksFile = $psitem.FullName
 
                         if ($Check -contains ($PSItem.Name -replace "v5.Tests.ps1", "")) {
-                            $message = "{0} file matches check {1}" -f $psitem.Name, $Check
+                            $message = "{0} file matches check {1}" -f $psitem.Name, ($Check | Out-String)
                             Write-PSFMessage -Message $message -Level Verbose
                             # file matches by name
                             if (!($script:selectedFiles -contains $script:checksFile)) {
@@ -95,7 +95,7 @@ function Get-CheckFile {
                             }
                         }
                         else {
-                            $message = "{0} file does not match check {1} lets check for the tag" -f $psitem.Name, $Check
+                            $message = "{0} file does not match check {1} lets check for the tag" -f $psitem.Name,  ($Check | Out-String)
                             Write-PSFMessage -Message $message -Level Verbose
                             $fileContent = Get-Content -Path $script:checksFile
                             @($check).ForEach{
