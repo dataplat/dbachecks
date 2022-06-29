@@ -151,8 +151,8 @@ function NewGet-AllInstanceInfo {
             $TraceFlagsExpected = Get-DbcConfigValue policy.traceflags.expected
             $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
             if (-not $ConfigValues.TraceFlagsExpected) {
-                $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
-            } 
+                $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected -Force
+            }
             $ExpectedTraceFlags = $TraceFlagsExpected.Foreach{
                 [PSCustomObject]@{
                     InstanceName      = $Instance.Name
@@ -173,8 +173,8 @@ function NewGet-AllInstanceInfo {
             $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsNotExpected' -Value $TraceFlagsNotExpected
             if (-not $ConfigValues.TraceFlagsExpected) {
-                $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected
-            } 
+                $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected -Force
+            }
             $NotExpectedTraceFlags = $TraceFlagsNotExpected.Where{ $_ -notin $TraceFlagsExpected }.Foreach{
                 [PSCustomObject]@{
                     InstanceName         = $Instance.Name
