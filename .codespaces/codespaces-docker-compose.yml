@@ -1,4 +1,5 @@
 version: "3"
+# because it crashes the integrated terminal in codespaces we need an additional devcontainer.json config. Hopefully this will work as expected.
 services:
     dbachecks1:
       image: sqldbawithabeard/dbachecks1:v0.1.0-beta.18
