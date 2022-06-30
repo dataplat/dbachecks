@@ -243,6 +243,41 @@ Set-PSFConfig -Module dbachecks -Name policy.database.statusexcludedb -Value @()
 
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
+# instance
+Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
+Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.dac -Validation bool -Value $false -Initialize -Description "Skip Dedicated Administrator Connection (DAC) check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.CrossDBOwnershipChaining -Validation bool -Value $false -Initialize -Description "Skip Cross Database Ownership Chaining check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.SQLMailXPsDisabled -Validation bool -Value $false -Initialize -Description "Skip SQL Mail XPs Disabled check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.oleautomation -Validation bool -Value $false -Initialize -Description "Skip OLE Automation check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.oleautomationproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip OLE Automation Procedures check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.remoteaccessdisabled -Validation bool -Value $false -Initialize -Description "Skip the remote access check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.scanforstartupproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip the scan for startup procedures disabled check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool -Value $false -Initialize -Description "Skip the scan the latest build of SQL Server check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.suspectpagelimit -Validation bool -Value $false -Initialize -Description "Skip the check for whether the suspect_pages table is nearing the row limit of 1000"
+Set-PSFConfig -Module dbachecks -Name skip.instance.AdHocWorkload -Validation bool -Value $false -Initialize -Description "Skip the check for whether AdHocWorkload Optimization is enabled"
+Set-PSFConfig -Module dbachecks -Name skip.instance.AdHocDistributedQueriesEnabled -Validation bool -Value $false -Initialize -Description "Skip the check for whether AdHoc Distributed Queries Enabled settings"
+Set-PSFConfig -Module dbachecks -Name skip.instance.DefaultFilePath -Validation bool -Value $false -Initialize -Description "Skip the check for Default File Path"
+Set-PSFConfig -Module dbachecks -Name skip.instance.SaRenamed -Validation bool -Value $false -Initialize -Description "Skip the check for Sa Renamed"
+Set-PSFConfig -Module dbachecks -Name skip.security.sadisabled -Validation bool -Value $true -Initialize -Description "Skip the check for if the sa login is disabled"
+Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip the check for a login named sa does not exist"
+Set-PSFConfig -Module dbachecks -Name skip.instance.DefaultBackupCompression -Validation bool -Value $false -Initialize -Description "Skip the check for default backup compression"
+Set-PSFConfig -Module dbachecks -Name skip.instance.ErrorLogCount -Validation bool -Value $false -Initialize -Description "Skip the check for the number of Error Log Entries"
+Set-PSFConfig -Module dbachecks -Name skip.instance.MaxDopInstance -Validation bool -Value $false -Initialize -Description "Skip the check for the Max Dop Instance"
+Set-PSFConfig -Module dbachecks -Name skip.instance.TwoDigitYearCutoff -Validation bool -Value $false -Initialize -Description "Skip the check for the Two Digit Year Cut off setting"
+Set-PSFConfig -Module dbachecks -Name skip.instance.TraceFlagsExpected -Validation bool -Value $false -Initialize -Description "Skip the check for expected Trace Flags"
+Set-PSFConfig -Module dbachecks -Name skip.instance.TraceFlagsNotExpected -Validation bool -Value $false -Initialize -Description "Skip the check for not expected Trace Flags"
+Set-PSFConfig -Module dbachecks -Name skip.instance.CLREnabled -Validation bool -Value $false -Initialize -Description "Skip the check for CLR Enabled"
+Set-PSFConfig -Module dbachecks -Name skip.instance.WhoIsActiveInstalled -Validation bool -Value $false -Initialize -Description "Skip the check for whether WhoIsActive is Installed"
+Set-PSFConfig -Module dbachecks -Name skip.instance.XpCmdShellDisabled -Validation bool -Value $false -Initialize -Description "Skip the check for whether XpCmdShell is Disabled"
+Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionStopped -Validation bool -Value $false -Initialize -Description "Skip the check for XESessions that are stopped"
+Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionRunning -Validation bool -Value $false -Initialize -Description "Skip the check for XESessions that should be running"
+Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionRunningAllowed -Validation bool -Value $false -Initialize -Description "Skip the check for XESessions that are allowed to be running"
+Set-PSFConfig -Module dbachecks -Name skip.instance.errorlogentries -Validation bool -Value $false -Initialize -Description "Skip the check for errorlog entries"
+
+
+
+
 Set-PSFConfig -Module dbachecks -Name skip.dbcc.datapuritycheck -Validation bool -Value $false -Initialize -Description "Skip data purity check in last good dbcc command"
 Set-PSFConfig -Module dbachecks -Name skip.backup.testing -Validation bool -Value $true -Initialize -Description "Don't run Test-DbaLastBackup by default (it's not read-only)"
 Set-PSFConfig -Module dbachecks -Name skip.backup.readonly -Validation bool -Value $false -Initialize -Description "Check read-only databases for last backup"
@@ -274,13 +309,13 @@ Set-PSFConfig -Module dbachecks -Name skip.database.status -Validation bool -Val
 
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
-Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
+
 Set-PSFConfig -Module dbachecks -Name skip.cluster.netclusterinterface -Validation bool -Value $false -Initialize -Description "Skip cluster private network interface checks"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR AG Listener TCP port number (If port number is not standard across the entire AG architecture)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.replica.tcpport -Validation bool -Value $false -Initialize -Description "Skip the HADR Replica TCP port number (If port number is not standard across the entire AG architecture)"
 Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation bool -Value $false -Initialize -Description "Skip the HADR listener ping test (especially useful for Azure and AWS)"
-Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
+
 Set-PSFConfig -Module dbachecks -Name skip.agent.databasemailenabled -Validation bool -Value $false -Initialize -Description "Skip the Database Mail Enabled agent check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.servicestartmode -Validation bool -Value $false -Initialize -Description "Skip the Agent Service State check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.servicestate -Validation bool -Value $false -Initialize -Description "Skip the Agent Service Start Mode check"
@@ -288,17 +323,8 @@ Set-PSFConfig -Module dbachecks -Name skip.agent.operatorname -Validation bool -
 Set-PSFConfig -Module dbachecks -Name skip.agent.operatoremail -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Email check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.dac -Validation bool -Value $false -Initialize -Description "Skip Dedicated Administrator Connection (DAC) check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.CrossDBOwnershipChaining -Validation bool -Value $false -Initialize -Description "Skip Cross Database Ownership Chaining check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.SQLMailXPsDisabled -Validation bool -Value $false -Initialize -Description "Skip SQL Mail XPs Disabled check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.oleautomation -Validation bool -Value $false -Initialize -Description "Skip OLE Automation check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.oleautomationproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip OLE Automation Procedures check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.remoteaccessdisabled -Validation bool -Value $false -Initialize -Description "Skip the remote access check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.scanforstartupproceduresdisabled -Validation bool -Value $false -Initialize -Description "Skip the scan for startup procedures disabled check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.latestbuild -Validation bool -Value $false -Initialize -Description "Skip the scan the latest build of SQL Server check"
-Set-PSFConfig -Module dbachecks -Name skip.instance.suspectpagelimit -Validation bool -Value $false -Initialize -Description "Skip the check for whether the suspect_pages table is nearing the row limit of 1000"
-Set-PSFConfig -Module dbachecks -Name skip.security.sadisabled -Validation bool -Value $true -Initialize -Description "Skip the check for if the sa login is disabled"
-Set-PSFConfig -Module dbachecks -Name skip.security.saexist -Validation bool -Value $true -Initialize -Description "Skip the check for a login named sa does not exist"
+
+
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
 Set-PSFConfig -Module dbachecks -Name skip.security.sqlagentproxiesnopublicrole -Validation bool -Value $true -Initialize -Description "Skips the scan for if the public role has access to SQL Agent proxies"
 Set-PSFConfig -Module dbachecks -Name skip.security.symmetrickeyencryptionlevel -Validation bool -Value $true -Initialize -Description "Skips the test for if the Symmetric Encryption is at least AES_128 or higher in non-system databases"
