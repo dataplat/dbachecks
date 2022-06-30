@@ -6,6 +6,8 @@ on:
     paths: 
       - ".devcontainer/devcontainer.json"
       - ".devcontainer/docker-compose.yml"
+      - ".devcontainer/codespaces/devcontainer.json"
+      - ".devcontainer/codespaces/codespaces-docker-compose.yml"
       - containers/**
     
   pull_request:
@@ -13,6 +15,8 @@ on:
     paths:
       - ".devcontainer/devcontainer.json"
       - ".devcontainer/docker-compose.yml"
+      - ".devcontainer/codespaces/devcontainer.json"
+      - ".devcontainer/codespaces/codespaces-docker-compose.yml"
       - containers/**
   workflow_dispatch:
 
@@ -64,14 +68,18 @@ jobs:
         with:
           find: "sqldbawithabeard/dbachecks1:.*"
           replace: "sqldbawithabeard/dbachecks1:${{ steps.bump.outputs.new_tag }}"
-          include: ".devcontainer/docker-compose.yml" 
+          include:
+           - ".devcontainer/docker-compose.yml" 
+           - ".devcontainer/codespaces/codespaces-docker-compose.yml"
       -
         name: Find and Replace Instance2
         uses: jacobtomlinson/gha-find-replace@v2
         with:
           find: "sqldbawithabeard/dbachecks2:.*"
           replace: "sqldbawithabeard/dbachecks2:${{ steps.bump.outputs.new_tag }}"
-          include: ".devcontainer/docker-compose.yml" 
+          include: 
+           - ".devcontainer/docker-compose.yml" 
+           - ".devcontainer/codespaces/codespaces-docker-compose.yml"
       -
         name: Add & Commit
         uses: EndBug/add-and-commit@v8.0.2
