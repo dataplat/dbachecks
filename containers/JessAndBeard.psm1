@@ -2239,7 +2239,6 @@ function Invoke-PerfAndValidateCheck {
   param($Checks)
   $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
   $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
-  $Sqlinstances = $dbachecks1, $dbachecks2, $dbachecks3
 
   $originalCode = {
     $global:v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred  -legacy $true -Show None -PassThru
