@@ -245,6 +245,20 @@ function NewGet-AllInstanceInfo {
                 $Sessions = $xeSessions.Name
             }
         }
+        'XESessionRunningAllowed' {
+
+            if (-not $xeSessions) {
+                $xeSessions = Get-DbaXESession -SqlInstance $Instance
+            }
+            $RunningAllowed = (Get-DbcConfigValue policy.xevent.validrunningsession)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validrunningsession' -Value $RunningAllowed
+            if (-not $RunningSessions) {
+                $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
+            }
+            if (-not $Sessions) {
+                $Sessions = $xeSessions.Name
+            }
+        }
 
         Default { }
     }
@@ -286,6 +300,14 @@ function NewGet-AllInstanceInfo {
                     SessionName = $PSItem
                     Sessions    = $Sessions
                     Running     = $RunningSessions
+                }
+            }
+            RunningAllowed  = $RunningSessions.ForEach{
+                [pscustomobject]@{
+                    Name        = $Instance.Name
+                    SessionName = $PSItem
+                    Sessions    = $Sessions
+                    Allowed     = $RunningAllowed
                 }
             }
             Name            = $Instance.Name
