@@ -1,7 +1,7 @@
 function NewGet-AllInstanceInfo {
     # Using the unique tags gather the information required
     Param($Instance, $Tags)
-    
+
     #clear out the default initialised fields
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $false)
@@ -14,7 +14,7 @@ function NewGet-AllInstanceInfo {
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile], $false)
 
     # set the default init fields for all the tags
-    
+
     # Server Initial fields
     $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server])
     $ServerInitFields.Add("VersionMajor") | Out-Null # so we can check versions
@@ -199,7 +199,6 @@ function NewGet-AllInstanceInfo {
             $WhoIsActiveInstalled = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'whoisactivedatabase' -Value (Get-DbcConfigValue policy.whoisactive.database)
         }
-
         'XpCmdShellDisabled' {
             $configurations = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'XpCmdShellDisabled' -Value (Get-DbcConfigValue policy.security.XpCmdShellDisabled)
@@ -232,7 +231,6 @@ function NewGet-AllInstanceInfo {
             }
         }
         'XESessionRunning' {
-
             if (-not $xeSessions) {
                 $xeSessions = Get-DbaXESession -SqlInstance $Instance
             }
@@ -246,7 +244,6 @@ function NewGet-AllInstanceInfo {
             }
         }
         'XESessionRunningAllowed' {
-
             if (-not $xeSessions) {
                 $xeSessions = Get-DbaXESession -SqlInstance $Instance
             }
@@ -258,6 +255,21 @@ function NewGet-AllInstanceInfo {
             if (-not $Sessions) {
                 $Sessions = $xeSessions.Name
             }
+        }
+        'ErrorLog' {
+            $logWindow = Get-DbcConfigValue -Name policy.errorlog.warningwindow
+            # so that it can be mocked
+            function Get-ErrorLogEntry {
+                # get the number of the first error log that was created after the log window config
+                $OldestErrorLogNumber = ($InstanceSMO.EnumErrorLogs() | Where-Object { $psitem.CreateDate -gt (Get-Date).AddDays( - $LogWindow) } | Sort-Object ArchiveNo -Descending | Select-Object -First 1).ArchiveNo + 1
+                # Get the Error Log entries for each one
+                    (0..$OldestErrorLogNumber).ForEach{
+                    $InstanceSMO.ReadErrorLog($psitem).Where{ $_.Text -match "Severity: 1[7-9]|Severity: 2[0-4]" }
+                }
+            }
+            # It is not enough to check the CreateDate on the log, you must check the LogDate on every error record as well.
+            $ErrorLogCount = (Get-ErrorLogEntry | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) }).Count
+                
         }
 
         Default { }
@@ -313,6 +325,10 @@ function NewGet-AllInstanceInfo {
             Name            = $Instance.Name
             Sessions        = $Sessions
             Running         = $RunningSessions
+        }
+        ErrorLogEntries       = [pscustomobject]@{
+            errorLogCount = $ErrorLogCount
+            logWindow     = $logWindow
         }
     }
     if ($ScanForStartupProceduresDisabled) {

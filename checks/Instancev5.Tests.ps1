@@ -29,8 +29,8 @@ BeforeDiscovery {
     }
     Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Verbose
     #if you ever need to see what is being tested uncomment and run in verbose
-     $InstancesToTestJson = $InstancesToTest | ConvertTo-Json
-     Write-PSFMessage -Message "InstancesToTest = $InstancesToTestJson" -Level Verbose
+    $InstancesToTestJson = $InstancesToTest | ConvertTo-Json
+    Write-PSFMessage -Message "InstancesToTest = $InstancesToTestJson" -Level Verbose
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 }
 
@@ -299,6 +299,15 @@ Describe "XE Sessions That Are Allowed to Be Running" -Tag XESessionRunningAllow
     Context "Checking running sessions allowed on <_.Name>" {
         It "Session <_.SessionName> is allowed to be running on <_.Name>" -Skip:$skip -ForEach $PsItem.XeSessions.RunningAllowed {
             $psitem.SessionName | Should -BeIn $PsItem.Allowed -Because "Only $($PsItem.Allowed) sessions are allowed to be running $($PsItem.Name)"
+        }
+    }
+}
+
+Describe "Error Log Entries" -Tag ErrorLog, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.errorlogentries
+    Context "Checking error log on <_.Name>" {
+        It "Error log should be free of error severities 17-24 within the window of <_.ErrorLogEntries.logWindow> days on <_.Name>" -Skip:$Skip {
+            $PSItem.ErrorLogEntries.Count | Should -Be 0 -Because  "these severities indicate serious problems" 
         }
     }
 }
