@@ -1,5 +1,6 @@
 version: "3"
 # because it crashes the integrated terminal in codespaces we need an additional devcontainer.json config. Hopefully this will work as expected.
+# hidden away in the docs :-( https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/introduction-to-dev-containers#devcontainerjson
 services:
     dbachecks1:
       image: sqldbawithabeard/dbachecks1:v0.1.0-beta.18
