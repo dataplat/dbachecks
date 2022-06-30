@@ -1,0 +1,30 @@
+version: "3"
+services:
+    dbachecks1:
+      image: sqldbawithabeard/dbachecks1:v0.1.0-beta.18
+      volumes:
+        - mydata:/var/opt/backups
+        - shared:/shared
+        # Update this to wherever you want VS Code to mount the folder of your project
+        - ..:/workspace:cached
+      ports:
+        - "7401:1433"
+      container_name: dbachecks1
+      hostname: dbachecks1
+      
+    dbachecks2:
+      image: sqldbawithabeard/dbachecks2:v0.1.0-beta.18
+      volumes:
+        - mydata:/var/opt/backups
+        - shared:/shared
+        # Update this to wherever you want VS Code to mount the folder of your project
+        # So that the second container is rebuilt everytime as well 
+        - ..:/somewhereweirdworkspace:cached
+      ports:
+        - "7402:1433"
+      container_name: dbachecks2
+      hostname: dbachecks2
+
+volumes:
+  mydata:
+  shared:
