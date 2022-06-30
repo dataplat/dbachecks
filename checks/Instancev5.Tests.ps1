@@ -298,7 +298,7 @@ Describe "XE Sessions That Are Allowed to Be Running" -Tag XESessionRunningAllow
     $skip = Get-DbcConfigValue skip.instance.XESessionRunningAllowed
     Context "Checking running sessions allowed on <_.Name>" {
         It "Session <_.SessionName> is allowed to be running on <_.Name>" -Skip:$skip -ForEach $PsItem.XeSessions.RunningAllowed {
-            $psitem.SessionName | Should  -BeIn $PsItem.Allowed -Because "Only $($PsItem.Allowed) sessions are allowed to be running $($PsItem.Name)"
+            $psitem.SessionName | Should -BeIn $PsItem.Allowed -Because "Only $($PsItem.Allowed) sessions are allowed to be running $($PsItem.Name)"
         }
     }
 }

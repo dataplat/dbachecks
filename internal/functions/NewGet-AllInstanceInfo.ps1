@@ -319,7 +319,7 @@ function NewGet-AllInstanceInfo {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
         if ($StartUpSPs -eq 0) {
             $testInstanceObject.Configuration.ScanForStartupProcedures.ConfigValue = 0
-        } 
+        }
     }
     if ($WhoIsActiveInstalled) {
         $whoisdatabase = Get-DbcConfigValue policy.whoisactive.database
