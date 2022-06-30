@@ -1,7 +1,7 @@
 version: "3"
 services:
     dbachecks1:
-      image: sqldbawithabeard/dbachecks1:v0.1.0-beta.20
+      image: sqldbawithabeard/dbachecks1:v0.1.0-beta.21
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
@@ -13,7 +13,7 @@ services:
       hostname: dbachecks1
       
     dbachecks2:
-      image: sqldbawithabeard/dbachecks2:v0.1.0-beta.20
+      image: sqldbawithabeard/dbachecks2:v0.1.0-beta.21
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
@@ -26,7 +26,7 @@ services:
       hostname: dbachecks2
       
     dbachecks3:
-      image: sqldbawithabeard/dbachecks1:v0.1.0-beta.20
+      image: sqldbawithabeard/dbachecks1:v0.1.0-beta.21
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
