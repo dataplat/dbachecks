@@ -1,6 +1,6 @@
-$Checks = 'XESessionExists','XESessionStopped','XpCmdShellDisabled','WhoIsActiveInstalled','CLREnabled','TraceFlagsNotExpected','TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'XESessionRunning'
-$Checks = 'RemoteAccessDisabled'
+$Checks = 'ErrorLogCount', 'XESessionRunningAllowed','XESessionRunning','XESessionRunningAllowed', 'XESessionExists','XESessionStopped','XpCmdShellDisabled','WhoIsActiveInstalled','CLREnabled','TraceFlagsNotExpected','TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
+$Checks = 'XESessionRunningAllowed'
+$Checks = 'ErrorLogCount'
 
 Invoke-PerfAndValidateCheck -Checks $Checks 
 
@@ -15,3 +15,6 @@ $v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check
 Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value system_health 
 Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value system_health ,AlwaysOn_health
 Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value system_health ,AlwaysOn_health,QuickSessionStandard
+
+Set-DbcConfig -Name policy.xevent.validrunningsession -Value  system_health ,AlwaysOn_health
+Set-DbcConfig -Name policy.xevent.validrunningsession -Value AlwaysOn_health
