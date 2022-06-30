@@ -75,7 +75,7 @@ jobs:
         with:
           find: "sqldbawithabeard/dbachecks2:.*"
           replace: "sqldbawithabeard/dbachecks2:${{ steps.bump.outputs.new_tag }}"
-          include: **docker-compose.yml
+          include: "**docker-compose.yml"
       -
         name: Add & Commit
         uses: EndBug/add-and-commit@v8.0.2
