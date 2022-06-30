@@ -219,12 +219,25 @@ function NewGet-AllInstanceInfo {
             }
         }
         'XESessionExists' {
-            Write-Host "IAM HERE"
             if (-not $xeSessions) {
                 $xeSessions = Get-DbaXESession -SqlInstance $Instance
             }
             $RequiredExists = (Get-DbcConfigValue policy.xevent.requiredexists)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'requiredexistssessions' -Value $RequiredExists
+            if (-not $RunningSessions) {
+                $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
+            }
+            if (-not $Sessions) {
+                $Sessions = $xeSessions.Name
+            }
+        }
+        'XESessionRunning' {
+
+            if (-not $xeSessions) {
+                $xeSessions = Get-DbaXESession -SqlInstance $Instance
+            }
+            $RequiredRunning = (Get-DbcConfigValue policy.xevent.requiredrunningsession)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'requiredrunningsession' -Value $RequiredRunning
             if (-not $RunningSessions) {
                 $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
             }
@@ -249,7 +262,7 @@ function NewGet-AllInstanceInfo {
         Logins                = $Instance.Logins
         Databases             = $Instance.Databases
         NumberOfLogFiles      = $Instance.NumberOfLogFiles
-        MaxDopSettings        = $MaxDopSettings 
+        MaxDopSettings        = $MaxDopSettings
         ExpectedTraceFlags    = $ExpectedTraceFlags
         NotExpectedTraceFlags = $NotExpectedTraceFlags
         XESessions            = [pscustomobject]@{
@@ -260,17 +273,24 @@ function NewGet-AllInstanceInfo {
                     Running     = $RunningSessions
                 }
             }
-            RequiredExists = $RequiredExists.ForEach{
+            RequiredExists  = $RequiredExists.ForEach{
                 [pscustomobject]@{
                     Name        = $Instance.Name
                     SessionName = $PSItem
                     Sessions    = $Sessions
                 }
             }
+            RequiredRunning = $RequiredRunning.ForEach{
+                [pscustomobject]@{
+                    Name        = $Instance.Name
+                    SessionName = $PSItem
+                    Sessions    = $Sessions
+                    Running     = $RunningSessions
+                }
+            }
             Name            = $Instance.Name
             Sessions        = $Sessions
             Running         = $RunningSessions
-            
         }
     }
     if ($ScanForStartupProceduresDisabled) {

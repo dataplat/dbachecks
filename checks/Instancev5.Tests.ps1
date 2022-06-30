@@ -286,6 +286,14 @@ Describe "XE Sessions that should Exist" -Tag XESessionExists, ExtendedEvent, Me
         }
     }
 }
+Describe "XE Sessions that should be running" -Tag XESessionRunning, ExtendedEvent, Medium, Instance -ForEach $InstancesToTest {
+    $skip = Get-DbcConfigValue skip.instance.XESessionRunning
+    Context "Checking sessions on <_.Name>" {
+        It "Session <_.SessionName> should be running on <_.Name>" -Skip:$skip -ForEach $PsItem.XeSessions.RequiredRunning {
+            $psitem.SessionName | Should  -BeIn $PsItem.Running -Because "$($psitem.SessionName) session should be running on $($PsItem.Name)"
+        }
+    }
+}
 
 <#
 Describe "XE Sessions That should be Running" -Tags XESessionRunning, ExtendedEvent, Medium, $filename {
