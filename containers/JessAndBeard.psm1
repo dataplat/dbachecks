@@ -526,7 +526,7 @@ function Assert-Correct {
     [string]
     $chapter = 'initial'
   )
- # $Global:PSDefaultParameterValues.CLear()
+  # $Global:PSDefaultParameterValues.CLear()
   switch ($chapter) {
     'initial' {
       # Valid estate is as we expect
@@ -2219,6 +2219,9 @@ function Invoke-PerfAndValidateCheck {
   .PARAMETER Checks
   Which checks shall we test
 
+  .PARAMETER PerfDetails
+  Shall we show the performance output from profiler
+
   .EXAMPLE
   Invoke-PerfAndValidateCheck -Check InvalidDatabaseOwner
 
@@ -2229,6 +2232,11 @@ function Invoke-PerfAndValidateCheck {
 
   Check validity and performance for both the ValidDatabaseOwner and InvalidDatabaseOwner tests
 
+  .EXAMPLE
+  Invoke-PerfAndValidateCheck -Check ValidDatabaseOwner, InvalidDatabaseOwner -PerfDetails
+
+  Check validity and performance for both the ValidDatabaseOwner and InvalidDatabaseOwner tests and show the top 50 slowest lines
+
   #>
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', 'Clear-Host', Justification = 'Dont tell me what to do')]
@@ -2236,7 +2244,7 @@ function Invoke-PerfAndValidateCheck {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', 'cls', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', 'cls', Justification = 'Dont tell me what to do')]
   [CmdletBinding()]
-  param($Checks)
+  param($Checks, [switch]$PerfDetail)
   $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
   $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
   $Sqlinstances = $dbachecks1, $dbachecks2, $dbachecks3
@@ -2357,6 +2365,12 @@ For v5 we Skipped
     $message = "
 The Total Tests Skipped are the same {0} {1} "-f $v4code.SkippedCount, $v5code.SkippedCount
     Write-PSFMessage -Message $Message -Level Output
+  }
+  if ($PerfDetail) {
+    $message = "
+    Let's take a look at the slowest code as well "
+    Write-PSFMessage -Message $Message -Level Output
+    $NewCodetrace.Top50SelfDuration
   }
 }
 
