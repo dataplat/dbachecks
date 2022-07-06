@@ -5,9 +5,10 @@ foreach ($file in (Get-ChildItem "$ModuleRoot\internal\configurations\*.ps1")) {
     . Import-ModuleFile -Path $file.FullName
 }
 
+$script:__dbcconfig = Get-DbcConfig
 # load app stuff and create files if needed
-$script:localapp = Get-DbcConfigValue -Name app.localapp
-$script:maildirectory = Get-DbcConfigValue -Name app.maildirectory
+$script:localapp = ($__dbcconfig | Where-Object {$_.Name -eq 'app.localapp' }).Value
+$script:maildirectory = ($__dbcconfig | Where-Object {$_.Name -eq 'app.maildirectory' }).Value
 
 if (-not (Test-Path -Path $script:localapp)) {
     New-Item -ItemType Directory -Path $script:localapp
@@ -36,7 +37,7 @@ foreach ($file in (Get-ChildItem "$ModuleRoot\internal\tepp\*.ps1")) {
 $PSDefaultParameterValues = $global:PSDefaultParameterValues
 
 # Set default param values if it exists
-if ($credential = (Get-DbcConfigValue -Name app.sqlcredential)) {
+if ($credential = (Get-DbcConfigValue -Name app.sqlcredential1)) {
     if ($PSDefaultParameterValues) {
         $newvalue = $PSDefaultParameterValues += @{ '*:SqlCredential' = $credential }
         Set-Variable -Scope 0 -Name PSDefaultParameterValues -Value $newvalue

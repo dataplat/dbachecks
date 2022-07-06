@@ -9,49 +9,54 @@
         "MY_SERVER": "dbachecks1"
     },
     "service": "dbachecks1",
-    "settings": {
-        "editor.renderWhitespace": "all",
-        "editor.bracketPairColorization.enabled": true,
-        "editor.guides.bracketPairs": true,
-        "editor.inlineSuggest.enabled": true,
-        "editor.mouseWheelZoom": true,
-        "editor.rulers": [
-            100
-        ],
-        "editor.wordWrapColumn": 100,
-        "editor.wordWrap": "bounded",
-        "files.defaultLanguage": "powershell",
-        "git.autofetch": true,
-        "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
-        "powershell.integratedConsole.focusConsoleOnExecute": true,
-        "powershell.codeFormatting.preset": "OTBS",
-        "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
-        "powershell.codeFormatting.useCorrectCasing": true,
-        "powershell.codeFormatting.newLineAfterCloseBrace": true,
-        "powershell.codeFormatting.newLineAfterOpenBrace": true,
-        "powershell.codeFormatting.whitespaceAroundOperator": true,
-        "powershell.codeFormatting.addWhitespaceAroundPipe": true,
-        "#terminal.integrated.profiles.linux#": {
-        "pwsh": {
-            "path": "pwsh",
-            "icon": "terminal-powershell"
+    "shutdownAction": "stopCompose",
+    "remoteUser": "root", // not ideal - prob need to setup a non-root ,user and use that instead. permissions issue without this!
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.powershell",
+                "github.vscode-pull-request-github",
+                "2gua.rainbow-brackets",
+                "oderwat.indent-rainbow",
+                "mhutchie.git-graph",
+                "usernamehw.errorlens",
+                "GitHub.copilot",
+                "eamodio.gitlens",
+                "TylerLeonhardt.vscode-inline-values-powershell",
+                "cschleiden.vscode-github-actions",
+                "ms-mssql.mssql"
+            ],
+            "settings": {
+                "editor.renderWhitespace": "all",
+                "editor.bracketPairColorization.enabled": true,
+                "editor.guides.bracketPairs": true,
+                "editor.inlineSuggest.enabled": true,
+                "editor.mouseWheelZoom": true,
+                "editor.rulers": [
+                    100
+                ],
+                "editor.wordWrapColumn": 100,
+                "editor.wordWrap": "bounded",
+                "files.defaultLanguage": "powershell",
+                "git.autofetch": true,
+                "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
+                "powershell.integratedConsole.focusConsoleOnExecute": true,
+                "powershell.codeFormatting.preset": "OTBS",
+                "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+                "powershell.codeFormatting.useCorrectCasing": true,
+                "powershell.codeFormatting.newLineAfterCloseBrace": true,
+                "powershell.codeFormatting.newLineAfterOpenBrace": true,
+                "powershell.codeFormatting.whitespaceAroundOperator": true,
+                "powershell.codeFormatting.addWhitespaceAroundPipe": true,
+                "#terminal.integrated.profiles.linux#": {
+                    "pwsh": {
+                        "path": "pwsh",
+                        "icon": "terminal-powershell"
+                    }
+                },
+                "terminal.integrated.defaultProfile.linux": "pwsh"
+            }
         }
     },
-    "terminal.integrated.defaultProfile.linux": "pwsh"
-    },
-    "extensions": [
-        "ms-vscode.powershell",
-        "github.vscode-pull-request-github",
-        "2gua.rainbow-brackets",
-        "oderwat.indent-rainbow",
-        "mhutchie.git-graph",
-        "usernamehw.errorlens",
-        "GitHub.copilot",
-        "eamodio.gitlens",
-        "TylerLeonhardt.vscode-inline-values-powershell",
-        "cschleiden.vscode-github-actions",
-        "ms-mssql.mssql"
-    ],
-    "shutdownAction": "stopCompose",
-    "remoteUser": "root"  // not ideal - prob need to setup a non-root user and use that instead. permissions issue without this!
+    "postCreateCommand": "pwsh -c 'ii readme.md'"
 }

@@ -127,7 +127,8 @@ function Set-DbcConfig {
                 Set-Variable -Scope 1 -Name PSDefaultParameterValues -Value @{ '*:SqlCredential' = $value }
             }
         }
-        Get-DbcConfig -Name $name
+        $script:__dbcconfig = Get-DbcConfig
+        $__dbcconfig | Where-Object {$_.Name -eq  $name}
     }
 }
 # SIG # Begin signature block
