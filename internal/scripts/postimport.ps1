@@ -47,6 +47,9 @@ if ($credential = (Get-DbcConfigValue -Name app.sqlcredential1)) {
     }
 }
 
+# create global config variable
+$global:dbcconfig = Get-DbcConfig
+
 # EnableException so that failed commands cause failures
 $PSDefaultParameterValues += @{ '*-Dba*:EnableException' = $true }
 
