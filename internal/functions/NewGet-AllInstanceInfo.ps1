@@ -270,6 +270,9 @@ function NewGet-AllInstanceInfo {
             # It is not enough to check the CreateDate on the log, you must check the LogDate on every error record as well.
             $ErrorLogCount = (Get-ErrorLogEntry | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) }).Count
         }
+        'TempDbConfiguration'{
+            
+        }
 
         Default { }
     }
