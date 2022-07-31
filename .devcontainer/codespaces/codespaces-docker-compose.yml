@@ -3,7 +3,7 @@ version: "3"
 # hidden away in the docs :-( https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/introduction-to-dev-containers#devcontainerjson
 services:
     dbachecks1:
-      image: sqldbawithabeard/dbachecks1:v0.1.0-beta.24
+      image: sqldbawithabeard/dbachecks1:v0.1.0-beta.25
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
@@ -15,7 +15,7 @@ services:
       hostname: dbachecks1
       
     dbachecks2:
-      image: sqldbawithabeard/dbachecks2:v0.1.0-beta.24
+      image: sqldbawithabeard/dbachecks2:v0.1.0-beta.25
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
