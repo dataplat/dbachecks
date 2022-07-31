@@ -2299,7 +2299,29 @@ The Tags are the same"
     Write-PSFMessage -Message $Message -Level Output
   }
 
-  If (($v5code.TotalCount - $v5code.NotRunCount) -ne $v4code.TotalCount) {
+  $changedTags = @(
+    @{
+      Name   = 'TraceFlagsExpected'
+      Change = 3 # + or - the number of tests for v5
+    },
+    @{
+      Name   = 'TraceFlagsNotExpected'
+      Change = 3 # + or - the number of tests for v5
+    }
+  )
+  $change = 0
+  $tagNameMessageAppend = $null
+  foreach ($changedTag in $changedTags) {
+    if ($v5code.Configuration.Filter.Tag.Value -contains $changedTag.Name) {
+      $change += $changedTag.Change
+      $tagNameMessageAppend += "tag {0} with change {1} " -f $changedTag.Name, $changedTag.Change
+    }
+  }
+  $messageAppend = if ($tagNameMessageAppend) { "although this includes {0}" -f $tagNameMessageAppend } else { '' }
+
+  $v5run = $v5code.TotalCount - $v5code.NotRunCount + $change
+
+  If ($v5run -ne $v4code.TotalCount) {
     $Message = "
 Uh-Oh - The total tests run between v4 and v5 are not the same somehow.
 For v4 We ran
@@ -2307,17 +2329,18 @@ For v4 We ran
 and
 For v5 we ran
 {1} tests
-The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block
-but TraceFlagsNotExpected will change that also
-" -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
+The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block {2}
+" -f $v4code.TotalCount, $v5run, $messageAppend
     Write-PSFMessage -Message $Message -Level Warning
   } else {
     $message = "
-The Total Tests Run are the same {0} {1} " -f $v4code.TotalCount, ($v5code.TotalCount - $v5code.NotRunCount)
+The Total Tests Run are the same {0} {1}
+{2}" -f $v4code.TotalCount, $v5run, $messageAppend
     Write-PSFMessage -Message $Message -Level Output
   }
 
-  If ($v5code.PassedCount -ne $v4code.PassedCount) {
+  $v5Passed = $v5code.PassedCount + $change
+  If ($v5Passed -ne $v4code.PassedCount) {
     $Message = "
 Uh-Oh - The total tests Passed between v4 and v5 are not the same somehow.
 For v4 We Passed
@@ -2325,14 +2348,14 @@ For v4 We Passed
 and
 For v5 we Passed
 {1} tests
-" -f $v4code.PassedCount, $v5code.PassedCount
+{2}" -f $v4code.PassedCount, $v5Passed, $messageAppend
     Write-PSFMessage -Message $Message -Level Warning
   } else {
     $message = "
-The Total Tests Passed are the same {0} {1} " -f $v4code.PassedCount, $v5code.PassedCount
+The Total Tests Passed are the same {0} {1}
+{2}" -f $v4code.PassedCount, $v5Passed, $messageAppend
     Write-PSFMessage -Message $Message -Level Output
   }
-
 
   If ($v5code.FailedCount -ne $v4code.FailedCount) {
     $Message = "
@@ -2346,7 +2369,8 @@ For v5 we Failed
     Write-PSFMessage -Message $Message -Level Warning
   } else {
     $message = "
-The Total Tests Failed are the same {0} {1} " -f $v4code.FailedCount, $v5code.FailedCount
+The Total Tests Failed are the same {0} {1} 
+{2}" -f $v4code.FailedCount, $v5code.FailedCount, $messageAppend
     Write-PSFMessage -Message $Message -Level Output
   }
 
@@ -2358,11 +2382,12 @@ For v4 We Skipped
 and
 For v5 we Skipped
 {1} tests
-" -f $v4code.SkippedCount, $v5code.SkippedCount
+{2}" -f $v4code.SkippedCount, $v5code.SkippedCount, $messageAppend
     Write-PSFMessage -Message $Message -Level Warning
   } else {
     $message = "
-The Total Tests Skipped are the same {0} {1} "-f $v4code.SkippedCount, $v5code.SkippedCount
+The Total Tests Skipped are the same {0} {1}
+{2}"-f $v4code.SkippedCount, $v5code.SkippedCount, $messageAppend
     Write-PSFMessage -Message $Message -Level Output
   }
   if ($PerfDetail) {
