@@ -124,6 +124,9 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'statusexclude' -Value (Get-DbcConfigValue policy.database.statusexcludedb)
 
         }
+	'CompatibilityLevel' {
+	    $compatibilityLevel = $true
+	}
         Default { }
     }
 
@@ -155,7 +158,8 @@ function Get-AllDatabaseInfo {
                 Status                      = if ($status) { $psitem.Status }
                 IsDatabaseSnapshot          = if ($status) { $psitem.IsDatabaseSnapshot } # needed for status test
                 Readonly                    = if ($status) { $psitem.Readonly } # needed for status test
-
+                CompatibilityLevel          = if ($compatibilitylevel) { $psitem.CompatibilityLevel }
+                ServerLevel                 = if ($compatibilitylevel) { $Instance.ServerLevel }
             }
         }
     }
