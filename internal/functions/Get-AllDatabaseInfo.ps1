@@ -159,7 +159,7 @@ function Get-AllDatabaseInfo {
                 IsDatabaseSnapshot          = if ($status) { $psitem.IsDatabaseSnapshot } # needed for status test
                 Readonly                    = if ($status) { $psitem.Readonly } # needed for status test
                 CompatibilityLevel          = if ($compatibilitylevel) { $psitem.CompatibilityLevel }
-                ServerLevel                 = if ($compatibilitylevel) { $Instance.ServerLevel }
+                ServerLevel                 = if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } }
             }
         }
     }

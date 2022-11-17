@@ -1,6 +1,6 @@
     $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 # So the v5 files need to be handled differently.
-# Ww will start with a BeforeDiscovery , $Filename , $Filename which for the Database Checks will need to gather the Instances up front
+# We will start with a BeforeDiscovery which for the Database Checks will need to gather the Instances up front
 BeforeDiscovery {
 
         # Gather the instances we know are not contactable
@@ -196,14 +196,32 @@ Describe "Database Status" -Tags DatabaseStatus, High, Database -ForEach $Instan
     }
 }
 
-Describe "Compatibility Level" -Tags CompatibilityLevel, High, Database -ForEach $InstancesToTest {
-    Context "Compatibility level matches server compatbility level" {
+Describe "Compatibality Level" -Tag CompatibilityLevel, High, Database -ForEach $InstancesToTest {
+    
+    Context "Compatibility level matches server compatability level" {
         It "Database <_.Name> has the expected compatibility level on <_.SqlInstance>" -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.statusexclude -notcontains $psitem.Name } } { 
-            Write-Host "$($Psitem | Select * | Format-List | OUt-string)"
-            $psitem.DatabaseCompatibility | Should -Be $psitem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features."
+            $DBCompat = $psitem.CompatibilityLevel
+            $SrvCompat = $psitem.ServerLevel
+            $DBCompat | Should -Be $SrvCompat -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features."
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
