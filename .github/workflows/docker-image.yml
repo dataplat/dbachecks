@@ -67,7 +67,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          context: containers/second/
+          context: containers/third/
           tags: dbachecks/sqlinstance3:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance3:latest
       -
         name: Find and Replace
