@@ -33,3 +33,15 @@ RUN $ErrorActionPreference='Stop'; Install-Module -Name dbatools,PSFramework,pos
 # Copy Profile
 
 ADD profile.ps1 /root/.config/powershell/
+
+# install homebrew - install gitversion and set path
+
+RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
+&& mkdir ~/.linuxbrew/bin \
+&& ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin \
+&& eval $(~/.linuxbrew/bin/brew shellenv) \
+&& brew --version \
+&& brew install gitversion
+
+# first change PATH
+ENV PATH=~/.linuxbrew/bin:~/.linuxbrew/sbin:$PATH
