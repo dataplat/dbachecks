@@ -81,14 +81,14 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@v2
         with:
           find: "dbachecks/sqlinstance2:.*"
-          replace: "sqldbawithabeard/dbachecks2:${{ steps.bump.outputs.new_tag }}"
+          replace: "dbachecks/sqlinstance2:${{ steps.bump.outputs.new_tag }}"
           include: "**docker-compose.yml"
       -
         name: Find and Replace Instance3
         uses: jacobtomlinson/gha-find-replace@v2
         with:
           find: "dbachecks/sqlinstance3:.*"
-          replace: "sqldbawithabeard/dbachecks3:${{ steps.bump.outputs.new_tag }}"
+          replace: "dbachecks/sqlinstance3:${{ steps.bump.outputs.new_tag }}"
           include: "**docker-compose.yml"
       -
         name: Add & Commit
