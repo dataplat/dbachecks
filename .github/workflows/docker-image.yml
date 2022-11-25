@@ -54,27 +54,41 @@ jobs:
         with:
           push: true
           context: containers/base/
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/dbachecks1:${{ steps.bump.outputs.new_tag }},${{ secrets.DOCKERHUB_USERNAME }}/dbatoolsprecon:latest
+          tags: dbachecks/sqlinstance1:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance1:latest
       -
         name: Build and push second Container
         uses: docker/build-push-action@v3
         with:
           push: true
           context: containers/second/
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/dbachecks2:${{ steps.bump.outputs.new_tag }},${{ secrets.DOCKERHUB_USERNAME }}/dbatoolsprecon2:latest
+          tags: dbachecks/sqlinstance2:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance2:latest
+      -
+        name: Build and push third Container
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: containers/second/
+          tags: dbachecks/sqlinstance3:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance3:latest
       -
         name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@v2
         with:
-          find: "sqldbawithabeard/dbachecks1:.*"
-          replace: "sqldbawithabeard/dbachecks1:${{ steps.bump.outputs.new_tag }}"
+          find: "dbachecks/sqlinstance1:.*"
+          replace: "dbachecks/sqlinstance1:${{ steps.bump.outputs.new_tag }}"
           include: "**docker-compose.yml"
       -
         name: Find and Replace Instance2
         uses: jacobtomlinson/gha-find-replace@v2
         with:
-          find: "sqldbawithabeard/dbachecks2:.*"
+          find: "dbachecks/sqlinstance2:.*"
           replace: "sqldbawithabeard/dbachecks2:${{ steps.bump.outputs.new_tag }}"
+          include: "**docker-compose.yml"
+      -
+        name: Find and Replace Instance3
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "dbachecks/sqlinstance3:.*"
+          replace: "sqldbawithabeard/dbachecks3:${{ steps.bump.outputs.new_tag }}"
           include: "**docker-compose.yml"
       -
         name: Add & Commit

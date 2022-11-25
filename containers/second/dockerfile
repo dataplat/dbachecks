@@ -1,4 +1,4 @@
-FROM dbatools/sqlinstance2
+FROM dbachecks/sqlinstance2
 USER root
 # Install PowerShell
 RUN apt-get update && apt install -y powershell

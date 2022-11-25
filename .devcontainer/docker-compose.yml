@@ -1,7 +1,7 @@
 version: "3"
 services:
     dbachecks1:
-      image: sqldbawithabeard/dbachecks1:v2.1.0-beta.1
+      image: dbachecks/sqlinstance1:latest
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
@@ -13,7 +13,7 @@ services:
       hostname: dbachecks1
       
     dbachecks2:
-      image: sqldbawithabeard/dbachecks2:v2.1.0-beta.1
+      image: dbachecks/sqlinstance2:latest
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
@@ -25,8 +25,9 @@ services:
       container_name: dbachecks2
       hostname: dbachecks2
       
+      # This is our SQL2022 container
     dbachecks3:
-      image: sqldbawithabeard/dbachecks1:v2.1.0-beta.1
+      image: dbachecks/sqlinstance3:latest
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
