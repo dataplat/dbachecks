@@ -28,14 +28,15 @@ RUN echo "export HISTFILE=/commandhistory/.bash_history" >> "/root/.bashrc" \
 
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
 RUN apt-get install build-essential -y
 
 # first change PATH
 ENV PATH=~/.linuxbrew/bin:~/.linuxbrew/sbin:$PATH
 
-RUN brew install gcc
-RUN brew install gitversion
+RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" /
+ brew install gcc /
+ brew install gitversion
 
 # Install Pester, 4.10.1
 SHELL ["/usr/bin/pwsh", "-c"]
