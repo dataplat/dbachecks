@@ -1,7 +1,7 @@
 version: "3"
 services:
     dbachecks1:
-      image: dbachecks/sqlinstance1:v2.18.0
+      image: dbachecks/sqlinstance1:v2.19.0
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
@@ -13,7 +13,7 @@ services:
       hostname: dbachecks1
       
     dbachecks2:
-      image: dbachecks/sqlinstance2:v2.18.0
+      image: dbachecks/sqlinstance2:v2.19.0
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
@@ -27,7 +27,7 @@ services:
       
       # This is our SQL2022 container
     dbachecks3:
-      image: dbachecks/sqlinstance3:v2.18.0
+      image: dbachecks/sqlinstance3:v2.19.0
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
