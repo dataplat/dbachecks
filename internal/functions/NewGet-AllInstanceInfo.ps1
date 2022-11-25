@@ -271,7 +271,7 @@ function NewGet-AllInstanceInfo {
             $ErrorLogCount = (Get-ErrorLogEntry | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) }).Count
         }
         'TempDbConfiguration'{
-            
+        $TempDBTest = Test-DbaTempDbConfig -SqlInstance $Instance
         }
 
         Default { }
@@ -332,6 +332,12 @@ function NewGet-AllInstanceInfo {
             errorLogCount = $ErrorLogCount
             logWindow     = $logWindow
         }
+        TempDbConfig = [PSCustomObject]@{
+            TF118EnabledCurrent = $tempDBTest[0].CurrentSetting
+            TF118EnabledRecommended = $tempDBTest[0].Recommended
+            TempDBFilesCurrent = $tempDBTest[1].CurrentSetting
+            TempDBFilesRecommended = $tempDBTest[1].Recommended
+        }]
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count

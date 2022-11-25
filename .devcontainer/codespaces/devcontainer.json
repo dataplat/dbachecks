@@ -50,7 +50,8 @@
         "eamodio.gitlens",
         "TylerLeonhardt.vscode-inline-values-powershell",
         "cschleiden.vscode-github-actions",
-        "ms-mssql.mssql"
+        "ms-mssql.mssql",
+        "Gruntfuggly.todo-tree"
     ],
     "shutdownAction": "stopCompose",
     "remoteUser": "root"  // not ideal - prob need to setup a non-root user and use that instead. permissions issue without this!

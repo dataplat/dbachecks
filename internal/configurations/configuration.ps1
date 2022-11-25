@@ -274,6 +274,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionStopped -Validation
 Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionRunning -Validation bool -Value $false -Initialize -Description "Skip the check for XESessions that should be running"
 Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionRunningAllowed -Validation bool -Value $false -Initialize -Description "Skip the check for XESessions that are allowed to be running"
 Set-PSFConfig -Module dbachecks -Name skip.instance.errorlogentries -Validation bool -Value $false -Initialize -Description "Skip the check for errorlog entries"
+Set-PSFConfig -Module dbachecks -Name skip.instance.tempdb -Validation bool -Value $false -Initialize -Description "Skip all the checks for the tempdb database"
 
 
 

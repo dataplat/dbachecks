@@ -1,3 +1,4 @@
+# TODO remove all the training day code :-)
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Because this is just for testing and developing')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Because this is for the prompt and it is required')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'containers', Justification = 'Because it is a global variable used later')]
@@ -2426,8 +2427,7 @@ The Total Tests Skipped are the same {0} {1}
       $message = "
     Let's take a look at the slowest code as well "
       Write-PSFMessage -Message $Message -Level Output
-      $NewCodetrace.Top50SelfDuration
-  }
+      $NewCodetrace.Top50SelfDuration| Select SelfPercent,HitCount,Line,Function  }
 }
 
 Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $true -Initialize -Description "Whether to ask or not" -ModuleExport

@@ -315,21 +315,20 @@ Describe "Error Log Entries" -Tag ErrorLog, Medium, Instance -ForEach $Instances
 }
 
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
-    Context "Testing TempDB Configuration on $psitem" {
-        $TempDBTest = Test-DbaTempDbConfig -SqlInstance $psitem
-        It "should have TF1118 enabled on $($TempDBTest[0].SqlInstance)" -Skip:((Get-DbcConfigValue skip.TempDb1118) -or ($InstanceSMO.VersionMajor -gt 12)) {
-            $TempDBTest[0].CurrentSetting | Should -Be $TempDBTest[0].Recommended -Because 'TF 1118 should be enabled'
+    Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name 
+        It "should have TF1118 enabled on <_.Name>" -Skip:((($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.XESessionRunningAllowed' }).Value)  -or ($InstanceSMO.VersionMajor -gt 12)) {
+            $psitem.TempDBConfig.TF118EnabledCurrent | Should -Be  $psitem.TempDBConfig.TF118EnabledRecommended -Because 'TF 1118 should be enabled'
         }
-        It "should have $($TempDBTest[1].Recommended) TempDB Files on $($TempDBTest[1].SqlInstance)" -Skip:(Get-DbcConfigValue skip.tempdbfileCount) {
-            $TempDBTest[1].CurrentSetting | Should -Be $TempDBTest[1].Recommended -Because 'This is the recommended number of tempdb files for your server'
+        It "should have <_.TempDBConfig.TempDBFilesRecommended> TempDB Files on <_.Name>" -Skip:(($__dbcconfig | Where-Object { $_.Name -eq 'skip.tempdbfileCount' }).Value)  {
+            $psitem.TempDBConfig.TempDBFilesCurrent | Should -Be $psitem.TempDBConfig.TempDBFilesRecommended -Because 'This is the recommended number of tempdb files for your server'
         }
-        It "should not have TempDB Files autogrowth set to percent on $($TempDBTest[2].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFileGrowthPercent) {
+        It "should not have TempDB Files autogrowth set to percent on $($TempDBTest[2].SqlInstance)" -Skip:(($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.XESessionRunningAllowed' }).Value)  {
             $TempDBTest[2].CurrentSetting | Should -Be $TempDBTest[2].Recommended -Because 'Auto growth type should not be percent'
         }
-        It "should not have TempDB Files on the C Drive on $($TempDBTest[3].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFilesonC) {
+        It "should not have TempDB Files on the C Drive on $($TempDBTest[3].SqlInstance)" -Skip:(($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.XESessionRunningAllowed' }).Value) {
             $TempDBTest[3].CurrentSetting | Should -Be $TempDBTest[3].Recommended -Because 'You do not want the tempdb files on the same drive as the operating system'
         }
-        It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(Get-DbcConfigValue skip.TempDbFileSizeMax) {
+        It "should not have TempDB Files with MaxSize Set on $($TempDBTest[4].SqlInstance)" -Skip:(($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.XESessionRunningAllowed' }).Value) {
             $TempDBTest[4].CurrentSetting | Should -Be $TempDBTest[4].Recommended -Because 'Tempdb files should be able to grow'
         }
         It "The data files should all be the same size on $($TempDBTest[0].SqlInstance)" {

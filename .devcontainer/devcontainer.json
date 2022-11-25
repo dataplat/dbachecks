@@ -24,7 +24,8 @@
                 "eamodio.gitlens",
                 "TylerLeonhardt.vscode-inline-values-powershell",
                 "cschleiden.vscode-github-actions",
-                "ms-mssql.mssql"
+                "ms-mssql.mssql",
+                "Gruntfuggly.todo-tree"
             ],
             "settings": {
                 "editor.renderWhitespace": "all",
