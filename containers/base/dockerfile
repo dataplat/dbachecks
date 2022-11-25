@@ -1,4 +1,4 @@
-FROM dbachecks/sqlinstance
+FROM dbachecks/sqlinstance1
 
 USER root
 
