@@ -32,7 +32,7 @@ RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.co
 RUN apt-get install build-essential -y
 
 # first change PATH
-ENV PATH=~/.linuxbrew/bin:~/.linuxbrew/sbin:$PATH
+ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
 
 RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" /
  brew install gcc /
