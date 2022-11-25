@@ -92,7 +92,7 @@ jobs:
           include: "**docker-compose.yml"
       -
         name: Add & Commit
-        uses: EndBug/add-and-commit@v8.0.2
+        uses: EndBug/add-and-commit@v9
         with:
           author_name: Beardy McBeardFace
           author_email: mrrobsewell@outlook.com
