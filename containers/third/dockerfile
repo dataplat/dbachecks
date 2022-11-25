@@ -1,8 +1,8 @@
 FROM dbachecks/sqlinstance3
 USER root
-# Install PowerShell
+# Install PowerShell  
 RUN apt-get update && apt install -y powershell
-# install git
+# install git  
 RUN apt install -y git
 
 # some cleanup
