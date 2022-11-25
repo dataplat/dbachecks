@@ -29,7 +29,7 @@ RUN echo "export HISTFILE=/commandhistory/.bash_history" >> "/root/.bashrc" \
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 RUN eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-RUN apt-get install build-essential
+RUN apt-get install build-essential -y
 
 # first change PATH
 ENV PATH=~/.linuxbrew/bin:~/.linuxbrew/sbin:$PATH
