@@ -26,15 +26,14 @@ RUN echo "export HISTFILE=/commandhistory/.bash_history" >> "/root/.bashrc" \
 
 # install homebrew - install gitversion and set path
 
-RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
-&& mkdir ~/.linuxbrew/bin \
-&& ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin \
-&& eval $(~/.linuxbrew/bin/brew shellenv) \
-&& brew install gcc \
-&& brew install gitversion
+RUN sudo NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+
 
 # first change PATH
 ENV PATH=~/.linuxbrew/bin:~/.linuxbrew/sbin:$PATH
+
+RUN brew install gitversion
 
 # Install Pester, 4.10.1
 SHELL ["/usr/bin/pwsh", "-c"]
