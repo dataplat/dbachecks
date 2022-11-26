@@ -257,7 +257,7 @@ function NewGet-AllInstanceInfo {
             }
         }
         'ErrorLog' {
-            $logWindow = ($ | Where-Object { $_.Name -eq 'policy.errorlog.warningwindow' }).Value
+            $logWindow = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.errorlog.warningwindow' }).Value
             # so that it can be mocked
             function Get-ErrorLogEntry {
                 # get the number of the first error log that was created after the log window config
@@ -332,12 +332,12 @@ function NewGet-AllInstanceInfo {
             errorLogCount = $ErrorLogCount
             logWindow     = $logWindow
         }
-        TempDbConfig          = [PSCustomObject]@{
-            TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
-            TF118EnabledRecommended = $tempDBTest[0].Recommended
-            TempDBFilesCurrent      = $tempDBTest[1].CurrentSetting
-            TempDBFilesRecommended  = $tempDBTest[1].Recommended
-        }
+        # TempDbConfig          = [PSCustomObject]@{
+        #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
+        #     TF118EnabledRecommended = $tempDBTest[0].Recommended
+        #     TempDBFilesCurrent      = $tempDBTest[1].CurrentSetting
+        #      TempDBFilesRecommended  = $tempDBTest[1].Recommended
+        # }
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
