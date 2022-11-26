@@ -13,3 +13,12 @@ $invokePlasterParameters = @{
      
 
 Invoke-Plaster @invokePlasterParameters -Verbose
+
+
+
+.\build.ps1 -ResolveDependency -Tasks noop
+
+./build.ps1 -Tasks ?
+
+./build.ps1 -Tasks build
+./build.ps1 -Tasks tests

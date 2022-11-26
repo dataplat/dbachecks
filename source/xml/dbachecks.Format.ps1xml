@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+  <ViewDefinitions>
+	<View>
+		<Name>dbachecks.Check</Name>
+			<ViewSelectedBy>
+				<TypeName>dbachecks.Check</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader/>
+					<TableColumnHeader/>
+					<TableColumnHeader/>
+					<TableColumnHeader/>
+					<TableColumnHeader/>
+					<TableColumnHeader/>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>Group</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Type</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>UniqueTag</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>AllTags</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Config</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Description</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+  </ViewDefinitions>
+</Configuration>

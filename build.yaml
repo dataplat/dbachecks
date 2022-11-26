@@ -5,9 +5,11 @@
 
 BuiltModuleSubdirectory: module
 CopyPaths:
-  - en-US
-  - DSCResources
-  # - Modules
+  - bin
+  - checks
+  - functions
+  - internal
+  - xml
 Encoding: UTF8
 # Can be used to manually specify module's semantic version if the preferred method of
 # using GitVersion is not available, and it is not possible to set the session environment
@@ -21,12 +23,12 @@ VersionedOutputDirectory: true
 #      ModuleBuilder Submodules Configuration      #
 ####################################################
 
-NestedModule:
-    DscResource.Common:
-      CopyOnly: true
-      Path: ./output/RequiredModules/DscResource.Common
-      AddToManifest: false
-      Exclude: PSGetModuleInfo.xml
+# NestedModule:
+#     DscResource.Common:
+#       CopyOnly: true
+#       Path: ./output/RequiredModules/DscResource.Common
+#       AddToManifest: false
+#       Exclude: PSGetModuleInfo.xml
 
 ####################################################
 #       Sampler Pipeline Configuration             #
@@ -75,40 +77,72 @@ BuildWorkflow:
 #       PESTER  Configuration                      #
 ####################################################
 
+# PESTER CONFIG START
 Pester:
-  OutputFormat: NUnitXML
-  # Excludes one or more paths from being used to calculate code coverage.
+  # Pester Advanced configuration.
+  # If a key is not set it will be using Sampler pipeline default value.
+  Configuration:
+    Run:
+      Path: tests/Project.Tests.ps1
+        
+      ExcludePath:
+    Filter:
+      Tag:
+      ExcludeTag:
+        
+    Output:
+      Verbosity: None
+    CodeCoverage:
+      Path:
+      OutputFormat:
+      CoveragePercentTarget: 0
+      OutputPath: JaCoCo_coverage.xml
+      OutputEncoding: ascii
+      ExcludeTests:
+    TestResult:
+      OutputFormat: NUnitXML
+      OutputPath:
+      OutputEncoding:
+      TestSuiteName:
+  # Sampler pipeline configuration
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
-  # If no scripts are defined the default is to use all the tests under the project's
-  # tests folder or source folder (if present). Test script paths can be defined to
-  # only run tests in certain folders, or run specific test files, or can be use to
-  # specify the order tests are run.
-  Script:
-    - tests/Unit
-  Tag:
-  CodeCoverageThreshold: 85 # Set to 0 to bypass
-  CodeCoverageOutputFile: JaCoCo_coverage.xml
-  CodeCoverageOutputFileEncoding: ascii
-  # Use this if code coverage should be merged from several pipeline test jobs.
-  # Any existing keys above should be replaced.
-  # CodeCoverageOutputFile - the file that is created for each pipeline test job.
-  # CodeCoverageFilePattern - the pattern used to search all pipeline test job artifacts
-  # after the file specified in CodeCoverageOutputFile.
-  # CodeCoverageMergedOutputFile - the file that is created by the merge build task and
-  # is the file that should be uploaded to code coverage services.
-  #CodeCoverageOutputFile: JaCoCo_Merge.xml
-  #CodeCoverageMergedOutputFile: JaCoCo_coverage.xml
-  #CodeCoverageFilePattern: JaCoCo_Merge.xml
+# PESTER CONFIG END
 
-DscTest:
-  ExcludeTag:
-    - "Common Tests - New Error-Level Script Analyzer Rules"
-  Tag:
-  ExcludeSourceFile:
-    - output
-  ExcludeModuleFile:
-    - Modules/DscResource.Common
+# Pester:
+#   OutputFormat: NUnitXML
+#   # Excludes one or more paths from being used to calculate code coverage.
+#   ExcludeFromCodeCoverage:
+#     - Modules/DscResource.Common
+#   # If no scripts are defined the default is to use all the tests under the project's
+#   # tests folder or source folder (if present). Test script paths can be defined to
+#   # only run tests in certain folders, or run specific test files, or can be use to
+#   # specify the order tests are run.
+#   Script:
+#     - tests/Project.Tests.ps1
+#   Tag:
+#   CodeCoverageThreshold: 85 # Set to 0 to bypass
+#   CodeCoverageOutputFile: JaCoCo_coverage.xml
+#   CodeCoverageOutputFileEncoding: ascii
+#   # Use this if code coverage should be merged from several pipeline test jobs.
+#   # Any existing keys above should be replaced.
+#   # CodeCoverageOutputFile - the file that is created for each pipeline test job.
+#   # CodeCoverageFilePattern - the pattern used to search all pipeline test job artifacts
+#   # after the file specified in CodeCoverageOutputFile.
+#   # CodeCoverageMergedOutputFile - the file that is created by the merge build task and
+#   # is the file that should be uploaded to code coverage services.
+#   #CodeCoverageOutputFile: JaCoCo_Merge.xml
+#   #CodeCoverageMergedOutputFile: JaCoCo_coverage.xml
+#   #CodeCoverageFilePattern: JaCoCo_Merge.xml
+
+# DscTest:
+#   ExcludeTag:
+#     - "Common Tests - New Error-Level Script Analyzer Rules"
+#   Tag:
+#   ExcludeSourceFile:
+#     - output
+#   ExcludeModuleFile:
+#     - Modules/DscResource.Common
 
 # Import ModuleBuilder tasks from a specific PowerShell module using the build
 # task's alias. Wildcard * can be used to specify all tasks that has a similar
