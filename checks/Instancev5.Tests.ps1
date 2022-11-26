@@ -314,6 +314,7 @@ Describe "Error Log Entries" -Tag ErrorLog, Medium, Instance -ForEach $Instances
     }
 }
 
+<#
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
     Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name 
         It "should have TF1118 enabled on <_.Name>" -Skip:((($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.XESessionRunningAllowed' }).Value)  -or ($InstanceSMO.VersionMajor -gt 12)) {
@@ -336,3 +337,4 @@ Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -For
         }
     }
 }
+#>

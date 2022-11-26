@@ -65,7 +65,7 @@ function NewGet-AllInstanceInfo {
             $StoredProcedureInitFields.Add("Startup") | Out-Null # So we can check SPs start up for the CIS checks
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $StoredProcedureInitFields)
             $StoredProcedureInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure]) #  I think we need to re-initialise here
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'scanforstartupproceduresdisabled' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.security.scanforstartupproceduresdisabled' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'scanforstartupproceduresdisabled' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.security.scanforstartupproceduresdisabled' }).Value)
         }
         'RemoteAccessDisabled' {
             $configurations = $true
@@ -75,22 +75,22 @@ function NewGet-AllInstanceInfo {
         }
         'DAC' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'dacallowed' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.dacallowed' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'dacallowed' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.dacallowed' }).Value)
         }
         'OLEAutomation' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'OLEAutomation' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.oleautomation' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'OLEAutomation' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.oleautomation' }).Value)
         }
         'AdHocWorkload' {
             $configurations = $true
         }
         'AdHocDistributedQueriesEnabled' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AdHocDistributedQueriesEnabled' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.security.AdHocDistributedQueriesEnabled' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AdHocDistributedQueriesEnabled' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.security.AdHocDistributedQueriesEnabled' }).Value)
         }
         'DefaultBackupCompression' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DefaultBackupCompression' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.backup.defaultbackupcompression' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DefaultBackupCompression' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.backup.defaultbackupcompression' }).Value)
         }
         'DefaultFilePath' {
             $SettingsInitFields.Add("DefaultFile") | Out-Null # so we can check file paths
@@ -123,7 +123,7 @@ function NewGet-AllInstanceInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $ServerInitFields)
             $ServerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server]) #  I think we need to re-initialise here
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'errorLogCount' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.errorlog.logcount' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'errorLogCount' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.errorlog.logcount' }).Value)
 
         }
         'MaxDopInstance' {
@@ -135,20 +135,20 @@ function NewGet-AllInstanceInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $DatabaseInitFields)
             $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'UseRecommendedMaxDop' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.instancemaxdop.userecommended' }).Value)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'InstanceMaxDop' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.instancemaxdop.maxdop' }).Value)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'ExcludeInstanceMaxDop' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.instancemaxdop.excludeinstance' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'UseRecommendedMaxDop' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.instancemaxdop.userecommended' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'InstanceMaxDop' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.instancemaxdop.maxdop' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'ExcludeInstanceMaxDop' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.instancemaxdop.excludeinstance' }).Value)
             if ($Instance.Name -notin $ConfigValues.ExcludeInstanceMaxDop) {
                 $MaxDopSettings = (Test-DbaMaxDop -SqlInstance $Instance)[0] # because we dont care about the database maxdops here - potentially we could store it and use it for DatabaseMaxDop ?
             }
         }
         'TwoDigitYearCutoff' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TwoDigitYearCutoff' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.twodigityearcutoff' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TwoDigitYearCutoff' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.twodigityearcutoff' }).Value)
 
         }
         'TraceFlagsExpected' {
-            $TraceFlagsExpected = ($__dbcconfig | Where-Object {$_.Name -eq 'policy.traceflags.expected' }).Value
+            $TraceFlagsExpected = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.traceflags.expected' }).Value
             $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
             if (-not $ConfigValues.TraceFlagsExpected) {
                 $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsExpected' -Value $TraceFlagsExpected -Force
@@ -167,8 +167,8 @@ function NewGet-AllInstanceInfo {
             }
         }
         'TraceFlagsNotExpected' {
-            $TraceFlagsNotExpected = ($__dbcconfig | Where-Object {$_.Name -eq 'policy.traceflags.notexpected' }).Value
-            $TraceFlagsExpected = ($__dbcconfig | Where-Object {$_.Name -eq 'policy.traceflags.expected' }).Value
+            $TraceFlagsNotExpected = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.traceflags.notexpected' }).Value
+            $TraceFlagsExpected = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.traceflags.expected' }).Value
             if ($null -eq $TraceFlagsExpected) { $TraceFlagsExpected = 'none expected' }
             $TraceFlagsActual = $Instance.EnumActiveGlobalTraceFlags()
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TraceFlagsNotExpected' -Value $TraceFlagsNotExpected
@@ -192,23 +192,23 @@ function NewGet-AllInstanceInfo {
         }
         'CLREnabled' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'CLREnabled' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.security.clrenabled' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'CLREnabled' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.security.clrenabled' }).Value)
         }
         'WhoIsActiveInstalled' {
             $configurations = $true
             $WhoIsActiveInstalled = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'whoisactivedatabase' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.whoisactive.database' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'whoisactivedatabase' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.whoisactive.database' }).Value)
         }
         'XpCmdShellDisabled' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'XpCmdShellDisabled' -Value (($__dbcconfig | Where-Object {$_.Name -eq 'policy.security.XpCmdShellDisabled' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'XpCmdShellDisabled' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.security.XpCmdShellDisabled' }).Value)
 
         }
         'XESessionStopped' {
             if (-not $xeSessions) {
                 $xeSessions = Get-DbaXESession -SqlInstance $Instance
             }
-            $RequiredStopped = (($__dbcconfig | Where-Object {$_.Name -eq 'policy.xevent.requiredstoppedsession' }).Value)
+            $RequiredStopped = (($__dbcconfig | Where-Object { $_.Name -eq 'policy.xevent.requiredstoppedsession' }).Value)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'requiredstoppedsession' -Value $RequiredStopped
             if (-not $xeSessions) {
                 $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
@@ -221,7 +221,7 @@ function NewGet-AllInstanceInfo {
             if (-not $xeSessions) {
                 $xeSessions = Get-DbaXESession -SqlInstance $Instance
             }
-            $RequiredExists = (($__dbcconfig | Where-Object {$_.Name -eq 'policy.xevent.requiredexists' }).Value)
+            $RequiredExists = (($__dbcconfig | Where-Object { $_.Name -eq 'policy.xevent.requiredexists' }).Value)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'requiredexistssessions' -Value $RequiredExists
             if (-not $RunningSessions) {
                 $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
@@ -234,7 +234,7 @@ function NewGet-AllInstanceInfo {
             if (-not $xeSessions) {
                 $xeSessions = Get-DbaXESession -SqlInstance $Instance
             }
-            $RequiredRunning = (($__dbcconfig | Where-Object {$_.Name -eq 'policy.xevent.requiredrunningsession' }).Value)
+            $RequiredRunning = (($__dbcconfig | Where-Object { $_.Name -eq 'policy.xevent.requiredrunningsession' }).Value)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'requiredrunningsession' -Value $RequiredRunning
             if (-not $RunningSessions) {
                 $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
@@ -247,7 +247,7 @@ function NewGet-AllInstanceInfo {
             if (-not $xeSessions) {
                 $xeSessions = Get-DbaXESession -SqlInstance $Instance
             }
-            $RunningAllowed = (($__dbcconfig | Where-Object {$_.Name -eq 'policy.xevent.validrunningsession' }).Value)
+            $RunningAllowed = (($__dbcconfig | Where-Object { $_.Name -eq 'policy.xevent.validrunningsession' }).Value)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validrunningsession' -Value $RunningAllowed
             if (-not $RunningSessions) {
                 $RunningSessions = $xeSessions.Where{ $_.Status -eq 'Running' }.Name
@@ -257,7 +257,7 @@ function NewGet-AllInstanceInfo {
             }
         }
         'ErrorLog' {
-            $logWindow = ($ | Where-Object {$_.Name -eq 'policy.errorlog.warningwindow' }).Value
+            $logWindow = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.errorlog.warningwindow' }).Value
             # so that it can be mocked
             function Get-ErrorLogEntry {
                 # get the number of the first error log that was created after the log window config
@@ -270,8 +270,8 @@ function NewGet-AllInstanceInfo {
             # It is not enough to check the CreateDate on the log, you must check the LogDate on every error record as well.
             $ErrorLogCount = (Get-ErrorLogEntry | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) }).Count
         }
-        'TempDbConfiguration'{
-        $TempDBTest = Test-DbaTempDbConfig -SqlInstance $Instance
+        'TempDbConfiguration' {
+            $TempDBTest = Test-DbaTempDbConfig -SqlInstance $Instance
         }
 
         Default { }
@@ -332,12 +332,12 @@ function NewGet-AllInstanceInfo {
             errorLogCount = $ErrorLogCount
             logWindow     = $logWindow
         }
-        TempDbConfig = [PSCustomObject]@{
-            TF118EnabledCurrent = $tempDBTest[0].CurrentSetting
-            TF118EnabledRecommended = $tempDBTest[0].Recommended
-            TempDBFilesCurrent = $tempDBTest[1].CurrentSetting
-            TempDBFilesRecommended = $tempDBTest[1].Recommended
-        }]
+        # TempDbConfig          = [PSCustomObject]@{
+        #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
+        #     TF118EnabledRecommended = $tempDBTest[0].Recommended
+        #     TempDBFilesCurrent      = $tempDBTest[1].CurrentSetting
+        #      TempDBFilesRecommended  = $tempDBTest[1].Recommended
+        # }
     }
     if ($ScanForStartupProceduresDisabled) {
         $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
@@ -346,7 +346,7 @@ function NewGet-AllInstanceInfo {
         }
     }
     if ($WhoIsActiveInstalled) {
-        $whoisdatabase = ($__dbcconfig | Where-Object {$_.Name -eq 'policy.whoisactive.database' }).Value
+        $whoisdatabase = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.whoisactive.database' }).Value
         $WhoIsActiveInstalled = $Instance.Databases[$whoisdatabase].StoredProcedures.Where{ $_.Name -eq 'sp_WhoIsActive' }.count
         $testInstanceObject.ConfigValues | Add-Member -MemberType NoteProperty -Name 'WhoIsActiveInstalled' -Value $whoIsActiveInstalled
     }
