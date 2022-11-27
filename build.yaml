@@ -50,11 +50,9 @@ BuildWorkflow:
     - build
     - package_module_nupkg
 
-  hqrmtest:
-    - DscResource_Tests_Stop_On_Fail
-
   # Defining test task to be run when invoking `./build.ps1 -Tasks test`
   test:
+    - Invoke_Pester_Tests_v5 
     - Pester_Tests_Stop_On_Fail
     # Use this task if pipeline uses code coverage and the module is using the
     # pattern of Public, Private, Enum, Classes.
