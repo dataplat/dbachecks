@@ -1,3 +1,4 @@
+<#
 BeforeDiscovery {
     $script:moduleName = $ProjectName
 
@@ -210,3 +211,4 @@ Describe 'Help for module' -Tags 'helpQuality' {
     }
 }
 
+#>

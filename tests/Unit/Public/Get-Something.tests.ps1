@@ -1,3 +1,4 @@
+<#
 $ProjectPath = "$PSScriptRoot\..\..\.." | Convert-Path
 $ProjectName = ((Get-ChildItem -Path $ProjectPath\*\*.psd1).Where{
         ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
@@ -61,3 +62,4 @@ InModuleScope $ProjectName {
         }
     }
 }
+#>
