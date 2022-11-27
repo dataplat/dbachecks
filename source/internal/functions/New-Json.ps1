@@ -9,7 +9,6 @@ function New-Json {
     foreach ($repo in $repos) {
         $repofiles += (Get-ChildItem "$repo\*.Tests.ps1")
     }
-
     $tokens = $null
     $errors = $null
     foreach ($file in $repofiles) {
