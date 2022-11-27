@@ -10,7 +10,7 @@ Describe "PSScriptAnalyzer rule-sets" -Tag Build , ScriptAnalyzer {
         # Get the files that have been altered in since the last merge from master
         $scripts = git diff --name-only $lastCommit HEAD | Where-Object { $psitem.EndsWith('ps1') }
         # only the ones in these folders
-        $scripts = $scripts | Where-object { ($_ -like 'internal*')  -or  ($_ -like 'functions*') -or ( $_ -like 'checks*')}
+        $scripts = $scripts | Where-Object { ($_ -like 'internal*') -or ($_ -like 'functions*') -or ( $_ -like 'checks*') }
     }
     BeforeAll {
         $PsScriptAnalyzerSettings = '/workspace/PSScriptAnalyzerSettings.psd1'
@@ -20,12 +20,24 @@ Describe "PSScriptAnalyzer rule-sets" -Tag Build , ScriptAnalyzer {
 
     Context "Checking PSScriptAnalyzer on Script <_>" -ForEach $scripts {
 
-        It "The Script Analyzer Rule <_> Should not fail" -ForEach $Rules.RuleName {
+        BeforeDiscovery {
+            $scriptpath = Join-Path -Path $ModuleBase -ChildPath $PsItem
             
-            $rulefailures = Invoke-ScriptAnalyzer -Path "$ModuleBase\$script" -IncludeRule $_ -Settings $PsScriptAnalyzerSettings
+            $Tests = $rules.ForEach{
+                @{
+                    scriptpath               = $scriptpath
+                    RuleName                     = $_.RuleName
+                    PsScriptAnalyzerSettings = $PsScriptAnalyzerSettings
+                }
+            }
+        }
+
+        It "The Script Analyzer Rule <_.RuleName> Should not fail" -ForEach $Tests {
+            $rulefailures = Invoke-ScriptAnalyzer -Path $PsItem.scriptpath -IncludeRule $PsItem.RuleName -Settings $PsItem.PsScriptAnalyzerSettings
             $message = ($rulefailures | Select-Object Message -Unique).Message
             $lines = $rulefailures.Line -join ','
-            $rulefailures.Count | Should -Be 0 -Because "Script Analyzer says the rules have been broken on lines $lines with Message '$message' Check in VSCode Problems tab or Run Invoke-ScriptAnalyzer -Script $ModuleBase\$script -Settings $PsScriptAnalyzerSettings"
+            $Because = 'Script Analyzer says the rules have been broken on lines {3} with Message {0} Check in VSCode Problems tab or Run Invoke-ScriptAnalyzer -Script {1} -Settings {2}' -f $message, $scriptpath,$PsScriptAnalyzerSettings,$lines
+            $rulefailures.Count | Should -Be 0 -Because $Because
         }
     }
 }
