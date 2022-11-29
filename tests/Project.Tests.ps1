@@ -1,41 +1,7 @@
 BeforeDiscovery {
     $script:ModuleName = 'dbachecks'
     $ModuleBase = (Get-Module -Name $ModuleName -ListAvailable).ModuleBase
-    # $commands = Get-Command -Module $ModuleName -CommandType Cmdlet, Function
-    function whateverthatis {
-        <#
-        .SYNOPSIS
-        a synposis
-        
-        .DESCRIPTION
-        a description
-        
-        .PARAMETER Name
-        Parameter description
-        
-        .PARAMETER Name1
-        This is my Name1 description
-        
-        .EXAMPLE
-        An example
-        .EXAMPLE
-         codey code code
-
-         descripty descripty descripty
-        
-        .NOTES
-        General notes
-        #>
-        param (
-            [Parameter(Mandatory)]
-            [string]$Name,
-            [Parameter(Mandatory)]
-            [int]$Name1
-        )
-        Write-Output "Hello $Name, $Name1"
-
-    }
-    $commands = Get-Command whateverthatis
+    $commands = Get-Command -Module $ModuleName -CommandType Cmdlet, Function
 }
 Describe 'PSScriptAnalyzer rule-sets' -Tag Build , ScriptAnalyzer {
     BeforeDiscovery {
@@ -90,8 +56,7 @@ Describe 'Testing help for <_.Name>' -Tag Help -ForEach $commands {
         It 'Synopsis should not be auto-generated or empty' {
             $Because = 'We are good citizens and write good help'
             $Help.Synopsis | Should -Not -BeLike 'Short description*' -Because $Because
-            $Help.Synopsis | Should -Not -BeLike "*$($PsItem.Name)*" -Because $Because
-            $Help.Synopsis | Should -Not -BeNullOrEmpty -Because $Because
+            $Help.Synopsis[0] | Should -Not -Match '\n' -Because $Because
         }
         It 'Description should not be auto-generated or empty' {
             $Because = 'We are good citizens and write good help'
