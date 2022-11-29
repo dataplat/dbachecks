@@ -5,16 +5,6 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'currentAccountName', Justification = 'Because silly script analyuser cant see it is used')]
 [CmdletBinding()]
 param()
-if (Test-Path /workspace/containers -ErrorAction SilentlyContinue) {
-    Import-Module /workspace/containers/JessAndBeard.psm1
-    $VerbosePreference = 'Continue' # So we can see ALL of the verbose in the psm1 file if we need to!
-} else {
-    Import-Module /workspaces/dbachecks/containers/JessAndBeard.psm1
-    $VerbosePreference = 'Continue' # So we can see ALL of the verbose in the psm1 file if we need to!
-}
-
-Import-Module dbatools
-
 
 $containers = $SQLInstances = $dbachecks1, $dbachecks2 , $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3'
 #region Set up connection
