@@ -29,9 +29,15 @@ Will truncate the existing table (if results go to a staging table for example)
 
 
 .EXAMPLE
-Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Write-DbcTable -SqlInstance sql2017n5 -Database tempdb -Table newdbachecks
+Invoke-DbcCheck -SqlInstance SQL2017N5 -Check AutoClose -Passthru | Convert-DbcResult -Label Beard-Check | Write-DbcTable -SqlInstance DbaInstance -Database dbadatabase
 
-Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and writes it to a table newdbachecks in tempdb on SQL2017N5 (NB Don't use tempdb!!)
+Runs the AutoClose check against SQL2017N5 and converts to a datatable with a label of Beard-Check and writes it to the dbadatabase on DbaInstance
+
+.EXAMPLE
+Import-DbcConfig -Path \\share\ProdMorningChecks.json
+Invoke-DbcCheck -SqlInstance $ProdSqlInstances -Passthru | Convert-DbcResult -Label Prod-Morning-Check | Write-DbcTable -SqlInstance DbaInstance -Database dbadatabase
+
+Loads the Prod Morning Checks Configuration and runs the checks against the SQL Instances converts to a datatable with a label of Prod-Morning-Check and writes it to the dbadatabase on DbaInstance
 
 .NOTES
 Initial - RMS 28/12/2019
@@ -57,10 +63,10 @@ function Write-DbcTable {
         [switch]$Truncate
 
     )
-    Write-PSFMessage "Testing we have a Test Results object" -Level Verbose
+    Write-PSFMessage 'Testing we have a Test Results object' -Level Verbose
     if (-not $InputObject) {
         Write-PSFMessage "Uh-Oh - I'm really sorry - We don't have a Test Results Object" -Level Significant
-        Write-PSFMessage "Did You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
+        Write-PSFMessage 'Did You forget the -PassThru parameter on Invoke-DbcCheck?' -Level Warning
         Return ''
     }
     Write-PSFMessage "Connecting to $SqlInstance" -Level Verbose
@@ -71,8 +77,7 @@ function Write-DbcTable {
         if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Update the dbachecksChecks tables ")) {
             Get-DbcCheck | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable -Truncate
         }
-    }
-    else {
+    } else {
         if ($PSCmdlet.ShouldProcess("$schema.$database" , "On $SqlInstance - Add the dbachecksChecks tables ")) {
             Get-DbcCheck | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table dbachecksChecks -Schema $Schema -AutoCreateTable
         }
@@ -80,8 +85,7 @@ function Write-DbcTable {
     Write-PSFMessage "Checking for $Table in $Database" -Level Verbose
     if (Get-DbaDbTable -SqlInstance $SqlInstanceSmo -Database $Database -Table $Table) {
         Write-PSFMessage "We have $table already - moving on." -Level Verbose
-    }
-    else {
+    } else {
         if ($PSCmdlet.ShouldProcess("$schema.$database" , "Create a new table called $table ")) {
             # If specified table does not exists, create with specific datatypes to avoid nvarchar(max)
             $sqlTableCreation = @"
@@ -109,7 +113,7 @@ function Write-DbcTable {
         }
     }
     if ($PSCmdlet.ShouldProcess("$Schema.$database" , "On $SqlInstance - Add dbachecks results to $Table ")) {
-        $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo  -Database $Database -Table $Table -Schema $Schema -AutoCreateTable -Truncate:$Truncate
+        $InputObject | Write-DbaDbTableData -SqlInstance $SqlInstanceSmo -Database $Database -Table $Table -Schema $Schema -AutoCreateTable -Truncate:$Truncate
     }
 }
 # SIG # Begin signature block

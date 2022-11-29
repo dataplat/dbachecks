@@ -15,13 +15,18 @@ Update-DbcRequiredModules
 
 Updates all required modules including dbachecks
 
+.EXAMPLE
+Update-DbcRequiredModules -Verbose
+
+Updates all required modules including dbachecks and shows verbose output
+
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Update-DbcRequiredModules/
 
 #>
 function Update-DbcRequiredModules {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
         [switch]$EnableException
     )
@@ -32,19 +37,17 @@ function Update-DbcRequiredModules {
             try {
                 Write-PSFMessage -Level Output -Message "Updating $($Module.ModuleName)"
                 Update-Module -Name $Module.ModuleName -ErrorAction Stop
-            }
-            catch {
-                Stop-PSFFunction -Message "Failure" -ErrorRecord $_
+            } catch {
+                Stop-PSFFunction -Message 'Failure' -ErrorRecord $_
             }
         }
     }
-    if ($pscmdlet.ShouldProcess("Install latest dbachecks from repository")) {
+    if ($pscmdlet.ShouldProcess('Install latest dbachecks from repository')) {
         try {
-            Write-PSFMessage -Level Output -Message "Updating dbachecks"
+            Write-PSFMessage -Level Output -Message 'Updating dbachecks'
             Update-Module -Name dbachecks -ErrorAction Stop
-        }
-        catch {
-            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
+        } catch {
+            Stop-PSFFunction -Message 'Failure' -ErrorRecord $_
         }
     }
 }

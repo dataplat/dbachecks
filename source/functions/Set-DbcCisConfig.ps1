@@ -10,19 +10,24 @@ Set-DbcCisConfig
 
 sets the configuration for CIS checks
 
+.EXAMPLE
+Set-DbcCisConfig -Verbose
+
+sets the configuration for CIS checks with verbose output
+
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Set-DbcCisConfig/
 #>
 
 function Set-DbcCisConfig {
-    [CmdletBinding(DefaultParameterSetName = "Name", SupportsShouldProcess)]
+    [CmdletBinding(DefaultParameterSetName = 'Name', SupportsShouldProcess)]
     Param (
     )
 
     Reset-DbcConfig
 
     #set CIS to what they need to be
-    if ($PSCmdlet.ShouldProcess("Configuration" , "Setting the values for CIS configuration ")) {
+    if ($PSCmdlet.ShouldProcess('Configuration' , 'Setting the values for CIS configuration ')) {
         Set-DbcConfig -Name skip.security.nonstandardport -Value $false
         Set-DbcConfig -Name policy.dacallowed -Value $false
         Set-DbcConfig -Name policy.errorlog.logcount -Value 12

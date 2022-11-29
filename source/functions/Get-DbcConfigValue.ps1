@@ -23,18 +23,23 @@
 
     Retrieves the raw value for the key "app.sqlinstance"
 
+.EXAMPLE
+    Get-DbcConfigValue app.computername
+
+    Retrieves the raw value for the key "app.computername"
+
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcConfig/
 #>
 function Get-DbcConfigValue {
     [CmdletBinding()]
     param (
-        [string]$Name = "*",
+        [string]$Name = '*',
         [switch]$EnableException
     )
 
     begin {
-      #  $Module = "dbachecks"
+        #  $Module = "dbachecks"
     }
     process {
         $Name = $Name.ToLower()
