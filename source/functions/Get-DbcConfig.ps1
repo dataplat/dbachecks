@@ -17,6 +17,11 @@
     Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
 .EXAMPLE
+    Get-DbcConfig
+
+    Gets all of the dbachecks configurations for the current session.
+
+.EXAMPLE
     Get-DbcConfig app.sqlinstance
 
     Retrieves the configuration element for the configuration app.sqlinstance
@@ -27,12 +32,12 @@ https://dbachecks.readthedocs.io/en/latest/functions/Get-DbcConfig/
 function Get-DbcConfig {
     [CmdletBinding()]
     param (
-        [string[]]$Name = "*",
+        [string[]]$Name = '*',
         [switch]$EnableException
     )
 
     begin {
-        $Module = "dbachecks"
+        $Module = 'dbachecks'
     }
     process {
         foreach ($configName in $Name) {
