@@ -124,6 +124,11 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'statusexclude' -Value (Get-DbcConfigValue policy.database.statusexcludedb)
 
         }
+        'SymmetricKeyEncryptionLevel' {
+            $symmetrickey = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'symmetrickeyexclude' -Value (Get-DbcConfigValue  policy.database.symmetrickeyencryptionlevelexcludedb)
+
+        }
         Default { }
     }
 
@@ -155,7 +160,7 @@ function Get-AllDatabaseInfo {
                 Status                      = if ($status) { $psitem.Status }
                 IsDatabaseSnapshot          = if ($status) { $psitem.IsDatabaseSnapshot } # needed for status test
                 Readonly                    = if ($status) { $psitem.Readonly } # needed for status test
-
+                SymmetricKey                = if ($symmetrickey) { ($psitem | where IsAccessible).SymmetricKeys }
             }
         }
     }

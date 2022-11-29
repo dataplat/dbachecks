@@ -239,6 +239,7 @@ Set-PSFConfig -Module dbachecks -Name policy.autocreatestats.excludedb -Value @(
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats checks"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats asynchronously checks"
 Set-PSFConfig -Module dbachecks -Name policy.database.statusexcludedb -Value @()  -Initialize -Description "Databases to exclude from the database status checks"
+Set-PSFConfig -Module dbachecks -Name policy.database.symmetrickeyencryptionlevelexcludedb -Value @('master', 'msdb', 'tempdb')  -Initialize -Description "Databases to exclude from the Symmetric Key Encryption Level checks"
 
 
 
