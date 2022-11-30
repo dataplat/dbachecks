@@ -239,6 +239,7 @@ Set-PSFConfig -Module dbachecks -Name policy.autocreatestats.excludedb -Value @(
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats checks"
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously.excludedb -Value @()  -Initialize -Description "Databases to exclude from the auto update stats asynchronously checks"
 Set-PSFConfig -Module dbachecks -Name policy.database.statusexcludedb -Value @()  -Initialize -Description "Databases to exclude from the database status checks"
+Set-PSFConfig -Module dbachecks -Name policy.database.symmetrickeyencryptionlevelexcludedb -Value @('master', 'msdb', 'tempdb')  -Initialize -Description "Databases to exclude from the Symmetric Key Encryption Level checks"
 
 
 
@@ -274,6 +275,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionStopped -Validation
 Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionRunning -Validation bool -Value $false -Initialize -Description "Skip the check for XESessions that should be running"
 Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionRunningAllowed -Validation bool -Value $false -Initialize -Description "Skip the check for XESessions that are allowed to be running"
 Set-PSFConfig -Module dbachecks -Name skip.instance.errorlogentries -Validation bool -Value $false -Initialize -Description "Skip the check for errorlog entries"
+Set-PSFConfig -Module dbachecks -Name skip.instance.tempdb -Validation bool -Value $false -Initialize -Description "Skip all the checks for the tempdb database"
 
 
 

@@ -24,61 +24,75 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: '0'
       - 
         name: Bump version and push tag
         id: bump
-        uses: anothrNick/github-tag-action@1.36.0
+        uses: anothrNick/github-tag-action@1.52.0
         env:
           DEFAULT_BUMP: minor
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
       -
         name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
       -
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       -
         name: Login to DockerHub
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build and push First Container
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           push: true
           context: containers/base/
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/dbachecks1:${{ steps.bump.outputs.new_tag }},${{ secrets.DOCKERHUB_USERNAME }}/dbatoolsprecon:latest
+          tags: dbachecks/sqlinstance1:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance1:latest
       -
         name: Build and push second Container
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           push: true
           context: containers/second/
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/dbachecks2:${{ steps.bump.outputs.new_tag }},${{ secrets.DOCKERHUB_USERNAME }}/dbatoolsprecon2:latest
+          tags: dbachecks/sqlinstance2:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance2:latest
+      -
+        name: Build and push third Container
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: containers/third/
+          tags: dbachecks/sqlinstance3:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance3:latest
       -
         name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@v2
         with:
-          find: "sqldbawithabeard/dbachecks1:.*"
-          replace: "sqldbawithabeard/dbachecks1:${{ steps.bump.outputs.new_tag }}"
+          find: "dbachecks/sqlinstance1:.*"
+          replace: "dbachecks/sqlinstance1:${{ steps.bump.outputs.new_tag }}"
           include: "**docker-compose.yml"
       -
         name: Find and Replace Instance2
         uses: jacobtomlinson/gha-find-replace@v2
         with:
-          find: "sqldbawithabeard/dbachecks2:.*"
-          replace: "sqldbawithabeard/dbachecks2:${{ steps.bump.outputs.new_tag }}"
+          find: "dbachecks/sqlinstance2:.*"
+          replace: "dbachecks/sqlinstance2:${{ steps.bump.outputs.new_tag }}"
+          include: "**docker-compose.yml"
+      -
+        name: Find and Replace Instance3
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "dbachecks/sqlinstance3:.*"
+          replace: "dbachecks/sqlinstance3:${{ steps.bump.outputs.new_tag }}"
           include: "**docker-compose.yml"
       -
         name: Add & Commit
-        uses: EndBug/add-and-commit@v8.0.2
+        uses: EndBug/add-and-commit@v9
         with:
           author_name: Beardy McBeardFace
           author_email: mrrobsewell@outlook.com

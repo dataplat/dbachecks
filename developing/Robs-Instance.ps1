@@ -1,8 +1,10 @@
-$Checks = 'ErrorLogCount', 'XESessionRunningAllowed','XESessionRunning','XESessionRunningAllowed', 'XESessionExists','XESessionStopped','XpCmdShellDisabled','WhoIsActiveInstalled','CLREnabled','TraceFlagsNotExpected','TraceFlagsExpected','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
-$Checks = 'XESessionRunningAllowed'
-$Checks = 'ErrorLogCount'
+$Checks = 'ErrorLogCount','TraceFlagsNotExpected','TraceFlagsExpected', 'XESessionRunningAllowed','XESessionRunning','XESessionRunningAllowed', 'XESessionExists','XESessionStopped','XpCmdShellDisabled','WhoIsActiveInstalled','CLREnabled','TwoDigitYearCutoff','MaxDopInstance','ErrorLogCount','ModelDbGrowth','DefaultBackupCompression','SaExist','SaDisabled','SaRenamed','DefaultFilePath','AdHocDistributedQueriesEnabled','AdHocWorkload',  'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation'
 
-Invoke-PerfAndValidateCheck -Checks $Checks 
+$Checks = 'XESessionRunningAllowed','XESessionRunning','XESessionRunningAllowed','XESessionExists','XESessionStopped','XpCmdShellDisabled'
+$Checks = 'TraceFlagsNotExpected','TraceFlagsExpected'
+
+Invoke-PerfAndValidateCheck -Checks $Checks
+Invoke-PerfAndValidateCheck -Checks $Checks -PerfDetail
 
 $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
@@ -18,3 +20,7 @@ Set-DbcConfig -Name policy.xevent.requiredrunningsession -Value system_health ,A
 
 Set-DbcConfig -Name policy.xevent.validrunningsession -Value  system_health ,AlwaysOn_health
 Set-DbcConfig -Name policy.xevent.validrunningsession -Value AlwaysOn_health
+
+$traci = Trace-Script -ScriptBlock {
+$v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $false -Show $show -PassThru 
+}

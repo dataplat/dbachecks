@@ -1,3 +1,4 @@
+# TODO remove all the training day code :-)
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Because this is just for testing and developing')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Because this is for the prompt and it is required')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'containers', Justification = 'Because it is a global variable used later')]
@@ -2244,23 +2245,27 @@ function Invoke-PerfAndValidateCheck {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', 'cls', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', 'cls', Justification = 'Dont tell me what to do')]
   [CmdletBinding()]
-  param($Checks, [switch]$PerfDetail)
+  param($Checks, [switch]$PerfDetail , [switch]$showTestResults)
   $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
   $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
+  if ($showTestResults) {
+      $show = 'All'
+  } else {
+      $show = 'None'
+  }
 
   $originalCode = {
-    $global:v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred  -legacy $true -Show None -PassThru
+      $global:v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred  -legacy $true -Show $show -PassThru
   }
 
   $NewCode = {
-    $global:v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $false  -Show None -PassThru
+      $global:v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -Check $Checks -SqlCredential $cred -legacy $false  -Show $show -PassThru
   }
 
   $originalCodetrace = Trace-Script -ScriptBlock $originalCode
   $NewCodetrace = Trace-Script -ScriptBlock $NewCode
 
   $originalCodeMessage = "With original Code it takes {0} MilliSeconds" -f $originalCodetrace.StopwatchDuration.TotalMilliseconds
-
 
   $savingMessage = "
 Running with
@@ -2280,11 +2285,10 @@ New Code runs in {2} % of the time
 
   Write-PSFMessage -Message $savingMessage -Level Output
 
-
   ##validate we got the right answers too
 
   If (Compare-Object $v5code.Configuration.Filter.Tag.Value $v4code.TagFilter) {
-    $Message = "
+      $Message = "
 Uh-Oh - The Tag filters between v4 and v5 are not the same somehow.
 For v4 We returned
 {0}
@@ -2292,37 +2296,66 @@ and
 For v5 we returned
 {1}
 " -f ($v4code.TagFilter | Out-String), ($v5code.Configuration.Filter.Tag.Value | Out-String)
-    Write-PSFMessage -Message $Message -Level Warning
+      Write-PSFMessage -Message $Message -Level Warning
   } else {
-    $message = "
+      $message = "
 The Tags are the same"
-    Write-PSFMessage -Message $Message -Level Output
+      Write-PSFMessage -Message $Message -Level Output
   }
 
   $changedTags = @(
-    @{
-      Name   = 'TraceFlagsExpected'
-      Change = 3 # + or - the number of tests for v5
-    },
-    @{
-      Name   = 'TraceFlagsNotExpected'
-      Change = 3 # + or - the number of tests for v5
-    }
+      @{
+          Name          = 'TraceFlagsExpected'
+          RunChange     = 3 # + or - the number of tests run for v5
+          PassedChange  = 3 # + or - the number of tests passed for v5
+          FailedChange  = 0 # + or - the number of tests failed for v5
+          SkippedChange = 0 # + or - the number of tests skipped for v5
+
+      },
+      @{
+          Name          = 'TraceFlagsNotExpected'
+          RunChange     = 3 # + or - the number of tests for v5
+          PassedChange  = 3 # + or - the number of tests passed for v5
+          FailedChange  = 0 # + or - the number of tests failed for v5
+          SkippedChange = 0 # + or - the number of tests skipped for v5
+      },
+      @{
+          Name          = 'XESessionRunningAllowed'
+          RunChange     = -12 # + or - the number of tests for v5
+          PassedChange  = 0 # + or - the number of tests passed for v5
+          FailedChange  = -12 # + or - the number of tests failed for v5
+          SkippedChange = 0 # + or - the number of tests skipped for v5
+      }
   )
-  $change = 0
+  $runchange = 0
+  $passedchange = 0
+  $failedchange = 0
+  $skippedchange = 0
   $tagNameMessageAppend = $null
   foreach ($changedTag in $changedTags) {
-    if ($v5code.Configuration.Filter.Tag.Value -contains $changedTag.Name) {
-      $change += $changedTag.Change
-      $tagNameMessageAppend += "tag {0} with change {1} " -f $changedTag.Name, $changedTag.Change
-    }
+      if ($v5code.Configuration.Filter.Tag.Value -contains $changedTag.Name) {
+          $runchange += $changedTag.RunChange
+          $passedchange += $changedTag.PassedChange
+          $failedchange += $changedTag.FailedChange
+          $skippedchange += $changedTag.SkippedChange
+          $tagNameMessageAppend += "tag {0} with:
+      - run change {1}
+      - passed change {2}
+      - failed change {3}
+      - skipped change {4}
+      " -f $changedTag.Name, $changedTag.RunChange, $changedTag.PassedChange, $changedTag.FailedChange, $changedTag.SkippedChange
+      }
   }
   $messageAppend = if ($tagNameMessageAppend) { "although this includes {0}" -f $tagNameMessageAppend } else { '' }
 
-  $v5run = $v5code.TotalCount - $v5code.NotRunCount + $change
+  $v5run = $v5code.TotalCount - $v5code.NotRunCount + $runchange
+  $v5Passed = $v5code.PassedCount + $passedchange
+  $v5failed = $v5code.FailedCount + $failedchange
+  $v5skipped = $v5code.SkippedCount + $skippedchange
 
+  #total checks
   If ($v5run -ne $v4code.TotalCount) {
-    $Message = "
+      $Message = "
 Uh-Oh - The total tests run between v4 and v5 are not the same somehow.
 For v4 We ran
 {0} tests
@@ -2331,17 +2364,17 @@ For v5 we ran
 {1} tests
 The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block {2}
 " -f $v4code.TotalCount, $v5run, $messageAppend
-    Write-PSFMessage -Message $Message -Level Warning
+      Write-PSFMessage -Message $Message -Level Warning
   } else {
-    $message = "
+      $message = "
 The Total Tests Run are the same {0} {1}
 {2}" -f $v4code.TotalCount, $v5run, $messageAppend
-    Write-PSFMessage -Message $Message -Level Output
+      Write-PSFMessage -Message $Message -Level Output
   }
 
-  $v5Passed = $v5code.PassedCount + $change
+  #total passed checks
   If ($v5Passed -ne $v4code.PassedCount) {
-    $Message = "
+      $Message = "
 Uh-Oh - The total tests Passed between v4 and v5 are not the same somehow.
 For v4 We Passed
 {0} tests
@@ -2349,53 +2382,52 @@ and
 For v5 we Passed
 {1} tests
 {2}" -f $v4code.PassedCount, $v5Passed, $messageAppend
-    Write-PSFMessage -Message $Message -Level Warning
+      Write-PSFMessage -Message $Message -Level Warning
   } else {
-    $message = "
+      $message = "
 The Total Tests Passed are the same {0} {1}
 {2}" -f $v4code.PassedCount, $v5Passed, $messageAppend
-    Write-PSFMessage -Message $Message -Level Output
+      Write-PSFMessage -Message $Message -Level Output
   }
-
-  If ($v5code.FailedCount -ne $v4code.FailedCount) {
-    $Message = "
+  # total failed
+  If ($v5failed -ne $v4code.FailedCount) {
+      $Message = "
 Uh-Oh - The total tests Failed between v4 and v5 are not the same somehow.
 For v4 We Failed
 {0} tests
 and
 For v5 we Failed
 {1} tests
-" -f $v4code.FailedCount, $v5code.FailedCount
-    Write-PSFMessage -Message $Message -Level Warning
+" -f $v4code.FailedCount, $v5failed
+      Write-PSFMessage -Message $Message -Level Warning
   } else {
-    $message = "
-The Total Tests Failed are the same {0} {1} 
-{2}" -f $v4code.FailedCount, $v5code.FailedCount, $messageAppend
-    Write-PSFMessage -Message $Message -Level Output
+      $message = "
+The Total Tests Failed are the same {0} {1}
+{2}" -f $v4code.FailedCount, $v5failed, $messageAppend
+      Write-PSFMessage -Message $Message -Level Output
   }
 
-  If ($v5code.SkippedCount -ne $v4code.SkippedCount) {
-    $Message = "
+  If ($v5skipped -ne $v4code.SkippedCount) {
+      $Message = "
 Uh-Oh - The total tests Skipped between v4 and v5 are not the same somehow.
 For v4 We Skipped
 {0} tests
 and
 For v5 we Skipped
 {1} tests
-{2}" -f $v4code.SkippedCount, $v5code.SkippedCount, $messageAppend
-    Write-PSFMessage -Message $Message -Level Warning
+{2}" -f $v4code.SkippedCount, $v5skipped, $messageAppend
+      Write-PSFMessage -Message $Message -Level Warning
   } else {
-    $message = "
+      $message = "
 The Total Tests Skipped are the same {0} {1}
-{2}"-f $v4code.SkippedCount, $v5code.SkippedCount, $messageAppend
-    Write-PSFMessage -Message $Message -Level Output
+{2}"-f $v4code.SkippedCount, $v5skipped, $messageAppend
+      Write-PSFMessage -Message $Message -Level Output
   }
   if ($PerfDetail) {
-    $message = "
+      $message = "
     Let's take a look at the slowest code as well "
-    Write-PSFMessage -Message $Message -Level Output
-    $NewCodetrace.Top50SelfDuration
-  }
+      Write-PSFMessage -Message $Message -Level Output
+      $NewCodetrace.Top50SelfDuration| Select SelfPercent,HitCount,Line,Function  }
 }
 
 Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $true -Initialize -Description "Whether to ask or not" -ModuleExport
