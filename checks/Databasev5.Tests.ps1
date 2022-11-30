@@ -51,7 +51,7 @@ BeforeDiscovery {
 
 
 
-Describe "Suspect Page" -Tags SuspectPage, High , Database -ForEach $InstancesToTest {
+Describe "Suspect Page" -Tag SuspectPage, High , Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.suspectpage' }).Value
     Context "Testing suspect pages on <_.Name>" {
         It "Database <_.Name> should return 0 suspect pages on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.suspectpageexclude -notcontains $PsItem.Name } } {
@@ -60,7 +60,7 @@ Describe "Suspect Page" -Tags SuspectPage, High , Database -ForEach $InstancesTo
     }
 }
 
-Describe "Database Collation" -Tags DatabaseCollation, High, Database -ForEach $InstancesToTest {
+Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.databasecollation' }).Value
     Context "Testing database collation on <_.Name>" {
         It "Database <_.Name> collation <_.Collation> should match server collation <_.ServerCollation> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.wrongcollation -notcontains $PsItem.Name } } {
@@ -76,7 +76,7 @@ Describe "Database Collation" -Tags DatabaseCollation, High, Database -ForEach $
 }
 
 
-Describe "Valid Database Owner" -Tags ValidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
+Describe "Valid Database Owner" -Tag ValidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.validdatabaseowner' }).Value
 
     Context "Testing Database Owners on <_.Name>" {
@@ -88,7 +88,7 @@ Describe "Valid Database Owner" -Tags ValidDatabaseOwner, Medium, Database -ForE
 }
 
 
-Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
+Describe "Invalid Database Owner" -Tag InvalidDatabaseOwner, Medium, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.invaliddatabaseowner' }).Value
     Context "Testing Database Owners on <_.Name>" {
 
@@ -98,7 +98,7 @@ Describe "Invalid Database Owner" -Tags InvalidDatabaseOwner, Medium, Database -
     }
 }
 
-Describe "AsymmetricKeySize" -Tags AsymmetricKeySize, CIS, Database -ForEach $InstancesToTest {
+Describe "AsymmetricKeySize" -Tag AsymmetricKeySize, CIS, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.security.asymmetrickeysize' }).Value
     Context "Testing Asymmetric Key Size is 2048 or higher on <_.Name>" {
         It "Database <_.Name> asymmetric key size should be at least 2048 on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.asymmetrickeysizeexclude -notcontains $PsItem.Name } } {
@@ -108,7 +108,7 @@ Describe "AsymmetricKeySize" -Tags AsymmetricKeySize, CIS, Database -ForEach $In
     }
 }
 
-Describe "Auto Close" -Tags AutoClose, High, Database -ForEach $InstancesToTest {
+Describe "Auto Close" -Tag AutoClose, High, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.autoclose' }).Value
     Context "Testing Auto Close on <_.Name>" {
         It "Database <_.Name> should have Auto Close set to <_.ConfigValues.autoclose> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autocloseexclude -notcontains $PsItem.Name } } {
@@ -117,7 +117,7 @@ Describe "Auto Close" -Tags AutoClose, High, Database -ForEach $InstancesToTest 
     }
 }
 
-Describe "Auto Shrink" -Tags AutoShrink, High, Database -ForEach $InstancesToTest {
+Describe "Auto Shrink" -Tag AutoShrink, High, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.autoshrink' }).Value
     Context "Testing Auto Shrink on <_.Name>" {
         It "Database <_.Name> should have Auto Shrink set to <_.ConfigValues.autoshrink> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoshrinkexclude -notcontains $PsItem.Name } } {
@@ -126,7 +126,7 @@ Describe "Auto Shrink" -Tags AutoShrink, High, Database -ForEach $InstancesToTes
     }
 }
 
-Describe "Virtual Log Files" -Tags VirtualLogFile, Medium, Database -ForEach $InstancesToTest {
+Describe "Virtual Log Files" -Tag VirtualLogFile, Medium, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.vlf' }).Value
     Context "Testing Database VLFs on <_.Name>" {
         It "Database <_.Name> VLF count should be less than <_.ConfigValues.maxvlf> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.vlfexclude -notcontains $PsItem.Name } } {
@@ -135,7 +135,7 @@ Describe "Virtual Log Files" -Tags VirtualLogFile, Medium, Database -ForEach $In
     }
 }
 
-Describe "Log File Count Checks" -Tags LogfileCount, Medium, Database -ForEach $InstancesToTest {
+Describe "Log File Count Checks" -Tag LogfileCount, Medium, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.logfilecounttest' }).Value
     Context "Testing Log File count for <_.Name>" {
         It "Database <_.Name> should have <_.ConfigValues.logfilecount> or less log files on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.logfilecountexclude -notcontains $PsItem.Name } } {
@@ -144,7 +144,7 @@ Describe "Log File Count Checks" -Tags LogfileCount, Medium, Database -ForEach $
     }
 }
 
-Describe "Auto Create Statistics" -Tags AutoCreateStatistics, Low, Database -ForEach $InstancesToTest {
+Describe "Auto Create Statistics" -Tag AutoCreateStatistics, Low, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.autocreatestatistics' }).Value
     Context "Testing Auto Create Statistics for <_.Name>" {
         It "Database <_.Name> should have Auto Create Statistics set to <_.ConfigValues.autocreatestats> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autocreatestatsexclude -notcontains $PsItem.Name } } {
@@ -153,7 +153,7 @@ Describe "Auto Create Statistics" -Tags AutoCreateStatistics, Low, Database -For
     }
 }
 
-Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, Low, Database -ForEach $InstancesToTest {
+Describe "Auto Update Statistics" -Tag AutoUpdateStatistics, Low, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.autoupdatestatistics' }).Value
     Context "Testing Auto Update Statistics on <_.Name>" {
         It "Database <_.Name> should have Auto Update Statistics set to <_.ConfigValues.autoupdatestats> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoupdatestatsexclude -notcontains $PsItem.Name } } {
@@ -162,7 +162,7 @@ Describe "Auto Update Statistics" -Tags AutoUpdateStatistics, Low, Database -For
     }
 }
 
-Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsynchronously, Low, Database -ForEach $InstancesToTest {
+Describe "Auto Update Statistics Asynchronously" -Tag AutoUpdateStatisticsAsynchronously, Low, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.autoupdatestatisticsasynchronously' }).Value
     Context "Testing Auto Update Statistics Asynchronously on <_.Name>" {
         It "Database <_.Name> should have Auto Update Statistics Asynchronously set to <_.ConfigValues.autoupdatestatsasync> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.autoupdatestatsasyncexclude -notcontains $PsItem.Name } } {
@@ -171,7 +171,7 @@ Describe "Auto Update Statistics Asynchronously" -Tags AutoUpdateStatisticsAsync
     }
 }
 
-Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, CIS, Database -ForEach $InstancesToTest {
+Describe "Trustworthy Option" -Tag Trustworthy, DISA, Varied, CIS, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.trustworthy' }).Value
     Context "Testing database trustworthy option on <_.Name>" {
         It "Database <_.Name> should have Trustworthy set to false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.trustworthyexclude -notcontains $PsItem.Name } } {
@@ -180,7 +180,7 @@ Describe "Trustworthy Option" -Tags Trustworthy, DISA, Varied, CIS, Database -Fo
     }
 }
 
-Describe "Database Status" -Tags DatabaseStatus, High, Database -ForEach $InstancesToTest {
+Describe "Database Status" -Tag DatabaseStatus, High, Database -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object {$_.Name -eq 'skip.database.status' }).Value
     Context "Database status is correct on <_.Name>" {
         It "Database <_.Name> has the expected status on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.statusexclude -notcontains $PsItem.Name } } {
