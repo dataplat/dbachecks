@@ -2,9 +2,20 @@
 dbachecks.psprojs
 config.json
 
-# ignore files for VS and VS Code and PowerShell Studio
-.vs/*
-.vscode/*
-*.pssproj
-*.sln
-*.TempPoint.*
+output/
+
+**.bak
+*.local.*
+!**/README.md
+.kitchen/
+
+*.nupkg
+*.suo
+*.user
+*.coverage
+.vs
+.psproj
+.sln
+markdownissues.txt
+node_modules
+package-lock.json
