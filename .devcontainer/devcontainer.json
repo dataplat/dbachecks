@@ -151,7 +151,7 @@
                 "powershell.codeFormatting.useCorrectCasingForCommentHelpForwardHelpTargetName": true,
                 "powershell.codeFormatting.autoCorrectAliases": true,
                 "powershell.codeFormatting.avoidSemicolonsAsLineTerminators": true,
-                "powershell.codeFormatting.useConstantStrings": true,
+                // "powershell.codeFormatting.useConstantStrings": true,
                 "powershell.codeFormatting.whitespaceBetweenParameters": true,
                 "powershell.codeFormatting.whitespaceInsideBrace": true,
                 "powershell.codeFolding.enable": true,
