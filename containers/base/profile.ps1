@@ -7,14 +7,8 @@
 param()
 if (Test-Path /workspace/containers -ErrorAction SilentlyContinue) {
     Import-Module /workspace/containers/JessAndBeard.psm1
-    $VerbosePreference = 'Continue' # So we can see ALL of the verbose in the psm1 file if we need to!
-    Import-Module /workspace/dbachecks.psd1 -Verbose
-    $VerbosePreference = 'SilentlyContinue'
 } else {
     Import-Module /workspaces/dbachecks/containers/JessAndBeard.psm1
-    $VerbosePreference = 'Continue' # So we can see ALL of the verbose in the psm1 file if we need to!
-    Import-Module /workspaces/dbachecks/dbachecks.psd1 -Verbose
-    $VerbosePreference = 'SilentlyContinue'
 }
 
 Import-Module dbatools
