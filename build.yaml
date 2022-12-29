@@ -42,9 +42,9 @@ BuildWorkflow:
     - Clean
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
-    - Create_changelog_release_output
-    - Generate_Conceptual_Help
-    - Generate_Wiki_Content
+#    - Create_changelog_release_output
+#    - Generate_Conceptual_Help
+#    - Generate_Wiki_Content
 
   pack:
     - build
@@ -133,14 +133,6 @@ Pester:
 #   #CodeCoverageMergedOutputFile: JaCoCo_coverage.xml
 #   #CodeCoverageFilePattern: JaCoCo_Merge.xml
 
-# DscTest:
-#   ExcludeTag:
-#     - "Common Tests - New Error-Level Script Analyzer Rules"
-#   Tag:
-#   ExcludeSourceFile:
-#     - output
-#   ExcludeModuleFile:
-#     - Modules/DscResource.Common
 
 # Import ModuleBuilder tasks from a specific PowerShell module using the build
 # task's alias. Wildcard * can be used to specify all tasks that has a similar
@@ -149,10 +141,9 @@ Pester:
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
-  Sampler.GitHubTasks:
-    - '*.ib.tasks'
-  DscResource.DocGenerator:
-    - 'Task.*'
+#  Sampler.GitHubTasks:
+#    - '*.ib.tasks'
+
 
 # Invoke-Build Header to be used to 'decorate' the terminal output of the tasks.
 TaskHeader: |
@@ -166,23 +157,10 @@ TaskHeader: |
   Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
   ""
 
-GitHubConfig:
-  GitHubFilesToAdd:
-    - 'CHANGELOG.md'
-  GitHubConfigUserName: dscbot
-  GitHubConfigUserEmail: dsccommunity@outlook.com
-  UpdateChangelogOnPrerelease: false
-
-####################################################
-#      DscResource.DocGenerator Configuration      #
-####################################################
-DscResource.DocGenerator:
-  Generate_Conceptual_Help:
-    MarkdownCodeRegularExpression:
-      - '\`(.+?)\`' # Match inline code-block
-      - '\\(\\)' # Match escaped backslash
-      - '\[[^\[]+\]\((.+?)\)' # Match markdown URL
-      - '_(.+?)_' # Match Italic (underscore)
-      - '\*\*(.+?)\*\*' # Match bold
-      - '\*(.+?)\*' # Match Italic (asterisk)
+# GitHubConfig:
+#   GitHubFilesToAdd:
+#     - 'CHANGELOG.md'
+#   GitHubConfigUserName: dscbot
+#   GitHubConfigUserEmail: dsccommunity@outlook.com
+#   UpdateChangelogOnPrerelease: false
 

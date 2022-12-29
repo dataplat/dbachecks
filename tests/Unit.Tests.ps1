@@ -1,4 +1,4 @@
-﻿$ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
 # For tests in .\Tests subdirectory
 if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
     $ModuleBase = Split-Path $ModuleBase -Parent
@@ -289,3 +289,11 @@ Describe "Database Tests Exclusions" {
 # vfeEiPewVvTtR9NzKQmRz9nqKtRTUaZCPHeYIoGX0Sq2HdCfY6fRNt/cSOhrOr1N
 # JdrpoTCNdFA6oeEN7GMQ056XIjQCcYwaFWExQrqridnObxYu
 # SIG # End signature block
+
+    $Describes.ForEach{
+        It "$($Psitem.Name) should reference the global exclude configuration" {
+            $psitem.Extent -like "*`$ExcludedDatabases*" | Should -BeTrue -Because "We need to exclude the databases specified in the config command.invokedbccheck.excludedatabases"
+        }
+    }
+}
+#>

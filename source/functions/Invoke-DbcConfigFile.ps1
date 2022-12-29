@@ -16,7 +16,12 @@ Using this switch turns this "nice by default" feature off and enables you to ca
 .EXAMPLE
 Invoke-DbcConfigFile
 
-Opens "$script:localapp\config.json" for editing. Follow with Import-DbcConfig.
+Opens "$script:localapp\config.json" for editing.
+
+.EXAMPLE
+Invoke-DbcConfigFile -Path C:\temp\config.json
+
+Opens "C:\temp\config.json" for editing.
 
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Invoke-DbcConfigFile/
@@ -38,9 +43,8 @@ function Invoke-DbcConfigFile {
         try {
             Invoke-Item -Path $Path
             Write-PSFMessage -Level	Output -Message "Remember to run Import-DbcConfig when you've finished your edits"
-        }
-        catch {
-            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
+        } catch {
+            Stop-PSFFunction -Message 'Failure' -ErrorRecord $_
             return
         }
     }

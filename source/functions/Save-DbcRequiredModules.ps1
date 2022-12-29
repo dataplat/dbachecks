@@ -18,12 +18,17 @@ Save-DbcRequiredModules -Path C:\temp\downlaods
 
 Saves all required modules and dbachecks to C:\temp\downloads
 
+.EXAMPLE
+Save-DbcRequiredModules -Path C:\temp\downlaods -Verbose
+
+Saves all required modules and dbachecks to C:\temp\downloads and shows verbose output
+
 .LINK
 https://dbachecks.readthedocs.io/en/latest/functions/Save-DbcRequiredModules/
 
 #>
 function Save-DbcRequiredModules {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
     [CmdletBinding()]
     param (
         [Parameter (Mandatory)]
@@ -34,9 +39,8 @@ function Save-DbcRequiredModules {
     if (-not (Test-Path $Path)) {
         try {
             $null = New-Item -ItemType Directory -Path $Path
-        }
-        catch {
-            Stop-PSFFunction -Message "Failure" -ErrorRecord $_
+        } catch {
+            Stop-PSFFunction -Message 'Failure' -ErrorRecord $_
         }
     }
 

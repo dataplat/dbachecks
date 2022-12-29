@@ -155,7 +155,7 @@
                 "powershell.codeFormatting.whitespaceBetweenParameters": true,
                 "powershell.codeFormatting.whitespaceInsideBrace": true,
                 "powershell.codeFolding.enable": true,
-                "powershell.codeFolding.showLastLine": false,
+                "powershell.codeFolding.showLastLine": true,
                 "powershell.enableReferencesCodeLens": true,
                 "powershell.powerShellDefaultVersion": "PowerShell Core 7 (x64)",
                 "editor.formatOnSave": true,
