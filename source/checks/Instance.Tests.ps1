@@ -1204,7 +1204,7 @@ $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks
 
     Describe "Suspect Page Limit Nearing" -Tags SuspectPageLimit, Medium, $filename {
         $skip = Get-DbcConfigValue skip.instance.suspectpagelimit
-        $thresholdPercent = Get-DbcConfigValue policy.suspectpages.threshold
+        $thresholdPercent = Get-DbcConfigValue policy.suspectpage.threshold
         if ($NotContactable -contains $psitem) {
             Context "Testing if the suspect_pages table is nearing the limit of 1000 rows on $psitem" {
                 It "Can't Connect to $Psitem" -Skip:$skip {
