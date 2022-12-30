@@ -13,7 +13,7 @@ BeforeDiscovery {
         if ($NotContactable -notcontains $psitem) {
             $Instance = $psitem
             try {
-                $InstanceSMO = Connect-DbaInstance  -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
+                $InstanceSMO = Connect-DbaInstance -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
             } catch {
                 $NotContactable += $Instance
             }
@@ -29,7 +29,7 @@ BeforeDiscovery {
     }
     Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Verbose
     #if you ever need to see what is being tested uncomment and run in verbose
-    $InstancesToTestJson = $InstancesToTest | ConvertTo-Json
+    $InstancesToTestJson = $InstancesToTest | ConvertTo-Json -Depth 10
     Write-PSFMessage -Message "InstancesToTest = $InstancesToTestJson" -Level Verbose
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
     # Get-DbcConfig is expensive so we call it once
@@ -39,7 +39,7 @@ BeforeDiscovery {
 Describe "Default Trace" -Tag DefaultTrace, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.defaulttrace' }).Value
     Context "Checking Default Trace on <_.Name>" {
-        It "The Default Trace should be enabled on <_.Name>"  -Skip:$skip {
+        It "The Default Trace should be enabled on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.DefaultTraceEnabled.ConfigValue | Should -Be 1 -Because "We expected the Default Trace to be enabled"
         }
     }
@@ -47,7 +47,7 @@ Describe "Default Trace" -Tag DefaultTrace, CIS, Low, Instance -ForEach $Instanc
 Describe "OLE Automation Procedures Disabled" -Tag OleAutomationProceduresDisabled, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.oleautomationproceduresdisabled' }).Value
     Context "Checking OLE Automation Procedures on <_.Name>" {
-        It "The OLE Automation Procedures should be disabled on <_.Name>"  -Skip:$skip {
+        It "The OLE Automation Procedures should be disabled on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.OleAutomationProceduresEnabled.ConfigValue | Should -Be 0 -Because "We expect the OLE Automation Procedures to be disabled"
         }
     }
@@ -56,7 +56,7 @@ Describe "OLE Automation Procedures Disabled" -Tag OleAutomationProceduresDisabl
 Describe "Remote Access Disabled" -Tag RemoteAccessDisabled, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.remoteaccessdisabled' }).Value
     Context "Checking Remote Access on <_.Name>" {
-        It "Remote Access should be disabled on <_.Name>"  -Skip:$skip {
+        It "Remote Access should be disabled on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.RemoteAccess.ConfigValue | Should -Be 0 -Because "We expected Remote Access to be disabled"
         }
     }
@@ -65,7 +65,7 @@ Describe "Remote Access Disabled" -Tag RemoteAccessDisabled, Security, CIS, Low,
 Describe "Cross Database Ownership Chaining" -Tag CrossDBOwnershipChaining, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.CrossDBOwnershipChaining' }).Value
     Context "Checking Cross Database Ownership Chaining on <_.Name>" {
-        It "Cross Database Ownership Chaining should be disabled on <_.Name>"  -Skip:$skip {
+        It "Cross Database Ownership Chaining should be disabled on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.CrossDBOwnershipChaining.ConfigValue | Should -Be 0 -Because "We expected the Cross DB Ownership Chaining to be disabled"
         }
     }
@@ -74,7 +74,7 @@ Describe "Cross Database Ownership Chaining" -Tag CrossDBOwnershipChaining, Secu
 Describe "Scan For Startup Procedures" -Tag ScanForStartupProceduresDisabled, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.scanforstartupproceduresdisabled' }).Value
     Context "Checking Scan For Startup Procedures on <_.Name>" {
-        It "Scan For Startup Procedures is set to <_.ConfigValues.scanforstartupproceduresdisabled> on <_.Name>"  -Skip:$skip {
+        It "Scan For Startup Procedures is set to <_.ConfigValues.scanforstartupproceduresdisabled> on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.ScanForStartupProcedures.ConfigValue -eq 0 | Should -Be $PSItem.ConfigValues.scanforstartupproceduresdisabled -Because "We expected the Cross DB Ownership Chaining to be disabled"
         }
     }
@@ -83,7 +83,7 @@ Describe "Scan For Startup Procedures" -Tag ScanForStartupProceduresDisabled, Se
 Describe "SQL Mail XPs Disabled" -Tag SQLMailXPsDisabled, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.SQLMailXPsDisabled' }).Value
     Context "Checking SQL Mail XPs on <_.Name>" {
-        It "SQL Mail XPs should be disabled on <_.Name>"  -Skip:($skip -or $psitem.VersionMajor -gt 10) {
+        It "SQL Mail XPs should be disabled on <_.Name>" -Skip:($skip -or $psitem.VersionMajor -gt 10) {
             $PSItem.Configuration.SqlMailXPsEnabled.ConfigValue | Should -Be 0 -Because "We expected Sql Mail XPs to be disabled"
         }
     }
@@ -92,7 +92,7 @@ Describe "SQL Mail XPs Disabled" -Tag SQLMailXPsDisabled, Security, CIS, Low, In
 Describe "Dedicated Administrator Connection" -Tag DAC, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.dac' }).Value
     Context "Checking Dedicated Administrator Connection on <_.Name>" {
-        It "DAC is set to <_.ConfigValues.dacallowed> on <_.Name>"  -Skip:$skip {
+        It "DAC is set to <_.ConfigValues.dacallowed> on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.RemoteDACConnectionsEnabled.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.dacallowed -Because 'This is the setting that you have chosen for DAC connections'
         }
     }
@@ -101,7 +101,7 @@ Describe "Dedicated Administrator Connection" -Tag DAC, Security, CIS, Low, Inst
 Describe "OLE Automation" -Tag OLEAutomation, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.oleautomation' }).Value
     Context "Checking OLE Automation on <_.Name>" {
-        It "OLE Automation is set to <_.ConfigValues.OLEAutomation> on <_.Name>"  -Skip:$skip {
+        It "OLE Automation is set to <_.ConfigValues.OLEAutomation> on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.OleAutomationProceduresEnabled.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.OLEAutomation -Because 'OLE Automation can introduce additional security risks'
         }
     }
@@ -109,7 +109,7 @@ Describe "OLE Automation" -Tag OLEAutomation, Security, CIS, Low, Instance -ForE
 Describe "Ad Hoc Workload Optimization" -Tag AdHocWorkload, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.AdHocWorkload' }).Value
     Context "Checking Ad Hoc Workload Optimization on <_.Name>" {
-        It "Ad Hoc Workload Optimization is enabled on <_.Name>"  -Skip:($skip -or $psitem.VersionMajor -lt 10) {
+        It "Ad Hoc Workload Optimization is enabled on <_.Name>" -Skip:($skip -or $psitem.VersionMajor -lt 10) {
             $PSItem.Configuration.OptimizeAdhocWorkloads.ConfigValue -eq 1 | Should -Be 1 -Because "Optimize for ad hoc workloads is a recommended setting"
         }
     }
@@ -118,7 +118,7 @@ Describe "Ad Hoc Workload Optimization" -Tag AdHocWorkload, Medium, Instance -Fo
 Describe "Ad Hoc Distributed Queries" -Tag AdHocDistributedQueriesEnabled, security, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.AdHocDistributedQueriesEnabled' }).Value
     Context "Checking Ad Hoc Distributed Queries on <_.Name>" {
-        It "Ad Hoc Distributed Queries is set to <_.ConfigValues.AdHocDistributedQueriesEnabled> on <_.Name>"  -Skip:$skip {
+        It "Ad Hoc Distributed Queries is set to <_.ConfigValues.AdHocDistributedQueriesEnabled> on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.AdHocDistributedQueriesEnabled.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.AdHocDistributedQueriesEnabled -Because 'This is the setting you have chosen for AdHoc Distributed Queries Enabled'
         }
     }
@@ -126,10 +126,10 @@ Describe "Ad Hoc Distributed Queries" -Tag AdHocDistributedQueriesEnabled, secur
 Describe "Default File Path" -Tag DefaultFilePath, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.DefaultFilePath' }).Value
     Context "Checking Default Data File Path on <_.Name>" {
-        It "Default Data File Path should not be on the C Drive on <_.Name>"  -Skip:$skip {
+        It "Default Data File Path should not be on the C Drive on <_.Name>" -Skip:$skip {
             $PSItem.Settings.DefaultFile.substring(0, 1) | Should -Not -Be "C" -Because 'Default Data file path should not be your C:\ drive'
         }
-        It "Default Log File Path should not be on the C Drive on <_.Name>"  -Skip:$skip {
+        It "Default Log File Path should not be on the C Drive on <_.Name>" -Skip:$skip {
             $PSItem.Settings.DefaultLog.substring(0, 1) | Should -Not -Be "C" -Because 'Default Log file path should not be your C:\ drive'
         }
     }
@@ -165,7 +165,7 @@ Describe "Login SA cannot exist" -Tag SaExist, CIS, Medium, Instance -ForEach $I
 Describe "Default Backup Compression" -Tag DefaultBackupCompression, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.DefaultBackupCompression' }).Value
     Context "Checking Default Backup Compression on <_.Name>" {
-        It "Default Backup Compression is set to <_.ConfigValues.DefaultBackupCompression> on <_.Name>"  -Skip:$skip {
+        It "Default Backup Compression is set to <_.ConfigValues.DefaultBackupCompression> on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.DefaultBackupCompression.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.DefaultBackupCompression -Because 'This is the setting you have chosen the default backup compression'
         }
     }
@@ -174,10 +174,10 @@ Describe "Default Backup Compression" -Tag DefaultBackupCompression, Low, Instan
 Describe "Model Database Growth" -Tag ModelDbGrowth, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.modeldbgrowth' }).Value
     Context "Testing model database growth setting is not default on <_.Name>" {
-        It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files  {
+        It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files {
             $psitem.GrowthType | Should -Not -Be 'Percent' -Because 'New databases use the model database as a template and percent growth can cause performance problems'
         }
-        It "Growth settings should not be 1Mb for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files  {
+        It "Growth settings should not be 1Mb for file <_.Name> on <_.Parent.Parent.Parent.Name>" -Skip:$skip -ForEach $PsItem.Databases['model'].FileGroups.Files {
             $psitem.Growth | Should -Not -Be 1024 -Because 'New databases use the model database as a template and growing for each Mb will have a performance impact'
         }
         It "Growth settings should not be percent for file <_.Name> on <_.Parent.Parent.Name>" -Skip:$skip -ForEach @($PsItem.Databases['model'].LogFiles) {
@@ -203,7 +203,7 @@ Describe "Instance MaxDop" -Tag MaxDopInstance, MaxDop, Medium, Instance -ForEac
     Context "Testing Instance MaxDop Value on <_.Name>" {
         #if UseRecommended - check that the CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the the RecommendedMaxDop property
         It "Instance Level MaxDop setting should be correct on <_.Name>" -Skip:$Skip -ForEach ($Psitem | Where-Object { $psitem.ConfigValues.UseRecommendedMaxDop -eq $true }) {
-            $psitem.MaxDopSettings.CurrentInstanceMaxDop | Should -Be $psitem.MaxDopSettings.RecommendedMaxDop  -Because "We expect the MaxDop Setting to be the default recommended value $($psitem.MaxDopSettings.RecommendedMaxDop)"
+            $psitem.MaxDopSettings.CurrentInstanceMaxDop | Should -Be $psitem.MaxDopSettings.RecommendedMaxDop -Because "We expect the MaxDop Setting to be the default recommended value $($psitem.MaxDopSettings.RecommendedMaxDop)"
         }
         #if not UseRecommended - check that the CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the MaxDopValue parameter
         It "Instance Level MaxDop setting should be correct on <_.Name>" -Skip:$Skip -ForEach($Psitem | Where-Object { $psitem.ConfigValues.UseRecommendedMaxDop -ne $true }) {
@@ -248,7 +248,7 @@ Describe "Trace Flags Not Expected" -Tag TraceFlagsNotExpected, TraceFlag, Mediu
 Describe "CLR Enabled" -Tag CLREnabled, security, CIS, High, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.CLREnabled' }).Value
     Context "Testing CLR Enabled on <_.Name>" {
-        It "CLR Enabled is set to <_.ConfigValues.CLREnabled> on <_.Name>"  -Skip:$skip {
+        It "CLR Enabled is set to <_.ConfigValues.CLREnabled> on <_.Name>" -Skip:$skip {
             $PSItem.Configuration.IsSqlClrEnabled.ConfigValue -eq 1 | Should -Be $psitem.ConfigValues.CLREnabled -Because 'This is the setting you have chosen for CLR Enabled'
         }
     }
@@ -257,7 +257,7 @@ Describe "CLR Enabled" -Tag CLREnabled, security, CIS, High, Instance -ForEach $
 Describe "sp_whoisactive is Installed" -Tag WhoIsActiveInstalled, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.WhoIsActiveInstalled' }).Value
     Context "Testing WhoIsActive exists on <_.Name>" {
-        It "WhoIsActive should exist on <_.ConfigValues.whoisactivedatabase> on <_.Name>"  -Skip:$skip {
+        It "WhoIsActive should exist on <_.ConfigValues.whoisactivedatabase> on <_.Name>" -Skip:$skip {
             $Psitem.ConfigValues.WhoIsActiveInstalled | Should -Be 1 -Because "The sp_WhoIsActive stored procedure should be installed in $($psitem.ConfigValues.whoisactivedatabase)"
         }
     }
@@ -284,7 +284,7 @@ Describe "XE Sessions that should Exist" -Tag XESessionExists, ExtendedEvent, Me
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.XESessionExists' }).Value
     Context "Checking sessions on <_.Name>" {
         It "Session <_.SessionName> should exist on <_.Name>" -Skip:$skip -ForEach $PsItem.XeSessions.RequiredExists {
-            $psitem.SessionName | Should  -BeIn $PsItem.Sessions -Because "$($psitem.SessionName) session should exist on $($PsItem.Name)"
+            $psitem.SessionName | Should -BeIn $PsItem.Sessions -Because "$($psitem.SessionName) session should exist on $($PsItem.Name)"
         }
     }
 }
@@ -292,7 +292,7 @@ Describe "XE Sessions that should be running" -Tag XESessionRunning, ExtendedEve
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.XESessionRunning' }).Value
     Context "Checking sessions on <_.Name>" {
         It "Session <_.SessionName> should be running on <_.Name>" -Skip:$skip -ForEach $PsItem.XeSessions.RequiredRunning {
-            $psitem.SessionName | Should  -BeIn $PsItem.Running -Because "$($psitem.SessionName) session should be running on $($PsItem.Name)"
+            $psitem.SessionName | Should -BeIn $PsItem.Running -Because "$($psitem.SessionName) session should be running on $($PsItem.Name)"
         }
     }
 }
@@ -309,7 +309,7 @@ Describe "Error Log Entries" -Tag ErrorLog, Medium, Instance -ForEach $Instances
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.errorlogentries' }).Value
     Context "Checking error log on <_.Name>" {
         It "Error log should be free of error severities 17-24 within the window of <_.ErrorLogEntries.logWindow> days on <_.Name>" -Skip:$Skip {
-            $PSItem.ErrorLogEntries.Count | Should -Be 0 -Because  "these severities indicate serious problems" 
+            $PSItem.ErrorLogEntries.Count | Should -Be 0 -Because "these severities indicate serious problems" 
         }
     }
 }
