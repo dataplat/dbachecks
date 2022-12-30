@@ -173,5 +173,5 @@
             }
         }
     },
-    "postCreateCommand": "pwsh -c 'ii readme.md'"
+    "postCreateCommand": "pwsh -c 'code /workspace/developing/Howto.md'"
 }
