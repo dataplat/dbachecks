@@ -79,9 +79,9 @@ Pester:
     Output:
       Verbosity: None
     CodeCoverage:
-      Path:
+      Path: '*/checks/*'
       OutputFormat:
-      CoveragePercentTarget: 1
+      CoveragePercentTarget: 0
       OutputPath: JaCoCo_coverage.xml
       OutputEncoding: ascii
       ExcludeTests:
