@@ -74,6 +74,9 @@ function Convert-DbcResult {
         $table.columns.add($col9)
         $table.columns.add($col10)
 
+
+    }
+    process {
         Write-PSFMessage "Testing we have a Test Results object" -Level Verbose
         if (-not $TestResults -or $TestResult) {
             Write-PSFMessage "It may be that we don't have a Test Results Object" -Level Significant
@@ -81,41 +84,71 @@ function Convert-DbcResult {
             Write-PSFMessage "It is possible You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
             Return ''
         }
-    }
-    process {
-        Write-PSFMessage "Processing the test results" -Level Verbose
-        $TestResults.TestResult.ForEach{
-            $ContextSplit = ($PSitem.Context -split ' ')
-            $ComputerName = ($ContextSplit[-1] -split '\\')[0]
-            $NameSplit = ($PSitem.Name -split ' ')
-            if ($PSitem.Name -match '^Database\s(.*?)\s') {
-                $Database = $Matches[1]
-            }
-            else {
-                $Database = $null
-            }
-            $Date = Get-Date
-            if ($Label) {
+        if ( $TestResults.TestResult) {
+            Write-PSFMessage "Processing the v4 test results" -Level Verbose
+            $TestResults.TestResult.ForEach{
+                $ContextSplit = ($PSitem.Context -split ' ')
+                $ComputerName = ($ContextSplit[-1] -split '\\')[0]
+                $NameSplit = ($PSitem.Name -split ' ')
+                if ($PSitem.Name -match '^Database\s(.*?)\s') {
+                    $Database = $Matches[1]
+                } else {
+                    $Database = $null
+                }
+                $Date = Get-Date
+                if ($Label) {
 
+                } else {
+                    $Label = 'NoLabel'
+                }
+                # Create a new Row
+                $row = $table.NewRow()
+                # Add values to new row
+                $Row.Date = [datetime]$Date
+                $Row.Label = $Label
+                $Row.Describe = $PSitem.Describe
+                $Row.Context = $ContextSplit[0..($ContextSplit.Count - 3)] -join ' '
+                $Row.Name = $NameSplit[0..($NameSplit.Count - 3)] -join ' '
+                $Row.Database = $Database
+                $Row.ComputerName = $ComputerName
+                $Row.Instance = $ContextSplit[-1]
+                $Row.Result = $PSitem.Result
+                $Row.FailureMessage = $PSitem.FailureMessage
+                #Add new row to table
+                $table.Rows.Add($row)
             }
-            else {
-                $Label = 'NoLabel'
+        } else {
+            Write-PSFMessage "Processing the v5 test results" -Level Verbose
+            $TestResults.Tests.Where{ $Psitem.Result -ne 'NotRun' }.ForEach{
+                $ContextSplit = ($PSitem.ExpandedName -split ' ')
+                $ComputerName = ($ContextSplit[-1] -split '\\')[0]
+                if ($PSitem.ExpandedName -match '^Database\s(.*?)\s') {
+                    $Database = $Matches[1]
+                } else {
+                    $Database = $null
+                }
+                $Date = Get-Date
+                if ($Label) {
+
+                } else {
+                    $Label = 'NoLabel'
+                }
+                # Create a new Row
+                $row = $table.NewRow()
+                # Add values to new row
+                $Row.Date = [datetime]$Date
+                $Row.Label = $Label
+                $Row.Describe = $PSitem.ExpandedPath.Split('.')[0]
+                $Row.Context = $PSitem.ExpandedPath.Split('.')[1]
+                $Row.Name = $PSitem.ExpandedPath.Split('.')[2]
+                $Row.Database = $Database
+                $Row.ComputerName = $ComputerName
+                $Row.Instance = $ContextSplit[-1]
+                $Row.Result = $PSitem.Result
+                $Row.FailureMessage = $PSitem.FailureMessage
+                #Add new row to table
+                $table.Rows.Add($row)
             }
-            # Create a new Row
-            $row = $table.NewRow()
-            # Add values to new row
-            $Row.Date = [datetime]$Date
-            $Row.Label = $Label
-            $Row.Describe = $PSitem.Describe
-            $Row.Context = $ContextSplit[0..($ContextSplit.Count - 3)] -join ' '
-            $Row.Name = $NameSplit[0..($NameSplit.Count - 3)] -join ' '
-            $Row.Database = $Database
-            $Row.ComputerName = $ComputerName
-            $Row.Instance = $ContextSplit[-1]
-            $Row.Result = $PSitem.Result
-            $Row.FailureMessage = $PSitem.FailureMessage
-            #Add new row to table
-            $table.Rows.Add($row)
         }
     }
     end {
