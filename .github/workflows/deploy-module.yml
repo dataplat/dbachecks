@@ -31,7 +31,7 @@ jobs:
         configFilePath: GitVersion.yml
     - name: Build & Package Module
       shell: pwsh
-      run: ./build.ps1 -ResolveDependency -tasks pack
+      run: ./build.ps1 -ResolveDependency -tasks pack -Verbose
       env:
         ModuleVersion: ${{ env.gitVersion.NuGetVersionV2 }}
     - name: Publish Build Artifact
