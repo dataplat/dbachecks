@@ -12,19 +12,6 @@ TaskHeader: |
   ""
 
 ####################################################
-#          ModuleBuilder Configuration             #
-####################################################
-
-CopyPaths:
-  - bin
-  - checks
-  - functions
-  - internal
-  - xml
-Encoding: UTF8
-VersionedOutputDirectory: true
-
-####################################################
 # Pipeline Build Task Configuration (Invoke-Build) #
 ####################################################
 BuildWorkflow:
@@ -57,7 +44,18 @@ BuildWorkflow:
     - Publish_Release_To_GitHub
     - Publish_GitHub_Wiki_Content
 
+####################################################
+#          ModuleBuilder Configuration             #
+####################################################
 
+CopyPaths:
+  - bin
+  - checks
+  - functions
+  - internal
+  - xml
+Encoding: UTF8
+VersionedOutputDirectory: true
 
 ####################################################
 #       PESTER  Configuration                      #
