@@ -5,8 +5,13 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'currentAccountName', Justification = 'Because silly script analyuser cant see it is used')]
 [CmdletBinding()]
 param()
-# }
-#endregion
+
+if (Test-Path /workspace/containers -ErrorAction SilentlyContinue) {
+    Import-Module /workspace/containers/JessAndBeard.psm1
+} else {
+    Import-Module /workspaces/dbachecks/containers/JessAndBeard.psm1
+}
+
 
 Remove-Item '/var/opt/backups/dbachecks1' -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item '/shared' -Recurse -Force -ErrorAction SilentlyContinue
