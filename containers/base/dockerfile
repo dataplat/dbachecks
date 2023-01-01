@@ -1,0 +1,7 @@
+FROM dbachecks/sqlinstance1
+
+USER root
+
+# Copy Profile
+
+ADD profile.ps1 /root/.config/powershell/

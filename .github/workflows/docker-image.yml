@@ -1,0 +1,99 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main, pesterv5 ]
+    paths: 
+      - ".devcontainer/devcontainer.json"
+      - ".devcontainer/docker-compose.yml"
+      - ".devcontainer/codespaces/devcontainer.json"
+      - ".devcontainer/codespaces/codespaces-docker-compose.yml"
+      - containers/**
+    
+  pull_request:
+    branches: [ main, pesterv5 ]
+    paths:
+      - ".devcontainer/devcontainer.json"
+      - ".devcontainer/docker-compose.yml"
+      - ".devcontainer/codespaces/devcontainer.json"
+      - ".devcontainer/codespaces/codespaces-docker-compose.yml"
+      - containers/**
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - 
+        name: Bump version and push tag
+        id: bump
+        uses: anothrNick/github-tag-action@1.52.0
+        env:
+          DEFAULT_BUMP: minor
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push First Container
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: containers/base/
+          tags: dbachecks/sqlinstance1:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance1:latest
+      -
+        name: Build and push second Container
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: containers/second/
+          tags: dbachecks/sqlinstance2:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance2:latest
+      -
+        name: Build and push third Container
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: containers/third/
+          tags: dbachecks/sqlinstance3:${{ steps.bump.outputs.new_tag }},dbachecks/sqlinstance3:latest
+      -
+        name: Find and Replace
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "dbachecks/sqlinstance1:.*"
+          replace: "dbachecks/sqlinstance1:${{ steps.bump.outputs.new_tag }}"
+          include: "**docker-compose.yml"
+      -
+        name: Find and Replace Instance2
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "dbachecks/sqlinstance2:.*"
+          replace: "dbachecks/sqlinstance2:${{ steps.bump.outputs.new_tag }}"
+          include: "**docker-compose.yml"
+      -
+        name: Find and Replace Instance3
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "dbachecks/sqlinstance3:.*"
+          replace: "dbachecks/sqlinstance3:${{ steps.bump.outputs.new_tag }}"
+          include: "**docker-compose.yml"
+      -
+        name: Add & Commit
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Beardy McBeardFace
+          author_email: mrrobsewell@outlook.com
+          message: 'The Beard says we have another one - This is an automated message'

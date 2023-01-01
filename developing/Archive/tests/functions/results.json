@@ -1,0 +1,68 @@
+{
+  "TagFilter": [
+    "AutoClose",
+    "lastgoodcheckdb",
+    "BackupPathAccess",
+    "FailedJob"
+  ],
+  "ExcludeTagFilter": [
+    "FailsafeOperator",
+    "DatabaseMailEnabled",
+    "DatabaseMailProfile",
+    "SqlEngineServiceAccount",
+    "OrphanedFile",
+    "ServerNameMatch",
+    "SqlBrowserServiceAccount"
+  ],
+  "TestNameFilter": null,
+  "ScriptBlockFilter": null,
+  "TotalCount": 20,
+  "PassedCount": 14,
+  "FailedCount": 6,
+  "SkippedCount": 0,
+  "PendingCount": 0,
+  "InconclusiveCount": 0,
+  "Time": {
+    "Ticks": 47923307,
+    "Days": 0,
+    "Hours": 0,
+    "Milliseconds": 792,
+    "Minutes": 0,
+    "Seconds": 4,
+    "TotalDays": 5.5466790509259256E-05,
+    "TotalHours": 0.0013312029722222221,
+    "TotalMilliseconds": 4792.3307,
+    "TotalMinutes": 0.079872178333333335,
+    "TotalSeconds": 4.7923307
+  },
+  "TestResult": [
+    {
+      "FailureMessage": "Expected the actual value to be greater than 2019-12-21T15:21:38.3892727Z, because You should have run a DBCC CheckDB inside that time, but got 2019-12-21T14:41:58.0230000.",
+      "Result": "Failed",
+      "Describe": "Last Good DBCC CHECKDB",
+      "Time": "00:00:00.0056746",
+      "Show": 1023,
+      "StackTrace": "at <ScriptBlock>, D:\\OneDrive\\Documents\\GitHub\\dbachecks\\checks\\Database.Tests.ps1: line 200\r\n200:                                 $psitem.LastGoodCheckDb | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddDays( - ($maxdays)) -Because \"You should have run a DBCC CheckDB inside that time\"",
+      "Passed": false,
+      "Parameters": "System.Collections.Specialized.OrderedDictionary",
+      "Context": "Testing Last Good DBCC CHECKDB on localhost,15592",
+      "Name": "Database master last good integrity check should be less than 3 days old on a37085985dc6",
+      "ErrorRecord": "Expected the actual value to be greater than 2019-12-21T15:21:38.3892727Z, because You should have run a DBCC CheckDB inside that time, but got 2019-12-21T14:41:58.0230000.",
+      "ParameterizedSuiteName": ""
+    },
+    {
+      "FailureMessage": "",
+      "Result": "Passed",
+      "Describe": "Last Good DBCC CHECKDB",
+      "Time": "00:00:00.0032216",
+      "Show": 1023,
+      "StackTrace": "",
+      "Passed": true,
+      "Parameters": "System.Collections.Specialized.OrderedDictionary",
+      "Context": "Testing Last Good DBCC CHECKDB on localhost,15592",
+      "Name": "Database master has Data Purity Enabled on a37085985dc6",
+      "ErrorRecord": null,
+      "ParameterizedSuiteName": ""
+    }
+  ]
+}

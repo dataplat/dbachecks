@@ -1,0 +1,142 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
+		"mssql.connections": [
+            {
+                "server": "dbachecks1",
+                "database": "Northwind",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks1-Northwind",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks1",
+                "database": "pubs",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks1-pubs",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks1",
+                "database": "master",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks1-master",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks1",
+                "database": "msdb",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks1-msdb",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks2",
+                "database": "master",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks2-master",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks2",
+                "database": "msdb",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks2-msdb",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks3",
+                "database": "Northwind",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks3-Northwind",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks3",
+                "database": "pubs",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks3-pubs",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks3",
+                "database": "master",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks3-master",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            },
+            {
+                "server": "dbachecks3",
+                "database": "msdb",
+                "authenticationType": "SqlLogin",
+                "user": "sqladmin",
+                "password": "dbatools.IO",
+                "emptyPasswordInput": false,
+                "savePassword": true,
+                "profileName": "dbachecks3-msdb",
+                "connectTimeout": 15,
+                "encrypt": false,
+                "applicationName": "vscode-mssql"
+            }
+        ]
+	}
+}

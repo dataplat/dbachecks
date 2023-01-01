@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+    sql2012:
+        image: dbafromthecold/sqlserver2012dev:sp4
+        ports:  
+          - "15589:1433"
+        environment:
+          SA_PASSWORD: "Password0!"
+          ACCEPT_EULA: "Y"
+    sql2014:
+        image: dbafromthecold/sqlserver2014dev:sp2
+        ports:  
+          - "15588:1433"
+        environment:
+          SA_PASSWORD: "Password0!"
+          ACCEPT_EULA: "Y"
+    sql2016:
+        image: dbafromthecold/sqlserver2016dev:sp2
+        ports:  
+          - "15587:1433"
+        environment:
+          SA_PASSWORD: "Password0!"
+          ACCEPT_EULA: "Y"
+    sql2017:
+        image: microsoft/mssql-server-windows-developer:2017-latest
+        ports:  
+          - "15586:1433"
+        environment:
+          SA_PASSWORD: "Password0!"
+          ACCEPT_EULA: "Y"
