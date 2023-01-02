@@ -12,8 +12,7 @@ function Import-ModuleFile {
     else {
         try {
             $ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($Path))), $null, $null)
-        }
-        catch {
+        } catch {
             Write-Warning "Failed to import $Path"
         }
     }
@@ -29,12 +28,12 @@ if ((Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\WindowsPowerShell\dbacheck
     . Import-ModuleFile -Path (Convert-Path -Path "$ModuleRoot\internal\scripts\preimport.ps1")
 
 # Import all internal functions
-foreach ($function in (Get-ChildItem "$ModuleRoot\internal\functions\*.ps1")) {
+foreach ($function in (Get-ChildItem (Convert-Path -Path "$ModuleRoot\internal\functions\*.ps1"))) {
     . Import-ModuleFile -Path $function.FullName
 }
 
 # Import all public functions
-foreach ($function in (Get-ChildItem "$ModuleRoot\functions\*.ps1")) {
+foreach ($function in (Get-ChildItem (Convert-Path -Path "$ModuleRoot\functions\*.ps1"))) {
     . Import-ModuleFile -Path $function.FullName
 }
 
