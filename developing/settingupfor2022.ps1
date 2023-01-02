@@ -6,7 +6,7 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=dbatools.IO" -p 52002:1433 -
 
 docker exec -u 0 mssql1  bash -c "chown mssql /var/opt/sqlserver"
 docker exec -u 0 mssql3  bash -c "chown mssql /var/opt/sqlserver"
-
+  
 $mssql1cred = Get-Credential
 $mssql2cred = Get-Credential
 $mssql3cred = Get-Credential
