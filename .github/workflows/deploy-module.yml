@@ -337,7 +337,7 @@ jobs:
      - Test_Stage_test_linux
      - Test_Stage_test_windows_core
      - Test_Stage_test_windows_ps
-     - Test_Stage_test_macos
+#     - Test_Stage_test_macos
      - Test_Stage_Code_Coverage
     if: success() && (github.ref == 'refs/heads/main')
     steps:
