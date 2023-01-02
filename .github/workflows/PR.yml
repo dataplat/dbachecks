@@ -222,13 +222,13 @@ jobs:
       uses:  emibcn/badge-action@v1.2.1
       with:
         label: Tests
-        status: '${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.#stats.runs }} runs: ${{ fromJSON( steps.macos-test-results.outputs.json ).#conclusion }}'
+        status: '${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.macos-test-results.outputs.json ).conclusion }}'
         color: ${{ env.MACOSBADGE_COLOR }}
         path: macos-badge.svg
     - name: Upload MacOs badge to Gist
       # Upload only for main branch
       if: >
-        github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == #'main' ||
+        github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' ||
         github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
       uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
       with:
