@@ -1,9 +1,10 @@
 # dbachecks
 
 
-[![.github/workflows/deploy-module.yml](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml/badge.svg?branch=main)](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml) 
-[![GitHub release badge](https://badgen.net/github/release/dataplat/dbachecks/stable)](https://github.com/dataplat/dbachecks/releases/latest)
-[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/dbachecks?label=dbachecks)](https://www.powershellgallery.com/packages/dbachecks/)  
+[![.github/workflows/deploy-module.yml](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml/badge.svg?branch=main)](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml)  
+[![GitHub release badge](https://badgen.net/github/release/dataplat/dbachecks/stable?label=latest_release)](https://github.com/dataplat/dbachecks/releases/latest)  
+[![GitHub pre-release badge](https://badgen.net/github/release/dataplat/dbachecks?label=pre-release)](https://github.com/dataplat/dbachecks/releases/)  
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/dbachecks?label=PowerShell_Gallery)](https://www.powershellgallery.com/packages/dbachecks/)   
 [![GitHub license badge](https://badgen.net/github/license/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/blob/43423437f831e2844452d482a50864f224f12534/LICENSE)  
 [![GitHub releases badge](https://badgen.net/github/releases/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/releases)  
 ![Ubuntu Linux](https://badgen.net/badge/icon/Ubuntu?icon=terminal&label)[![Linux Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/linux-badge.svg)](https://github.com/dataplat/dbachecks/actions/)  
