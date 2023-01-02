@@ -1,0 +1,330 @@
+on:
+  pull_request:
+    branches:
+    - main
+    paths-ignore:
+    - CHANGELOG.md
+    tags:
+    - '**'
+    - '!*preview*'
+env:
+  buildFolderName: output
+  buildArtifactName: output
+  testResultFolderName: testResults
+jobs:
+  Build_Stage_Package_Module:
+    name: Package Module
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   # checkout the correct branch name
+        fetch-depth: 0  
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.15
+      with:
+        versionSpec: 5.x
+    - name: Evaluate Next Version
+      uses: gittools/actions/gitversion/execute@v0.9.15
+      with:
+        configFilePath: GitVersion.yml
+    - name: Build & Package Module
+      shell: pwsh
+      run: ./build.ps1 -ResolveDependency -tasks pack -Verbose
+      env:
+        ModuleVersion: ${{ env.gitVersion.NuGetVersionV2 }}
+    - name: Publish Build Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.buildArtifactName }}
+        path: ${{ env.buildFolderName }}/
+  Test_Stage_test_linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    needs:
+    - Build_Stage_Package_Module
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   # checkout the correct branch name
+        fetch-depth: 0  
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.buildArtifactName }}
+        path: ${{ env.buildFolderName }}
+    - name: Run Tests
+      shell: pwsh
+      run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
+    - name: Publish Test Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+        name: CodeCoverageLinux
+      if: success() || failure()
+  Test_Stage_test_windows_core:
+    name: Windows (PowerShell)
+    runs-on: windows-2019
+    needs:
+    - Build_Stage_Package_Module
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   # checkout the correct branch name
+        fetch-depth: 0  
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.buildArtifactName }}
+        path: ${{ env.buildFolderName }}
+    - name: Run Tests
+      shell: pwsh
+      run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
+
+    - name: Publish Test Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+        name: CodeCoverageWinPS7
+      if: success() || failure()
+  Test_Stage_test_windows_ps:
+    name: Windows (Windows PowerShell)
+    runs-on: windows-2019
+    needs:
+    - Build_Stage_Package_Module
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   # checkout the correct branch name
+        fetch-depth: 0  
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.buildArtifactName }}
+        path: ${{ env.buildFolderName }}
+    - name: Run Tests
+      shell: pwsh
+      run: ./build.ps1 -ResolveDependency -tasks test
+    - name: Publish Test Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+        name: CodeCoverageWinPS51
+      if: success() || failure()
+  Test_Stage_test_macos:
+    name: macOS
+    runs-on: macos-latest
+    needs:
+    - Build_Stage_Package_Module
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   # checkout the correct branch name
+        fetch-depth: 0  
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.buildArtifactName }}
+        path: ${{ env.buildFolderName }}
+    - name: Run Tests
+      shell: pwsh
+      run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get # around dbatools failing to load XE.core.dll if
+    - name: Publish Test Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+        name: CodeCoverageMacOS
+      if: success() || failure()
+  Test_Stage_Code_Coverage:
+    name: Publish Code Coverage
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    needs:
+    - Build_Stage_Package_Module
+    - Test_Stage_test_macos
+    - Test_Stage_test_linux
+    - Test_Stage_test_windows_core
+    - Test_Stage_test_windows_ps
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   # checkout the correct branch name
+        fetch-depth: 0  
+    - name: Download Test Artifact macOS
+      uses: actions/download-artifact@v3
+      with:
+        name: CodeCoverageMacOS
+        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
+    - name: Download Test Artifact Linux
+      uses: actions/download-artifact@v3
+      with:
+        name: CodeCoverageLinux
+        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
+    - name: Download Test Artifact Windows (PS 5.1)
+      uses: actions/download-artifact@v3
+      with:
+        name: CodeCoverageWinPS51
+        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/
+    - name: Download Test Artifact Windows (PS7)
+      uses: actions/download-artifact@v3
+      with:
+        name: CodeCoverageWinPS7
+        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS7/
+    - name: Publish MacOs Test Results
+      id: macos-test-results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/NUnit*.xml
+        check_name: MacOs Test Results
+    - name: Publish Linux Test Results
+      id: linux-test-results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
+        check_name: Linux Test Results
+    - name: Publish WinPS51 Test Results
+      id: winps51-test-results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/NUnit*.xml
+        check_name: WinPS51 Test Results
+    - name: Publish WinPS71 Test Results
+      id: winps71-test-results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS7/NUnit*.xml
+        check_name: WinPS71 Test Results
+    - name: Set Macos badge color
+      shell: bash
+      run: |
+        case ${{ fromJSON( steps.macos-test-results.outputs.json ).conclusion }} in
+          success)
+            echo "MACOSBADGE_COLOR=31c653" >> $GITHUB_ENV
+            ;;
+          failure)
+            echo "MACOSBADGE_COLOR=800000" >> $GITHUB_ENV
+            ;;
+          neutral)
+            echo "MACOSBADGE_COLOR=696969" >> $GITHUB_ENV
+            ;;
+        esac
+    - name: Create Macos badge
+      uses:  emibcn/badge-action@v1.2.1
+      with:
+        label: Tests
+        status: '${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.stats.#tests }} tests, ${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.#stats.runs }} runs: ${{ fromJSON( steps.macos-test-results.outputs.json ).#conclusion }}'
+        color: ${{ env.MACOSBADGE_COLOR }}
+        path: macos-badge.svg
+    - name: Upload MacOs badge to Gist
+      # Upload only for main branch
+      if: >
+        github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == #'main' ||
+        github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+      uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
+      with:
+        token: ${{ secrets.GIST_TOKEN }}
+        gistURL: https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec
+        file: macos-badge.svg
+    - name: Set Linux badge color
+      shell: bash
+      run: |
+        case ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }} in
+          success)
+            echo "LINUXBADGE_COLOR=31c653" >> $GITHUB_ENV
+            ;;
+          failure)
+            echo "LINUXBADGE_COLOR=800000" >> $GITHUB_ENV
+            ;;
+          neutral)
+            echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
+            ;;
+        esac
+    - name: Create Linux badge
+      uses:  emibcn/badge-action@v1.2.1
+      with:
+        label: Tests
+        status: '${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }}'
+        color: ${{ env.LINUXBADGE_COLOR }}
+        path: linux-badge.svg
+    - name: Upload Linux badge to Gist
+      # Upload only for main branch
+      if: >
+        github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' ||
+        github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+      uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
+      with:
+        token: ${{ secrets.GIST_TOKEN }}
+        gistURL: https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec
+        file: linux-badge.svg
+    - name: Set WinPS51 badge color
+      shell: bash
+      run: |
+        case ${{ fromJSON( steps.winps51-test-results.outputs.json ).conclusion }} in
+          success)
+            echo "WINPS51BADGE_COLOR=31c653" >> $GITHUB_ENV
+            ;;
+          failure)
+            echo "WINPS51BADGE_COLOR=800000" >> $GITHUB_ENV
+            ;;
+          neutral)
+            echo "WINPS51BADGE_COLOR=696969" >> $GITHUB_ENV
+            ;;
+        esac
+    - name: Create WINPS51 badge
+      uses:  emibcn/badge-action@v1.2.1
+      with:
+        label: Tests
+        status: '${{ fromJSON( steps.winps51-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.winps51-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.winps51-test-results.outputs.json ).conclusion }}'
+        color: ${{ env.WINPS51BADGE_COLOR }}
+        path: winps51-badge.svg
+    - name: Upload WINPS51 badge to Gist
+      # Upload only for main branch
+      if: >
+        github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' ||
+        github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+      uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
+      with:
+        token: ${{ secrets.GIST_TOKEN }}
+        gistURL: https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec
+        file: winps51-badge.svg
+    - name: Set WinPS7 badge color
+      shell: bash
+      run: |
+        case ${{ fromJSON( steps.winps71-test-results.outputs.json ).conclusion }} in
+          success)
+            echo "WINPS7BADGE_COLOR=31c653" >> $GITHUB_ENV
+            ;;
+          failure)
+            echo "WINPS7BADGE_COLOR=800000" >> $GITHUB_ENV
+            ;;
+          neutral)
+            echo "WINPS7BADGE_COLOR=696969" >> $GITHUB_ENV
+            ;;
+        esac
+    - name: Create WinPS7 badge
+      uses:  emibcn/badge-action@v1.2.1
+      with:
+        label: Tests
+        status: '${{ fromJSON( steps.winps71-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.winps71-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.winps71-test-results.outputs.json ).conclusion }}'
+        color: ${{ env.WINPS7BADGE_COLOR }}
+        path: winps7-badge.svg
+    - name: Upload WINPS7 badge to Gist
+      # Upload only for main branch
+      if: >
+        github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' ||
+        github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+      uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
+      with:
+        token: ${{ secrets.GIST_TOKEN }}
+        gistURL: https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec
+        file: winps7-badge.svg
