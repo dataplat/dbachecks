@@ -19,7 +19,7 @@ Get-DbaLogin -SqlInstance $sql1,$sql2,$sql3  | ft
 Get-DbaDatabase -SqlInstance $sql1,$sql2,$sql3  | ft
 Get-DbaAgentJob -SqlInstance $sql1,$sql2,$sql3  | ft
 Get-DbaDbCertificate -SqlInstance $sql1,$sql2,$sql3  | ft
-
+  
 docker run -p 52000:1433 -v sqlserver:/var/opt/sqlserver  -d dbatools/sqlinstance --name mssql1
 docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=dbatools.IO" -p 52002:1433 --name mssql3 --hostname mssql3 -v sqlserver:/var/opt/sqlserver -d  mcr.microsoft.com/mssql/server:2022-latest
 
