@@ -22,7 +22,7 @@ Describe 'PSScriptAnalyzer rule-sets' -Tag Build , ScriptAnalyzer {
     Context 'Checking PSScriptAnalyzer on Script <_>' -ForEach $scripts {
 
         BeforeDiscovery {
-            $PsScriptAnalyzerSettings = '/workspace/PSScriptAnalyzerSettings.psd1'
+            $PsScriptAnalyzerSettings = 'PSScriptAnalyzerSettings.psd1'
             $scriptpath = Join-Path -Path $ModuleBase -ChildPath $PsItem
             
             $Tests = $rules.ForEach{
