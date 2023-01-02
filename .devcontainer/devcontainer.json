@@ -173,5 +173,5 @@
             }
         }
     },
-    "postCreateCommand": "pwsh -c 'code /workspace/developing/Howto.md'"
+    "postCreateCommand": "pwsh -c '/workspace/developing/Howto.md'"
 }

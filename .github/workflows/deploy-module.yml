@@ -55,17 +55,15 @@ jobs:
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}
-    - name: find the module
-      shell: pwsh
-      run: gci * -recurse
     - name: Run Tests
       shell: pwsh
-      run: ./build.ps1 -tasks test
+      run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
     - name: Publish Test Artifact
       uses: actions/upload-artifact@v3
       with:
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
         name: CodeCoverageLinux
+      if: success() || failure()
   Test_Stage_test_windows_core:
     name: Windows (PowerShell)
     runs-on: windows-2019
@@ -84,12 +82,14 @@ jobs:
         path: ${{ env.buildFolderName }}
     - name: Run Tests
       shell: pwsh
-      run: ./build.ps1 -ResolveDependency -tasks test
+      run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
+
     - name: Publish Test Artifact
       uses: actions/upload-artifact@v3
       with:
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
         name: CodeCoverageWinPS7
+      if: success() || failure()
   Test_Stage_test_windows_ps:
     name: Windows (Windows PowerShell)
     runs-on: windows-2019
@@ -114,6 +114,7 @@ jobs:
       with:
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
         name: CodeCoverageWinPS51
+      if: success() || failure()
   Test_Stage_test_macos:
     name: macOS
     runs-on: macos-latest
@@ -132,14 +133,17 @@ jobs:
         path: ${{ env.buildFolderName }}
     - name: Run Tests
       shell: pwsh
-      run: ./build.ps1 -ResolveDependency -tasks test
+      run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
+
     - name: Publish Test Artifact
       uses: actions/upload-artifact@v3
       with:
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
         name: CodeCoverageMacOS
+      if: success() || failure()
   Test_Stage_Code_Coverage:
     name: Publish Code Coverage
+    if: success() || failure()
     runs-on: ubuntu-latest
     needs:
     - Build_Stage_Package_Module
