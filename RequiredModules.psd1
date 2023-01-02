@@ -17,5 +17,6 @@
     'Sampler.GitHubTasks' = 'latest'
     MarkdownLinkCheck     = 'latest'
     dbatools              = 'latest'
+    PSFramework           = 'latest'
 }
 
