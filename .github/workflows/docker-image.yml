@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ main, pesterv5 ]
+    branches: [ developing, pesterv5 ]
     paths: 
       - ".devcontainer/devcontainer.json"
       - ".devcontainer/docker-compose.yml"
@@ -11,7 +11,7 @@ on:
       - containers/**
     
   pull_request:
-    branches: [ main, pesterv5 ]
+    branches: [ developing, pesterv5 ]
     paths:
       - ".devcontainer/devcontainer.json"
       - ".devcontainer/docker-compose.yml"
