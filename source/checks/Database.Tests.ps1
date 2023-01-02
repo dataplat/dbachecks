@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-. $PSScriptRoot/../internal/assertions/Database.Assertions.ps1
+. (Convert-Path -Path $PSScriptRoot/../internal/assertions/Database.Assertions.ps1)
 
 
 [array]$ExcludedDatabases = Get-DbcConfigValue command.invokedbccheck.excludedatabases

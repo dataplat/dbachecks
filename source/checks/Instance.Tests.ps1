@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-. $PSScriptRoot/../internal/assertions/Instance.Assertions.ps1
+. (Convert-Path -Path $PSScriptRoot/../internal/assertions/Instance.Assertions.ps1)
 
 # Check out the comments at the top of Instance.Assertions for guidance on adding checks
 
