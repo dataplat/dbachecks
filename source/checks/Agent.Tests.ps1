@@ -1,5 +1,5 @@
 $filename = $MyInvocation.MyCommand.Name.Replace('.Tests.ps1', '')
-. $PSScriptRoot/../internal/assertions/Agent.Assertions.ps1
+. (Convert-Path -Path $PSScriptRoot/../internal/assertions/Agent.Assertions.ps1)
 [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
 
 Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable

@@ -1,4 +1,4 @@
-. $script:ModuleRoot/internal/functions/Invoke-ConfigurationScript.ps1
+. (Convert-Path -Path $script:ModuleRoot/internal/functions/Invoke-ConfigurationScript.ps1)
 <#
 .SYNOPSIS
 Resets configuration entries to their default values.
@@ -36,12 +36,10 @@ function Reset-DbcConfig {
         if (!$Name) {
             # no name provided, get all known dbachecks settings
             $resolvedName = (Get-DbcConfig).Name
-        }
-        elseif ($Name -match '\*') {
+        } elseif ($Name -match '\*') {
             # wildcard is used, get only the matching settings
             $resolvedName = (Get-DbcConfig).Name | Where-Object { $psitem -like $Name }
-        }
-        else {
+        } else {
             $resolvedName = $Name
         }
 
@@ -49,8 +47,7 @@ function Reset-DbcConfig {
             $localName = $psitem.ToLower()
             if (-not (Get-DbcConfig -Name $localName)) {
                 Stop-PSFFunction -FunctionName Reset-DbcConfig -Message "Setting named $localName does not exist. Use Get-DbcCheck to get the list of supported settings."
-            }
-            else {
+            } else {
                 Write-PSFMessage -FunctionName Reset-DbcConfig -Message "resetting $localName"
                 Unregister-PSFConfig -Module dbachecks -Name $localName
                 [PSFramework.Configuration.ConfigurationHost]::Configurations.Remove("dbachecks.$localName") | Out-Null

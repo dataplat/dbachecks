@@ -7,7 +7,7 @@ function New-Json {
     $repos = Get-CheckRepo
     $collection = $groups = $repofiles = @()
     foreach ($repo in $repos) {
-        $repofiles += (Get-ChildItem "$repo\*.Tests.ps1")
+        $repofiles += (Get-ChildItem (Convert-Path -Path "$repo\*.Tests.ps1"))
     }
     $tokens = $null
     $errors = $null
@@ -102,22 +102,17 @@ function New-Json {
                 # CHoose the type
                 if ($Describe.Parent -match "Get-Instance") {
                     $type = "Sqlinstance"
-                }
-                elseif ($Describe.Parent -match "Get-ComputerName" -or $Describe.Parent -match "AllServerInfo") {
+                } elseif ($Describe.Parent -match "Get-ComputerName" -or $Describe.Parent -match "AllServerInfo") {
                     $type = "ComputerName"
-                }
-                elseif ($Describe.Parent -match "Get-ClusterObject") {
+                } elseif ($Describe.Parent -match "Get-ClusterObject") {
                     $Type = "ClusterNode"
-                }
-                else {
+                } else {
                     #Choose the type from the new way from inside the foreach
                     if ($ComputerNameForEach -match $title) {
                         $type = "ComputerName"
-                    }
-                    elseif ($InstanceNameForEach -match $title) {
+                    } elseif ($InstanceNameForEach -match $title) {
                         $type = "Sqlinstance"
-                    }
-                    else {
+                    } else {
                         $type = $null
                     }
                 }
@@ -125,8 +120,7 @@ function New-Json {
                 if ($filename -eq 'HADR') {
                     ## HADR configs are outside of describe
                     $configs = [regex]::matches($check, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{ $_.Name -eq 1 }.Value
-                }
-                else {
+                } else {
                     $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{ $_.Name -eq 1 }.Value
                 }
                 $Config = ''
@@ -202,7 +196,7 @@ function New-Json {
         }
     }
     $singletags = (($collection.AllTags -split ",").Trim() | Group-Object | Where-Object { $_.Count -eq 1 -and $_.Name -notin $groups })
-    $Descriptions = Get-Content $script:ModuleRoot\internal\configurations\DbcCheckDescriptions.json -Raw | ConvertFrom-Json
+    $Descriptions = Get-Content (Convert-Path -Path $script:ModuleRoot\internal\configurations\DbcCheckDescriptions.json ) -Raw | ConvertFrom-Json
     foreach ($check in $collection) {
         $unique = $singletags | Where-Object { $_.Name -in ($check.AllTags -split ",").Trim() }
         $check.UniqueTag = $unique.Name
@@ -210,10 +204,9 @@ function New-Json {
     }
     try {
         if ($PSCmdlet.ShouldProcess("$script:localapp\checks.json" , "Convert Json and write to file")) {
-            ConvertTo-Json -InputObject $collection | Out-File "$script:localapp\checks.json"
+            ConvertTo-Json -InputObject $collection | Out-File (Convert-Path -Path"$script:localapp\checks.json" )
         }
-    }
-    catch {
+    } catch {
         Write-PSFMessage "Failed to create the json, something weird might happen now with tags and things" -Level Significant
     }
 
