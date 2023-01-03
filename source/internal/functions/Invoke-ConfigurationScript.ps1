@@ -9,7 +9,7 @@ function Invoke-ConfigurationScript {
     #>
     [CmdletBinding()]
     param()
-    . $script:ModuleRoot\internal\configurations\configuration.ps1
+    . (Convert-Path -Path $script:ModuleRoot\internal\configurations\configuration.ps1)
 }
 
 # SIG # Begin signature block
