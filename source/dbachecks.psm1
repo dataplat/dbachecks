@@ -25,7 +25,7 @@ if ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsPowerShell\dbacheck
 if ((Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\WindowsPowerShell\dbachecks\System" -Name "DoDotSource" -ErrorAction Ignore).DoDotSource) { $script:doDotSource = $true }
 
 # Execute Preimport actions
-    . Import-ModuleFile -Path (Convert-Path -Path "$ModuleRoot\internal\scripts\preimport.ps1")
+. Import-ModuleFile -Path (Convert-Path -Path "$ModuleRoot\internal\scripts\preimport.ps1")
 
 # Import all internal functions
 foreach ($function in (Get-ChildItem (Convert-Path -Path "$ModuleRoot\internal\functions\*.ps1"))) {
@@ -38,7 +38,7 @@ foreach ($function in (Get-ChildItem (Convert-Path -Path "$ModuleRoot\functions\
 }
 
 # Execute Postimport actions
-    . Import-ModuleFile -Path (Convert-Path -Path "$ModuleRoot\internal\scripts\postimport.ps1")
+. Import-ModuleFile -Path (Convert-Path -Path "$ModuleRoot\internal\scripts\postimport.ps1")
 
 if (-not (Test-Path Alias:Update-Dbachecks)) { Set-Alias -Scope Global -Name 'Update-Dbachecks' -Value 'Update-DbcRequiredModules' }
 $VerbosePreference = "SilentlyContinue"
