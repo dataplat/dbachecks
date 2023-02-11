@@ -14,18 +14,20 @@ So to develop you need to understand the following:
 
 The code in the source directory is the code that will be built and deployed to the PowerShell Gallery. This is the directory that you will be changing the code in.
 
-The code in the output directory is the code that is built by Sampler. It is in the gitignore file so that it is not committed to the repo. This is the code that you can test with the 3 SQL instances. The advantage is that the Sampler build process will create a clean environment and add the built module into the PSModulePath. 
+NOTE - You will get really frustrated if you alter the code in the output directory and then build it again and find it doesnt work and the code all vanished. ASK ME HOW I KNOW !!!
+
+The code in the output directory is the code that is built by Sampler. It is in the gitignore file so that it is not committed to the repo. This is the code that you can test with the 3 SQL instances. The advantage is that the Sampler build process will create a clean environment and add the built module into the PSModulePath.
 
 # Workflow
 
 ## Once in a session
-- Run `.\build.ps1 -ResolveDependency -Tasks noop` to download all required dependencies and set up the environment. 
+- Run `.\build.ps1 -ResolveDependency -Tasks noop` to download all required dependencies and set up the environment.
 
 ## Coding
 
 - Code in the source directory
 - Save the files
-- Run the build.ps1 script 
+- Run the build.ps1 script
     - with Tasks build `./build.ps1 -Tasks build`
     - This will build the code and copy it to the output directory.
     <img width="741" alt="image" src="https://user-images.githubusercontent.com/6729780/204135400-c324ef33-c7c2-4031-a408-d70d174fecd5.png">
@@ -38,7 +40,7 @@ Once you have finished doing some coding and want to test
     - With Tasks build test `./build.ps1 -Tasks build,test`
     - This will build the code and run the Pester Tests.
     <img width="854" alt="image" src="https://user-images.githubusercontent.com/6729780/204135632-e3918657-60b0-4f8b-9c29-65beb4c5a391.png">
-    - if you have failed tests, you can 
+    - if you have failed tests, you can
         - Run Pester manually `Invoke-Pester tests`
         <img width="922" alt="image" src="https://user-images.githubusercontent.com/6729780/204135673-78751e7b-cb5c-46c8-961d-07e5f25652c0.png">
         - You can check the test results in the browser by creating a html page
