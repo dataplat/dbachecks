@@ -28,9 +28,9 @@ BeforeDiscovery {
         }
     }
     Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Verbose
-    #if you ever need to see what is being tested uncomment and run in verbose
-    $InstancesToTestJson = $InstancesToTest | ConvertTo-Json -Depth 10
-    Write-PSFMessage -Message "InstancesToTest = $InstancesToTestJson" -Level Verbose
+    #if you ever need to see what is being tested uncomment and run in verbose but this crashed with a weird  Microsoft.SqlServer.Management.Sdk.Sfc.InvalidQueryExpressionEnumeratorException: urn could not be resolved at level OleDbProviderSetting.
+    # $InstancesToTestJson = $InstancesToTest | ConvertTo-Json -Depth 10
+    #Write-PSFMessage -Message "InstancesToTest = $InstancesToTestJson" -Level Verbose
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
     # Get-DbcConfig is expensive so we call it once
     $__dbcconfig = Get-DbcConfig
