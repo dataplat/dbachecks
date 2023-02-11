@@ -36,7 +36,7 @@ BeforeDiscovery {
     $__dbcconfig = Get-DbcConfig
 }
 
-Describe "Instance Connection" -Tags InstanceConnection, Connectivity, High, Instance -ForEach $InstancesToTest {
+Describe "Instance Connection" -Tag InstanceConnection, Connectivity, High, Instance -ForEach $InstancesToTest {
     BeforeAll {
         $skipall = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection' }).Value
         $skipremote = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.remoting' }).Value
@@ -44,23 +44,25 @@ Describe "Instance Connection" -Tags InstanceConnection, Connectivity, High, Ins
         $skipauth = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.auth' }).Value
         $authscheme = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.connection.authscheme' }).Value
     }
+    BeforeDiscovery {
+        $authscheme = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.connection.authscheme' }).Value
+    }
 
     Context "Checking Instance Connection on on <_.Name>" -Skip:$skipall {
-        It "connects successfully to <_.Name>" -Skip:skipall {
+        It "connects successfully to <_.Name>" -Skip:$skipall {
             $PsItem.InstanceConnection.Connect | Should -BeTrue -Because "We expect the instance to be connectable"
         }
         It "auth scheme should be $authscheme on <_.Name>" -Skip:$skipauth {
             $PsItem.InstanceConnection.AuthScheme | Should -Be $authscheme -Because "We expect the auth scheme to be $authscheme"
         }
         It "We should be able to ping host <_.Name>" -Skip:$skipping {
-            $PsItem.InstanceConnection.Ping | Should -BeTrue -Because "We expect the instance to be pingable"
+            $PsItem.InstanceConnection.Ping | Should -Be 'Success' -Because "We expect the instance to be pingable"
         }
         It "We should be able to remote onto <_.Name>" -Skip:$skipremote {
             $PsItem.InstanceConnection.Remote | Should -BeTrue -Because "We expect the instance to be remotely connectable"
         }
     }
 }
-
 
 Describe "Default Trace" -Tag DefaultTrace, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.defaulttrace' }).Value
