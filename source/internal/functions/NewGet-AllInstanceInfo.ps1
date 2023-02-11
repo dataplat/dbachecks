@@ -273,6 +273,44 @@ function NewGet-AllInstanceInfo {
         'TempDbConfiguration' {
             $TempDBTest = Test-DbaTempDbConfig -SqlInstance $Instance
         }
+        'InstanceConnection' {
+            $InstanceConnection = @{
+                connection = $true # because we wouldnt get here otherwise
+                authscheme = (
+                    #local is always NTLM except when its a container ;-)
+                    if ($Instance.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance.Name -notlike '*,*')) {
+                        if (-not(($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.auth' }).Value)) {
+                            $instance.Query("Select auth_scheme as AuthScheme FROM sys.dm_exec_connections WHERE session_id = @@SPID").AuthScheme
+                        } else {
+                            'skipped'
+                        }
+                    } else {
+                        'skipped-local' }
+                )
+                ping       = (
+                    if (-not(($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.ping' }).Value)) {
+                        $ping = New-Object System.Net.NetworkInformation.Ping
+                        $timeout = 1000 #milliseconds
+                        ($ping.Send($instance.ComputerName, $timeout)).Status
+                    } else {
+                        'skipped'
+                    }
+                )
+                remote     = (
+                    if (-not(($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.remote' }).Value)) {
+                        #simple remoting check
+                        try {
+                            $null = Invoke-Command -ComputerName $instance.ComputerName -ScriptBlock { Get-ChildItem } -ErrorAction Stop
+                            $true
+                        } catch {
+                            $false
+                        }
+                    } else {
+                        'skipped'
+                    }
+                )
+            }
+        }
 
         Default { }
     }
@@ -332,6 +370,7 @@ function NewGet-AllInstanceInfo {
             errorLogCount = $ErrorLogCount
             logWindow     = $logWindow
         }
+        InstanceConnection    = $InstanceConnection
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended

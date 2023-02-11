@@ -7,7 +7,7 @@ BeforeDiscovery {
     [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
     # Get all the tags in use in this run
     $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
-    
+
     $InstancesToTest = @(Get-Instance).ForEach{
         # just add it to the Not Contactable list
         if ($NotContactable -notcontains $psitem) {
@@ -35,6 +35,32 @@ BeforeDiscovery {
     # Get-DbcConfig is expensive so we call it once
     $__dbcconfig = Get-DbcConfig
 }
+
+Describe "Instance Connection" -Tags InstanceConnection, Connectivity, High, Instance -ForEach $InstancesToTest {
+    BeforeAll {
+        $skipall = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection' }).Value
+        $skipremote = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.remoting' }).Value
+        $skipping = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.ping' }).Value
+        $skipauth = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.auth' }).Value
+        $authscheme = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.connection.authscheme' }).Value
+    }
+
+    Context "Checking Instance Connection on on <_.Name>" -Skip:$skipall {
+        It "connects successfully to <_.Name>" -Skip:skipall {
+            $PsItem.InstanceConnection.Connect | Should -BeTrue -Because "We expect the instance to be connectable"
+        }
+        It "auth scheme should be $authscheme on <_.Name>" -Skip:$skipauth {
+            $PsItem.InstanceConnection.AuthScheme | Should -Be $authscheme -Because "We expect the auth scheme to be $authscheme"
+        }
+        It "We should be able to ping host <_.Name>" -Skip:$skipping {
+            $PsItem.InstanceConnection.Ping | Should -BeTrue -Because "We expect the instance to be pingable"
+        }
+        It "We should be able to remote onto <_.Name>" -Skip:$skipremote {
+            $PsItem.InstanceConnection.Remote | Should -BeTrue -Because "We expect the instance to be remotely connectable"
+        }
+    }
+}
+
 
 Describe "Default Trace" -Tag DefaultTrace, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.defaulttrace' }).Value
@@ -309,14 +335,14 @@ Describe "Error Log Entries" -Tag ErrorLog, Medium, Instance -ForEach $Instances
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.errorlogentries' }).Value
     Context "Checking error log on <_.Name>" {
         It "Error log should be free of error severities 17-24 within the window of <_.ErrorLogEntries.logWindow> days on <_.Name>" -Skip:$Skip {
-            $PSItem.ErrorLogEntries.Count | Should -Be 0 -Because "these severities indicate serious problems" 
+            $PSItem.ErrorLogEntries.Count | Should -Be 0 -Because "these severities indicate serious problems"
         }
     }
 }
 
 <#
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
-    Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name 
+    Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name
         It "should have TF1118 enabled on <_.Name>" -Skip:((($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.XESessionRunningAllowed' }).Value)  -or ($InstanceSMO.VersionMajor -gt 12)) {
             $psitem.TempDBConfig.TF118EnabledCurrent | Should -Be  $psitem.TempDBConfig.TF118EnabledRecommended -Because 'TF 1118 should be enabled'
         }
