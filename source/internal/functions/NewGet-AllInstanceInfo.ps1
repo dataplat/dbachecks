@@ -275,14 +275,14 @@ function NewGet-AllInstanceInfo {
         }
         'InstanceConnection' {
             #local is always NTLM except when its a container ;-)
-            if ($Instance.NetBiosName -eq $ENV:COMPUTERNAME -and ($instance.Name -notlike '*,*')) {
+            if ($Instance.ComputerNamePhysicalNetBIOS -eq $ENV:COMPUTERNAME -and ($instance.Name -notlike '*,*')) {
+                $authscheme = 'skipped-local'
+            } else {
                 if (-not(($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.auth' }).Value)) {
                     $authscheme = $instance.Query("Select auth_scheme as AuthScheme FROM sys.dm_exec_connections WHERE session_id = @@SPID").AuthScheme
                 } else {
                     $authscheme = 'skipped'
                 }
-            } else {
-                $authscheme = 'skipped-local'
             }
 
             if (-not(($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.ping' }).Value)) {
