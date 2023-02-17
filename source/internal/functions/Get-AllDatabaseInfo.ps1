@@ -68,7 +68,6 @@ function Get-AllDatabaseInfo {
 
         'ValidDatabaseOwner' {
             $owner = $true
-            $dbOwner =
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownername' -Value (Get-DbcConfigValue policy.validdbowner.name)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownerexclude' -Value (Get-DbcConfigValue policy.validdbowner.excludedb)
         }
