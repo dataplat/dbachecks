@@ -21,7 +21,7 @@ jobs:
       with:
         ref: ${{github.event.pull_request.head.ref}}
         repository: ${{github.event.pull_request.head.repo.full_name}}   # checkout the correct branch name
-        fetch-depth: 0  
+        fetch-depth: 0
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.15
       with:
@@ -51,7 +51,7 @@ jobs:
       with:
         ref: ${{github.event.pull_request.head.ref}}
         repository: ${{github.event.pull_request.head.repo.full_name}}   # checkout the correct branch name
-        fetch-depth: 0  
+        fetch-depth: 0
     - name: Download Build Artifact
       uses: actions/download-artifact@v3
       with:
@@ -77,7 +77,7 @@ jobs:
       with:
         ref: ${{github.event.pull_request.head.ref}}
         repository: ${{github.event.pull_request.head.repo.full_name}}   # checkout the correct branch name
-        fetch-depth: 0  
+        fetch-depth: 0
     - name: Download Build Artifact
       uses: actions/download-artifact@v3
       with:
@@ -104,7 +104,7 @@ jobs:
       with:
         ref: ${{github.event.pull_request.head.ref}}
         repository: ${{github.event.pull_request.head.repo.full_name}}   # checkout the correct branch name
-        fetch-depth: 0   
+        fetch-depth: 0
     - name: Download Build Artifact
       uses: actions/download-artifact@v3
       with:
@@ -132,8 +132,9 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
       with:
-        ref: ${{ github.head_ref }}   # checkout the correct branch name
-        fetch-depth: 0  
+        ref: ${{github.event.pull_request.head.ref}}   # checkout the correct branch name
+        repository: ${{github.event.pull_request.head.repo.full_name}}   # checkout the correct branch name
+        fetch-depth: 0
 
     - name: Download Test Artifact Linux
       uses: actions/download-artifact@v3
