@@ -34,7 +34,7 @@ BeforeDiscovery {
     $__dbcconfig = Get-DbcConfig
 }
 
-# Each Test will have a -ForEach for the Instances and the InstancesToTest object will have a 
+# Each Test will have a -ForEach for the Instances and the InstancesToTest object will have a
 # lot of information gathered up front to reduce trips and connections to the database
 
 
@@ -189,6 +189,16 @@ Describe "Database Status" -Tag DatabaseStatus, High, Database -ForEach $Instanc
             $psitem.Status | Should -Not -Match 'Emergency' -Because "We expect that there will be no databases in EmergencyMode"
             $psitem.Status | Should -Not -Match 'Standby' -Because "We expect that there will be no databases in Standby"
             $psitem.Status | Should -Not -Match 'Suspect' -Because "We expect that there will be no databases in a Suspect state"
+        }
+    }
+}
+
+Describe "Query Store Enabled" -Tag QueryStoreEnabled, Medium, Database -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.querystoreenabled' }).Value
+
+    Context "Testing to see if Query Store is enabled on <_.Name>" {
+        It "Database <_.Name> should have Query Store enabled on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.qsenabledexclude -notcontains $PsItem.Name } } {
+            $psitem.QueryStoreEnabled | Should -Not -BeIn ('OFF', 'ERROR') -Because "We expect the Query Store to be enabled"
         }
     }
 }
