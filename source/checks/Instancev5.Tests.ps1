@@ -45,6 +45,10 @@ Describe "Instance Connection" -Tag InstanceConnection, Connectivity, High, Inst
         $authscheme = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.connection.authscheme' }).Value
     }
     BeforeDiscovery {
+        $skipall = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection' }).Value
+        $skipremote = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.remoting' }).Value
+        $skipping = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.ping' }).Value
+        $skipauth = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.auth' }).Value
         $authscheme = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.connection.authscheme' }).Value
     }
 
