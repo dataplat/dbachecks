@@ -35,6 +35,7 @@ Initial - RMS 28/12/2019
 #>
 function Convert-DbcResult {
     [OutputType([System.Data.DataTable])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Because I dont know why it doesnt know about Label')]
     Param(
         # The pester results object
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -91,11 +92,6 @@ function Convert-DbcResult {
                     $Database = $null
                 }
                 $Date = Get-Date
-                if ($Label) {
-
-                } else {
-                    $Label = 'NoLabel'
-                }
                 # Create a new Row
                 $row = $table.NewRow()
                 # Add values to new row
@@ -117,7 +113,7 @@ function Convert-DbcResult {
             $Results.Tests.Where{ $Psitem.Result -ne 'NotRun' }.ForEach{
                 $TestResult = $Psitem
                 switch ($TestResult.Result) {
-                    'skipped' { 
+                    'skipped' {
                         $PathSplit = $TestResult.ExpandedPath.split('.')
                         $Describe = $PathSplit[0]
                         $Context = $PathSplit[1]
