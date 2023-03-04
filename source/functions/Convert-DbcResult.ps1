@@ -38,10 +38,11 @@ function Convert-DbcResult {
     Param(
         # The pester results object
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [PSCustomObject]$TestResults,
+        [Alias('TestsResults')]
+        [PSCustomObject]$Results,
         [Parameter(Mandatory = $false)]
         # the label for the Tests
-        [string]$Label
+        [string]$Label = 'NoLabel'
     )
 
     begin {
@@ -78,15 +79,9 @@ function Convert-DbcResult {
     }
     process {
         Write-PSFMessage "Testing we have a Test Results object" -Level Verbose
-        if (-not $TestResults -or $TestResult) {
-            Write-PSFMessage "It may be that we don't have a Test Results Object" -Level Significant
-            Write-PSFMessage "It might be that you have custom checks in which case we will move on. Otherwise......." -Level Significant
-            Write-PSFMessage "It is possible You forget the -PassThru parameter on Invoke-DbcCheck?" -Level Warning
-            Return ''
-        }
-        if ( $TestResults.TestResult) {
+        if ( $Results.TestResult) {
             Write-PSFMessage "Processing the v4 test results" -Level Verbose
-            $TestResults.TestResult.ForEach{
+            $Results.TestResult.ForEach{
                 $ContextSplit = ($PSitem.Context -split ' ')
                 $ComputerName = ($ContextSplit[-1] -split '\\')[0]
                 $NameSplit = ($PSitem.Name -split ' ')
@@ -119,31 +114,52 @@ function Convert-DbcResult {
             }
         } else {
             Write-PSFMessage "Processing the v5 test results" -Level Verbose
-            $TestResults.Tests.Where{ $Psitem.Result -ne 'NotRun' }.ForEach{
-                $ContextSplit = ($PSitem.ExpandedName -split ' ')
+            $Results.Tests.Where{ $Psitem.Result -ne 'NotRun' }.ForEach{
+                $TestResult = $Psitem
+                switch ($TestResult.Result) {
+                    'skipped' { 
+                        $PathSplit = $TestResult.ExpandedPath.split('.')
+                        $Describe = $PathSplit[0]
+                        $Context = $PathSplit[1]
+                        $ContextSplit = ($Context -split ' ')
+                        $Instance = $ContextSplit[-1]
+                        $CheckName = $TestResult.ExpandedName -replace '<_.Name>', 'CheckSkipped' -replace '<_.SqlInstance>', $Instance
+                        if ($TestResult.ExpandedName -match '<_\.Name>') {
+                            $Database = 'CheckSkipped'
+                        } else {
+                            $Database = $null
+                        }
+                    }
+                    Default {
+                        $PathSplit = $TestResult.ExpandedPath.split('.')
+                        $Describe = $PathSplit[0]
+                        $Context = $PathSplit[1]
+                        $ContextSplit = ($Context -split ' ')
+                        $Instance = $ContextSplit[-1]
+                        $CheckName = $TestResult.ExpandedName
+                        if ($TestResult.ExpandedName -match '^Database\s(.*?)\s') {
+                            $Database = $Matches[1]
+                        } else {
+                            $Database = $null
+                        }
+                    }
+                }
                 $ComputerName = ($ContextSplit[-1] -split '\\')[0]
-                if ($PSitem.ExpandedName -match '^Database\s(.*?)\s') {
-                    $Database = $Matches[1]
-                } else {
-                    $Database = $null
-                }
-                $Date = Get-Date
-                if ($Label) {
 
-                } else {
-                    $Label = 'NoLabel'
-                }
+
+                $Date = Get-Date
+
                 # Create a new Row
                 $row = $table.NewRow()
                 # Add values to new row
                 $Row.Date = [datetime]$Date
                 $Row.Label = $Label
-                $Row.Describe = $PSitem.ExpandedPath.Split('.')[0]
-                $Row.Context = $PSitem.ExpandedPath.Split('.')[1]
-                $Row.Name = $PSitem.ExpandedPath.Split('.')[2]
+                $Row.Describe = $Describe
+                $Row.Context = $Context
+                $Row.Name = $CheckName
                 $Row.Database = $Database
                 $Row.ComputerName = $ComputerName
-                $Row.Instance = $ContextSplit[-1]
+                $Row.Instance = $Instance
                 $Row.Result = $PSitem.Result
                 $Row.FailureMessage = $PSitem.FailureMessage
                 #Add new row to table
