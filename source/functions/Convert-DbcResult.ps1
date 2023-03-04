@@ -160,8 +160,8 @@ function Convert-DbcResult {
                 $Row.Database = $Database
                 $Row.ComputerName = $ComputerName
                 $Row.Instance = $Instance
-                $Row.Result = $PSitem.Result
-                $Row.FailureMessage = $PSitem.FailureMessage
+                $Row.Result = $TestResult.Result
+                $Row.FailureMessage = $TestResult.ErrorRecord.Exception.Message
                 #Add new row to table
                 $table.Rows.Add($row)
             }
