@@ -270,6 +270,9 @@ function NewGet-AllInstanceInfo {
             # It is not enough to check the CreateDate on the log, you must check the LogDate on every error record as well.
             $ErrorLogCount = (Get-ErrorLogEntry | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) }).Count
         }
+        'LatestBuild' {
+            $LatestBuild = Test-DbaBuild -SqlInstance $Instance -Latest
+        }
         'TempDbConfiguration' {
             $TempDBTest = Test-DbaTempDbConfig -SqlInstance $Instance
         }
@@ -373,6 +376,9 @@ function NewGet-AllInstanceInfo {
             logWindow     = $logWindow
         }
         InstanceConnection    = $InstanceConnection
+        LatestBuild           = [PSCustomObject]@{
+            Compliant = $LatestBuild.Compliant
+        }
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended
