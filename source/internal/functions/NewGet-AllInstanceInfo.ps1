@@ -316,99 +316,86 @@ function NewGet-AllInstanceInfo {
         'BackUpPathAccess' {
             # get value from config or from default setting
             $BackupPath = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.storage.backuppath' }).Value
-            'BackUpPathAccess' {
-                # get value from config or from default setting
-                $BackupPath = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.storage.backuppath' }).Value
-                if (-not $BackupPath) {
-                    $BackupPath = $Instance.BackupDirectory
-                }
-                $BackupPathAccess = Test-DbaPath -SqlInstance $Instance -Path $BackupPath
+            if (-not $BackupPath) {
+                $BackupPath = $Instance.BackupDirectory
             }
+            $BackupPathAccess = Test-DbaPath -SqlInstance $Instance -Path $BackupPath
+        }
+    }
+    #build the object from the results above
 
-            #build the object from the results above
+    $testInstanceObject = [PSCustomObject]@{
+        #build the object from the results above
+        InstanceName          = $Instance.DbaInstanceName
+        Name                  = $Instance.Name
+        ConfigValues          = $ConfigValues
+        VersionMajor          = $Instance.VersionMajor
+        Configuration         = if ($configurations) { $Instance.Configuration } else { $null }
+        Settings              = $Instance.Settings
+        Logins                = $Instance.Logins
+        Databases             = $Instance.Databases
+        NumberOfLogFiles      = $Instance.NumberOfLogFiles
+        MaxDopSettings        = $MaxDopSettings
+        ExpectedTraceFlags    = $ExpectedTraceFlags
+        NotExpectedTraceFlags = $NotExpectedTraceFlags
+        XESessions            = [pscustomobject]@{
+            RequiredStopped = $RequiredStopped.ForEach{
+                [pscustomobject]@{
+                    Name        = $Instance.Name
+                    SessionName = $PSItem
+                    Running     = $RunningSessions
+                }
+            }
+            RequiredExists  = $RequiredExists.ForEach{
+                [pscustomobject]@{
+                    Name        = $Instance.Name
+                    SessionName = $PSItem
+                    Sessions    = $Sessions
+                }
+            }
+            RequiredRunning = $RequiredRunning.ForEach{
+                [pscustomobject]@{
+                    Name        = $Instance.Name
+                    SessionName = $PSItem
+                    Sessions    = $Sessions
+                    Running     = $RunningSessions
+                }
+            }
+            RunningAllowed  = $RunningSessions.ForEach{
+                [pscustomobject]@{
+                    Name        = $Instance.Name
+                    SessionName = $PSItem
+                    Sessions    = $Sessions
+                    Allowed     = $RunningAllowed
+                }
+            }
+            Name            = $Instance.Name
+            Sessions        = $Sessions
+            Running         = $RunningSessions
+        }
+        ErrorLogEntries       = [pscustomobject]@{
+            errorLogCount = $ErrorLogCount
+            logWindow     = $logWindow
+        }
+        InstanceConnection    = $InstanceConnection
+        BackupPathAccess      = [pscustomobject]@{
+            Result     = $BackupPathAccess
+            BackupPath = $BackupPath
+        }
+        LatestBuild           = [PSCustomObject]@{
+            Compliant = $LatestBuild.Compliant
+        }
+    }
 
-            $testInstanceObject = [PSCustomObject]@{
-                #build the object from the results above
-                InstanceName          = $Instance.DbaInstanceName
-                Name                  = $Instance.Name
-                ConfigValues          = $ConfigValues
-                VersionMajor          = $Instance.VersionMajor
-                Configuration         = if ($configurations) { $Instance.Configuration } else { $null }
-                Settings              = $Instance.Settings
-                Logins                = $Instance.Logins
-                Databases             = $Instance.Databases
-                NumberOfLogFiles      = $Instance.NumberOfLogFiles
-                MaxDopSettings        = $MaxDopSettings
-                ExpectedTraceFlags    = $ExpectedTraceFlags
-                NotExpectedTraceFlags = $NotExpectedTraceFlags
-                XESessions            = [pscustomobject]@{
-                    RequiredStopped = $RequiredStopped.ForEach{
-                        [pscustomobject]@{
-                            Name        = $Instance.Name
-                            SessionName = $PSItem
-                            Running     = $RunningSessions
-                        }
-                    }
-                    RequiredExists  = $RequiredExists.ForEach{
-                        [pscustomobject]@{
-                            Name        = $Instance.Name
-                            SessionName = $PSItem
-                            Sessions    = $Sessions
-                        }
-                    }
-                    RequiredRunning = $RequiredRunning.ForEach{
-                        [pscustomobject]@{
-                            Name        = $Instance.Name
-                            SessionName = $PSItem
-                            Sessions    = $Sessions
-                            Running     = $RunningSessions
-                        }
-                    }
-                    RunningAllowed  = $RunningSessions.ForEach{
-                        [pscustomobject]@{
-                            Name        = $Instance.Name
-                            SessionName = $PSItem
-                            Sessions    = $Sessions
-                            Allowed     = $RunningAllowed
-                        }
-                    }
-                    Name            = $Instance.Name
-                    Sessions        = $Sessions
-                    Running         = $RunningSessions
-                }
-                ErrorLogEntries       = [pscustomobject]@{
-                    errorLogCount = $ErrorLogCount
-                    logWindow     = $logWindow
-                }
-                InstanceConnection    = $InstanceConnection
-                BackupPathAccess      = [pscustomobject]@{
-                    Result           = $BackupPathAccess
-                    BackupPath       = $BackupPath
-                    LatestBuild      = [PSCustomObject]@{
-                        Compliant = $LatestBuild.Compliant
-                    }
-                    BackupPathAccess = [pscustomobject]@{
-                        Result     = $BackupPathAccess
-                        BackupPath = $BackupPath
-                    }
-                    <<<<<<< HEAD
-                    BackupPathAccess  = [pscustomobject]@{
-                        Result     = $BackupPathAccess
-                        BackupPath = $BackupPath
-                        = ======
-                        LatestBuild   = [PSCustomObject]@{
-                            Compliant = $LatestBuild.Compliant
-                            >>>>>>> 8a6e07b6640c8452c8d599e1c2f4539ad94e1692
-                        }
-                        $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
-                        if ($StartUpSPs -eq 0) {
-                            $testInstanceObject.Configuration.ScanForStartupProcedures.ConfigValue = 0
-                        }
-                    }
-                    if ($WhoIsActiveInstalled) {
-                        $whoisdatabase = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.whoisactive.database' }).Value
-                        $WhoIsActiveInstalled = $Instance.Databases[$whoisdatabase].StoredProcedures.Where{ $_.Name -eq 'sp_WhoIsActive' }.count
-                        $testInstanceObject.ConfigValues | Add-Member -MemberType NoteProperty -Name 'WhoIsActiveInstalled' -Value $whoIsActiveInstalled
-                    }
-                    return $testInstanceObject
-                }
+    $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
+    if ($StartUpSPs -eq 0) {
+        $testInstanceObject.Configuration.ScanForStartupProcedures.ConfigValue = 0
+    }
+
+    if ($WhoIsActiveInstalled) {
+        $whoisdatabase = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.whoisactive.database' }).Value
+        $WhoIsActiveInstalled = $Instance.Databases[$whoisdatabase].StoredProcedures.Where{ $_.Name -eq 'sp_WhoIsActive' }.count
+        $testInstanceObject.ConfigValues | Add-Member -MemberType NoteProperty -Name 'WhoIsActiveInstalled' -Value $whoIsActiveInstalled
+    }
+    return $testInstanceObject
+}
