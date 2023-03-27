@@ -346,6 +346,15 @@ Describe "Error Log Entries" -Tag ErrorLog, Medium, Instance -ForEach $Instances
     }
 }
 
+Describe "Backup Path Access" -Tag BackupPathAccess, Storage, DISA, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.BackupPathAccess' }).Value
+    Context "Testing Backup Path Access on <_.Name>" {
+        It "can access backup path <_.BackupPathAccess.BackupPath> on <_.Name>" {
+            $PsItem.BackupPathAccess.Result | Should -BeTrue -Because 'The SQL Service account needs to have access to the backup path $($PsItem.BackupPathAccess.BackupPath)to backup your databases'
+        }
+    }
+}
+
 <#
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
     Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name

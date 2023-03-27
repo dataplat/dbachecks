@@ -313,11 +313,19 @@ function NewGet-AllInstanceInfo {
                 Remote     = $remote
             }
         }
+        'BackUpPathAccess' {
+            # get value from config or from default setting
+            $BackupPath = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.storage.backuppath' }).Value
+            if (-not $BackupPath) {
+                $BackupPath = $Instance.BackupDirectory
+            }
+            $BackupPathAccess = Test-DbaPath -SqlInstance $Instance -Path $BackupPath
+        }
 
         Default { }
     }
 
-    #build the object
+    #build the object from the results above
 
     $testInstanceObject = [PSCustomObject]@{
         ComputerName          = $Instance.ComputerName
@@ -373,6 +381,10 @@ function NewGet-AllInstanceInfo {
             logWindow     = $logWindow
         }
         InstanceConnection    = $InstanceConnection
+        BackupPathAccess      = [pscustomobject]@{
+            Result     = $BackupPathAccess
+            BackupPath = $BackupPath
+        }
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended
