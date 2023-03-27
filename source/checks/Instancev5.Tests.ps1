@@ -355,6 +355,15 @@ Describe "Backup Path Access" -Tag BackupPathAccess, Storage, DISA, Medium, Inst
     }
 }
 
+Describe "Latest Build" -Tag LatestBuild, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.latestbuild' }).Value
+    Context "Testing Latest Build on <_.Name>" {
+        It "The Latest Build of SQL should be installed on <_.Name>" -Skip:$skip {
+            $psitem.LatestBuild.Compliant | Should -BeTrue -Because "being patched to the latest version is important"
+        }
+    }
+}
+
 <#
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
     Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name
