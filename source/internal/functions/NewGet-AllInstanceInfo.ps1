@@ -329,6 +329,10 @@ function NewGet-AllInstanceInfo {
             $Latency = (Test-DbaNetworkLatency -SqlInstance $Instance).NetworkOnlyTotal.TotalMilliseconds
         }
 
+        'LinkedServerConnection' {
+            $LinkedServerResults = Test-DbaLinkedServerConnection -SqlInstance $Instance
+        }
+
         Default { }
     }
 
@@ -398,6 +402,25 @@ function NewGet-AllInstanceInfo {
         NetworkLatency        = [PSCustomObject]@{
             Latency   = $Latency
             Threshold = $NetworkThreshold
+        }
+        LinkedServerResults   = if ($LinkedServerResults) {
+            $LinkedServerResults.ForEach{
+                [pscustomobject]@{
+                    InstanceName     = $Instance.Name
+                    LinkedServerName = $PSItem.LinkedServerName
+                    RemoteServer     = $PSItem.RemoteServer
+                    Connectivity     = $PSItem.Connectivity
+                    Result           = $PSItem.Result
+                }
+            }
+        } else {
+            [pscustomobject]@{
+                InstanceName     = $Instance.Name
+                LinkedServerName = 'None found'
+                RemoteServer     = 'None'
+                Connectivity     = $true
+                Result           = 'None'
+            }
         }
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting

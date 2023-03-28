@@ -372,6 +372,16 @@ Describe "Network Latency" -Tag NetworkLatency, Connectivity, Medium, Instance -
         }
     }
 }
+
+Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.linkedserverconnection' }).Value
+    Context "Testing Linked Server Connection on <_.Name>" {
+        It "should be able to connect to <_.LinkedServerName> for Linked Server <_.RemoteServer> on <_.InstanceName>" -Skip:$skip -ForEach @($Psitem.LinkedServerResults) {
+            $psitem.Connectivity | Should -BeTrue -Because "Linked server connection should be successful but the result was $($Psitem.Result)"
+        }
+    }
+}
+
 <#
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
     Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name
