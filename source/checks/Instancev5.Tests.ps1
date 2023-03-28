@@ -373,7 +373,7 @@ Describe "Network Latency" -Tag NetworkLatency, Connectivity, Medium, Instance -
     }
 }
 
-Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, Medium, Instance -ForEach $InstancesToTest {
+Describe "Linked Servers" -Tag LinkedServerConnection, Connectivity, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.linkedserverconnection' }).Value
     Context "Testing Linked Server Connection on <_.Name>" {
         It "should be able to connect to <_.LinkedServerName> for Linked Server <_.RemoteServer> on <_.InstanceName>" -Skip:$skip -ForEach @($Psitem.LinkedServerResults) {
