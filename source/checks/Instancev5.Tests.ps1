@@ -346,11 +346,47 @@ Describe "Error Log Entries" -Tag ErrorLog, Medium, Instance -ForEach $Instances
     }
 }
 
+Describe "Backup Path Access" -Tag BackupPathAccess, Storage, DISA, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.BackupPathAccess' }).Value
+    Context "Testing Backup Path Access on <_.Name>" {
+        It "can access backup path <_.BackupPathAccess.BackupPath> on <_.Name>" {
+            $PsItem.BackupPathAccess.Result | Should -BeTrue -Because 'The SQL Service account needs to have access to the backup path $($PsItem.BackupPathAccess.BackupPath) to backup your databases'
+        }
+    }
+}
+
 Describe "Latest Build" -Tag LatestBuild, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.latestbuild' }).Value
     Context "Testing Latest Build on <_.Name>" {
         It "The Latest Build of SQL should be installed on <_.Name>" -Skip:$skip {
             $psitem.LatestBuild.Compliant | Should -BeTrue -Because "being patched to the latest version is important"
+        }
+    }
+}
+
+Describe "Network Latency" -Tag NetworkLatency, Connectivity, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.networklatency' }).Value
+    Context "Testing Network Latency on <_.Name>" {
+        It "should have a network latency less than <_.NetworkLatency.Threshold> ms on <_.Name>" -Skip:$skip {
+            $psitem.NetworkLatency.Latency | Should -BeLessThan $psitem.NetworkLatency.Threshold -Because "Network latency should be less than $($psitem.NetworkLatency.Threshold) ms"
+        }
+    }
+}
+
+Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.linkedserverconnection' }).Value
+    Context "Testing Linked Server Connection on <_.Name>" {
+        It "should be able to connect to <_.LinkedServerName> for Linked Server <_.RemoteServer> on <_.InstanceName>" -Skip:$skip -ForEach @($Psitem.LinkedServerResults) {
+            $psitem.Connectivity | Should -BeTrue -Because "Linked server connection should be successful but the result was $($Psitem.Result)"
+        }
+    }
+}
+
+Describe "Max Memory" -Tag MaxMemory, High, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.maxmemory' }).Value
+    Context "Testing Max Memory on <_.Name>" {
+        It "Max Memory setting should be correct on <_.Name>" -Skip:$skip {
+            $Psitem.MaxMemory.MaxValue | Should -BeLessThan $Psitem.MaxMemory.RecommendedValue -Because 'You do not want to exhaust server memory'
         }
     }
 }
