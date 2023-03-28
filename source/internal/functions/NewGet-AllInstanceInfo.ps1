@@ -270,8 +270,8 @@ function NewGet-AllInstanceInfo {
             # It is not enough to check the CreateDate on the log, you must check the LogDate on every error record as well.
             $ErrorLogCount = (Get-ErrorLogEntry | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) }).Count
         }
-        'LatestBuild' {
-            $LatestBuild = Test-DbaBuild -SqlInstance $Instance -Latest
+        'TempDbConfiguration' {
+            $TempDBTest = Test-DbaTempDbConfig -SqlInstance $Instance
         }
         'InstanceConnection' {
             #local is always NTLM except when its a container ;-)
@@ -321,11 +321,17 @@ function NewGet-AllInstanceInfo {
             }
             $BackupPathAccess = Test-DbaPath -SqlInstance $Instance -Path $BackupPath
         }
+        'LatestBuild' {
+            $LatestBuild = Test-DbaBuild -SqlInstance $Instance -Latest
+        }
+
+        Default { }
     }
-    #build the object from the results above
+
+    #build the object
 
     $testInstanceObject = [PSCustomObject]@{
-        #build the object from the results above
+        ComputerName          = $Instance.ComputerName
         InstanceName          = $Instance.DbaInstanceName
         Name                  = $Instance.Name
         ConfigValues          = $ConfigValues
@@ -385,13 +391,19 @@ function NewGet-AllInstanceInfo {
         LatestBuild           = [PSCustomObject]@{
             Compliant = $LatestBuild.Compliant
         }
+        # TempDbConfig          = [PSCustomObject]@{
+        #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
+        #     TF118EnabledRecommended = $tempDBTest[0].Recommended
+        #     TempDBFilesCurrent      = $tempDBTest[1].CurrentSetting
+        #      TempDBFilesRecommended  = $tempDBTest[1].Recommended
+        # }
     }
-
-    $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
-    if ($StartUpSPs -eq 0) {
-        $testInstanceObject.Configuration.ScanForStartupProcedures.ConfigValue = 0
+    if ($ScanForStartupProceduresDisabled) {
+        $StartUpSPs = $Instance.Databases['master'].StoredProcedures.Where{ $_. Name -ne 'sp_MSrepl_startup' -and $_.StartUp -eq $true }.count
+        if ($StartUpSPs -eq 0) {
+            $testInstanceObject.Configuration.ScanForStartupProcedures.ConfigValue = 0
+        }
     }
-
     if ($WhoIsActiveInstalled) {
         $whoisdatabase = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.whoisactive.database' }).Value
         $WhoIsActiveInstalled = $Instance.Databases[$whoisdatabase].StoredProcedures.Where{ $_.Name -eq 'sp_WhoIsActive' }.count
