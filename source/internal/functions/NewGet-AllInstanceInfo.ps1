@@ -324,6 +324,10 @@ function NewGet-AllInstanceInfo {
         'LatestBuild' {
             $LatestBuild = Test-DbaBuild -SqlInstance $Instance -Latest
         }
+        'NetworkLatency' {
+            $NetworkThreshold = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.network.latencymaxms' }).Value
+            $Latency = (Test-DbaNetworkLatency -SqlInstance $Instance).NetworkOnlyTotal.TotalMilliseconds
+        }
 
         Default { }
     }
@@ -390,6 +394,10 @@ function NewGet-AllInstanceInfo {
         }
         LatestBuild           = [PSCustomObject]@{
             Compliant = $LatestBuild.Compliant
+        }
+        NetworkLatency        = [PSCustomObject]@{
+            Latency   = $Latency
+            Threshold = $NetworkThreshold
         }
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting

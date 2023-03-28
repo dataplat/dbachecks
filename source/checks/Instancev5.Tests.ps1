@@ -364,6 +364,14 @@ Describe "Latest Build" -Tag LatestBuild, Security, CIS, Medium, Instance -ForEa
     }
 }
 
+Describe "Network Latency" -Tag NetworkLatency, Connectivity, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.networklatency' }).Value
+    Context "Testing Network Latency on <_.Name>" {
+        It "should have a network latency less than <_.NetworkLatency.Threshold> ms on <_.Name>" -Skip:$skip {
+            $psitem.NetworkLatency.Latency | Should -BeLessThan $psitem.NetworkLatency.Threshold -Because "Network latency should be less than $($psitem.NetworkLatency.Threshold) ms"
+        }
+    }
+}
 <#
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
     Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name
