@@ -1,20 +1,24 @@
 # dbachecks
 
 
-[![.github/workflows/deploy-module.yml](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml/badge.svg?branch=main)](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml)  
-[![GitHub release badge](https://badgen.net/github/release/dataplat/dbachecks/stable?label=latest_release)](https://github.com/dataplat/dbachecks/releases/latest)  
-[![GitHub pre-release badge](https://badgen.net/github/release/dataplat/dbachecks?label=pre-release)](https://github.com/dataplat/dbachecks/releases/)  
-[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/dbachecks?label=PowerShell_Gallery)](https://www.powershellgallery.com/packages/dbachecks/)   
-[![GitHub license badge](https://badgen.net/github/license/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/blob/43423437f831e2844452d482a50864f224f12534/LICENSE)  
-[![GitHub releases badge](https://badgen.net/github/releases/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/releases)  
-![Ubuntu Linux](https://badgen.net/badge/icon/Ubuntu?icon=terminal&label)[![Linux Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/linux-badge.svg)](https://github.com/dataplat/dbachecks/actions/)  
-![macOS](https://badgen.net/badge/icon/macOS?icon=apple&label)[![MacOs Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/macos-badge.svg)](https://github.com/dataplat/dbachecks/actions/)  
-![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label)[![Windows pwsh Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/winps7-badge.svg)](https://github.com/dataplat/dbachecks/actions/)  
- ![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label)[![Windows PowerShell 5.1 Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/winps51-badge.svg)](https://github.com/dataplat/dbachecks/actions/)  
-  
+[![.github/workflows/deploy-module.yml](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml/badge.svg?branch=main)](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml)
+[![GitHub release badge](https://badgen.net/github/release/dataplat/dbachecks/stable?label=latest_release)](https://github.com/dataplat/dbachecks/releases/latest)
+[![GitHub pre-release badge](https://badgen.net/github/release/dataplat/dbachecks?label=pre-release)](https://github.com/dataplat/dbachecks/releases/)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/dbachecks?label=PowerShell_Gallery)](https://www.powershellgallery.com/packages/dbachecks/)
+[![GitHub license badge](https://badgen.net/github/license/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/blob/43423437f831e2844452d482a50864f224f12534/LICENSE)
+[![GitHub releases badge](https://badgen.net/github/releases/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/releases)
+![Ubuntu Linux](https://badgen.net/badge/icon/Ubuntu?icon=terminal&label)[![Linux Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/linux-badge.svg)](https://github.com/dataplat/dbachecks/actions/)
+![macOS](https://badgen.net/badge/icon/macOS?icon=apple&label)[![MacOs Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/macos-badge.svg)](https://github.com/dataplat/dbachecks/actions/)
+![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label)[![Windows pwsh Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/winps7-badge.svg)](https://github.com/dataplat/dbachecks/actions/)
+ ![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label)[![Windows PowerShell 5.1 Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/winps51-badge.svg)](https://github.com/dataplat/dbachecks/actions/)
+
 
 
 <img align="left" src="https://user-images.githubusercontent.com/8278033/34322840-ed09114e-e832-11e7-9670-9baa686ade71.png">
+
+Please note - development on v2 has stopped and all efforts are focused on the v3 improvements to use Pester v5 and improve performance.
+
+You are welcome to help by picking something from the project https://github.com/orgs/dataplat/projects/2 or by contacting @SQLDBAWithABeard @jpomfret @ClaudioESSilva or @shaneis
 
 dbachecks is a framework created by and for SQL Server pros who need to validate their environments. Basically, we all share similar checklists and mostly just the server names and RPO/RTO/etc change.
 
