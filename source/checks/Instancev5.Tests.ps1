@@ -382,6 +382,15 @@ Describe "Linked Servers" -Tags LinkedServerConnection, Connectivity, Medium, In
     }
 }
 
+Describe "Max Memory" -Tag MaxMemory, High, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.maxmemory' }).Value
+    Context "Testing Max Memory on <_.Name>" {
+        It "Max Memory setting should be correct on <_.Name>" -Skip:$skip {
+            $Psitem.MaxMemory.MaxValue | Should -BeLessThan $Psitem.MaxMemory.RecommendedValue -Because 'You do not want to exhaust server memory'
+        }
+    }
+}
+
 <#
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
     Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name

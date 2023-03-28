@@ -333,6 +333,27 @@ function NewGet-AllInstanceInfo {
             $LinkedServerResults = Test-DbaLinkedServerConnection -SqlInstance $Instance
         }
 
+        'MaxMemory' {
+            if ($isLinux -or $isMacOS) {
+                $totalMemory = $Instance.PhysicalMemory
+                # Some servers under-report by 1.
+                if (($totalMemory % 1024) -ne 0) {
+                    $totalMemory = $totalMemory + 1
+                }
+                $MaxMemory = [PSCustomObject]@{
+                    MaxValue         = $totalMemory
+                    RecommendedValue = $Instance.Configuration.MaxServerMemory.ConfigValue + 379
+                    # because we added 379 before and I have zero idea why
+                }
+            } else {
+                $MemoryValues = Test-DbaMaxMemory -SqlInstance $Instance
+                $MaxMemory = [PSCustomObject]@{
+                    MaxValue         = $MemoryValues.MaxValue
+                    RecommendedValue = $MemoryValues.RecommendedValue
+                }
+            }
+        }
+
         Default { }
     }
 
@@ -422,6 +443,7 @@ function NewGet-AllInstanceInfo {
                 Result           = 'None'
             }
         }
+        MaxMemory             = $MaxMemory
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended
