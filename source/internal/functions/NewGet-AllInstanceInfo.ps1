@@ -324,6 +324,35 @@ function NewGet-AllInstanceInfo {
         'LatestBuild' {
             $LatestBuild = Test-DbaBuild -SqlInstance $Instance -Latest
         }
+        'NetworkLatency' {
+            $NetworkThreshold = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.network.latencymaxms' }).Value
+            $Latency = (Test-DbaNetworkLatency -SqlInstance $Instance).NetworkOnlyTotal.TotalMilliseconds
+        }
+
+        'LinkedServerConnection' {
+            $LinkedServerResults = Test-DbaLinkedServerConnection -SqlInstance $Instance
+        }
+
+        'MaxMemory' {
+            if ($isLinux -or $isMacOS) {
+                $totalMemory = $Instance.PhysicalMemory
+                # Some servers under-report by 1.
+                if (($totalMemory % 1024) -ne 0) {
+                    $totalMemory = $totalMemory + 1
+                }
+                $MaxMemory = [PSCustomObject]@{
+                    MaxValue         = $totalMemory
+                    RecommendedValue = $Instance.Configuration.MaxServerMemory.ConfigValue + 379
+                    # because we added 379 before and I have zero idea why
+                }
+            } else {
+                $MemoryValues = Test-DbaMaxMemory -SqlInstance $Instance
+                $MaxMemory = [PSCustomObject]@{
+                    MaxValue         = $MemoryValues.MaxValue
+                    RecommendedValue = $MemoryValues.RecommendedValue
+                }
+            }
+        }
 
         Default { }
     }
@@ -391,6 +420,30 @@ function NewGet-AllInstanceInfo {
         LatestBuild           = [PSCustomObject]@{
             Compliant = $LatestBuild.Compliant
         }
+        NetworkLatency        = [PSCustomObject]@{
+            Latency   = $Latency
+            Threshold = $NetworkThreshold
+        }
+        LinkedServerResults   = if ($LinkedServerResults) {
+            $LinkedServerResults.ForEach{
+                [pscustomobject]@{
+                    InstanceName     = $Instance.Name
+                    LinkedServerName = $PSItem.LinkedServerName
+                    RemoteServer     = $PSItem.RemoteServer
+                    Connectivity     = $PSItem.Connectivity
+                    Result           = $PSItem.Result
+                }
+            }
+        } else {
+            [pscustomobject]@{
+                InstanceName     = $Instance.Name
+                LinkedServerName = 'None found'
+                RemoteServer     = 'None'
+                Connectivity     = $true
+                Result           = 'None'
+            }
+        }
+        MaxMemory             = $MaxMemory
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended

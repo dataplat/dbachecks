@@ -42,12 +42,11 @@ function Export-DbcConfig {
     )
 
     Write-PSFMessage "Testing if $Path exists" -Level Verbose
-    if (Test-Path -Path $file) {
+    if (Test-Path -Path $Path) {
         if (-not $Force) {
             Write-PSFMessage "Uh-Oh - File $Path exists - use the Force parameter to overwrite (even if your name is not Luke!)" -Level Significant
             Return ''
-        }
-        else {
+        } else {
             Write-PSFMessage "File $Path exists and will be overwritten " -Level Verbose
         }
     }
@@ -56,8 +55,7 @@ function Export-DbcConfig {
         # support for Invoke-Item
         Get-Item -Path $Path
         Write-PSFMessage -Message "Wrote file to $Path" -Level Verbose
-    }
-    catch {
+    } catch {
         Stop-PSFFunction -Message $_ -Target $Path
     }
 }

@@ -279,7 +279,10 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionRunning -Validation
 Set-PSFConfig -Module dbachecks -Name skip.instance.XESessionRunningAllowed -Validation bool -Value $false -Initialize -Description "Skip the check for XESessions that are allowed to be running"
 Set-PSFConfig -Module dbachecks -Name skip.instance.errorlogentries -Validation bool -Value $false -Initialize -Description "Skip the check for errorlog entries"
 Set-PSFConfig -Module dbachecks -Name skip.instance.tempdb -Validation bool -Value $false -Initialize -Description "Skip all the checks for the tempdb database"
-Set-PSFConfig -Module dbachecks -Name skip.instance.BackupPathAccess -Validation bool -Value $false -Initialize -Description "Skip all the checks for the backup path access check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.BackupPathAccess -Validation bool -Value $false -Initialize -Description "Skip the check for the backup path access check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.networklatency -Validation bool -Value $false -Initialize -Description "Skip the check for network latency"
+Set-PSFConfig -Module dbachecks -Name skip.instance.linkedserverconnection -Validation bool -Value $false -Initialize -Description "Skip the check for linked server connection"
+Set-PSFConfig -Module dbachecks -Name skip.instance.maxmemory -Validation bool -Value $false -Initialize -Description "Skip the check for max memory"
 
 
 
