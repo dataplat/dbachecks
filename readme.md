@@ -1,18 +1,18 @@
 # dbachecks
 
 
-<img align="right" src="https://api.star-history.com/svg?repos=dataplat/dbachecks&type=Date">
+<img align="right" height="300" src="https://api.star-history.com/svg?repos=dataplat/dbachecks&type=Date">
 
 
-[![.github/workflows/deploy-module.yml](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml/badge.svg?branch=main)](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml)
-[![GitHub release badge](https://badgen.net/github/release/dataplat/dbachecks/stable?label=latest_release)](https://github.com/dataplat/dbachecks/releases/latest)
-[![GitHub pre-release badge](https://badgen.net/github/release/dataplat/dbachecks?label=pre-release)](https://github.com/dataplat/dbachecks/releases/)
-[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/dbachecks?label=PowerShell_Gallery)](https://www.powershellgallery.com/packages/dbachecks/)
+[![.github/workflows/deploy-module.yml](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml/badge.svg?branch=main)](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml)  
+[![GitHub release badge](https://badgen.net/github/release/dataplat/dbachecks/stable?label=latest_release)](https://github.com/dataplat/dbachecks/releases/latest) 
+[![GitHub pre-release badge](https://badgen.net/github/release/dataplat/dbachecks?label=pre-release)](https://github.com/dataplat/dbachecks/releases/)  
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/dbachecks?label=PowerShell_Gallery)](https://www.powershellgallery.com/packages/dbachecks/)  
 [![GitHub license badge](https://badgen.net/github/license/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/blob/43423437f831e2844452d482a50864f224f12534/LICENSE)
-[![GitHub releases badge](https://badgen.net/github/releases/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/releases)
-![Ubuntu Linux](https://badgen.net/badge/icon/Ubuntu?icon=terminal&label=pwsh)[![Linux Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/linux-badge.svg)](https://github.com/dataplat/dbachecks/actions/)
-![macOS](https://badgen.net/badge/icon/macOS?icon=apple&label=pwsh)[![MacOs Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/macos-badge.svg)](https://github.com/dataplat/dbachecks/actions/)
-![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label=pwsh)[![Windows pwsh Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/winps7-badge.svg)](https://github.com/dataplat/dbachecks/actions/)
+[![GitHub releases badge](https://badgen.net/github/releases/dataplat/dbachecks)](https://github.com/dataplat/dbachecks/releases)  
+![Ubuntu Linux](https://badgen.net/badge/icon/Ubuntu?icon=terminal&label=pwsh)[![Linux Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/linux-badge.svg)](https://github.com/dataplat/dbachecks/actions/)  
+![macOS](https://badgen.net/badge/icon/macOS?icon=apple&label=pwsh)[![MacOs Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/macos-badge.svg)](https://github.com/dataplat/dbachecks/actions/)  
+![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label=pwsh)[![Windows pwsh Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/winps7-badge.svg)](https://github.com/dataplat/dbachecks/actions/)  
  ![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label=5.1)[![Windows PowerShell 5.1 Tests](https://gist.githubusercontent.com/SQLDBAWithABeard/7a5d2837e29654202f22392187c75fec/raw/winps51-badge.svg)](https://github.com/dataplat/dbachecks/actions/)
 
 

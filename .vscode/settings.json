@@ -43,5 +43,9 @@
         "type",
         "whoisactive",
         "whoisactivedatabase"
-    ]
+    ],
+    "[markdown]": {
+        "editor.trimAutoWhitespace": false,
+        "files.trimTrailingWhitespace": false
+    }
 }
