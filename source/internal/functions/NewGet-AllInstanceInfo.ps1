@@ -358,6 +358,12 @@ function NewGet-AllInstanceInfo {
             $FileCount = @(Find-DbaOrphanedFile -SqlInstance $Instance).Count
         }
 
+        ServerNameMatch {
+            $ServerNameMatchconfiguredServerName = $Instance.Query("SELECT @@servername AS ServerName").ServerName
+            $ServerNameMatchnetName = $Instance.NetName
+            $ServerNameMatchrenamerequired = $ServerNameMatchnetName -ne $ServerNameMatchconfiguredServerName
+        }
+
         Default { }
     }
 
@@ -450,6 +456,11 @@ function NewGet-AllInstanceInfo {
         MaxMemory             = $MaxMemory
         OrphanedFile          = [pscustomobject]@{
             FileCount = $FileCount
+        }
+        ServerNameMatch       = [pscustomobject]@{
+            configuredServerName = $ServerNameMatchconfiguredServerName
+            netName              = $ServerNameMatchnetName
+            renamerequired       = $ServerNameMatchrenamerequired
         }
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
