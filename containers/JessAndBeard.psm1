@@ -2326,6 +2326,13 @@ The Tags are the same"
           FailedChange  = -12 # + or - the number of tests failed for v5
           SkippedChange = 0 # + or - the number of tests skipped for v5
       }
+      @{
+          Name          = 'LinkedServerConnection'
+          RunChange     = -3 # + or - the number of tests for v5
+          PassedChange  = -3 # + or - the number of tests passed for v5
+          FailedChange  = 0 # + or - the number of tests failed for v5
+          SkippedChange = 0 # + or - the number of tests skipped for v5
+      }
   )
   $runchange = 0
   $passedchange = 0
