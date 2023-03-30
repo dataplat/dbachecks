@@ -341,8 +341,8 @@ function NewGet-AllInstanceInfo {
                     $totalMemory = $totalMemory + 1
                 }
                 $MaxMemory = [PSCustomObject]@{
-                    MaxValue         = $totalMemory
-                    RecommendedValue = $Instance.Configuration.MaxServerMemory.ConfigValue + 379
+                    MaxValue         = $Instance.Configuration.MaxServerMemory.ConfigValue + 379
+                    RecommendedValue = $totalMemory
                     # because we added 379 before and I have zero idea why
                 }
             } else {
