@@ -341,8 +341,8 @@ function NewGet-AllInstanceInfo {
                     $totalMemory = $totalMemory + 1
                 }
                 $MaxMemory = [PSCustomObject]@{
-                    MaxValue         = $totalMemory
-                    RecommendedValue = $Instance.Configuration.MaxServerMemory.ConfigValue + 379
+                    MaxValue         = $Instance.Configuration.MaxServerMemory.ConfigValue + 379
+                    RecommendedValue = $totalMemory
                     # because we added 379 before and I have zero idea why
                 }
             } else {
@@ -352,6 +352,16 @@ function NewGet-AllInstanceInfo {
                     RecommendedValue = $MemoryValues.RecommendedValue
                 }
             }
+        }
+
+        OrphanedFile {
+            $FileCount = @(Find-DbaOrphanedFile -SqlInstance $Instance).Count
+        }
+
+        ServerNameMatch {
+            $ServerNameMatchconfiguredServerName = $Instance.Query("SELECT @@servername AS ServerName").ServerName
+            $ServerNameMatchnetName = $Instance.NetName
+            $ServerNameMatchrenamerequired = $ServerNameMatchnetName -ne $ServerNameMatchconfiguredServerName
         }
 
         Default { }
@@ -444,6 +454,14 @@ function NewGet-AllInstanceInfo {
             }
         }
         MaxMemory             = $MaxMemory
+        OrphanedFile          = [pscustomobject]@{
+            FileCount = $FileCount
+        }
+        ServerNameMatch       = [pscustomobject]@{
+            configuredServerName = $ServerNameMatchconfiguredServerName
+            netName              = $ServerNameMatchnetName
+            renamerequired       = $ServerNameMatchrenamerequired
+        }
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended

@@ -391,6 +391,25 @@ Describe "Max Memory" -Tag MaxMemory, High, Instance -ForEach $InstancesToTest {
     }
 }
 
+Describe "Orphaned Files" -Tag OrphanedFile, Low, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.orphanedfile' }).Value
+    Context "Testing Orphaned Files on <_.Name>" {
+        It "should not have orphaned files on <_.Name>" -Skip:$skip {
+            $Psitem.OrphanedFile.FileCount | Should -Be 0 -Because 'You dont want any orphaned files - Use Find-DbaOrphanedFile to locate them'
+        }
+    }
+}
+
+Describe "SQL and Windows names match" -Tag ServerNameMatch, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.servernamematch' }).Value
+    Context "Testing SQL and Windows names match on <_.Name>" {
+        It "should have matching names on <_.Name>" -Skip:$skip {
+            $Psitem.ServerNameMatch.renamerequired | Should -BeFalse -Because "SQL and Windows names should match but configured name $($Psitem.ServerNameMatch.configuredServerName) does not match $($Psitem.ServerNameMatch.netName)"
+        }
+    }
+}
+
+
 <#
 Describe "TempDB Configuration" -Tags TempDbConfiguration, Medium, Instance -ForEach $InstancesToTest {
     Context "Testing TempDB Configuration on $psitem" -Skip:(($__dbcconfig | Where-Object { $_.Name

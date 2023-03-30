@@ -1,8 +1,6 @@
 # dbachecks
 
-
-<img align="right" height="300" src="https://api.star-history.com/svg?repos=dataplat/dbachecks&type=Date">
-
+<a href="https://star-history.com/#dataplat/dbachecks&Date"><img align="right" height="300" src="https://api.star-history.com/svg?repos=dataplat/dbachecks&type=Date"></a>
 
 [![.github/workflows/deploy-module.yml](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml/badge.svg?branch=main)](https://github.com/dataplat/dbachecks/actions/workflows/deploy-module.yml)  
 [![GitHub release badge](https://badgen.net/github/release/dataplat/dbachecks/stable?label=latest_release)](https://github.com/dataplat/dbachecks/releases/latest) 
