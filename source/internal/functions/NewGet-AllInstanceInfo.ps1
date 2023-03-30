@@ -354,6 +354,10 @@ function NewGet-AllInstanceInfo {
             }
         }
 
+        OrphanedFile {
+            $FileCount = @(Find-DbaOrphanedFile -SqlInstance $Instance).Count
+        }
+
         Default { }
     }
 
@@ -444,6 +448,9 @@ function NewGet-AllInstanceInfo {
             }
         }
         MaxMemory             = $MaxMemory
+        OrphanedFile          = [pscustomobject]@{
+            FileCount = $FileCount
+        }
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended

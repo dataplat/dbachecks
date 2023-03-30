@@ -283,6 +283,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.BackupPathAccess -Validation
 Set-PSFConfig -Module dbachecks -Name skip.instance.networklatency -Validation bool -Value $false -Initialize -Description "Skip the check for network latency"
 Set-PSFConfig -Module dbachecks -Name skip.instance.linkedserverconnection -Validation bool -Value $false -Initialize -Description "Skip the check for linked server connection"
 Set-PSFConfig -Module dbachecks -Name skip.instance.maxmemory -Validation bool -Value $false -Initialize -Description "Skip the check for max memory"
+Set-PSFConfig -Module dbachecks -Name skip.instance.orphanedfile -Validation bool -Value $false -Initialize -Description "Skip the check for orphaned file"
 
 
 
