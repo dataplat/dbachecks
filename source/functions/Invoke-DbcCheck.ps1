@@ -305,6 +305,8 @@ function Invoke-DbcCheck {
                     Remove-Module Pester -ErrorAction SilentlyContinue
                     Write-PSFMessage 'Running in fancy new mode, we need to import Version 5' -Level Verbose
                     Import-Module Pester -MinimumVersion 5.0.0 -Global
+                } else {
+                    Write-PSFMessage 'Running in fancy new mode but not imported' -Level Verbose
                 }
 
                 # We should be able to move the creation of the container and the configuration to here
