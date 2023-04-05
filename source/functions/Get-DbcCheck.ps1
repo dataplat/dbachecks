@@ -41,13 +41,13 @@ function Get-DbcCheck {
         $checksfile = Join-Path -Path $script:localapp -ChildPath 'checks.json'
         if ($Pattern) {
             if ($Pattern -notmatch '\*') {
-                $output = @([System.IO.File]::ReadAllText("$script:localapp/checks.json" ) | ConvertFrom-Json).ForEach{
+                $output = @([System.IO.File]::ReadAllText($checksfile) | ConvertFrom-Json).ForEach{
                     $psitem | Where-Object {
                         $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -match $Pattern
                     }
                 }
             } else {
-                $output = @([System.IO.File]::ReadAllText("$script:localapp/checks.json" ) | ConvertFrom-Json).ForEach{
+                $output = @([System.IO.File]::ReadAllText($checksfile) | ConvertFrom-Json).ForEach{
                     $psitem | Where-Object {
                         $_.Group, $_.Description , $_.UniqueTag , $_.AllTags, $_.Type -like $Pattern
                     }
