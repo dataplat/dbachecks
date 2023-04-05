@@ -54,7 +54,7 @@ function Get-DbcCheck {
                 }
             }
         } else {
-            $output = [System.IO.File]::ReadAllText("$script:localapp/checks.json" ) | ConvertFrom-Json
+            $output = [System.IO.File]::ReadAllText($checksfile) | ConvertFrom-Json
         }
         if ($Group) {
             $output = @($output).ForEach{
