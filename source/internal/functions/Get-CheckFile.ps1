@@ -54,7 +54,7 @@ function Get-CheckFile {
                             }
                         } else {
                             @($check).ForEach{
-                                if (@([System.IO.File]::ReadAllText($script:checksFile) | Select-String -Pattern "^\s*Describe.*-Tags\s+.*($psitem)").Matches.Count) {
+                                if (@([System.IO.File]::ReadAllLines($script:checksFile) | Select-String -Pattern "^\s*Describe.*-Tags\s+.*($psitem)").Matches.Count) {
                                     # file matches by one of the tags
                                     if (!($script:selectedFiles -contains $script:checksFile)) {
                                         $script:selectedFiles.Add($script:checksFile)
@@ -97,7 +97,7 @@ function Get-CheckFile {
                         } else {
                             $message = '{0} file does not match check {1} lets check for the tag' -f $psitem.Name, ($Check | Out-String)
                             Write-PSFMessage -Message $message -Level Verbose
-                            $fileContent = [System.IO.File]::ReadAllText($script:checksFile)
+                            $fileContent = [System.IO.File]::ReadAllLines($script:checksFile)
                             @($check).ForEach{
                                 $message = 'Check file {0} for the tag {1}' -f $script:checksFile, $psitem
                                 Write-PSFMessage -Message $message -Level Verbose

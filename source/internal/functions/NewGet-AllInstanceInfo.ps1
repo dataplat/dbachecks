@@ -354,14 +354,38 @@ function NewGet-AllInstanceInfo {
             }
         }
 
-        OrphanedFile {
+        'OrphanedFile' {
             $FileCount = @(Find-DbaOrphanedFile -SqlInstance $Instance).Count
         }
 
-        ServerNameMatch {
+        'ServerNameMatch' {
             $ServerNameMatchconfiguredServerName = $Instance.Query("SELECT @@servername AS ServerName").ServerName
             $ServerNameMatchnetName = $Instance.NetName
             $ServerNameMatchrenamerequired = $ServerNameMatchnetName -ne $ServerNameMatchconfiguredServerName
+        }
+
+        'MemoryDump' {
+            $maxdumps = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.dump.maxcount' }).Value
+            $daystocheck = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.instance.memorydumpsdaystocheck' }).Value
+            if ($null -eq $daystocheck) {
+                $datetocheckfrom = '0001-01-01'
+            } else {
+                $datetocheckfrom = (Get-Date).ToUniversalTime().AddDays( - $daystocheck )
+            }
+            if (($InstanceSMO.Version.Major -lt 11 -and (-not ($InstanceSMO.Version.Major -eq 10 -and $InstanceSMO.Version.Minor -eq 50)))) {
+                $MemoryDumpCount = 0
+            } else {
+                # Warning Action removes dbatools output for version too low from test results
+                # Skip on the it will show in the results
+                $MemoryDumpCount = (@(Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Where{ $_.CreationTime -gt $datetocheckfrom }).Count
+            }
+
+            $Dump = [pscustomobject] @{
+                DumpCount         = $MemoryDumpCount
+                MaxDumps          = $maxdumps
+                DumpDateCheckFrom = $datetocheckfrom
+                Result            = $MemoryDumpCount -le $maxdumps
+            }
         }
 
         Default { }
@@ -462,6 +486,7 @@ function NewGet-AllInstanceInfo {
             netName              = $ServerNameMatchnetName
             renamerequired       = $ServerNameMatchrenamerequired
         }
+        MemoryDump            = $Dump
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended
