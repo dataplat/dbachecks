@@ -157,7 +157,6 @@
                 "powershell.codeFolding.enable": true,
                 "powershell.codeFolding.showLastLine": true,
                 "powershell.enableReferencesCodeLens": true,
-                "powershell.powerShellDefaultVersion": "PowerShell Core 7 (x64)",
                 "editor.formatOnSave": true,
                 "editor.formatOnSaveMode": "file",
                 "editor.formatOnPaste": true,
@@ -173,5 +172,5 @@
             }
         }
     },
-    "postCreateCommand": "pwsh -c '/workspace/developing/Howto.md'"
+    "postCreateCommand": ""
 }
