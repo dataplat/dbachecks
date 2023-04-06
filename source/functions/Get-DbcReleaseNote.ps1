@@ -29,15 +29,16 @@ function Get-DbcReleaseNote {
         [switch]$Latest
     )
 
-    $releasenotes = Get-Content $ModuleRoot\RELEASE.md -Raw
+    $releasenotesfile = Join-Path -Path $PSScriptRoot -ChildPath 'RELEASE.md'
 
-    if($Latest){
+    $releasenotes = [System.IO.File]::ReadAllText($releasenotesfile)
+
+    if ($Latest) {
         ($releasenotes -Split "##Latest")[0]
-    }
-    else{
+    } else {
         $releasenotes
     }
- }
+}
 # SIG # Begin signature block
 # MIINEAYJKoZIhvcNAQcCoIINATCCDP0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

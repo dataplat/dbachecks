@@ -21,7 +21,7 @@ function New-Json {
             $filename = $file.Name.Replace(".Tests.ps1", "")
             #  Write-Verbose "Processing $FileName"
             #  Write-Verbose "Getting Content of File"
-            $Check = Get-Content $file -Raw
+            $Check = [System.IO.File]::ReadAllText($file)
 
             # because custom checks if they are not coded correctly will break this json creation
             # and they wont get added nicely so that they can be targetted with tags (checks)
@@ -42,7 +42,7 @@ function New-Json {
                         $Check = $null
                         Set-Content -Path $file -Value $filecontent
                         Write-Verbose "Getting Content of File again"
-                        $Check = Get-Content $file -Raw
+                        $Check = [System.IO.File]::ReadAllText($file)
                     }
 
                 }
@@ -66,7 +66,7 @@ function New-Json {
                             $Check = $null
                         }
                         #  Write-Verbose "Getting Content of File again"
-                        $Check = Get-Content $file -Raw
+                        $Check = [System.IO.File]::ReadAllText($file)
 
                     }
                 }
