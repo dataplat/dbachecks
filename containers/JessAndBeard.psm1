@@ -2264,6 +2264,8 @@ function Invoke-PerfAndValidateCheck {
   }
 
   $originalCodetrace = Trace-Script -ScriptBlock $originalCode
+  Remove-Module Pester
+  Import-Module Pester -MinimumVersion 5.0.0 -Global
   $NewCodetrace = Trace-Script -ScriptBlock $NewCode
 
   $originalCodeMessage = "With original Code it takes {0} MilliSeconds" -f $originalCodetrace.StopwatchDuration.TotalMilliseconds
