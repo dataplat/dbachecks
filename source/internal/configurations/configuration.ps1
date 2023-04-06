@@ -21,7 +21,7 @@ Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $Emai
 
 # some configs to help with autocompletes and other module level stuff
 #apps
-$defaultRepo = "$script:ModuleRoot\checks"
+$defaultRepo = Join-Path -Path $script:ModuleRoot -ChildPath checks
 Set-PSFConfig -Module dbachecks -Name app.checkrepos -Value @($defaultRepo) -Initialize -Description "Where Pester tests/checks are stored"
 Set-PSFConfig -Module dbachecks -Name app.sqlinstance -Value $null -Initialize -Description "List of SQL Server instances that SQL-based tests will run against"
 Set-PSFConfig -Module dbachecks -Name app.computername -Value $null -Initialize -Description "List of Windows Servers that Windows-based tests will run against"
@@ -248,7 +248,8 @@ Set-PSFConfig -Module dbachecks -Name policy.database.symmetrickeyencryptionleve
 
 # skips - these are for whole checks that should not run by default or internal commands that can't be skipped using ExcludeTag
 # instance
-Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings test"
+Set-PSFConfig -Module dbachecks -Name skip.instance.memorydump -Validation bool -Value $false -Initialize -Description "Skip the memory dump check"
+Set-PSFConfig -Module dbachecks -Name skip.instance.modeldbgrowth -Validation bool -Value $false -Initialize -Description "Skip the model database growth settings check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.defaulttrace -Validation bool -Value $false -Initialize -Description "Skip the default trace check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.dac -Validation bool -Value $false -Initialize -Description "Skip Dedicated Administrator Connection (DAC) check"
 Set-PSFConfig -Module dbachecks -Name skip.instance.CrossDBOwnershipChaining -Validation bool -Value $false -Initialize -Description "Skip Cross Database Ownership Chaining check"
