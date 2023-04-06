@@ -179,7 +179,7 @@ https://github.com/pester/Pester/wiki/Invoke-Pester
 Describe
 about_Pester
 #>
-#TODO the help is probably not correct 
+#TODO the help is probably not correct
 function Invoke-DbcCheck {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Because scoping is hard')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Because its set to the global var')]
@@ -240,7 +240,7 @@ function Invoke-DbcCheck {
         }
         return $RuntimeParamDic
     }
-    
+
     begin {
         if (Test-PSFParameterBinding -ParameterName ConfigFile) {
             if (-not (Test-Path -Path $ConfigFile)) {
@@ -288,20 +288,26 @@ function Invoke-DbcCheck {
     process {
         if ($legacy) {
             try {
-                Remove-Module Pester -ErrorAction SilentlyContinue
-                Write-PSFMessage 'Running in legacy mode, we need to import Version 4' -Level Verbose
-                Import-Module Pester -RequiredVersion 4.10.1 -Global
+                if (Get-Module Pester | Where-Object { $_.Version -gt '5.0.0' }) {
+                    Remove-Module Pester -ErrorAction SilentlyContinue
+                    Write-PSFMessage 'Running in legacy mode, we need to import Version 4' -Level Verbose
+                    Import-Module Pester -RequiredVersion 4.10.1 -Global
+                }
             } catch {
-                Write-PSFMessage -Message 'Something Went wrong' -Level Warning -ErrorRecord $_ 
+                Write-PSFMessage -Message 'Something Went wrong' -Level Warning -ErrorRecord $_
                 Return
             }
             $null = $PSBoundParameters.Remove('legacy')
             Invoke-DbcCheckv4 @PSBoundParameters
         } else {
             try {
-                Remove-Module Pester -ErrorAction SilentlyContinue
-                Write-PSFMessage 'Running in fancy new mode, we need to import Version 5' -Level Verbose
-                Import-Module Pester -MinimumVersion 5.0.0 -Global
+                if (Get-Module Pester | Where-Object { $_.Version -lt '5.0.0' }) {
+                    Remove-Module Pester -ErrorAction SilentlyContinue
+                    Write-PSFMessage 'Running in fancy new mode, we need to import Version 5' -Level Verbose
+                    Import-Module Pester -MinimumVersion 5.0.0 -Global
+                } else {
+                    Write-PSFMessage 'Running in fancy new mode but not imported' -Level Verbose
+                }
 
                 # We should be able to move the creation of the container and the configuration to here
                 switch ($Show) {
@@ -363,7 +369,7 @@ function Invoke-DbcCheck {
                     $configuration.Run.PassThru = $true
                 }
             } catch {
-                Write-PSFMessage -Message 'Something Went wrong' -Level Warning -ErrorRecord $_ 
+                Write-PSFMessage -Message 'Something Went wrong' -Level Warning -ErrorRecord $_
                 Return
             }
             $null = $PSBoundParameters.Remove('legacy')

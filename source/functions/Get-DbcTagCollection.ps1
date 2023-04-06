@@ -37,7 +37,11 @@ function Get-DbcTagCollection {
     )
 
     process {
-        $alltags = (Get-Content "$script:localapp\checks.json" | Out-String | ConvertFrom-Json) | Select-Object -ExpandProperty AllTags
+        $script:localapp = Get-DbcConfigValue -Name app.localapp
+        # so that it works cross platform
+        $checksfile = Join-Path -Path $script:localapp -ChildPath 'checks.json'
+
+        $alltags = ([System.IO.File]::ReadAllText($checksfile) | ConvertFrom-Json) | Select-Object -ExpandProperty AllTags
         ($alltags -split ",").Trim() | Where-Object { $_ -like $name } | Sort-Object | Select-Object -Unique
     }
 }

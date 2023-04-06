@@ -7,7 +7,8 @@ function New-Json {
     $repos = Get-CheckRepo
     $collection = $groups = $repofiles = @()
     foreach ($repo in $repos) {
-        $repofiles += (Get-ChildItem "$repo\*.Tests.ps1")
+        $folders = Join-Path -Path $repo -ChildPath '*.Tests.ps1'
+        $repofiles += (Get-ChildItem $folders )
     }
     $tokens = $null
     $errors = $null
@@ -20,7 +21,7 @@ function New-Json {
             $filename = $file.Name.Replace(".Tests.ps1", "")
             #  Write-Verbose "Processing $FileName"
             #  Write-Verbose "Getting Content of File"
-            $Check = Get-Content $file -Raw
+            $Check = [System.IO.File]::ReadAllText($file)
 
             # because custom checks if they are not coded correctly will break this json creation
             # and they wont get added nicely so that they can be targetted with tags (checks)
@@ -41,7 +42,7 @@ function New-Json {
                         $Check = $null
                         Set-Content -Path $file -Value $filecontent
                         Write-Verbose "Getting Content of File again"
-                        $Check = Get-Content $file -Raw
+                        $Check = [System.IO.File]::ReadAllText($file)
                     }
 
                 }
@@ -65,7 +66,7 @@ function New-Json {
                             $Check = $null
                         }
                         #  Write-Verbose "Getting Content of File again"
-                        $Check = Get-Content $file -Raw
+                        $Check = [System.IO.File]::ReadAllText($file)
 
                     }
                 }
@@ -102,22 +103,17 @@ function New-Json {
                 # CHoose the type
                 if ($Describe.Parent -match "Get-Instance") {
                     $type = "Sqlinstance"
-                }
-                elseif ($Describe.Parent -match "Get-ComputerName" -or $Describe.Parent -match "AllServerInfo") {
+                } elseif ($Describe.Parent -match "Get-ComputerName" -or $Describe.Parent -match "AllServerInfo") {
                     $type = "ComputerName"
-                }
-                elseif ($Describe.Parent -match "Get-ClusterObject") {
+                } elseif ($Describe.Parent -match "Get-ClusterObject") {
                     $Type = "ClusterNode"
-                }
-                else {
+                } else {
                     #Choose the type from the new way from inside the foreach
                     if ($ComputerNameForEach -match $title) {
                         $type = "ComputerName"
-                    }
-                    elseif ($InstanceNameForEach -match $title) {
+                    } elseif ($InstanceNameForEach -match $title) {
                         $type = "Sqlinstance"
-                    }
-                    else {
+                    } else {
                         $type = $null
                     }
                 }
@@ -125,8 +121,7 @@ function New-Json {
                 if ($filename -eq 'HADR') {
                     ## HADR configs are outside of describe
                     $configs = [regex]::matches($check, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{ $_.Name -eq 1 }.Value
-                }
-                else {
+                } else {
                     $configs = [regex]::matches($describe.Parent.Extent.Text, "Get-DbcConfigValue\s([a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*.[a-zA-Z\d]*\b)").groups.Where{ $_.Name -eq 1 }.Value
                 }
                 $Config = ''
@@ -202,18 +197,19 @@ function New-Json {
         }
     }
     $singletags = (($collection.AllTags -split ",").Trim() | Group-Object | Where-Object { $_.Count -eq 1 -and $_.Name -notin $groups })
-    $Descriptions = Get-Content $script:ModuleRoot\internal\configurations\DbcCheckDescriptions.json -Raw | ConvertFrom-Json
+    $descriptionsFile = Join-Path -Path $script:ModuleRoot -ChildPath 'internal\configurations\DbcCheckDescriptions.json'
+    $descriptions = [System.IO.File]::ReadAllText($descriptionsFile) | ConvertFrom-Json
     foreach ($check in $collection) {
         $unique = $singletags | Where-Object { $_.Name -in ($check.AllTags -split ",").Trim() }
         $check.UniqueTag = $unique.Name
         $Check.Description = $Descriptions.Where{ $_.UniqueTag -eq $Check.UniqueTag }.Description
     }
     try {
-        if ($PSCmdlet.ShouldProcess("$script:localapp\checks.json" , "Convert Json and write to file")) {
-            ConvertTo-Json -InputObject $collection | Out-File "$script:localapp\checks.json"
+        $checksfile = Join-Path -Path $script:localapp -ChildPath 'checks.json'
+        if ($PSCmdlet.ShouldProcess($checksfile  , "Convert Json and write to file")) {
+            ConvertTo-Json -InputObject $collection | Out-File $checksfile
         }
-    }
-    catch {
+    } catch {
         Write-PSFMessage "Failed to create the json, something weird might happen now with tags and things" -Level Significant
     }
 

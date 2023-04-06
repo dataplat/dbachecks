@@ -2246,6 +2246,7 @@ function Invoke-PerfAndValidateCheck {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', 'cls', Justification = 'Dont tell me what to do')]
   [CmdletBinding()]
   param($Checks, [switch]$PerfDetail , [switch]$showTestResults)
+ $SQLInstances = $dbachecks1, $dbachecks2, $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3'
   $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
   $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
   if ($showTestResults) {
@@ -2263,6 +2264,8 @@ function Invoke-PerfAndValidateCheck {
   }
 
   $originalCodetrace = Trace-Script -ScriptBlock $originalCode
+  Remove-Module Pester
+  Import-Module Pester -MinimumVersion 5.0.0 -Global
   $NewCodetrace = Trace-Script -ScriptBlock $NewCode
 
   $originalCodeMessage = "With original Code it takes {0} MilliSeconds" -f $originalCodetrace.StopwatchDuration.TotalMilliseconds
@@ -2434,7 +2437,7 @@ The Total Tests Skipped are the same {0} {1}
       $message = "
     Let's take a look at the slowest code as well "
       Write-PSFMessage -Message $Message -Level Output
-      $NewCodetrace.Top50SelfDuration| Select SelfPercent,HitCount,Line,Function  }
+      $NewCodetrace.Top50SelfDuration| Select SelfPercent,HitCount,Line,Function, Text }
 }
 
 Set-PSFConfig -Module JessAndBeard -Name shallweplayagame -Value $true -Initialize -Description "Whether to ask or not" -ModuleExport
