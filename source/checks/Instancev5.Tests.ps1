@@ -213,6 +213,14 @@ Describe "Max Memory" -Tag MaxMemory, High, Instance -ForEach $InstancesToTest {
     }
 }
 
+Describe "SQL Memory Dumps" -Tags MemoryDump, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.memorydump' }).Value
+    Context "Testing SQL Memory Dumps on <_.Name>" {
+        It "There should be less than <_.MemoryDump.MaxDumps> since <_.MemoryDump.DumpDateCheckFrom> on <_.Name>" -Skip:$skip {
+            $Psitem.MemoryDump.Result | Should -BeTrue -Because "We expected less than $($Psitem.MemoryDump.MaxDumps) dumps since $(PsItem.MemoryDump.DumpDateCheckFrom)but found $($Psitem.MemoryDump.DumpCount) . Memory dumps often suggest issues with the SQL Server instance"
+        }
+    }
+}
 
 Describe "Model Database Growth" -Tag ModelDbGrowth, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.modeldbgrowth' }).Value
