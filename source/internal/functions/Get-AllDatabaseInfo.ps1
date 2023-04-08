@@ -62,7 +62,7 @@ function Get-AllDatabaseInfo {
 
         'AutoShrink' {
             $autoshrink = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoshrink' -Value (Get-DbcConfigValue policy.database.autoshrink) 
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoshrink' -Value (Get-DbcConfigValue policy.database.autoshrink)
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoshrinkexclude' -Value (Get-DbcConfigValue policy.autoshrinke.excludedb)
         }
 
@@ -124,11 +124,15 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'statusexclude' -Value (Get-DbcConfigValue policy.database.statusexcludedb)
 
         }
-        'SymmetricKeyEncryptionLevel' {
-            $symmetrickey = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'symmetrickeyexclude' -Value (Get-DbcConfigValue  policy.database.symmetrickeyencryptionlevelexcludedb)
-
+        'QueryStoreEnabled' {
+            $qs = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsenabledexclude' -Value (Get-DbcConfigValue database.querystoreenabled.excludedb)
         }
+        'QueryStoreDisabled' {
+            $qs = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsdisabledexclude' -Value (Get-DbcConfigValue database.querystoredisabled.excludedb)
+        }
+
         Default { }
     }
 
@@ -149,18 +153,19 @@ function Get-AllDatabaseInfo {
                 ConfigValues                = $ConfigValues # can we move this out?
                 AsymmetricKeySize           = if ($asymmetrickey) { ($psitem.AsymmetricKeys | Where-Object { $_.KeyLength -lt 2048} | Measure-Object).Count }
                 #AsymmetricKeySize          = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key so counting ones that are too short
-                AutoClose                   = if ($autoclose) { $psitem.AutoClose}
-                AutoCreateStatistics        = if ($autocreatestats) { $psitem.AutoCreateStatisticsEnabled }
-                AutoUpdateStatistics        = if ($autoupdatestats) { $psitem.AutoUpdateStatisticsEnabled }
-                AutoUpdateStatisticsAsync   = if ($autoupdatestatsasync) { $psitem.AutoUpdateStatisticsAsync }
-                AutoShrink                  = if ($autoshrink) { $psitem.AutoShrink}
-                VLF                         = if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count }
-                LogFileCount                = if ($logfilecount) { ($psitem.LogFiles | Measure-Object).Count }
-                Trustworthy                 = if ($trustworthy) { $psitem.Trustworthy }
-                Status                      = if ($status) { $psitem.Status }
-                IsDatabaseSnapshot          = if ($status) { $psitem.IsDatabaseSnapshot } # needed for status test
-                Readonly                    = if ($status) { $psitem.Readonly } # needed for status test
-                SymmetricKey                = if ($symmetrickey) { ($psitem | where IsAccessible).SymmetricKeys }
+                AutoClose                 = @(if ($autoclose) { $psitem.AutoClose })
+                AutoCreateStatistics      = @(if ($autocreatestats) { $psitem.AutoCreateStatisticsEnabled })
+                AutoUpdateStatistics      = @(if ($autoupdatestats) { $psitem.AutoUpdateStatisticsEnabled })
+                AutoUpdateStatisticsAsync = @(if ($autoupdatestatsasync) { $psitem.AutoUpdateStatisticsAsync })
+                AutoShrink                = @(if ($autoshrink) { $psitem.AutoShrink })
+                VLF                       = @(if ($vlf) { ($psitem.Query("DBCC LOGINFO") | Measure-Object).Count })
+                LogFileCount              = @(if ($logfilecount) { ($psitem.LogFiles | Measure-Object).Count })
+                Trustworthy               = @(if ($trustworthy) { $psitem.Trustworthy })
+                Status                    = @(if ($status) { $psitem.Status })
+                IsDatabaseSnapshot        = @(if ($status) { $psitem.IsDatabaseSnapshot }) # needed for status test
+                Readonly                  = @(if ($status) { $psitem.Readonly }) # needed for status test
+                QueryStore                = @(if ($qs) { $psitem.QueryStoreOptions.ActualState })
+
             }
         }
     }
