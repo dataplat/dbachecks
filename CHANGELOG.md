@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1-preview0009] - 2023-04-11
+
 ### Added
 
 - For new features.
