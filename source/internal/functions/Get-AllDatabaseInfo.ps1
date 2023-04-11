@@ -124,9 +124,14 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'statusexclude' -Value (Get-DbcConfigValue policy.database.statusexcludedb)
         }
         'QueryStoreEnabled' {
-            $qsenabled = $true
+            $qs = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsenabledexclude' -Value (Get-DbcConfigValue database.querystoreenabled.excludedb)
         }
+        'QueryStoreDisabled' {
+            $qs = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsdisabledexclude' -Value (Get-DbcConfigValue database.querystoredisabled.excludedb)
+        }
+
         Default { }
     }
 
@@ -158,7 +163,7 @@ function Get-AllDatabaseInfo {
                 Status                    = @(if ($status) { $psitem.Status })
                 IsDatabaseSnapshot        = @(if ($status) { $psitem.IsDatabaseSnapshot }) # needed for status test
                 Readonly                  = @(if ($status) { $psitem.Readonly }) # needed for status test
-                QueryStoreEnabled         = @(if ($qsenabled) { $psitem.QueryStoreOptions.ActualState })
+                QueryStore                = @(if ($qs) { $psitem.QueryStoreOptions.ActualState })
 
             }
         }
