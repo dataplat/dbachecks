@@ -365,3 +365,11 @@ jobs:
       env:
         GitHubToken: ${{ secrets.GitHubToken }}
 
+    - name: Merge main -> containers
+      uses: devmasx/merge-branch@1.4.0
+      with:
+        type: now
+        from_branch: main
+        target_branch: containers
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
