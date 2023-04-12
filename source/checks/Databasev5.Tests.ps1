@@ -198,7 +198,18 @@ Describe "Query Store Enabled" -Tag QueryStoreEnabled, Medium, Database -ForEach
 
     Context "Testing to see if Query Store is enabled on <_.Name>" {
         It "Database <_.Name> should have Query Store enabled on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.qsenabledexclude -notcontains $PsItem.Name } } {
-            $psitem.QueryStoreEnabled | Should -Not -BeIn ('OFF', 'ERROR') -Because "We expect the Query Store to be enabled"
+            $psitem.QueryStore | Should -Not -BeIn ('OFF', 'ERROR') -Because "We expect the Query Store to be enabled"
         }
     }
 }
+
+Describe "Query Store Disabled" -Tag QueryStoreDisabled, Medium, Database -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.querystoredisabled' }).Value
+
+    Context "Testing to see if Query Store is disabled on <_.Name>" {
+        It "Database <_.Name> should have Query Store disabled on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.qsdisabledexclude -notcontains $PsItem.Name } } {
+            $psitem.QueryStore | Should -Not -Be 'OFF' -Because "We expect the Query Store to be disabled"
+        }
+    }
+}
+
