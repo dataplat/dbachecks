@@ -1,38 +1,38 @@
 version: "3"
 services:
     dbachecks1:
-      image: dbachecks/sqlinstance1:v2.28.0
+      image: dbachecks/sqlinstance1:v2.29.0
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
-        # Update this to wherever you want VS Code to mount the folder of your project 
+        # Update this to wherever you want VS Code to mount the folder of your project
         - ..:/workspace:cached
       ports:
         - "7401:1433"
       container_name: dbachecks1
       hostname: dbachecks1
-      
+
     dbachecks2:
-      image: dbachecks/sqlinstance2:v2.28.0
+      image: dbachecks/sqlinstance2:v2.29.0
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
         # Update this to wherever you want VS Code to mount the folder of your project
-        # So that the second container is rebuilt everytime as well 
+        # So that the second container is rebuilt everytime as well
         - ..:/somewhereweirdworkspace:cached
       ports:
         - "7402:1433"
       container_name: dbachecks2
       hostname: dbachecks2
-      
+
       # This is our SQL2022 container
     dbachecks3:
-      image: dbachecks/sqlinstance3:v2.28.0
+      image: dbachecks/sqlinstance3:v2.29.0
       volumes:
         - mydata:/var/opt/backups
         - shared:/shared
         # Update this to wherever you want VS Code to mount the folder of your project
-        # So that the second container is rebuilt everytime as well 
+        # So that the second container is rebuilt everytime as well
         - ..:/somewhereweirdworkspace:cached
       ports:
         - "7403:1433"
