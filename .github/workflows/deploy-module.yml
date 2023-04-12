@@ -5,6 +5,7 @@ on:
     paths-ignore:
     - CHANGELOG.md
     - containers/**
+    - .github/**
     tags:
     - '**'
     - '!*preview*'
