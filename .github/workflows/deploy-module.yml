@@ -4,6 +4,8 @@ on:
     - main
     paths-ignore:
     - CHANGELOG.md
+    - containers/**
+    - .github/**
     tags:
     - '**'
     - '!*preview*'
@@ -370,3 +372,4 @@ jobs:
         from_branch: main
         target_branch: containers
         github_token: ${{ secrets.GITHUB_TOKEN }}
+

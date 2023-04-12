@@ -2223,6 +2223,11 @@ function Invoke-PerfAndValidateCheck {
   .PARAMETER PerfDetails
   Shall we show the performance output from profiler
 
+  .PARAMETER SQLInstances
+  Which SQL Instances shall we test.
+
+  Defaults ($dbachecks1, $dbachecks2, $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3')
+
   .EXAMPLE
   Invoke-PerfAndValidateCheck -Check InvalidDatabaseOwner
 
@@ -2238,6 +2243,11 @@ function Invoke-PerfAndValidateCheck {
 
   Check validity and performance for both the ValidDatabaseOwner and InvalidDatabaseOwner tests and show the top 50 slowest lines
 
+  .EXAMPLE
+  Invoke-PerfAndValidateCheck -SqlInstances 'localhost,7401' -Check ValidDatabaseOwner, InvalidDatabaseOwner
+
+  Check validity and performance for both the ValidDatabaseOwner and InvalidDatabaseOwner tests aganinst one container.
+
   #>
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', 'Clear-Host', Justification = 'Dont tell me what to do')]
@@ -2245,8 +2255,13 @@ function Invoke-PerfAndValidateCheck {
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', 'cls', Justification = 'Dont tell me what to do')]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', 'cls', Justification = 'Dont tell me what to do')]
   [CmdletBinding()]
-  param($Checks, [switch]$PerfDetail , [switch]$showTestResults)
- $SQLInstances = $dbachecks1, $dbachecks2, $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3'
+  param(
+    $Checks,
+    [switch]$PerfDetail,
+    [switch]$showTestResults,
+    $SQLInstances = ($dbachecks1, $dbachecks2, $dbachecks3 = 'dbachecks1', 'dbachecks2', 'dbachecks3')
+  )
+
   $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
   $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
   if ($showTestResults) {
