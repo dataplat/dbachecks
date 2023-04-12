@@ -131,7 +131,10 @@ function Get-AllDatabaseInfo {
             $qs = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsdisabledexclude' -Value (Get-DbcConfigValue database.querystoredisabled.excludedb)
         }
-
+        'CompatibilityLevel' {
+            $compatibilityLevel = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'compatexclude' -Value (Get-DbcConfigValue database.compatibilitylevel.excludedb)
+        }
         Default { }
     }
 
@@ -164,7 +167,8 @@ function Get-AllDatabaseInfo {
                 IsDatabaseSnapshot        = @(if ($status) { $psitem.IsDatabaseSnapshot }) # needed for status test
                 Readonly                  = @(if ($status) { $psitem.Readonly }) # needed for status test
                 QueryStore                = @(if ($qs) { $psitem.QueryStoreOptions.ActualState })
-
+                CompatibilityLevel        = @(if ($compatibilitylevel) { $psitem.CompatibilityLevel })
+                ServerLevel               = @(if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } })
             }
         }
     }
