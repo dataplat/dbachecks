@@ -28,6 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
           DRY_RUN: true
+          RELEASE_BRANCHES: main, containers
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
