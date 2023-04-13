@@ -51,89 +51,89 @@ function Get-AllDatabaseInfo {
 
         'AsymmetricKeySize' {
             $asymmetrickey = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'asymmetrickeysizeexclude' -Value (Get-DbcConfigValue policy.asymmetrickeysize.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'asymmetrickeysizeexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.asymmetrickeysize.excludedb').Value
         }
 
         'AutoClose' {
             $autoclose = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoclose' -Value (Get-DbcConfigValue policy.database.autoclose)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocloseexclude' -Value (Get-DbcConfigValue policy.autoclose.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoclose' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.autoclose').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocloseexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.autoclose.excludedb').Value
         }
 
         'AutoShrink' {
             $autoshrink = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoshrink' -Value (Get-DbcConfigValue policy.database.autoshrink)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoshrinkexclude' -Value (Get-DbcConfigValue policy.autoshrinke.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoshrink' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.autoshrink').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoshrinkexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.autoshrinke.excludedb').Value
         }
 
         'ValidDatabaseOwner' {
             $owner = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownername' -Value (Get-DbcConfigValue policy.validdbowner.name)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownerexclude' -Value (Get-DbcConfigValue policy.validdbowner.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownername' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.validdbowner.name').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'validdbownerexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.validdbowner.excludedb').Value
         }
 
         'InvalidDatabaseOwner' {
             $owner = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'invaliddbownername' -Value (Get-DbcConfigValue policy.invaliddbowner.name)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'invaliddbownerexclude' -Value (Get-DbcConfigValue policy.invaliddbowner.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'invaliddbownername' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.invaliddbowner.name').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'invaliddbownerexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.invaliddbowner.excludedb').Value
         }
 
         'DatabaseCollation' {
             $collation = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'wrongcollation' -Value (Get-DbcConfigValue policy.database.wrongcollation)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'wrongcollation' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.wrongcollation').Value
         }
 
         'SuspectPage' {
             $suspectPage = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'suspectpageexclude' -Value (Get-DbcConfigValue policy.suspectpage.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'suspectpageexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.suspectpage.excludedb').Value
         }
         'VirtualLogFile' {
             $vlf = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'maxvlf' -Value (Get-DbcConfigValue policy.database.maxvlf)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'vlfexclude' -Value (Get-DbcConfigValue policy.vlf.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'maxvlf' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.maxvlf').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'vlfexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.vlf.excludedb').Value
         }
         'LogFileCount' {
             $logfilecount = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'logfilecount' -Value (Get-DbcConfigValue policy.database.logfilecount)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'logfilecountexclude' -Value (Get-DbcConfigValue policy.logfilecount.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'logfilecount' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.logfilecount').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'logfilecountexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.logfilecount.excludedb').Value
         }
         'AutoCreateStatistics' {
             $autocreatestats = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocreatestats' -Value (Get-DbcConfigValue policy.database.autocreatestatistics)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocreatestatsexclude' -Value (Get-DbcConfigValue policy.autocreatestats.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocreatestats' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.autocreatestatistics').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autocreatestatsexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.autocreatestats.excludedb').Value
         }
         'AutoUpdateStatistics' {
             $autoupdatestats = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestats' -Value (Get-DbcConfigValue policy.database.autoupdatestatistics)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsexclude' -Value (Get-DbcConfigValue policy.autoupdatestats.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestats' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.autoupdatestatistics').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.autoupdatestats.excludedb').Value
         }
         'AutoUpdateStatisticsAsynchronously' {
             $autoupdatestatsasync = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsasync' -Value (Get-DbcConfigValue policy.database.autoupdatestatisticsasynchronously)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsasyncexclude' -Value (Get-DbcConfigValue policy.autoupdatestatisticsasynchronously.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsasync' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.autoupdatestatisticsasynchronously').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'autoupdatestatsasyncexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.autoupdatestatisticsasynchronously.excludedb').Value
         }
         'Trustworthy' {
             $trustworthy = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'trustworthyexclude' -Value (Get-DbcConfigValue policy.database.trustworthyexcludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'trustworthyexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.trustworthyexcludedb').Value
         }
         'DatabaseStatus' {
             $status = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excludereadonly' -Value (Get-DbcConfigValue policy.database.status.excludereadonly)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excludeoffline' -Value (Get-DbcConfigValue policy.database.status.excludeoffline)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excluderestoring' -Value (Get-DbcConfigValue policy.database.status.excluderestoring)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'statusexclude' -Value (Get-DbcConfigValue policy.database.statusexcludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excludereadonly' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.status.excludereadonly').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excludeoffline' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.status.excludeoffline').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'excluderestoring' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.status.excluderestoring').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'statusexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.statusexcludedb').Value
         }
         'QueryStoreEnabled' {
             $qs = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsenabledexclude' -Value (Get-DbcConfigValue database.querystoreenabled.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsenabledexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.querystoreenabled.excludedb').Value
         }
         'QueryStoreDisabled' {
             $qs = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsdisabledexclude' -Value (Get-DbcConfigValue database.querystoredisabled.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'qsdisabledexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.querystoredisabled.excludedb').Value
         }
         'CompatibilityLevel' {
             $compatibilityLevel = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'compatexclude' -Value (Get-DbcConfigValue database.compatibilitylevel.excludedb)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'compatexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.compatibilitylevel.excludedb').Value
         }
         Default { }
     }
