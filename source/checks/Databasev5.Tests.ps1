@@ -213,3 +213,12 @@ Describe "Query Store Disabled" -Tag QueryStoreDisabled, Medium, Database -ForEa
     }
 }
 
+Describe "Compatibility Level" -Tag CompatibilityLevel, High, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.compatibilitylevel').Value
+
+    Context "Compatibility level matches server compatibility level" {
+        It "Database <_.Name> has the expected compatibility level on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.compatexclude -notcontains $psitem.Name } } {
+            $psitem.CompatibilityLevel | Should -Be $psitem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features."
+        }
+    }
+}

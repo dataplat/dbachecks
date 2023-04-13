@@ -163,6 +163,8 @@ Set-PSFConfig -Module dbachecks -Name policy.database.status.excludeoffline -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -Value @() -Initialize -Description "Database names that we expect to be restoring"
 Set-PSFConfig -Module dbachecks -Name database.querystoreenabled.excludedb -Value @('model', 'tempdb', 'master') -Initialize -Description "A List of databases that we do not want to check for Query Store enabled"
 Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Value @('model', 'tempdb', 'master') -Initialize -Description "A List of databases that we do not want to check for Query Store disabled"
+Set-PSFConfig -Module dbachecks -Name database.compatibilitylevel.excludedb -Value @() -Initialize -Description "A list of databases that we do not want to check compatibility level"
+
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Value $null -Initialize -Description "The number of days to go back to check for growth events"
 Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @('msdb') -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
 Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb', 'ReportServer', 'ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
@@ -319,6 +321,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatistics -Valida
 Set-PSFConfig -Module dbachecks -Name skip.database.autoupdatestatisticsasynchronously -Validation bool -Value $false -Initialize -Description "Skip the auto update statistics asynchronously test"
 Set-PSFConfig -Module dbachecks -Name skip.database.trustworthy -Validation bool -Value $false -Initialize -Description "Skip the trustworthy database test"
 Set-PSFConfig -Module dbachecks -Name skip.database.status -Validation bool -Value $false -Initialize -Description "Skip the database status test"
+Set-PSFConfig -Module dbachecks -Name skip.database.compatibilitylevel -Validation bool -Value $false -Initialize -Description "Skip the database compatibility test"
 
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
