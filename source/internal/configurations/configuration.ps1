@@ -340,6 +340,7 @@ Set-PSFConfig -Module dbachecks -Name skip.agent.servicestartmode -Validation bo
 Set-PSFConfig -Module dbachecks -Name skip.agent.servicestate -Validation bool -Value $false -Initialize -Description "Skip the Agent Service Start Mode check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.operatorname -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Name check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.operatoremail -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Email check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.failsafeoperator -Validation bool -Value $false -Initialize -Description "Skip the Agent Failsafe Operator check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
 
@@ -373,7 +374,7 @@ Set-PSFConfig -Module dbachecks -Name skip.security.serverprotocol -Validation b
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
-Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
+Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the Failsafe Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.databasemailprofile -Value $null -Initialize -Description "Name of the Database Mail Profile in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.validjobowner.name -Value "sa" -Initialize -Description "Agent job owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name agent.invalidjobowner.name -Value $null -Initialize -Description "Agent job owner account should not be this user"
