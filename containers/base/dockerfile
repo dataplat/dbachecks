@@ -8,4 +8,3 @@ ADD profile.ps1 /root/.config/powershell/
 
 # Install PowerShell
 RUN apt-get update && apt install -y powershell
-
