@@ -43,3 +43,5 @@ $traci1 = Trace-Script -ScriptBlock {
 $traci = Trace-Script -ScriptBlock {
     $v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $true -Show $show -PassThru
 }
+
+ Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check failsafeoperator -legacy $false -Show $show -verbose
