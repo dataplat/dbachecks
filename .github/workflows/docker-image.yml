@@ -27,7 +27,6 @@ jobs:
           DEFAULT_BUMP: minor
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
-          DRY_RUN: true
           RELEASE_BRANCHES: main, containers
       -
         name: Set up QEMU
