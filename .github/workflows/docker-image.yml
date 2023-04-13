@@ -10,14 +10,6 @@ on:
       - ".devcontainer/codespaces/codespaces-docker-compose.yml"
       - containers/**
 
-  pull_request:
-    branches: [ containers ]
-    paths:
-      - ".devcontainer/devcontainer.json"
-      - ".devcontainer/docker-compose.yml"
-      - ".devcontainer/codespaces/devcontainer.json"
-      - ".devcontainer/codespaces/codespaces-docker-compose.yml"
-      - containers/**
   workflow_dispatch:
 
 jobs:
