@@ -5,6 +5,18 @@ USER root
 # Install PowerShell
 RUN apt-get update && apt install -y powershell
 
+# cos I want a nice prompt too :-)
+
+RUN  apt-get install unzip
+RUN  wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
+RUN  chmod +x /usr/local/bin/oh-my-posh
+
+RUN  mkdir ~/.poshthemes
+RUN  wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip -O ~/.poshthemes/themes.zip
+RUN  unzip ~/.poshthemes/themes.zip -d ~/.poshthemes
+RUN  chmod u+rw ~/.poshthemes/*.omp.*
+RUN  rm ~/.poshthemes/themes.zip
+
 # Copy Profile
 
 ADD profile.ps1 /root/.config/powershell/
