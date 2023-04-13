@@ -20,7 +20,7 @@ function Load-Profile {
     # Import-Module oh-my-posh
     # Set-PoshPrompt -Theme atomic
 
-    $env:POSH_THEMES_PATH = ' ~/.poshthemes'
+    $env:POSH_THEMES_PATH = '~/.poshthemes'
 
     function global:Set-PoshPrompt {
         param(
