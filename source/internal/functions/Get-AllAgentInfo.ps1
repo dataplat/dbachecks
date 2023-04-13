@@ -24,6 +24,9 @@ function Get-AllAgentInfo {
     # Job Server Initial fields
     $OperatorInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Operator])
 
+    # Job Server Alert System Initial fields
+    $FailsafeInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.AlertSystem])
+
     # Database Initial Fields
     $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
 
@@ -59,13 +62,14 @@ function Get-AllAgentInfo {
         }
         'AgentServiceAccount' {
             if (($Instance.VersionMajor -ge 14) -or $IsLinux -or $Instance.HostPlatform -eq 'Linux') {
-                $Agent = @($Instance.Query("SELECT status_desc, startup_type_desc FROM sys.dm_server_services") | Where-Object servicename -like '*Agent*').ForEach{
+                $Agent = @($Instance.Query("SELECT status_desc, startup_type_desc FROM sys.dm_server_services") | Where-Object servicename -Like '*Agent*').ForEach{
                     [PSCustomObject]@{
-                        State = $PSItem.status_desc
+                        State     = $PSItem.status_desc
                         StartMode = $PSItem.startup_type_desc
                     }
                 }
-            } else { # Windows
+            } else {
+                # Windows
                 $Agent = @(Get-DbaService -ComputerName $Instance.ComputerName -Type Agent)
             }
         }
@@ -79,25 +83,46 @@ function Get-AllAgentInfo {
 
             $Operator = $ConfigValues.DbaOperatorName.ForEach{
                 [PSCustomObject]@{
-                    InstanceName            = $Instance.Name
-                    ExpectedOperatorName    = $PSItem
-                    ActualOperatorName      = $Instance.JobServer.Operators.Name
-                    ExpectedOperatorEmail   = 'null'
-                    ActualOperatorEmail     = 'null'
+                    InstanceName          = $Instance.Name
+                    ExpectedOperatorName  = $PSItem
+                    ActualOperatorName    = $Instance.JobServer.Operators.Name
+                    ExpectedOperatorEmail = 'null'
+                    ActualOperatorEmail   = 'null'
                 }
             }
 
             $Operator += $ConfigValues.DbaOperatorEmail.ForEach{
                 [PSCustomObject]@{
-                    InstanceName            = $Instance.Name
-                    ExpectedOperatorName    = 'null'
-                    ActualOperatorName      = 'null'
-                    ExpectedOperatorEmail   = $PSItem
-                    ActualOperatorEmail     = $Instance.JobServer.Operators.EmailAddress
+                    InstanceName          = $Instance.Name
+                    ExpectedOperatorName  = 'null'
+                    ActualOperatorName    = 'null'
+                    ExpectedOperatorEmail = $PSItem
+                    ActualOperatorEmail   = $Instance.JobServer.Operators.EmailAddress
                 }
             }
         }
         'FailsafeOperator' {
+            $FailsafeInitFields.Add("Name") | Out-Null # so we can check failsafe operators
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.AlertSystem], $FailsafeInitFields)
+            $FailsafeInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.AlertSystem])
+
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'FailsafeOperator' -Value (Get-DbcConfigValue agent.failsafeoperator)
+
+            $Operator = $ConfigValues.FailsafeOperator.ForEach{
+                [PSCustomObject]@{
+                    InstanceName             = $Instance.Name
+                    ExpectedFailSafeOperator = $PSItem
+                    ActualOperatorName       = $Instance.JobServer.AlertSystem.Name
+                }
+            }
+
+            $Operator += $ConfigValues.FailsafeOperator.ForEach{
+                [PSCustomObject]@{
+                    InstanceName             = $Instance.Name
+                    ExpectedFailSafeOperator = 'null'
+                    ActualOperatorName       = 'null'
+                }
+            }
 
         }
         'DatabaseMailProfile' {
