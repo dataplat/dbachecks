@@ -35,6 +35,7 @@ jobs:
           DEFAULT_BUMP: minor
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
+          DRY_RUN: true
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
