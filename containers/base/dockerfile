@@ -6,5 +6,5 @@ USER root
 
 ADD profile.ps1 /root/.config/powershell/
 
-# Install PowerShell
+# Install PowerShell latest please
 RUN apt-get update && apt install -y powershell
