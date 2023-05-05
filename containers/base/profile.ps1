@@ -6,6 +6,10 @@
 [CmdletBinding()]
 param()
 
+# Set these defaults for all future sessions on this machine
+Set-DbatoolsConfig -FullName sql.connection.trustcert -Value $true -Register
+Set-DbatoolsConfig -FullName sql.connection.encrypt -Value $false -Register
+
 if (Test-Path /workspace/containers -ErrorAction SilentlyContinue) {
     Import-Module /workspace/containers/JessAndBeard.psm1
 } else {
