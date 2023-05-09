@@ -410,6 +410,12 @@ function NewGet-AllInstanceInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $SettingsInitFields)
         }
 
+        'LoginCheckPolicy' {
+            $LoginInitFields.Add("IsDisabled") | Out-Null # so we can check login check policy
+            $LoginInitFields.Add("PasswordPolicyEnforced") | Out-Null # so we can check login check policy
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $LoginInitFields)
+        }
+
         Default { }
     }
 
