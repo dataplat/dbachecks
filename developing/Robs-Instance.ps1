@@ -10,6 +10,7 @@ $Checks = 'LinkedServerConnection'
 $Checks = 'MaxMemory'
 $Checks = 'OrphanedFile'
 $Checks = 'MemoryDump'
+$Checks = 'HideInstance'
 
 Invoke-PerfAndValidateCheck -Checks $Checks
 Invoke-PerfAndValidateCheck -Checks $Checks -PerfDetail

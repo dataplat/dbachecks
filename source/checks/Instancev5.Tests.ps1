@@ -140,6 +140,16 @@ Describe "Error Log Count" -Tag ErrorLogCount, CIS, Low, Instance -ForEach $Inst
     }
 }
 
+Describe "Hide Instance" -Tag HideInstance, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.hideinstance' }).Value
+    Context "Checking the Hide an Instance of SQL Server Database Engine property on <_.Name>" {
+        It "The Hide an Instance of SQL Server Database Engine property on SQL Server instance <_.Name>" -Skip:$skip {
+            # We don't make this -BeTrue because the possible results  are $true/$false/'Could not connect'
+            $psitem.HideInstance.Result | Should -Be $true -Because "We expected the hide instance property to be set to $true"
+        }
+    }
+}
+
 Describe "Instance Connection" -Tag InstanceConnection, Connectivity, High, Instance -ForEach $InstancesToTest {
     BeforeAll {
         $skipall = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection' }).Value

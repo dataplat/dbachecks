@@ -388,6 +388,18 @@ function NewGet-AllInstanceInfo {
             }
         }
 
+        'HideInstance' {
+            try {
+                $HideInstance = [pscustomobject] @{
+                    Result = (Get-DbaHideInstance -SqlInstance $InstanceSMO).HideInstance
+                }
+            } catch {
+                $HideInstance = [pscustomobject] @{
+                    Result = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
         Default { }
     }
 
@@ -487,6 +499,7 @@ function NewGet-AllInstanceInfo {
             renamerequired       = $ServerNameMatchrenamerequired
         }
         MemoryDump            = $Dump
+        HideInstance          = $HideInstance
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended
