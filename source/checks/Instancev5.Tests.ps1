@@ -140,6 +140,16 @@ Describe "Error Log Count" -Tag ErrorLogCount, CIS, Low, Instance -ForEach $Inst
     }
 }
 
+Describe "Hide Instance" -Tag HideInstance, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.hideinstance' }).Value
+    Context "Checking the Hide an Instance of SQL Server Database Engine property on <_.Name>" {
+        It "The Hide an Instance of SQL Server Database Engine property on SQL Server instance <_.Name>" -Skip:$skip {
+            # We don't make this -BeTrue because the possible results  are $true/$false/'Could not connect'
+            $psitem.HideInstance.Result | Should -Be $true -Because "We expected the hide instance property to be set to $true"
+        }
+    }
+}
+
 Describe "Instance Connection" -Tag InstanceConnection, Connectivity, High, Instance -ForEach $InstancesToTest {
     BeforeAll {
         $skipall = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection' }).Value
@@ -190,6 +200,33 @@ Describe "Linked Servers" -Tag LinkedServerConnection, Connectivity, Medium, Ins
     }
 }
 
+Describe "Failed Login Auditing" -Tag LoginAuditFailed, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.loginauditlevelfailed' }).Value
+    Context "Testing if failed login auditing is in place on <_.Name>" {
+        It "The failed login auditing should be set on  <_.Name>" -Skip:$skip {
+            $psitem.Settings.AuditLevel | Should -BeIn @("Failure", "All") -Because "We expected the audit level to be set to capture failed logins"
+        }
+    }
+}
+
+Describe "Successful Login Auditing" -Tag LoginAuditSuccessful, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.loginauditlevelsuccessful' }).Value
+    Context "Testing if successful and failed login auditing is in place on  <_.Name>" {
+        It "The successful and failed auditing should be set on  <_.Name>" -Skip:$skip {
+            $psitem.Settings.AuditLevel | Should -Be "All" -Because "We expected the audit level to be set to capture all logins (successful and failed)"
+        }
+    }
+}
+
+Describe "Login Check Policy" -Tag LoginCheckPolicy, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.LoginCheckPolicy' }).Value
+    Context "Testing if the CHECK_POLICY is enabled on all logins on $psitem" {
+        It "All logins should have the CHECK_POLICY option set to ON on $psitem" -Skip:$skip {
+           ($psitem.logins | Where-Object { $_.LoginType -eq 'SqlLogin' -and $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false }).Count | Should -Be 0 -Because "We expected the CHECK_POLICY for the all logins to be enabled"
+        }
+    }
+}
+
 Describe "Instance MaxDop" -Tag MaxDopInstance, MaxDop, Medium, Instance -ForEach ($InstancesToTest | Where-Object { $psitem.Name -notin $psitem.ConfigValues.ExcludeInstanceMaxDop }) {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.MaxDopInstance' }).Value
     Context "Testing Instance MaxDop Value on <_.Name>" {
@@ -213,11 +250,11 @@ Describe "Max Memory" -Tag MaxMemory, High, Instance -ForEach $InstancesToTest {
     }
 }
 
-Describe "SQL Memory Dumps" -Tags MemoryDump, Medium, Instance -ForEach $InstancesToTest {
+Describe "SQL Memory Dumps" -Tag MemoryDump, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.memorydump' }).Value
     Context "Testing SQL Memory Dumps on <_.Name>" {
         It "There should be less than <_.MemoryDump.MaxDumps> since <_.MemoryDump.DumpDateCheckFrom> on <_.Name>" -Skip:$skip {
-            $Psitem.MemoryDump.Result | Should -BeTrue -Because "We expected less than $($Psitem.MemoryDump.MaxDumps) dumps since $(PsItem.MemoryDump.DumpDateCheckFrom)but found $($Psitem.MemoryDump.DumpCount) . Memory dumps often suggest issues with the SQL Server instance"
+            $Psitem.MemoryDump.Result | Should -BeTrue -Because "We expected less than $($Psitem.MemoryDump.MaxDumps) dumps since $($PsItem.MemoryDump.DumpDateCheckFrom)but found $($Psitem.MemoryDump.DumpCount) . Memory dumps often suggest issues with the SQL Server instance"
         }
     }
 }
