@@ -388,6 +388,34 @@ function NewGet-AllInstanceInfo {
             }
         }
 
+        'HideInstance' {
+            try {
+                $HideInstance = [pscustomobject] @{
+                    Result = (Get-DbaHideInstance -SqlInstance $InstanceSMO).HideInstance
+                }
+            } catch {
+                $HideInstance = [pscustomobject] @{
+                    Result = 'We Could not Connect to $Instance'
+                }
+            }
+        }
+
+        'LoginAuditFailed' {
+            $SettingsInitFields.Add("AuditLevel") | Out-Null # so we can check auditlevel
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $SettingsInitFields)
+        }
+
+        'LoginAuditSuccessful' {
+            $SettingsInitFields.Add("AuditLevel") | Out-Null # so we can check auditlevel
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $SettingsInitFields)
+        }
+
+        'LoginCheckPolicy' {
+            $LoginInitFields.Add("IsDisabled") | Out-Null # so we can check login check policy
+            $LoginInitFields.Add("PasswordPolicyEnforced") | Out-Null # so we can check login check policy
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $LoginInitFields)
+        }
+
         Default { }
     }
 
@@ -487,6 +515,7 @@ function NewGet-AllInstanceInfo {
             renamerequired       = $ServerNameMatchrenamerequired
         }
         MemoryDump            = $Dump
+        HideInstance          = $HideInstance
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended
