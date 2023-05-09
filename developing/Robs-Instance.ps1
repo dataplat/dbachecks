@@ -13,6 +13,7 @@ $Checks = 'MemoryDump'
 $Checks = 'HideInstance'
 $Checks = 'LoginAuditFailed'
 $Checks = 'LoginAuditSuccessful'
+$Checks = 'LoginCheckPolicy'
 $Checks = 'LoginAuditSuccessful', 'LoginAuditFailed'
 
 Invoke-PerfAndValidateCheck -Checks $Checks
