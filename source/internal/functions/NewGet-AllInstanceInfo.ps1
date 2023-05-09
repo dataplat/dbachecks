@@ -400,6 +400,16 @@ function NewGet-AllInstanceInfo {
             }
         }
 
+        'LoginAuditFailed' {
+            $SettingsInitFields.Add("AuditLevel") | Out-Null # so we can check auditlevel
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $SettingsInitFields)
+        }
+
+        'LoginAuditSuccessful' {
+            $SettingsInitFields.Add("AuditLevel") | Out-Null # so we can check auditlevel
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $SettingsInitFields)
+        }
+
         Default { }
     }
 

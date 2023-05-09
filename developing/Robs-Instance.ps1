@@ -11,6 +11,9 @@ $Checks = 'MaxMemory'
 $Checks = 'OrphanedFile'
 $Checks = 'MemoryDump'
 $Checks = 'HideInstance'
+$Checks = 'LoginAuditFailed'
+$Checks = 'LoginAuditSuccessful'
+$Checks = 'LoginAuditSuccessful', 'LoginAuditFailed'
 
 Invoke-PerfAndValidateCheck -Checks $Checks
 Invoke-PerfAndValidateCheck -Checks $Checks -PerfDetail
@@ -19,7 +22,7 @@ $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
 $show = 'All'
 
-$v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $true -Show $show -PassThru
+$v4code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $true -Show $show -PassThru -verbose
 # Run v5 checks
 $v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $false -Show $show -PassThru -Verbose
 

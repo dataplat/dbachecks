@@ -200,6 +200,24 @@ Describe "Linked Servers" -Tag LinkedServerConnection, Connectivity, Medium, Ins
     }
 }
 
+Describe "Failed Login Auditing" -Tag LoginAuditFailed, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.loginauditlevelfailed' }).Value
+    Context "Testing if failed login auditing is in place on <_.Name>" {
+        It "The failed login auditing should be set on  <_.Name>" -Skip:$skip {
+            $psitem.Settings.AuditLevel | Should -BeIn @("Failure", "All") -Because "We expected the audit level to be set to capture failed logins"
+        }
+    }
+}
+
+Describe "Successful Login Auditing" -Tag LoginAuditSuccessful, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.loginauditlevelsuccessful' }).Value
+    Context "Testing if successful and failed login auditing is in place on  <_.Name>" {
+        It "The successful and failed auditing should be set on  <_.Name>" -Skip:$skip {
+            $psitem.Settings.AuditLevel | Should -Be "All" -Because "We expected the audit level to be set to capture all logins (successful and failed)"
+        }
+    }
+}
+
 Describe "Instance MaxDop" -Tag MaxDopInstance, MaxDop, Medium, Instance -ForEach ($InstancesToTest | Where-Object { $psitem.Name -notin $psitem.ConfigValues.ExcludeInstanceMaxDop }) {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.MaxDopInstance' }).Value
     Context "Testing Instance MaxDop Value on <_.Name>" {
