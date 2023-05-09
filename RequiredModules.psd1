@@ -7,6 +7,7 @@
         }
     }
 
+    'dbatools.library'    = 'latest'
     InvokeBuild           = 'latest'
     PSScriptAnalyzer      = 'latest'
     Pester                = 'latest'
