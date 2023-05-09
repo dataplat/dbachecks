@@ -288,11 +288,13 @@ function Invoke-DbcCheck {
     process {
         if ($legacy) {
             try {
+                Write-PSFMessage 'Running in legacy mode, we need Version 4'
                 if (Get-Module Pester | Where-Object { $_.Version -gt '5.0.0' }) {
+                    Write-PSFMessage 'Remove Version 5' -Level Verbose
                     Remove-Module Pester -ErrorAction SilentlyContinue
-                    Write-PSFMessage 'Running in legacy mode, we need to import Version 4' -Level Verbose
-                    Import-Module Pester -RequiredVersion 4.10.1 -Global
                 }
+                Write-PSFMessage 'import Version 4' -Level Verbose
+                Import-Module Pester -RequiredVersion 4.10.1 -Global
             } catch {
                 Write-PSFMessage -Message 'Something Went wrong' -Level Warning -ErrorRecord $_
                 Return
