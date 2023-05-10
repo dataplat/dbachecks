@@ -14,6 +14,8 @@ $Checks = 'HideInstance'
 $Checks = 'LoginAuditFailed'
 $Checks = 'LoginAuditSuccessful'
 $Checks = 'LoginCheckPolicy'
+$Checks = 'SuspectPageLimit'
+$Checks = 'SupportedBuild'
 $Checks = 'LoginAuditSuccessful', 'LoginAuditFailed'
 
 Invoke-PerfAndValidateCheck -Checks $Checks
