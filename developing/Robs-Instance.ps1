@@ -16,6 +16,7 @@ $Checks = 'LoginAuditSuccessful'
 $Checks = 'LoginCheckPolicy'
 $Checks = 'SuspectPageLimit'
 $Checks = 'SupportedBuild'
+$Checks = 'LoginMustChange'
 $Checks = 'LoginAuditSuccessful', 'LoginAuditFailed'
 
 Invoke-PerfAndValidateCheck -Checks $Checks

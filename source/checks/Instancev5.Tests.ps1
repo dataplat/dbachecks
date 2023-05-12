@@ -227,6 +227,15 @@ Describe "Login Check Policy" -Tag LoginCheckPolicy, Security, CIS, Medium, Inst
     }
 }
 
+Describe "Login Must Change" -Tag LoginMustChange, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.LoginMustChange' }).Value
+    Context "Testing if the new SQL logins that have not logged have to change their password when they log in on <_.Name>" {
+        It "All new sql logins should have the have to change their password when they log in for the first time on <_.Name>" -Skip:$skip {
+            $PsItem.LoginMustChangeCount | Should -Be 0 -Because "We expected the all the new sql logins to have to change the password on first login"
+        }
+    }
+}
+
 Describe "Instance MaxDop" -Tag MaxDopInstance, MaxDop, Medium, Instance -ForEach ($InstancesToTest | Where-Object { $psitem.Name -notin $psitem.ConfigValues.ExcludeInstanceMaxDop }) {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.MaxDopInstance' }).Value
     Context "Testing Instance MaxDop Value on <_.Name>" {

@@ -461,6 +461,15 @@ function NewGet-AllInstanceInfo {
             }
         }
 
+        'LoginMustChange' {
+            $loginTimeSql = "SELECT login_name, MAX(login_time) AS login_time FROM sys.dm_exec_sessions GROUP BY login_name"
+            $loginTimes = $instance.ConnectionContext.ExecuteWithResults($loginTimeSql).Tables[0]
+            $lastlogin = @{Name = 'LastLogin' ; Expression = { $Name = $_.name; ($loginTimes | Where-Object { $_.login_name -eq $name }).login_time
+                }
+            }
+            $LoginMustChangeCount = ($Instance.Logins | Where-Object { $_.Name -in $Instance.Roles['sysadmin'].EnumMemberNames() } | Select-Object Name, $lastlogin, MustChangePassword, IsDisabled | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_.LastLogin }).Count
+        }
+
         Default { }
     }
 
@@ -563,6 +572,7 @@ function NewGet-AllInstanceInfo {
         HideInstance           = $HideInstance
         SuspectPageCountResult = $SuspectPageCountResult
         SupportedBuild         = $SupportedBuild
+        LoginMustChangeCount   = $LoginMustChangeCount
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended

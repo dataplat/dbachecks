@@ -717,7 +717,7 @@ function Get-AllInstanceInfo {
                     $role = Get-DbaServerRole -SqlInstance $instance -ServerRole "sysadmin"
 
                     $LoginMustChange = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SqlInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_LastLogin }).Count
+                        Count = @(Get-DbaLogin -SqlInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_.LastLogin }).Count
                     }
                 } catch {
                     $There = $false
