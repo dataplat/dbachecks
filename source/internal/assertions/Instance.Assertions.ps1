@@ -112,8 +112,7 @@ function Get-AllInstanceInfo {
                             Text        = $Psitem.Text
                         } | Where-Object { $psitem.LogDate -gt (Get-Date).AddDays( - $LogWindow) }
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $ErrorLog = [PSCustomObject]@{
                         LogDate      = 'Do not know the Date'
@@ -122,8 +121,7 @@ function Get-AllInstanceInfo {
                         InstanceName = 'An Error occurred ' + $Instance
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $ErrorLog = [PSCustomObject]@{
                     LogDate      = 'Do not know the Date'
@@ -140,15 +138,13 @@ function Get-AllInstanceInfo {
                     $DefaultTrace = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $DefaultTrace = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $DefaultTrace = [pscustomobject] @{
                     ConfiguredValue = 'We Could not Connect to $Instance'
@@ -163,15 +159,13 @@ function Get-AllInstanceInfo {
                     $OleAutomationProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $OleAutomationProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $OleAutomationProceduresDisabled = [pscustomobject] @{
                     ConfiguredValue = 'We Could not Connect to $Instance'
@@ -186,15 +180,13 @@ function Get-AllInstanceInfo {
                     $CrossDBOwnershipChaining = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $CrossDBOwnershipChaining = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $CrossDBOwnershipChaining = [pscustomobject] @{
                     ConfiguredValue = 'We Could not Connect to $Instance'
@@ -216,23 +208,20 @@ function Get-AllInstanceInfo {
 
                     if ($null -eq $results) {
                         $Value = 0
-                    }
-                    else {
+                    } else {
                         $Value = $SpConfig.ConfiguredValue
                     }
 
                     $ScanForStartupProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = $Value
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $ScanForStartupProceduresDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $ScanForStartupProceduresDisabled = [pscustomobject] @{
                     ConfiguredValue = 'We Could not Connect to $Instance'
@@ -245,8 +234,7 @@ function Get-AllInstanceInfo {
                     $daystocheck = Get-DbcConfigValue policy.instance.memorydumpsdaystocheck
                     if ($null -eq $daystocheck) {
                         $datetocheckfrom = '0001-01-01'
-                    }
-                    else {
+                    } else {
                         $datetocheckfrom = (Get-Date).ToUniversalTime().AddDays( - $daystocheck )
                     }
                     $MaxDump = [pscustomobject] @{
@@ -254,15 +242,13 @@ function Get-AllInstanceInfo {
                         # Skip on the it will show in the results
                         Count = (@(Get-DbaDump -SqlInstance $Instance -WarningAction SilentlyContinue).Where{ $_.CreationTime -gt $datetocheckfrom }).Count
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $MaxDump = [pscustomobject] @{
                         Count = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $MaxDump = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
@@ -277,15 +263,13 @@ function Get-AllInstanceInfo {
                     $RemoteAccessDisabled = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $RemoteAccessDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $RemoteAccessDisabled = [pscustomobject] @{
                     ConfiguredValue = 'We Could not Connect to $Instance'
@@ -300,15 +284,13 @@ function Get-AllInstanceInfo {
                     $LatestBuild = [pscustomobject] @{
                         Compliant = $results.Compliant
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $LatestBuild = [pscustomobject] @{
                         Compliant = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $LatestBuild = [pscustomobject] @{
                     Compliant = 'We Could not Connect to $Instance'
@@ -319,19 +301,17 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     #This needs to be done in query just in case the account had already been renamed
-                    $login = Get-DbaLogin -SqlInstance $Instance | Where-Object Id -eq 1
+                    $login = Get-DbaLogin -SqlInstance $Instance | Where-Object Id -EQ 1
                     $SaDisabled = [pscustomobject] @{
                         Disabled = $login.IsDisabled
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $SaDisabled = [pscustomobject] @{
                         Disabled = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $SaDisabled = [pscustomobject] @{
                     Disabled = 'We Could not Connect to $Instance'
@@ -344,15 +324,13 @@ function Get-AllInstanceInfo {
                     $SaExist = [pscustomobject] @{
                         Exist = @(Get-DbaLogin -SqlInstance $Instance -Login sa).Count
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $SaExist = [pscustomobject] @{
                         Exist = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $SaExist = [pscustomobject] @{
                     Exist = 'We Could not Connect to $Instance'
@@ -371,16 +349,14 @@ function Get-AllInstanceInfo {
                         State     = $SqlEngineService.State
                         StartType = $SqlEngineService.StartMode
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $EngineService = [pscustomobject] @{
                         State     = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
                         StartType = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $EngineService = [pscustomobject] @{
                     State     = 'We Could not Connect to $Instance'
@@ -407,15 +383,13 @@ function Get-AllInstanceInfo {
                     $PublicRolePermission = [pscustomobject] @{
                         Count = $results.RowCount
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $PublicRolePermission = [pscustomobject] @{
                         Count = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $PublicRolePermission = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
@@ -428,15 +402,13 @@ function Get-AllInstanceInfo {
                     $BuiltInAdmin = [pscustomobject] @{
                         Exist = @(Get-DbaLogin -SqlInstance $Instance -Login "BUILTIN\Administrators").Count
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $BuiltInAdmin = [pscustomobject] @{
                         Exist = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $BuiltInAdmin = [pscustomobject] @{
                     Exist = 'We Could not Connect to $Instance'
@@ -455,21 +427,18 @@ function Get-AllInstanceInfo {
                         $LocalWindowsGroup = [pscustomobject] @{
                             Exist = $true
                         }
-                    }
-                    else {
+                    } else {
                         $LocalWindowsGroup = [pscustomobject] @{
                             Exist = $false
                         }
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $LocalWindowsGroup = [pscustomobject] @{
                         Exist = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $LocalWindowsGroup = [pscustomobject] @{
                     Exist = 'We Could not Connect to $Instance'
@@ -479,19 +448,17 @@ function Get-AllInstanceInfo {
         'LoginAuditFailed' {
             if ($There) {
                 try {
-                    $results = Get-DbaInstanceProperty -SQLInstance $instance -InstanceProperty AuditLevel
+                    $results = Get-DbaInstanceProperty -SqlInstance $instance -InstanceProperty AuditLevel
                     $LoginAuditFailed = [pscustomobject] @{
                         AuditLevel = $results.Value
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $LoginAuditFailed = [pscustomobject] @{
                         AuditLevel = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $LoginAuditFailed = [pscustomobject] @{
                     AuditLevel = 'We Could not Connect to $Instance'
@@ -502,19 +469,17 @@ function Get-AllInstanceInfo {
         'LoginAuditSuccessful' {
             if ($There) {
                 try {
-                    $results = Get-DbaInstanceProperty -SQLInstance $instance -InstanceProperty AuditLevel
+                    $results = Get-DbaInstanceProperty -SqlInstance $instance -InstanceProperty AuditLevel
                     $LoginAuditSuccessful = [pscustomobject] @{
                         AuditLevel = $results.Value
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $LoginAuditSuccessful = [pscustomobject] @{
                         AuditLevel = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $LoginAuditSuccessful = [pscustomobject] @{
                     AuditLevel = 'We Could not Connect to $Instance'
@@ -537,8 +502,7 @@ function Get-AllInstanceInfo {
                             $SqlAgentProxiesWithPublicRole += $SqlAgentProxyWithPublicRole
                         }
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $SqlAgentProxiesWithPublicRole = [pscustomobject] @{
                         Name               = 'We Could not Connect to $Instance'
@@ -546,8 +510,7 @@ function Get-AllInstanceInfo {
                         CredentialIdentity = $null
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $SqlAgentProxiesWithPublicRole = [pscustomobject] @{
                     Name               = 'We Could not Connect to $Instance'
@@ -564,15 +527,13 @@ function Get-AllInstanceInfo {
                     $HideInstance = [pscustomobject] @{
                         HideInstance = $results.HideInstance
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $HideInstance = [pscustomobject] @{
                         HideInstance = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $HideInstance = [pscustomobject] @{
                     HideInstance = 'We Could not Connect to $Instance'
@@ -586,8 +547,7 @@ function Get-AllInstanceInfo {
                     $EngineServiceAdmin = [pscustomobject] @{
                         Exist = 'We Cant Check running on Linux'
                     }
-                }
-                else {
+                } else {
                     try {
                         $ComputerName , $InstanceName = $Instance.Name.Split('\')
                         if ($null -eq $InstanceName) {
@@ -599,28 +559,24 @@ function Get-AllInstanceInfo {
                         $EngineServiceAdmin = [pscustomobject] @{
                             Exist = $localAdmins.Name.Contains($SqlEngineService.StartName)
                         }
-                    }
-                    catch [System.Exception] {
+                    } catch [System.Exception] {
                         if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
                             $EngineServiceAdmin = [pscustomobject] @{
                                 Exist = $false
                             }
-                        }
-                        else {
+                        } else {
                             $EngineServiceAdmin = [pscustomobject] @{
                                 Exist = 'Some sort of failure'
                             }
                         }
-                    }
-                    catch {
+                    } catch {
                         $There = $false
                         $EngineServiceAdmin = [pscustomobject] @{
                             Exist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $EngineServiceAdmin = [pscustomobject] @{
                     Exist = 'We Could not Connect to $Instance'
@@ -634,8 +590,7 @@ function Get-AllInstanceInfo {
                     $AgentServiceAdmin = [pscustomobject] @{
                         Exist = 'We Cant Check running on Linux'
                     }
-                }
-                else {
+                } else {
                     try {
                         $ComputerName , $InstanceName = $Instance.Name.Split('\')
                         if ($null -eq $InstanceName) {
@@ -647,28 +602,24 @@ function Get-AllInstanceInfo {
                         $AgentServiceAdmin = [pscustomobject] @{
                             Exist = $localAdmins.Name.Contains($SqlAgentService.StartName)
                         }
-                    }
-                    catch [System.Exception] {
+                    } catch [System.Exception] {
                         if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
                             $AgentServiceAdmin = [pscustomobject] @{
                                 Exist = $false
                             }
-                        }
-                        else {
+                        } else {
                             $AgentServiceAdmin = [pscustomobject] @{
                                 Exist = 'Some sort of failure'
                             }
                         }
-                    }
-                    catch {
+                    } catch {
                         $There = $false
                         $AgentServiceAdmin = [pscustomobject] @{
                             Exist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $AgentServiceAdmin = [pscustomobject] @{
                     Exist = 'We Could not Connect to $Instance'
@@ -682,8 +633,7 @@ function Get-AllInstanceInfo {
                     $FullTextServiceAdmin = [pscustomobject] @{
                         Exist = 'We Cant Check running on Linux'
                     }
-                }
-                else {
+                } else {
                     try {
                         $ComputerName , $InstanceName = $Instance.Name.Split('\')
                         if ($null -eq $InstanceName) {
@@ -694,20 +644,17 @@ function Get-AllInstanceInfo {
                         $FullTextServiceAdmin = [pscustomobject] @{
                             Exist = $localAdmins.Name.Contains($SqlFullTextService.StartName)
                         }
-                    }
-                    catch [System.Exception] {
+                    } catch [System.Exception] {
                         if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
                             $FullTextServiceAdmin = [pscustomobject] @{
                                 Exist = $false
                             }
-                        }
-                        else {
+                        } else {
                             $FullTextServiceAdmin = [pscustomobject] @{
                                 Exist = 'Some sort of failure'
                             }
                         }
-                    }
-                    catch {
+                    } catch {
                         $There = $false
                         $FullTextServiceAdmin = [pscustomobject] @{
                             Exist = "We Could not Connect to $Instance $ComputerName , $InstanceName from catch"
@@ -715,8 +662,7 @@ function Get-AllInstanceInfo {
                     }
                 }
 
-            }
-            else {
+            } else {
                 $There = $false
                 $FullTextServiceAdmin = [pscustomobject] @{
                     Exist = 'We Could not Connect to $Instance'
@@ -728,17 +674,15 @@ function Get-AllInstanceInfo {
             if ($There) {
                 try {
                     $LoginCheckPolicy = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance $instance -Type SQL | Where-Object { $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false }).Count
+                        Count = @(Get-DbaLogin -SqlInstance $instance -Type SQL | Where-Object { $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false }).Count
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $LoginCheckPolicy = [pscustomobject] @{
                         Count = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $LoginCheckPolicy = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
@@ -749,20 +693,18 @@ function Get-AllInstanceInfo {
         'LoginPasswordExpiration' {
             if ($There) {
                 try {
-                    $role = Get-DbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
+                    $role = Get-DbaServerRole -SqlInstance $instance -ServerRole "sysadmin"
 
                     $LoginPasswordExpiration = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.PasswordExpirationEnabled -eq $false -and $_.IsDisabled -eq $false }).Count
+                        Count = @(Get-DbaLogin -SqlInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.PasswordExpirationEnabled -eq $false -and $_.IsDisabled -eq $false }).Count
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $LoginPasswordExpiration = [pscustomobject] @{
                         Count = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $LoginPasswordExpiration = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
@@ -772,20 +714,18 @@ function Get-AllInstanceInfo {
         'LoginMustChange' {
             if ($There) {
                 try {
-                    $role = Get-DbaServerRole -SQLInstance $instance -ServerRole "sysadmin"
+                    $role = Get-DbaServerRole -SqlInstance $instance -ServerRole "sysadmin"
 
                     $LoginMustChange = [pscustomobject] @{
-                        Count = @(Get-DbaLogin -SQLInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.IsMustChange -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_LastLogin }).Count
+                        Count = @(Get-DbaLogin -SqlInstance $instance -Login @($role.Login) -Type SQL | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_LastLogin }).Count
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $LoginMustChange = [pscustomobject] @{
                         Count = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $LoginMustChange = [pscustomobject] @{
                     Count = 'We Could not Connect to $Instance'
@@ -800,15 +740,13 @@ function Get-AllInstanceInfo {
                     $SQLMailXPsDisabled = [pscustomobject] @{
                         ConfiguredValue = $SpConfig.ConfiguredValue
                     }
-                }
-                catch {
+                } catch {
                     $There = $false
                     $SQLMailXPsDisabled = [pscustomobject] @{
                         ConfiguredValue = 'We Could not Connect to $Instance'
                     }
                 }
-            }
-            else {
+            } else {
                 $There = $false
                 $SQLMailXPsDisabled = [pscustomobject] @{
                     ConfiguredValue = 'We Could not Connect to $Instance'
@@ -874,7 +812,7 @@ function Assert-ScanForStartupProcedures {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
     [CmdletBinding()]
     param ($AllInstanceInfo, $ScanForStartupProcsDisabled)
-    ($AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue -eq 0)  | Should -Be $ScanForStartupProcsDisabled -Because "We expected the scan for startup procedures to be configured correctly"
+    ($AllInstanceInfo.ScanForStartupProceduresDisabled.ConfiguredValue -eq 0) | Should -Be $ScanForStartupProcsDisabled -Because "We expected the scan for startup procedures to be configured correctly"
 }
 function Assert-MaxDump {
     Param($AllInstanceInfo, $maxdumps)
@@ -896,8 +834,7 @@ function Assert-InstanceMaxDop {
     if ($UseRecommended) {
         #if UseRecommended - check that the CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the the RecommendedMaxDop property
         $MaxDop.CurrentInstanceMaxDop | Should -Be $MaxDop.RecommendedMaxDop -Because "We expect the MaxDop Setting to be the recommended value $($MaxDop.RecommendedMaxDop)"
-    }
-    else {
+    } else {
         #if not UseRecommended - check that the CurrentInstanceMaxDop property returned from Test-DbaMaxDop matches the MaxDopValue parameter
         $MaxDop.CurrentInstanceMaxDop | Should -Be $MaxDopValue -Because "We expect the MaxDop Setting to be $MaxDopValue"
     }
@@ -928,8 +865,7 @@ function Assert-InstanceSupportedBuild {
         $Build = $results.build
         $Compliant | Should -Be $true -Because "this build $Build should not be behind the required build"
         #If no $BuildBehind only check against support dates
-    }
-    else {
+    } else {
         $Results = Test-DbaBuild -SqlInstance $Instance -SqlCredential $sqlcredential -Latest
         [DateTime]$SupportedUntil = Get-Date $results.SupportedUntil -Format O
         $Build = $results.build
@@ -960,9 +896,8 @@ function Assert-TraceFlag {
     )
 
     if ($ExpectedTraceFlag -ne 0) {
-        $ExpectedTraceFlag  | Should -BeIn  $ActualTraceflags -Because "We expect that Trace Flag $ExpectedTraceFlag will be set"
-    }
-    else {
+        $ExpectedTraceFlag | Should -BeIn $ActualTraceflags -Because "We expect that Trace Flag $ExpectedTraceFlag will be set"
+    } else {
         $ActualTraceflags | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set"
     }
 }
@@ -977,8 +912,7 @@ function Assert-NotTraceFlag {
 
     if ($null -eq $NotExpectedTraceFlag) {
         (@(Get-DbaTraceFlag -SqlInstance $SQLInstance).Where{ $_.TraceFlag -notin $ExpectedTraceFlag } | Select-Object).TraceFlag | Should -BeNullOrEmpty -Because "We expect that there will be no Trace Flags set on $SQLInstance"
-    }
-    else {
+    } else {
         @($NotExpectedTraceFlag).ForEach{
             (Get-DbaTraceFlag -SqlInstance $SQLInstance).TraceFlag | Should -Not -Contain $PSItem -Because "We expect that Trace Flag $PsItem will not be set on $SQLInstance"
         }
@@ -1070,7 +1004,7 @@ function Assert-LoginAuditSuccessful {
 
 function Assert-LoginAuditFailed {
     Param($AllInstanceInfo)
-    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn  @("Failure", "All") -Because "We expected the audit level to be set to capture failed logins"
+    $AllInstanceInfo.LoginAuditFailed.AuditLevel | Should -BeIn @("Failure", "All") -Because "We expected the audit level to be set to capture failed logins"
 }
 
 
