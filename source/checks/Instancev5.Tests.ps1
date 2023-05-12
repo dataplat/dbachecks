@@ -220,9 +220,27 @@ Describe "Successful Login Auditing" -Tag LoginAuditSuccessful, Security, CIS, M
 
 Describe "Login Check Policy" -Tag LoginCheckPolicy, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.LoginCheckPolicy' }).Value
-    Context "Testing if the CHECK_POLICY is enabled on all logins on $psitem" {
-        It "All logins should have the CHECK_POLICY option set to ON on $psitem" -Skip:$skip {
+    Context "Testing if the CHECK_POLICY is enabled on all logins on <_.Name>" {
+        It "All logins should have the CHECK_POLICY option set to ON on <_.Name>" -Skip:$skip {
            ($psitem.logins | Where-Object { $_.LoginType -eq 'SqlLogin' -and $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false }).Count | Should -Be 0 -Because "We expected the CHECK_POLICY for the all logins to be enabled"
+        }
+    }
+}
+
+Describe "Login Must Change" -Tag LoginMustChange, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.LoginMustChange' }).Value
+    Context "Testing if the new SQL logins that have not logged have to change their password when they log in on <_.Name>" {
+        It "All new sql logins should have the have to change their password when they log in for the first time on <_.Name>" -Skip:$skip {
+            $PsItem.LoginMustChangeCount | Should -Be 0 -Because "We expected the all the new sql logins to have to change the password on first login"
+        }
+    }
+}
+
+Describe "Login Password Expiration" -Tag LoginPasswordExpiration, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.LoginPasswordExpiration' }).Value
+    Context "Testing if the login password expiration is enabled for sql logins in the sysadmin role on <_.Name>" {
+        It "All sql logins should have the password expiration option set to ON in the sysadmin role on <_.Name>" -Skip:$skip {
+            $PsItem.LoginPasswordExpirationCount | Should -Be 0 -Because "We expected the password expiration policy to set on all sql logins in the sysadmin role"
         }
     }
 }
@@ -375,6 +393,29 @@ Describe "SQL Mail XPs Disabled" -Tag SQLMailXPsDisabled, Security, CIS, Low, In
     }
 }
 
+Describe "Supported Build" -Tag SupportedBuild, DISA, High, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.SupportedBuild' }).Value
+    Context "Checking that build is still supported by Microsoft for <_.Name>" -Skip:$skip {
+        It "The build is not behind the latest build by more than <_.SupportedBuild.BuildBehind> for <_.Name>" {
+            $psItem.SupportedBuild.Compliant | Should -BeTrue -Because "this build $($psItem.SupportedBuild.Build) should not be behind the required build"
+        }
+        It "The build is supported by Microsoft for <_.Name>" {
+            $psItem.SupportedBuild.InsideMicrosoftSupport | Should -BeTrue -Because "this build $($psItem.SupportedBuild.Build) is now unsupported by Microsoft"
+        }
+        It "The build is supported by Microsoft within the warning window of <_.SupportedBuild.BuildWarning> months for <_.Name>" {
+            $psItem.SupportedBuild.InsideBuildWarning | Should -BeTrue -Because "this build $($psItem.SupportedBuild.Build)  will be unsupported by Microsoft on $($psItem.SupportedBuild.SupportedUntil) which is less than $($psItem.SupportedBuild.BuildWarning) months away"
+        }
+    }
+}
+
+Describe "Suspect Page Limit Nearing" -Tag SuspectPageLimit, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.suspectpagelimit' }).Value
+    Context "Testing if the suspect_pages table is nearing the limit of 1000 rows on on <_.Name>" {
+        It "The suspect_pages table in msdb shouldn't be nearing the limit of 1000 rows on on <_.Name>" -Skip:$skip {
+            $PSItem.SuspectPageCountResult | Should -BeTrue -Because "The suspect_pages table in msdb shouldn't be nearing the limit of 1000 rows"
+        }
+    }
+}
 Describe "Trace Flags Expected" -Tag TraceFlagsExpected, TraceFlag, High, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.TraceFlagsExpected' }).Value
     Context "Testing Expected Trace Flags on <_.Name>" {
