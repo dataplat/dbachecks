@@ -236,6 +236,15 @@ Describe "Login Must Change" -Tag LoginMustChange, Security, CIS, Medium, Instan
     }
 }
 
+Describe "Login Password Expiration" -Tag LoginPasswordExpiration, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.LoginPasswordExpiration' }).Value
+    Context "Testing if the login password expiration is enabled for sql logins in the sysadmin role on <_.Name>" {
+        It "All sql logins should have the password expiration option set to ON in the sysadmin role on <_.Name>" -Skip:$skip {
+            $PsItem.LoginPasswordExpirationCount | Should -Be 0 -Because "We expected the password expiration policy to set on all sql logins in the sysadmin role"
+        }
+    }
+}
+
 Describe "Instance MaxDop" -Tag MaxDopInstance, MaxDop, Medium, Instance -ForEach ($InstancesToTest | Where-Object { $psitem.Name -notin $psitem.ConfigValues.ExcludeInstanceMaxDop }) {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.MaxDopInstance' }).Value
     Context "Testing Instance MaxDop Value on <_.Name>" {

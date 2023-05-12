@@ -467,7 +467,11 @@ function NewGet-AllInstanceInfo {
             $lastlogin = @{Name = 'LastLogin' ; Expression = { $Name = $_.name; ($loginTimes | Where-Object { $_.login_name -eq $name }).login_time
                 }
             }
-            $LoginMustChangeCount = ($Instance.Logins | Where-Object { $_.Name -in $Instance.Roles['sysadmin'].EnumMemberNames() } | Select-Object Name, $lastlogin, MustChangePassword, IsDisabled | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_.LastLogin }).Count
+            $LoginMustChangeCount = ($Instance.Logins | Where-Object { $_.LoginType -eq 'SqlLogin' } | Where-Object { $_.Name -in $Instance.Roles['sysadmin'].EnumMemberNames() } | Select-Object Name, $lastlogin, MustChangePassword, IsDisabled | Where-Object { $_.MustChangePassword -eq $false -and $_.IsDisabled -eq $false -and $null -eq $_.LastLogin }).Count
+        }
+
+        'LoginPasswordExpiration' {
+            $LoginPasswordExpirationCount = ($Instance.Logins | Where-Object { $_.Name -in $Instance.Roles['sysadmin'].EnumMemberNames() } | Where-Object { $_.LoginType -eq 'SqlLogin' -and $_.PasswordExpirationEnabled -EQ $false -and $_.IsDisabled -EQ $false }).Count
         }
 
         Default { }
@@ -476,20 +480,20 @@ function NewGet-AllInstanceInfo {
     #build the object
 
     $testInstanceObject = [PSCustomObject]@{
-        ComputerName           = $Instance.ComputerName
-        InstanceName           = $Instance.DbaInstanceName
-        Name                   = $Instance.Name
-        ConfigValues           = $ConfigValues
-        VersionMajor           = $Instance.VersionMajor
-        Configuration          = if ($configurations) { $Instance.Configuration } else { $null }
-        Settings               = $Instance.Settings
-        Logins                 = $Instance.Logins
-        Databases              = $Instance.Databases
-        NumberOfLogFiles       = $Instance.NumberOfLogFiles
-        MaxDopSettings         = $MaxDopSettings
-        ExpectedTraceFlags     = $ExpectedTraceFlags
-        NotExpectedTraceFlags  = $NotExpectedTraceFlags
-        XESessions             = [pscustomobject]@{
+        ComputerName                 = $Instance.ComputerName
+        InstanceName                 = $Instance.DbaInstanceName
+        Name                         = $Instance.Name
+        ConfigValues                 = $ConfigValues
+        VersionMajor                 = $Instance.VersionMajor
+        Configuration                = if ($configurations) { $Instance.Configuration } else { $null }
+        Settings                     = $Instance.Settings
+        Logins                       = $Instance.Logins
+        Databases                    = $Instance.Databases
+        NumberOfLogFiles             = $Instance.NumberOfLogFiles
+        MaxDopSettings               = $MaxDopSettings
+        ExpectedTraceFlags           = $ExpectedTraceFlags
+        NotExpectedTraceFlags        = $NotExpectedTraceFlags
+        XESessions                   = [pscustomobject]@{
             RequiredStopped = $RequiredStopped.ForEach{
                 [pscustomobject]@{
                     Name        = $Instance.Name
@@ -524,23 +528,23 @@ function NewGet-AllInstanceInfo {
             Sessions        = $Sessions
             Running         = $RunningSessions
         }
-        ErrorLogEntries        = [pscustomobject]@{
+        ErrorLogEntries              = [pscustomobject]@{
             errorLogCount = $ErrorLogCount
             logWindow     = $logWindow
         }
-        InstanceConnection     = $InstanceConnection
-        BackupPathAccess       = [pscustomobject]@{
+        InstanceConnection           = $InstanceConnection
+        BackupPathAccess             = [pscustomobject]@{
             Result     = $BackupPathAccess
             BackupPath = $BackupPath
         }
-        LatestBuild            = [PSCustomObject]@{
+        LatestBuild                  = [PSCustomObject]@{
             Compliant = $LatestBuild.Compliant
         }
-        NetworkLatency         = [PSCustomObject]@{
+        NetworkLatency               = [PSCustomObject]@{
             Latency   = $Latency
             Threshold = $NetworkThreshold
         }
-        LinkedServerResults    = if ($LinkedServerResults) {
+        LinkedServerResults          = if ($LinkedServerResults) {
             $LinkedServerResults.ForEach{
                 [pscustomobject]@{
                     InstanceName     = $Instance.Name
@@ -559,20 +563,21 @@ function NewGet-AllInstanceInfo {
                 Result           = 'None'
             }
         }
-        MaxMemory              = $MaxMemory
-        OrphanedFile           = [pscustomobject]@{
+        MaxMemory                    = $MaxMemory
+        OrphanedFile                 = [pscustomobject]@{
             FileCount = $FileCount
         }
-        ServerNameMatch        = [pscustomobject]@{
+        ServerNameMatch              = [pscustomobject]@{
             configuredServerName = $ServerNameMatchconfiguredServerName
             netName              = $ServerNameMatchnetName
             renamerequired       = $ServerNameMatchrenamerequired
         }
-        MemoryDump             = $Dump
-        HideInstance           = $HideInstance
-        SuspectPageCountResult = $SuspectPageCountResult
-        SupportedBuild         = $SupportedBuild
-        LoginMustChangeCount   = $LoginMustChangeCount
+        MemoryDump                   = $Dump
+        HideInstance                 = $HideInstance
+        SuspectPageCountResult       = $SuspectPageCountResult
+        SupportedBuild               = $SupportedBuild
+        LoginMustChangeCount         = $LoginMustChangeCount
+        LoginPasswordExpirationCount = $LoginPasswordExpirationCount
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended
