@@ -220,8 +220,8 @@ Describe "Successful Login Auditing" -Tag LoginAuditSuccessful, Security, CIS, M
 
 Describe "Login Check Policy" -Tag LoginCheckPolicy, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.LoginCheckPolicy' }).Value
-    Context "Testing if the CHECK_POLICY is enabled on all logins on $psitem" {
-        It "All logins should have the CHECK_POLICY option set to ON on $psitem" -Skip:$skip {
+    Context "Testing if the CHECK_POLICY is enabled on all logins on <_.Name>" {
+        It "All logins should have the CHECK_POLICY option set to ON on <_.Name>" -Skip:$skip {
            ($psitem.logins | Where-Object { $_.LoginType -eq 'SqlLogin' -and $_.PasswordPolicyEnforced -eq $false -and $_.IsDisabled -eq $false }).Count | Should -Be 0 -Because "We expected the CHECK_POLICY for the all logins to be enabled"
         }
     }
