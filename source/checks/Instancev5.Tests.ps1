@@ -394,6 +394,18 @@ Describe "SQL and Windows names match" -Tag ServerNameMatch, Medium, Instance -F
     }
 }
 
+Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.sqlengineserviceaccount' }).Value
+    Context "Testing SQL Engine Service on <_.Name>" -Skip:$skip {
+        It "SQL Engine service account should be <_.State> on <_.InstanceName>" -ForEach $PsItem.SqlEngineServiceAccount {
+            $PsItem.State | Should -Be $PsItem.ExpectedState -Because "We expected the SQL Engine service account to be $($PsItem.ExpectedState)"
+        }
+        It "SQL Engine service account should have a start mode of <_.ExpectedStartType> on instance <_.InstanceName>" -ForEach $PsItem.SqlEngineServiceAccount {
+            $PsItem.StartType | Should -Be $PsItem.ExpectedStartType -Because $Psitem.because
+        }
+    }
+}
+
 Describe "SQL Mail XPs Disabled" -Tag SQLMailXPsDisabled, Security, CIS, Low, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.SQLMailXPsDisabled' }).Value
     Context "Checking SQL Mail XPs on <_.Name>" {

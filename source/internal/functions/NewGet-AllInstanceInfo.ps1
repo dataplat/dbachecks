@@ -492,7 +492,26 @@ function NewGet-AllInstanceInfo {
         }
 
         'SqlEngineServiceAccount' {
+            $EngineAccounts = Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue
+            $starttype = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.instance.sqlenginestart' }).Value
+            $state = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.instance.sqlenginestate' }).Value
+            if ($Instance.IsClustered) {
+                $starttype = 'Manual'
+                $because = 'This is a clustered instance and Clustered Instances required that the SQL engine service is set to manual'
+            } else {
+                $because = "The SQL Service Start Type was expected to be $starttype"
+            }
 
+            $SqlEngineServiceAccount = foreach ($EngineAccount in $EngineAccounts) {
+                [PSCustomObject]@{
+                    InstanceName      = $Instance.Name
+                    State             = $EngineAccount.State
+                    ExpectedState     = $state
+                    StartType         = $EngineAccount.StartType
+                    ExpectedStartType = $starttype
+                    because           = $because
+                }
+            }
         }
 
         Default { }
@@ -600,6 +619,7 @@ function NewGet-AllInstanceInfo {
         LoginMustChangeCount         = $LoginMustChangeCount
         LoginPasswordExpirationCount = $LoginPasswordExpirationCount
         AgentServiceAdminExist       = $AgentServiceAdminExist
+        SqlEngineServiceAccount      = $SqlEngineServiceAccount
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended
