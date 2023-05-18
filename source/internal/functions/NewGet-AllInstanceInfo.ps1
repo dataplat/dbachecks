@@ -474,6 +474,23 @@ function NewGet-AllInstanceInfo {
             $LoginPasswordExpirationCount = ($Instance.Logins | Where-Object { $_.Name -in $Instance.Roles['sysadmin'].EnumMemberNames() } | Where-Object { $_.LoginType -eq 'SqlLogin' -and $_.PasswordExpirationEnabled -EQ $false -and $_.IsDisabled -EQ $false }).Count
         }
 
+        'AgentServiceAdmin' {
+            try {
+                $SqlAgentService = Get-DbaService -ComputerName $Instance.ComputerName -InstanceName $Instance.DbaInstanceName -Type Agent -ErrorAction SilentlyContinue
+                $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
+                $AgentServiceAdminExist = $localAdmins.Name.Contains($SqlAgentService.StartName)
+
+            } catch [System.Exception] {
+                if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                    $AgentServiceAdminExist = $false
+                } else {
+                    $AgentServiceAdminExist = 'Some sort of failure'
+                }
+            } catch {
+                $AgentServiceAdminExist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+            }
+        }
+
         Default { }
     }
 
@@ -578,6 +595,7 @@ function NewGet-AllInstanceInfo {
         SupportedBuild               = $SupportedBuild
         LoginMustChangeCount         = $LoginMustChangeCount
         LoginPasswordExpirationCount = $LoginPasswordExpirationCount
+        AgentServiceAdminExist       = $AgentServiceAdminExist
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended

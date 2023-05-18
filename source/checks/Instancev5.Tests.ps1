@@ -55,6 +55,16 @@ Describe "Ad Hoc Workload Optimization" -Tag AdHocWorkload, Medium, Instance -Fo
     }
 }
 
+Describe "SQL Agent Service Admin" -Tags AgentServiceAdmin, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.AgentServiceAdmin' }).Value
+    Context "Testing whether SQL Agent account is a local administrator on <_.Name>" {
+        It "The SQL Agent service account should not be a local administrator on <_.Name>" -Skip:$skip {
+            # We don't make this -BeFalse because the possible results  are $true/$false/'Could not connect'
+            $psitem.AgentServiceAdminExist | Should -Be $false -Because "We expected the service account for the SQL Agent to not be a local administrator"
+        }
+    }
+}
+
 Describe "Backup Path Access" -Tag BackupPathAccess, Storage, DISA, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.BackupPathAccess' }).Value
     Context "Testing Backup Path Access on <_.Name>" {
