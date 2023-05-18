@@ -491,6 +491,10 @@ function NewGet-AllInstanceInfo {
             }
         }
 
+        'SqlEngineServiceAccount' {
+
+        }
+
         Default { }
     }
 
