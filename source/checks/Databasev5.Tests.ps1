@@ -222,3 +222,13 @@ Describe "Compatibility Level" -Tag CompatibilityLevel, High, Database -ForEach 
         }
     }
 }
+
+Describe "Guest User" -Tag GuestUserConnect, Security, CIS, Medium, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.guestuserconnect').Value
+
+    Context "Testing Guest user has CONNECT permission" {
+        It "Database Guest user should return no CONNECT permissions in <_.Name> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.guestuserexclude -notcontains $psitem.Name } } {
+            $psitem.GuestUserConnect | Should -BeFalse -Because "we don't want the guest user to have connect access to our database."
+        }
+    }
+}
