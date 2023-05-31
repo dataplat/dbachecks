@@ -24,7 +24,8 @@
                 "TylerLeonhardt.vscode-inline-values-powershell",
                 "cschleiden.vscode-github-actions",
                 "ms-mssql.mssql",
-                "Gruntfuggly.todo-tree"
+                "Gruntfuggly.todo-tree",
+                "streetsidesoftware.code-spell-checker"
             ],
             "settings": {
                 "editor.renderWhitespace": "all",
