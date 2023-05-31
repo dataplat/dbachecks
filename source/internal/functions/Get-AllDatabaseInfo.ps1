@@ -135,6 +135,10 @@ function Get-AllDatabaseInfo {
             $compatibilityLevel = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'compatexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.compatibilitylevel.excludedb').Value
         }
+        'GuestUserConnect' {
+            $guestUserConnect = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'guestuserexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.guestuser.excludedb').Value
+        }
         Default { }
     }
 
@@ -169,6 +173,7 @@ function Get-AllDatabaseInfo {
                 QueryStore                = @(if ($qs) { $psitem.QueryStoreOptions.ActualState })
                 CompatibilityLevel        = @(if ($compatibilitylevel) { $psitem.CompatibilityLevel })
                 ServerLevel               = @(if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } })
+                GuestUserConnect          = @(if ($guestUserConnect) { if ($psitem.EnumDatabasePermissions('guest') | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect }) { $true } } )
             }
         }
     }
