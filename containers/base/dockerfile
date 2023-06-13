@@ -3,7 +3,7 @@ FROM dbachecks/sqlinstance1
 USER root
 
 # remove old dbatools directory so 2.0 will import
-RUN rm -rf /usr/local/share/powershell/Modules/dbatools
+RUN rm -rf /usr/local/share/powershell/Modules/dbatools/1.1.145
 
 # Copy Profile
 
