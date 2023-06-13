@@ -169,7 +169,8 @@ Set-PSFConfig -Module dbachecks -Name database.guestuser.excludedb -Value @('mas
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Value $null -Initialize -Description "The number of days to go back to check for growth events"
 Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @('msdb') -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
 Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb', 'ReportServer', 'ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
-Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description " A List of database what we do not want to check for SAFE CLR Assemblies"
+Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description "A List of database that we do not want to check for SAFE CLR Assemblies"
+Set-PSFConfig -Module dbachecks -Name policy.database.containeddbautocloseexclude -Value @('msdb') -Initialize -Description "A List of contained database that we we do not want to check for autoclose"
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description " The % log used we should stay below"
 
 # Policy for Ola Hallengren Maintenance Solution

@@ -139,6 +139,10 @@ function Get-AllDatabaseInfo {
             $guestUserConnect = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'guestuserexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.guestuser.excludedb').Value
         }
+        'ContainedDBAutoClose' {
+            $containedDbAutoClose = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'contdbautocloseexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.XXXX.excludedb').Value
+        }
         Default { }
     }
 
@@ -158,8 +162,7 @@ function Get-AllDatabaseInfo {
                 SuspectPage               = @(if ($suspectPage) { (Get-DbaSuspectPage -SqlInstance $Instance -Database $psitem.Name | Measure-Object).Count })
                 ConfigValues              = $ConfigValues # can we move this out?
                 AsymmetricKeySize         = @(if ($asymmetrickey) { ($psitem.AsymmetricKeys | Where-Object { $_.KeyLength -lt 2048 } | Measure-Object).Count })
-                #AsymmetricKeySize          = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key so counting ones that are too short
-                AutoClose                 = @(if ($autoclose) { $psitem.AutoClose })
+                AutoClose                 = @(if ($autoclose -or $containedDbAutoClose) { $psitem.AutoClose })
                 AutoCreateStatistics      = @(if ($autocreatestats) { $psitem.AutoCreateStatisticsEnabled })
                 AutoUpdateStatistics      = @(if ($autoupdatestats) { $psitem.AutoUpdateStatisticsEnabled })
                 AutoUpdateStatisticsAsync = @(if ($autoupdatestatsasync) { $psitem.AutoUpdateStatisticsAsync })
@@ -174,6 +177,7 @@ function Get-AllDatabaseInfo {
                 CompatibilityLevel        = @(if ($compatibilitylevel) { $psitem.CompatibilityLevel })
                 ServerLevel               = @(if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } })
                 GuestUserConnect          = @(if ($guestUserConnect) { if ($psitem.EnumDatabasePermissions('guest') | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect }) { $true } } )
+                ContainedDb               = @(if ($containedDbAutoClose) { if ($psItem.ContainmentType -ne "NONE" -and $psItem.ContainmentType -ne $null) { $true } else { $false } } )
             }
         }
     }
