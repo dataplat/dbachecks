@@ -164,6 +164,7 @@ Set-PSFConfig -Module dbachecks -Name policy.database.status.excluderestoring -V
 Set-PSFConfig -Module dbachecks -Name database.querystoreenabled.excludedb -Value @('model', 'tempdb', 'master') -Initialize -Description "A List of databases that we do not want to check for Query Store enabled"
 Set-PSFConfig -Module dbachecks -Name database.querystoredisabled.excludedb -Value @('model', 'tempdb', 'master') -Initialize -Description "A List of databases that we do not want to check for Query Store disabled"
 Set-PSFConfig -Module dbachecks -Name database.compatibilitylevel.excludedb -Value @() -Initialize -Description "A list of databases that we do not want to check compatibility level"
+Set-PSFConfig -Module dbachecks -Name database.guestuser.excludedb -Value @('master', 'tempdb', 'msdb') -Initialize -Description "A list of databases that we do not want to check guest user connect permissions for"
 
 Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Value $null -Initialize -Description "The number of days to go back to check for growth events"
 Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @('msdb') -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
@@ -288,6 +289,7 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.linkedserverconnection -Vali
 Set-PSFConfig -Module dbachecks -Name skip.instance.maxmemory -Validation bool -Value $false -Initialize -Description "Skip the check for max memory"
 Set-PSFConfig -Module dbachecks -Name skip.instance.orphanedfile -Validation bool -Value $false -Initialize -Description "Skip the check for orphaned file"
 Set-PSFConfig -Module dbachecks -Name skip.instance.servernamematch -Validation bool -Value $false -Initialize -Description "Skip the check for server name match"
+Set-PSFConfig -Module dbachecks -Name skip.instance.supportedbuild -Validation bool -Value $false -Initialize -Description "Skip the checks for supported build"
 
 
 
