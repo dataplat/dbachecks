@@ -50,8 +50,5 @@
     },
     "cSpell.enableFiletypes": [
         "powershell"
-    ],
-    "cSpell.ignoreWords": [
-        "maxcount"
     ]
 }
