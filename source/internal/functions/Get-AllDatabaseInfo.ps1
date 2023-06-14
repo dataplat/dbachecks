@@ -144,6 +144,10 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'recoverymodeltype' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.recoverymodel.type').Value
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'recoverymodelexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.recoverymodel.excludedb').Value
         }
+        'PseudoSimple' {
+            $pseudoSimple = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pseudosimpleexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.pseudosimpleexcludedb').Value
+        }
         Default { }
     }
 
@@ -179,7 +183,9 @@ function Get-AllDatabaseInfo {
                 CompatibilityLevel        = @(if ($compatibilitylevel) { $psitem.CompatibilityLevel })
                 ServerLevel               = @(if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } })
                 GuestUserConnect          = @(if ($guestUserConnect) { if ($psitem.EnumDatabasePermissions('guest') | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect }) { $true } } )
-                RecoveryModel             = @(if ($recoverymodel) { $psitem.RecoveryModel })
+                RecoveryModel             = @(if ($recoverymodel -or $pseudoSimple) { $psitem.RecoveryModel })
+                PseudoSimple              = @(if ($pseudoSimple) { $psitem.RecoveryModel -eq 'FULL' -and $psitem.LastLogBackupDate -eq '0001-01-01' })
+                # might need to change this to look at last_log_backup_lsn column of the sys.database_recovery_status or DBCC DBINFO () WITH TABLERESULTS").Tables[0] | Where-Object {$_.Field -eq "dbi_dbbackupLSN"}
             }
         }
     }
