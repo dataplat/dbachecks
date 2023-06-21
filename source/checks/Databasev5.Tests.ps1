@@ -232,3 +232,13 @@ Describe "Guest User" -Tag GuestUserConnect, Security, CIS, Medium, Database -Fo
         }
     }
 }
+
+Describe "Recovery Model" -Tag RecoveryModel, DISA, Medium, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.recoverymodel').Value
+
+    Context "Testing Recovery Model" {
+        It "Database <_.Name> should be set to <_.ConfigValues.recoverymodeltype> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.recoverymodelexclude -notcontains $psitem.Name } } {
+            $psitem.RecoveryModel | Should -Be $psitem.ConfigValues.recoverymodeltype -Because "You expect this recovery model."
+        }
+    }
+}
