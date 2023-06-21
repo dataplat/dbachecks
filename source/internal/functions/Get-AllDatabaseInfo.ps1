@@ -139,6 +139,11 @@ function Get-AllDatabaseInfo {
             $guestUserConnect = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'guestuserexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.guestuser.excludedb').Value
         }
+        'RecoveryModel' {
+            $recoverymodel = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'recoverymodeltype' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.recoverymodel.type').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'recoverymodelexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.recoverymodel.excludedb').Value
+        }
         Default { }
     }
 
@@ -174,6 +179,7 @@ function Get-AllDatabaseInfo {
                 CompatibilityLevel        = @(if ($compatibilitylevel) { $psitem.CompatibilityLevel })
                 ServerLevel               = @(if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } })
                 GuestUserConnect          = @(if ($guestUserConnect) { if ($psitem.EnumDatabasePermissions('guest') | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect }) { $true } } )
+                RecoveryModel             = @(if ($recoverymodel) { $psitem.RecoveryModel })
             }
         }
     }
