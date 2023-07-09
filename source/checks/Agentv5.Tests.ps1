@@ -48,26 +48,18 @@ Describe "SQL Agent Account" -Tag AgentServiceAccount, ServiceAccount -ForEach $
     $skipServiceState = Get-DbcConfigValue skip.agent.servicestate
     $skipServiceStartMode = Get-DbcConfigValue skip.agent.servicestartmode
 
-    # cant check agent on container - hmm does this actually work with instance need to check
-    if (-not $IsLinux -and ($InstanceSMO.HostPlatform -ne 'Linux')) {
-        Context "Testing SQL Agent is running on <_.Name>" {
-            It "SQL Agent should be running for <_.InstanceName> on <_.Name>" -Skip:$skipServiceState {
-                $PSItem.Agent.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
-            }
+    Context "Testing SQL Agent is running on <_.Name>" {
+        It "SQL Agent should be running for <_.InstanceName> on <_.Name>" -Skip:$skipServiceState {
+            $PSItem.Agent.State | Should -Be "Running" -Because 'The agent service is required to run SQL Agent jobs'
         }
-        if ($PSItem.IsClustered) {
-            It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
-                $PSItem.Agent.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
-            }
-        } else {
-            It "SQL Agent service should have a start mode of Automatic for standalone instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
-                $PSItem.Agent.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
-            }
+    }
+    if ($PSItem.IsClustered) {
+        It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
+            $PSItem.Agent.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
         }
     } else {
-        Context "Testing SQL Agent is running on $psitem" {
-            It "Running on Linux or connecting to container so can't check Services on $Psitem" -Skip {
-            }
+        It "SQL Agent service should have a start mode of Automatic for standalone instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
+            $PSItem.Agent.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
         }
     }
 }
@@ -92,7 +84,7 @@ Describe "Failsafe Operator" -Tag FailsafeOperator, Operator -ForEach $Instances
     $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
 
     Context "Testing failsafe Operators exists on <_.Name>" {
-        It "The Failsafe operator <_.FailSafeOperator> exists on <_.Name>" -Skip:$skipFailsafeoperator -ForEach ($PSItem.JobServer.AlertSystem | Where-Object FailSafeOperator -NE $null) {
+        It "The Failsafe operator <_.FailSafeOperator> exists on <_.Name>" -Skip:$skipFailsafeoperator -ForEach ($PSItem.JobServer.AlertSystem | Where-Object FailSafeOperator -EQ 'null') {
             $PSItem.ExpectedFailSafeOperator | Should -Be $failsafeoperator -Because 'The failsafe operator will ensure that any job failures will be notified to someone if not set explicitly'
         }
     }
