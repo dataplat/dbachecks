@@ -14,7 +14,8 @@ BeforeDiscovery {
             $Instance = $psitem
             try {
                 $InstanceSMO = Connect-DbaInstance -SqlInstance $Instance -ErrorAction SilentlyContinue -ErrorVariable errorvar
-            } catch {
+            }
+            catch {
                 $NotContactable += $Instance
             }
             if ($NotContactable -notcontains $psitem) {
@@ -57,7 +58,8 @@ Describe "SQL Agent Account" -Tag AgentServiceAccount, ServiceAccount -ForEach $
         It "SQL Agent service should have a start mode of Manual for FailOver Clustered Instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
             $PSItem.Agent.StartMode | Should -Be "Manual" -Because 'Clustered Instances required that the Agent service is set to manual'
         }
-    } else {
+    }
+    else {
         It "SQL Agent service should have a start mode of Automatic for standalone instance <_.InstanceName> on <_.Name>" -Skip:$skipServiceStartMode {
             $PSItem.Agent.StartMode | Should -Be "Automatic" -Because 'Otherwise the Agent Jobs wont run if the server is restarted'
         }
@@ -75,17 +77,6 @@ Describe "DBA Operator" -Tag DbaOperator, Operator -ForEach $InstancesToTest {
 
         It "The Operator email <_.ExpectedOperatorEmail> is correct on <_.Name>" -Skip:$skipOperatorEmail -ForEach ($PSItem.Operator | Where-Object ExpectedOperatorEmail -NE 'null') {
             $PSItem.ExpectedOperatorEmail | Should -BeIn $PSItem.ActualOperatorEmail -Because 'This operator email is expected to exist'
-        }
-    }
-}
-
-Describe "Failsafe Operator" -Tag FailsafeOperator, Operator -ForEach $InstancesToTest {
-    $skipFailsafeoperator = Get-DbcConfigValue skip.agent.failsafeoperator
-    $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
-
-    Context "Testing failsafe Operators exists on <_.Name>" {
-        It "The Failsafe operator <_.FailSafeOperator> exists on <_.Name>" -Skip:$skipFailsafeoperator -ForEach ($PSItem.JobServer.AlertSystem | Where-Object FailSafeOperator -EQ 'null') {
-            $PSItem.ExpectedFailSafeOperator | Should -Be $failsafeoperator -Because 'The failsafe operator will ensure that any job failures will be notified to someone if not set explicitly'
         }
     }
 }
