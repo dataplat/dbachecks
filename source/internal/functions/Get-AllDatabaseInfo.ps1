@@ -160,7 +160,7 @@ function Get-AllDatabaseInfo {
         ComputerName = $Instance.ComputerName
         InstanceName = $Instance.DbaInstanceName
         Name         = $Instance.Name
-        ConfigValues = $ConfigValues # can we move this out to here?
+        ConfigValues = $ConfigValues
         Databases    = $Instance.Databases.Foreach{
             [PSCustomObject]@{
                 Name                      = $psitem.Name
@@ -169,7 +169,7 @@ function Get-AllDatabaseInfo {
                 ServerCollation           = @(if ($collation) { $Instance.collation })
                 Collation                 = @(if ($collation) { $psitem.collation })
                 SuspectPage               = @(if ($suspectPage) { (Get-DbaSuspectPage -SqlInstance $Instance -Database $psitem.Name | Measure-Object).Count })
-                ConfigValues              = $ConfigValues # can we move this out?
+                ConfigValues              = $ConfigValues
                 AsymmetricKeySize         = @(if ($asymmetrickey) { ($psitem.AsymmetricKeys | Where-Object { $_.KeyLength -lt 2048 } | Measure-Object).Count })
                 AutoClose                 = @(if ($autoclose -or $containedDbAutoClose) { $psitem.AutoClose })
                 AutoCreateStatistics      = @(if ($autocreatestats) { $psitem.AutoCreateStatisticsEnabled })
@@ -188,7 +188,8 @@ function Get-AllDatabaseInfo {
                 GuestUserConnect          = @(if ($guestUserConnect) { if ($psitem.EnumDatabasePermissions('guest') | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect }) { $true } } )
                 RecoveryModel             = @(if ($pseudoSimple -or $recoverymodel) { $psitem.RecoveryModel })
                 PseudoSimple              = @(if ($pseudoSimple) { '' -eq (($psitem.Query('Select last_log_backup_lsn from sys.database_recovery_status where database_id = DB_ID()')).last_log_backup_lsn) })
-                ContainedDb               = @(if ($containedDbAutoClose) { if ($psItem.ContainmentType -ne "NONE" -and $psItem.ContainmentType -ne $null) { $true } else { $false } } )
+                ContainmentType           = @(if ($containedDbAutoClose) { $psitem.ContainmentType })
+                ContainedDbAutoClose      = @(if ($containedDbAutoClose) { if (($psItem.ContainmentType -ne "NONE") -and ($null -ne $psItem.ContainmentType) -and $psitem.AutoClose) { $true } else { $false } } )
             }
         }
     }

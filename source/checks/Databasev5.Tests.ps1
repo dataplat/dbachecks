@@ -257,8 +257,8 @@ Describe "Contained Database Auto Close" -Tag ContainedDBAutoClose, CIS, Databas
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.containedbautoclose').Value
 
     Context "Testing contained database auto close option" {
-        It "Database <_.Name> should have auto close set to false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database <#TODO: here #> -and $_.ContainedDb } else { $psitem.ConfigValues.contdbautocloseexclude -notcontains $psitem.Name } } {
-            $psitem.GuestUserConnect | Should -BeFalse -Because "Contained Databases should have auto close set to false for CIS compliance."
+        It "Database <_.Name> should have auto close set to false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.ContainmentType -ne "NONE" } else { $psitem.ConfigValues.contdbautocloseexclude -notcontains $psitem.Name -and $_.ContainmentType -ne "NONE" } } {
+            $psitem.ContainedDbAutoClose | Should -BeFalse -Because "Contained Databases should have auto close set to false for CIS compliance."
         }
     }
 }
