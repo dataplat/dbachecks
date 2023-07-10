@@ -242,3 +242,13 @@ Describe "Recovery Model" -Tag RecoveryModel, DISA, Medium, Database -ForEach $I
         }
     }
 }
+
+Describe "PseudoSimple Recovery Model" -Tag PseudoSimple, Medium, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.pseudosimple').Value
+
+    Context "Testing database is not in PseudoSimple recovery model" {
+        It "Database <_.Name> has PseudoSimple recovery model equal false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.RecoveryModel -eq 'Full' } else { $psitem.ConfigValues.pseudosimpleexclude -notcontains $psitem.Name -and $_.RecoveryModel -eq 'Full' } } {
+            $psitem.PseudoSimple | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
+        }
+    }
+}
