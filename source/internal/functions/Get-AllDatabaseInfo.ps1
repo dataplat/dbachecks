@@ -184,7 +184,7 @@ function Get-AllDatabaseInfo {
                 ServerLevel               = @(if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } })
                 GuestUserConnect          = @(if ($guestUserConnect) { if ($psitem.EnumDatabasePermissions('guest') | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect }) { $true } } )
                 RecoveryModel             = @(if ($recoverymodel -or $pseudoSimple) { $psitem.RecoveryModel })
-                PseudoSimple              = @(if ($pseudoSimple) { $psitem.RecoveryModel -eq 'FULL' -and $psitem.LastLogBackupDate -eq '0001-01-01' })
+                PseudoSimple              = @(if ($pseudoSimple) { '' -eq (($psitem.Query('Select last_log_backup_lsn from sys.database_recovery_status where database_id = DB_ID()')).last_log_backup_lsn) })
                 # might need to change this to look at last_log_backup_lsn column of the sys.database_recovery_status or DBCC DBINFO () WITH TABLERESULTS").Tables[0] | Where-Object {$_.Field -eq "dbi_dbbackupLSN"}
             }
         }
