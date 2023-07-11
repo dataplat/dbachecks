@@ -171,6 +171,8 @@ Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Valu
 Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb', 'ReportServer', 'ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
 Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description " A List of database what we do not want to check for SAFE CLR Assemblies"
 Set-PSFConfig -Module dbachecks -Name policy.database.pseudosimpleexcludedb -Value @('tempdb', 'model') -Initialize -Description "A List of databases that we do not want to check for pseudosimple recovery modelasd a"
+Set-PSFConfig -Module dbachecks -Name policy.database.contdbautocloseexclude -Value @('msdb') -Initialize -Description "A List of contained database that we we do not want to check for autoclose"
+Set-PSFConfig -Module dbachecks -Name policy.database.contdbsqlauthexclude -Value @() -Initialize -Description "A list of databases that we do not want to check for contained databases with SQL authenticated users"
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description " The % log used we should stay below"
 
 # Policy for Ola Hallengren Maintenance Solution

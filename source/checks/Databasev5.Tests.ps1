@@ -58,6 +58,7 @@ Describe "Suspect Page" -Tag SuspectPage, High , Database -ForEach $InstancesToT
 }
 
 Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $InstancesToTest {
+    #TODO: Should we have a skip option for each IT block?
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.database.databasecollation' }).Value
     Context "Testing database collation on <_.Name>" {
         It "Database <_.Name> collation <_.Collation> should match server collation <_.ServerCollation> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.wrongcollation -notcontains $PsItem.Name } } {
@@ -65,10 +66,9 @@ Describe "Database Collation" -Tag DatabaseCollation, High, Database -ForEach $I
         }
 
         # wrong collation set
-        It "Database <_.Name> collation <_.Collation> should not match server collation <_.ServerCollation> on <_.SqlInstance>" -ForEach $psitem.Databases.Where{ $_.Name -in $psitem.ConfigValues.wrongcollation } {
+        It "Database <_.Name> collation <_.Collation> should not match server collation <_.ServerCollation> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ $_.Name -in $psitem.ConfigValues.wrongcollation } {
             $psitem.ServerCollation | Should -Not -Be $psitem.Collation -Because "You have defined the database to have another collation then the server. You will get collation conflict errors in tempdb"
         }
-
     }
 }
 
@@ -249,6 +249,28 @@ Describe "PseudoSimple Recovery Model" -Tag PseudoSimple, Medium, Database -ForE
     Context "Testing database is not in PseudoSimple recovery model" {
         It "Database <_.Name> has PseudoSimple recovery model equal false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.RecoveryModel -eq 'Full' } else { $psitem.ConfigValues.pseudosimpleexclude -notcontains $psitem.Name -and $_.RecoveryModel -eq 'Full' } } {
             $psitem.PseudoSimple | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
+        }
+    }
+}
+
+Describe "Contained Database Auto Close" -Tag ContainedDBAutoClose, CIS, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.containedbautoclose').Value
+
+    Context "Testing contained database auto close option" {
+        It "Database <_.Name> should have auto close set to false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.ContainmentType -ne "NONE" } else { $psitem.ConfigValues.contdbautocloseexclude -notcontains $psitem.Name -and $_.ContainmentType -ne "NONE" } } {
+            $psitem.ContainedDbAutoClose | Should -BeFalse -Because "Contained Databases should have auto close set to false for CIS compliance."
+        }
+    }
+}
+
+Describe "Contained Database SQL Authenticated Users" -Tag ContainedDBSQLAuth, CIS, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.ContainedDBSQLAuth').Value
+
+    #if ($version -lt 13 ) { $skip = $true }
+
+    Context "Testing contained database to see if sql authenticated users exist" {
+        It "Database <_.Name> should have no sql authenticated users on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.ContainmentType -ne "NONE" } else { $psitem.ConfigValues.contdbsqlauthexclude -notcontains $psitem.Name -and $_.ContainmentType -ne "NONE" } } {
+            $psitem.ContainedDbSqlAuthUsers | Should -Be 0 -Because "We expect there to be no sql authenticated users in contained database."
         }
     }
 }
