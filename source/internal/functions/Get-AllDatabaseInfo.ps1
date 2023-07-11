@@ -150,7 +150,11 @@ function Get-AllDatabaseInfo {
         }
         'ContainedDBAutoClose' {
             $containedDbAutoClose = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'contdbautocloseexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'database.XXXX.excludedb').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'contdbautocloseexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbautocloseexclude').Value
+        }
+        'ContainedDBSQLAuth'{
+            $containedDbSqlAuthUsers = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'contdbsqlauthexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbsqlauthexclude').Value
         }
         Default { }
     }
@@ -188,8 +192,9 @@ function Get-AllDatabaseInfo {
                 GuestUserConnect          = @(if ($guestUserConnect) { if ($psitem.EnumDatabasePermissions('guest') | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect }) { $true } } )
                 RecoveryModel             = @(if ($pseudoSimple -or $recoverymodel) { $psitem.RecoveryModel })
                 PseudoSimple              = @(if ($pseudoSimple) { '' -eq (($psitem.Query('Select last_log_backup_lsn from sys.database_recovery_status where database_id = DB_ID()')).last_log_backup_lsn) })
-                ContainmentType           = @(if ($containedDbAutoClose) { $psitem.ContainmentType })
+                ContainmentType           = @(if ($containedDbAutoClose -or $containedDbSqlAuthUsers) { $psitem.ContainmentType })
                 ContainedDbAutoClose      = @(if ($containedDbAutoClose) { if (($psItem.ContainmentType -ne "NONE") -and ($null -ne $psItem.ContainmentType) -and $psitem.AutoClose) { $true } else { $false } } )
+                ContainedDbSqlAuthUsers   = @(if ($containedDbSqlAuthUsers) { if ($psItem.ContainmentType -ne "NONE" -and ($null -ne $psItem.ContainmentType)) { ($psitem.Users | Where-Object {$_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true } | Measure-Object ).Count}} )
             }
         }
     }

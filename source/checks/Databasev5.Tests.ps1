@@ -262,3 +262,15 @@ Describe "Contained Database Auto Close" -Tag ContainedDBAutoClose, CIS, Databas
         }
     }
 }
+
+Describe "Contained Database SQL Authenticated Users" -Tag ContainedDBSQLAuth, CIS, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.ContainedDBSQLAuth').Value
+
+    #if ($version -lt 13 ) { $skip = $true }
+
+    Context "Testing contained database to see if sql authenticated users exist" {
+        It "Database <_.Name> should have no sql authenticated users on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.ContainmentType -ne "NONE" } else { $psitem.ConfigValues.contdbsqlauthexclude -notcontains $psitem.Name -and $_.ContainmentType -ne "NONE" } } {
+            $psitem.ContainedDbSqlAuthUsers | Should -Be 0 -Because "We expect there to be no sql authenticated users in contained database."
+        }
+    }
+}
