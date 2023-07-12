@@ -31,23 +31,26 @@ BeforeDiscovery {
             }
         }
     }
+
     Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Verbose
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
+
+    # Get-DbcConfig is expensive so we call it once
+    $__dbcconfig = Get-DbcConfig
 }
 
-
-Describe "Database Mail XPs" -Tag DatabaseMailEnabled, CIS, security -ForEach $InstancesToTest {
-    $skip = Get-DbcConfigValue skip.agent.databasemailenabled
+Describe "Database Mail XPs" -Tag DatabaseMailEnabled, CIS, security, Agent -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.databasemailenabled' }).Value
     Context "Testing Database Mail XPs on <_.Name>" {
-        It "Testing Database Mail XPs is set to <_.DatabaseMailEnabled> on <_.Name>" -Skip:$skip {
+        It "Testing Database Mail XPs is set to <_.ConfigValues.DatabaseMailEnabled> on <_.Name>" -Skip:$skip {
             $PSItem.DatabaseMailEnabled | Should -Be $PSItem.ConfigValues.DatabaseMailEnabled -Because 'The Database Mail XPs setting should be set correctly'
         }
     }
 }
 
-Describe "SQL Agent Account" -Tag AgentServiceAccount, ServiceAccount -ForEach $InstancesToTest {
-    $skipServiceState = Get-DbcConfigValue skip.agent.servicestate
-    $skipServiceStartMode = Get-DbcConfigValue skip.agent.servicestartmode
+Describe "SQL Agent Account" -Tag AgentServiceAccount, ServiceAccount, Agent -ForEach $InstancesToTest {
+    $skipServiceState = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.servicestate' }).Value
+    $skipServiceStartMode = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.servicestartmode' }).Value
 
     Context "Testing SQL Agent is running on <_.Name>" {
         It "SQL Agent should be running for <_.InstanceName> on <_.Name>" -Skip:$skipServiceState {
@@ -66,9 +69,9 @@ Describe "SQL Agent Account" -Tag AgentServiceAccount, ServiceAccount -ForEach $
     }
 }
 
-Describe "DBA Operator" -Tag DbaOperator, Operator -ForEach $InstancesToTest {
-    $skipOperatorName = Get-DbcConfigValue skip.agent.operatorname
-    $skipOperatorEmail = Get-DbcConfigValue skip.agent.operatoremail
+Describe "DBA Operator" -Tag DbaOperator, Operator, Agent -ForEach $InstancesToTest {
+    $skipOperatorName = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.dbaoperatorname' }).Value
+    $skipOperatorEmail = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.dbaoperatoremail' }).Value
 
     Context "Testing DBA Operators exists on <_.Name>" {
         It "The Operator <_.ExpectedOperatorName> exists on <_.Name>" -Skip:$skipOperatorName -ForEach ($PSItem.Operator | Where-Object ExpectedOperatorName -NE 'null') {
@@ -81,23 +84,28 @@ Describe "DBA Operator" -Tag DbaOperator, Operator -ForEach $InstancesToTest {
     }
 }
 
-# Describe "Failsafe Operator" -Tags FailsafeOperator, Operator, $filename {
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing failsafe operator exists on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         Context "Testing failsafe operator exists on $psitem" {
-#             $failsafeoperator = Get-DbcConfigValue agent.failsafeoperator
-#             It "The Failsafe Operator exists on $psitem" {
-#                 (Connect-DbaInstance -SqlInstance $psitem).JobServer.AlertSystem.FailSafeOperator | Should -Be $failsafeoperator -Because 'The failsafe operator will ensure that any job failures will be notified to someone if not set explicitly'
-#             }
-#         }
-#     }
-# }
+Describe "Failsafe operator" -Tag FailsafeOperator, CIS, security, Agent -ForEach $InstancesToTest {
+    $skipFailsafeOperator = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.failsafeoperator' }).Value
+
+    Context "Testing failsafe operator exists on <_.Name>" {
+        It "The failsafe operator <_.FailSafeOperator.ExpectedFailSafeOperator> exists on <_.Name>" -Skip:$skipFailsafeOperator {
+            $PSItem.FailSafeOperator.ActualFailSafeOperator | Should -Be $PSItem.FailSafeOperator.ExpectedFailSafeOperator -Because 'The failsafe operator will ensure that any job failures will be notified to someone if not set explicitly'
+        }
+    }
+}
+
+#
+## Write-PSFMessage -Message "Tags = $Tags" -Level Verbose
+#
+#Describe "Failsafe Operator" -Tag FailsafeOperator, Operator, Agent -ForEach $InstancesToTest {
+#    $skipFailsafeOperator = Get-DbcConfigValue skip.agent.failsafeoperator
+#  
+#    Context "Testing failsafe operator exists on <_.Name>" {
+#        It "The Failsafe Operator <_.ExpectedFailSafeOperator> exists on <_.Name>" -Skip:$skipFailsafeOperator  -ForEach ($PSItem.AlertSystem | Where-Object ExpectedFailSafeOperator -NE 'null') {
+#            $PSItem.ExpectedFailSafeOperator | Should -Be $PSItem.ActualFailSafeOperator -Because 'The failsafe operator will ensure that any job failures will be notified to someone if not set explicitly'
+#        }
+#    }
+#}
 
 # Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
 #     if ($NotContactable -contains $psitem) {

@@ -8,6 +8,7 @@ function Get-AllAgentInfo {
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Operator], $false)
+    $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.AlertSystem], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Information], $false)
     $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $false)
@@ -102,28 +103,19 @@ function Get-AllAgentInfo {
             }
         }
         'FailsafeOperator' {
-            $FailsafeInitFields.Add("Name") | Out-Null # so we can check failsafe operators
+            $FailsafeInitFields.Add("FailSafeOperator") | Out-Null # so we can check failsafe operators
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.AlertSystem], $FailsafeInitFields)
             $FailsafeInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.AlertSystem])
 
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'FailsafeOperator' -Value (Get-DbcConfigValue agent.failsafeoperator)
 
-            $Operator = $ConfigValues.FailsafeOperator.ForEach{
+            $failsafeOperator = $ConfigValues.FailsafeOperator.ForEach{
                 [PSCustomObject]@{
                     InstanceName             = $Instance.Name
                     ExpectedFailSafeOperator = $PSItem
-                    ActualOperatorName       = $Instance.JobServer.AlertSystem.Name
+                    ActualFailSafeOperator   = $Instance.JobServer.AlertSystem.FailSafeOperator
                 }
             }
-
-            $Operator += $ConfigValues.FailsafeOperator.ForEach{
-                [PSCustomObject]@{
-                    InstanceName             = $Instance.Name
-                    ExpectedFailSafeOperator = 'null'
-                    ActualOperatorName       = 'null'
-                }
-            }
-
         }
         'DatabaseMailProfile' {
 
@@ -166,6 +158,7 @@ function Get-AllAgentInfo {
         DatabaseMailEnabled = $Instance.Configuration.DatabaseMailEnabled.ConfigValue
         Agent               = @($Agent)
         Operator            = @($Operator)
+        FailSafeOperator    = @($failsafeOperator)
     }
     return $testInstanceObject
 }
