@@ -84,7 +84,7 @@ Describe "DBA Operator" -Tag DbaOperator, Operator, Agent -ForEach $InstancesToT
     }
 }
 
-Describe "Failsafe operator" -Tag FailsafeOperator, CIS, security, Agent -ForEach $InstancesToTest {
+Describe "Failsafe operator" -Tag FailsafeOperator, Operator, Agent -ForEach $InstancesToTest {
     $skipFailsafeOperator = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.failsafeoperator' }).Value
 
     Context "Testing failsafe operator exists on <_.Name>" {
@@ -94,18 +94,16 @@ Describe "Failsafe operator" -Tag FailsafeOperator, CIS, security, Agent -ForEac
     }
 }
 
-#
-## Write-PSFMessage -Message "Tags = $Tags" -Level Verbose
-#
-#Describe "Failsafe Operator" -Tag FailsafeOperator, Operator, Agent -ForEach $InstancesToTest {
-#    $skipFailsafeOperator = Get-DbcConfigValue skip.agent.failsafeoperator
-#  
-#    Context "Testing failsafe operator exists on <_.Name>" {
-#        It "The Failsafe Operator <_.ExpectedFailSafeOperator> exists on <_.Name>" -Skip:$skipFailsafeOperator  -ForEach ($PSItem.AlertSystem | Where-Object ExpectedFailSafeOperator -NE 'null') {
-#            $PSItem.ExpectedFailSafeOperator | Should -Be $PSItem.ActualFailSafeOperator -Because 'The failsafe operator will ensure that any job failures will be notified to someone if not set explicitly'
-#        }
-#    }
-#}
+Describe "Database Mail Profile" -Tag DatabaseMailProfile, Agent -ForEach $InstancesToTest {
+    $skipDatabaseMailProfile = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.databasemailprofile' }).Value
+
+    Context "Testing Database Mail Profile exists on <_.Name>" {
+        It "The Database Mail profile <_.DatabaseMailProfile.ExpectedDatabaseMailProfile> exists on <_.Name>" -Skip:$skipDatabaseMailProfile { #-ForEach ($PSItem.DatabaseMailProfile | Where-Object ExpectedDatabaseMailProfile -NE 'null') {
+            $PSItem.DatabaseMailProfile.ActualDatabaseMailProfile | Should -Be $PSItem.DatabaseMailProfile.ExpectedDatabaseMailProfile -Because 'The database mail profile is required to send emails'
+        }
+    }
+}
+
 
 # Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
 #     if ($NotContactable -contains $psitem) {

@@ -341,8 +341,10 @@ Set-PSFConfig -Module dbachecks -Name skip.agent.servicestate -Validation bool -
 Set-PSFConfig -Module dbachecks -Name skip.agent.dbaoperatorname -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Name check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.dbaoperatoremail -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Email check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.failsafeoperator -Validation bool -Value $false -Initialize -Description "Skip the Agent Failsafe Operator check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.databasemailprofile -Validation bool -Value $false -Initialize -Description "Skip the Database Mail Profile check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
+
 
 
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
