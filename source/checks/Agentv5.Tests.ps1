@@ -99,47 +99,22 @@ Describe "Database Mail Profile" -Tag DatabaseMailProfile, Agent -ForEach $Insta
 
     Context "Testing Database Mail Profile exists on <_.Name>" {
         It "The Database Mail profile <_.DatabaseMailProfile.ExpectedDatabaseMailProfile> exists on <_.Name>" -Skip:$skipDatabaseMailProfile { #-ForEach ($PSItem.DatabaseMailProfile | Where-Object ExpectedDatabaseMailProfile -NE 'null') {
-            $PSItem.DatabaseMailProfile.ActualDatabaseMailProfile | Should -Be $PSItem.DatabaseMailProfile.ExpectedDatabaseMailProfile -Because 'The database mail profile is required to send emails'
+            $PSItem.DatabaseMailProfile.ActualDatabaseMailProfile | Should -BeIn $PSItem.DatabaseMailProfile.ExpectedDatabaseMailProfile -Because 'The database mail profile is required to send emails'
+        }
+    }
+}
+
+Describe "Agent Mail Profile" -Tag AgentMailProfile, Agent -ForEach $InstancesToTest {
+    $skipAgentMailProfile = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.agentmailprofile' }).Value
+
+    Context "esting SQL Agent Alert System database mail profile is set on <_.Name>" {
+        It "The SQL Server Agent Alert System has the mail profile <_.AgentMailProfile.ExpectedAgentMailProfile> enabled as profile on <_.Name>." -Skip:$skipAgentMailProfile { #-ForEach ($PSItem.DatabaseMailProfile | Where-Object ExpectedDatabaseMailProfile -NE 'null') {
+            $PSItem.AgentMailProfile.ActualAgentMailProfile | Should -Be $PSItem.AgentMailProfile.ExpectedAgentMailProfile -Because 'The SQL Agent Alert System needs an enabled database mail profile to send alert emails'
         }
     }
 }
 
 
-# Describe "Database Mail Profile" -Tags DatabaseMailProfile, $filename {
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing database mail profile is set on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         Context "Testing database mail profile is set on $psitem" {
-#             $databasemailprofile = Get-DbcConfigValue  agent.databasemailprofile
-#             It "The Database Mail profile $databasemailprofile exists on $psitem" {
-#                 ((Get-DbaDbMailProfile -SqlInstance $InstanceSMO).Name -contains $databasemailprofile) | Should -Be $true -Because 'The database mail profile is required to send emails'
-#             }
-#         }
-#     }
-# }
-
-# Describe "Agent Mail Profile" -Tags AgentMailProfile, $filename {
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing SQL Agent Alert System database mail profile is set on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         Context "Testing SQL Agent Alert System database mail profile is set on $psitem" {
-#             $agentmailprofile = Get-DbcConfigValue  agent.databasemailprofile
-#             It "The SQL Server Agent Alert System should have an enabled database mail profile on $psitem" {
-#                 (Get-DbaAgentServer -SqlInstance $InstanceSMO).DatabaseMailProfile | Should -Be $agentmailprofile -Because 'The SQL Agent Alert System needs an enabled database mail profile to send alert emails'
-#             }
-#         }
-#     }
-# }
 
 # Describe "Failed Jobs" -Tags FailedJob, $filename {
 
