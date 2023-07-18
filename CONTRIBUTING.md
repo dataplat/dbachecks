@@ -1,6 +1,5 @@
 # Contributing
 
-## TODO
 ## Welcome
 
 Before we go any further, thanks for being here. Thanks for using dbachecks and especially thanks 
@@ -34,7 +33,7 @@ In order to use the devcontainer there are a few things you need to get started.
 - [Docker](https://www.docker.com/get-started)
 - [git](https://git-scm.com/downloads)
 - [VSCode](https://code.visualstudio.com/download)
-- [`Remote Development` Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+- [Remote Development Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
 ### Setup
 
@@ -61,9 +60,81 @@ so that could take a hot second depending on your internet speeds.
 1. The first time you do this it may take a little, and you'll need an internet connection, as it'll download the container images used in our demos
 
 ### Develop & Build
-TODO: sampler instructions - similar to /workspace/developing/Howto.md
 
-### Rebuild
+We are using the [Sampler](https://github.com/gaelcolas/Sampler) Powershell Module to structure our module.
+This makes it easier to develop and test the module locally.
+
+The workflow for using this and developing the code - for example to add a new Database level check you could follow
+this guide.
+
+1. Download the repo locally and create a new branch to develop on
+    ```PowerShell
+    git checkout -b newStuff # give it a proper name!
+    ```
+
+1. Develop in the source repository, to add a check you need to add the following code:
+  - add check code to `source/checks/DatabaseV5.Tests.ps1`
+  - add required configurations to `source/internal/configurations/configuration.ps1`
+    - `skip.database.checkName`
+    - `policy.database.checkNameExcludeDb`
+  - add required properties to object info to `source/internal/functions/Get-AllDatabaseInfo.ps1`
+
+1. Build the module
+    ```PowerShell
+    ./build.ps1 -Tasks build
+    ```
+
+1. Sampler automatically adds the new version to your path you can prove that with the following code:
+    ```PowerShell
+    get-module dbachecks -ListAvailable | Select-Object Name, ModuleBase
+    ```
+
+1. Import new version of the module
+    ```PowerShell
+    Import-Module dbachecks -force
+    ```
+
+1. Test out the new code
+    ```PowerShell
+    # save the password to make for easy connections
+    $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
+    $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
+
+    $show = 'All'
+    $checks = 'RecoveryModel' # <-- change this to your new check name 
+
+    $sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
+    #$sqlinstances = 'dbachecks1', 'dbachecks2', 'dbachecks3' # need client aliases for this to work New-DbaClientAlias
+
+    # Run v5 checks
+    $v5code = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check $Checks -legacy $false -Show $show -PassThru -Verbose
+    ```
+
+1. If you are working on the v4 --> v5 upgrade you can also confirm your v5 test results match v4 with the following
+    ```PowerShell
+    # save the password to make for easy connections
+    $password = ConvertTo-SecureString "dbatools.IO" -AsPlainText -Force
+    $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sqladmin", $password
+
+    $show = 'All'
+    $checks = 'RecoveryModel' # <-- change this to your new check name 
+
+    $sqlinstances = 'localhost,7401', 'localhost,7402', 'localhost,7403'
+    #$sqlinstances = 'dbachecks1', 'dbachecks2', 'dbachecks3' # need client aliases for this to work New-DbaClientAlias
+
+    # Check results of the tests - are we testing the same things with the same results for v4 & v5
+    Invoke-PerfAndValidateCheck -SQLInstances $sqlinstances -Checks $Checks
+    # Include the specific details for the perf testing
+    Invoke-PerfAndValidateCheck -SQLInstances $sqlinstances -Checks $Checks -PerfDetail
+    # Include the test results - this helps troubleshooting if your tests aren't the same
+    Invoke-PerfAndValidateCheck -SQLInstances $sqlinstances -Checks $Checks -showTestResults
+    ```
+
+1. Once you are happy with your code, push your branch to GitHub and create a PR against the dbachecks repo.
+
+1. Thanks!
+
+### Rebuild your devcontainer
 
 The only way to properly rebuild to ensure that all volumes etc are removed is to open up a console
 or PowerShell window outside of the devcontainer and run the following:
