@@ -293,6 +293,13 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.maxmemory -Validation bool -
 Set-PSFConfig -Module dbachecks -Name skip.instance.orphanedfile -Validation bool -Value $false -Initialize -Description "Skip the check for orphaned file"
 Set-PSFConfig -Module dbachecks -Name skip.instance.servernamematch -Validation bool -Value $false -Initialize -Description "Skip the check for server name match"
 Set-PSFConfig -Module dbachecks -Name skip.instance.supportedbuild -Validation bool -Value $false -Initialize -Description "Skip the checks for supported build"
+# becuase we can't run this on core
+if ($IsCoreCLR) {
+    $value = $true
+} {
+    $value = $false
+}
+Set-PSFConfig -Module dbachecks -Name skip.instance.sqlengineserviceaccount -Validation bool -Value $value -Initialize -Description "Skip the checks for sql engine service account"
 
 
 
