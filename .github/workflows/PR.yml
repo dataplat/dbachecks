@@ -59,7 +59,7 @@ jobs:
         path: ${{ env.buildFolderName }}
     - name: Run Tests
       shell: pwsh
-      run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
+      run: ./build.ps1 -tasks noop ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
     - name: Publish Test Artifact
       uses: actions/upload-artifact@v3
       with:

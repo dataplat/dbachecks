@@ -2351,13 +2351,19 @@ The Tags are the same"
           FailedChange  = 0 # + or - the number of tests failed for v5
           SkippedChange = 0 # + or - the number of tests skipped for v5
       },
-            @{
+      @{
           Name          = 'SupportedBuild'
           RunChange     = -3 # + or - the number of tests run for v5
           PassedChange  = -3 # + or - the number of tests passed for v5
           FailedChange  = 0 # + or - the number of tests failed for v5
           SkippedChange = 0 # + or - the number of tests skipped for v5
-
+      },
+      @{
+          Name          = 'GuestUserConnect'
+          RunChange     = 0 # + or - the number of tests run for v5
+          PassedChange  = +2 # + or - the number of tests passed for v5
+          FailedChange  = -2 # + or - the number of tests failed for v5
+          SkippedChange = 0 # + or - the number of tests skipped for v5
       }
   )
   $runchange = 0
