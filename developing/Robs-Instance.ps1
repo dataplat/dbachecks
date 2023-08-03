@@ -1,4 +1,6 @@
-$Checks = 'ErrorLogCount', 'XESessionExists', 'XESessionStopped', 'XpCmdShellDisabled', 'WhoIsActiveInstalled', 'CLREnabled', 'TwoDigitYearCutoff', 'MaxDopInstance', 'ErrorLogCount', 'ModelDbGrowth', 'DefaultBackupCompression', 'SaExist', 'SaDisabled', 'SaRenamed', 'DefaultFilePath', 'AdHocDistributedQueriesEnabled', 'AdHocWorkload', 'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation', 'ServerNameMatch', 'OrphanedFile', 'MaxMemory', 'NetworkLatency'
+./build.ps1 -Tasks build
+
+$Checks = 'ErrorLogCount', 'XESessionExists', 'XESessionStopped', 'XpCmdShellDisabled', 'WhoIsActiveInstalled', 'CLREnabled', 'TwoDigitYearCutoff', 'MaxDopInstance', 'ErrorLogCount', 'ModelDbGrowth', 'DefaultBackupCompression', 'SaExist', 'SaDisabled', 'SaRenamed', 'DefaultFilePath', 'AdHocDistributedQueriesEnabled', 'AdHocWorkload', 'DefaultTrace', 'OleAutomationProceduresDisabled', 'CrossDBOwnershipChaining', 'ScanForStartupProceduresDisabled', 'RemoteAccessDisabled', 'SQLMailXPsDisabled', 'DAC', 'OLEAutomation', 'ServerNameMatch', 'OrphanedFile', 'MaxMemory', 'NetworkLatency', 'PublicRolePermission'
 
 $Checks = 'XESessionRunningAllowed', 'XESessionRunning', 'XESessionRunningAllowed', 'XESessionExists', 'XESessionStopped', 'XpCmdShellDisabled'
 $Checks = 'TraceFlagsNotExpected', 'TraceFlagsExpected'
@@ -18,6 +20,9 @@ $Checks = 'SuspectPageLimit'
 $Checks = 'SupportedBuild'
 $Checks = 'LoginMustChange'
 $Checks = 'LoginAuditSuccessful', 'LoginAuditFailed'
+Set-DbcConfig -Name skip.security.PublicPermission -Value $false
+$Checks = 'PublicRolePermission'
+$Checks = 'PUblicPermission'
 
 Invoke-PerfAndValidateCheck -Checks $Checks
 Invoke-PerfAndValidateCheck -Checks $Checks -PerfDetail
