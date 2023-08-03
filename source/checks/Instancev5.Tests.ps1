@@ -367,6 +367,16 @@ Describe "Login SA cannot exist" -Tag SaExist, CIS, Medium, Instance -ForEach $I
     }
 }
 
+Describe "Public Role Permissions" -Tag PublicPermission, PublicRolePermission, Security, CIS, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.PublicPermission' }).Value
+
+    Context "Testing if the public role permissions don't have permissions  on <_.Name>" {
+        It "All permissions should be set to CIS standards on the public role on <_.Name>" -Skip:$skip {
+            $PsItem.PublicRolePermissions | Should -Be 0 -Because "We expected the public role to have no permissions for CIS compliance."
+        }
+    }
+}
+
 Describe "SA Login Renamed" -Tag SaRenamed, DISA, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.SaRenamed' }).Value
     Context "Checking that sa login has been renamed on <_.Name>" {
