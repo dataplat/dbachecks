@@ -46,7 +46,7 @@ function Invoke-DbcCheckv5 {
             $name = "Config" + (($name.Split(".") | ForEach-Object { $_.SubString(0, 1).ToUpper() + $_.SubString(1) }) -join '')
             $ParamAttrib = New-Object System.Management.Automation.ParameterAttribute
             $ParamAttrib.ParameterSetName = '__AllParameterSets'
-            $AttribColl = New-Object  System.Collections.ObjectModel.Collection[System.Attribute]
+            $AttribColl = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
             $AttribColl.Add($ParamAttrib)
 
             $RuntimeParam = New-Object System.Management.Automation.RuntimeDefinedParameter($name, [object], $AttribColl)
@@ -159,8 +159,8 @@ function Invoke-DbcCheckv5 {
                     Write-PSFMessage -Message "SqlInstance is $SqlInstance" -Level Verbose
                     # Because we have all these bound params :-(
                     $null = $PSBoundParameters.Remove('configuration')
-
                     Invoke-Pester -Configuration $configuration
+
                     Pop-Location
                 }
             }
