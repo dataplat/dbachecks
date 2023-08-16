@@ -34,7 +34,29 @@ BeforeDiscovery {
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
     # Get-DbcConfig is expensive so we call it once
     $__dbcconfig = Get-DbcConfig
+    $notcontactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
+    $Checks = Get-DbcCheck
+    $TestsNoGoBrrr = foreach ($Not in $notcontactable) {
+        foreach ($tag in $tags) {
+            [PSCustomObject]@{
+                Name = $Not
+                Tag  = $tag
+            }
+        }
+    }
 }
+
+BeforeAll {
+
+}
+Describe "<_.Tag> failed on <_.Name>" -Tag FailedConnections -ForEach $TestsNoGoBrrr {
+    Context "Checking <_.Tag> on <_.Name>" {
+        It "The instance <_.Name> is not connectable" -Skip:$skip {
+            $false | Should -BeTrue -Because "This instance is not connectable"
+        }
+    }
+}
+
 
 # Ordered alphabetically by unique tag please
 Describe "Ad Hoc Distributed Queries" -Tag AdHocDistributedQueriesEnabled, security, CIS, Medium, Instance -ForEach $InstancesToTest {

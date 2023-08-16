@@ -419,16 +419,16 @@ function NewGet-AllInstanceInfo {
         { 'PublicRolePermissions' -or 'PublicPermission' } {
             #This needs to be done in query just in case the account had already been renamed
             $query = "
-                        SELECT Count(*) AS [RowCount]
-                        FROM master.sys.server_permissions
-                        WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%')
-                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER')
-                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)
-                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3)
-                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4)
-                            AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
+                     SELECT Count(*) AS [RowCount]
+                     FROM master.sys.server_permissions
+                     WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%')
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER')
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3)
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4)
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
                         "
-            $PublicRolePermsCount = $srv.Query($query).RowCount
+            $PublicRolePermsCount = $Instance.Query($query).RowCount
         }
 
         'SuspectPageLimit' {
