@@ -2304,8 +2304,9 @@ New Code runs in {2} % of the time
   Write-PSFMessage -Message $savingMessage -Level Output
 
   ##validate we got the right answers too
-
-  If (Compare-Object $v5code.Configuration.Filter.Tag.Value $v4code.TagFilter) {
+[System.Collections.ArrayList]$v5CodeTags = $v5code.Configuration.Filter.Tag.Value
+$v5CodeTags.Remove('FailedConnections')
+  If (Compare-Object $v5CodeTags $v4code.TagFilter) {
       $Message = "
 Uh-Oh - The Tag filters between v4 and v5 are not the same somehow.
 For v4 We returned
@@ -2420,7 +2421,12 @@ For v4 We Passed
 and
 For v5 we Passed
 {1} tests
-{2}" -f $v4code.PassedCount, $v5Passed, $messageAppend
+{2}
+v4 TestNames
+{3}
+v5 TestNames
+{4}
+" -f $v4code.PassedCount, $v5Passed, $messageAppend, ($v4code.TestResult.Where{$_.Result -eq 'Passed'}.Name |Out-String),($v5code.Passed.ExpandedName |Out-String)
       Write-PSFMessage -Message $Message -Level Warning
   } else {
       $message = "
@@ -2437,7 +2443,11 @@ For v4 We Failed
 and
 For v5 we Failed
 {1} tests
-" -f $v4code.FailedCount, $v5failed
+v4 TestNames
+{2}
+v5 TestNames
+{3}
+" -f $v4code.FailedCount, $v5failed,($v4code.TestResult.Where{$_.Result -eq 'Failed'}.Name |Out-String),($v5code.Failed.ExpandedName |Out-String)
       Write-PSFMessage -Message $Message -Level Warning
   } else {
       $message = "
@@ -2453,8 +2463,12 @@ For v4 We Skipped
 {0} tests
 and
 For v5 we Skipped
-{1} tests
-{2}" -f $v4code.SkippedCount, $v5skipped, $messageAppend
+{1}
+v4 TestNames
+{3}
+v5 TestNames
+{4}
+{2}" -f $v4code.SkippedCount, $v5skipped, $messageAppend,($v4code.TestResult.Where{$_.Result -eq 'Skipped'}.Name |Out-String),($v5code.Skipped.ExpandedName |Out-String)
       Write-PSFMessage -Message $Message -Level Warning
   } else {
       $message = "

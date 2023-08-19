@@ -59,8 +59,8 @@ function Load-Profile {
     )
     $global:__currentTheme = (Get-Random -InputObject $themes)
     function global:Get-CurrentPoshTheme { $__currentTheme }
-    Set-PoshPrompt -Theme $__currentTheme
-
+    # Set-PoshPrompt -Theme $__currentTheme
+    Set-PoshPrompt -Theme 'chips'
     if ($psstyle) {
         $psstyle.FileInfo.Directory = $psstyle.FileInfo.Executable = $psstyle.FileInfo.SymbolicLink = ""
         $PSStyle.FileInfo.Extension.Clear()
