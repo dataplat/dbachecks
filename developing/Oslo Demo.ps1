@@ -53,4 +53,48 @@ $Checks = 'ErrorLogCount', 'XpCmdShellDisabled', 'WhoIsActiveInstalled', 'CLREna
 
 Invoke-PerfAndValidateCheck -Checks $Checks
 
+# I want to use the results in a different way
+
+# ok lets run the checks and save the out put to a variable so that we can show you what happens. Notice we need the -PassThru switch
+
+$CheckResults = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check InstanceConnection, DatabaseStatus -Show $show -legacy $false -PassThru
+
+# this is our base results object
+$CheckResults
+
+# lets convert it to something useful
+
+$SomethingUseful = $CheckResults | Convert-DbcResult
+
+$SomethingUseful
+$SomethingUseful | Format-Table
+
+$SomethingUseful | Select-Object -First 1
+
+# Label huh - what is that?
+# label these results so that they can be filtered later
+
+$Coffee = $CheckResults | Convert-DbcResult -Label 'CoffeeFilter'
+
+$Coffee | Select-Object -First 1
+
+# Now we can set those to a file if we want
+
+$CheckResults | Convert-DbcResult -Label 'CoffeeFilter' | Set-DbcFile -FileType Json -FilePath . -FileName oslo -Verbose
+$CheckResults | Convert-DbcResult -Label 'Whiskey' | Set-DbcFile -FileType Json -FilePath . -FileName oslo -Append
+
+code ./oslo.json
+
+# or put them into a database table
+
+$CheckResults | Convert-DbcResult -Label 'CoffeeFilter' | Write-DbcTable -SqlInstance dbachecks1 -SqlCredential $cred -Database tempdb -Verbose
+
+Invoke-DbaQuery -SqlInstance dbachecks1 -SqlCredential $cred -Database tempdb -Query 'SELECT * FROM CheckResults'
+
+# YOU CANT DO THIS FROM HERE - Open Windows terminal on the host and run
+
+Start-DbcPowerBi -FromDatabase
+
+# then use localhost,7401 tempdb and u:sqladmin p:dbatools.IO
+
 # question turn off a container adn talk about hte fails?
