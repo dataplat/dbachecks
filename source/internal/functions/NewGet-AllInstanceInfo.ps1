@@ -507,9 +507,42 @@ function NewGet-AllInstanceInfo {
         }
 
         'SqlEngineServiceAccount' {
-            $EngineAccounts = Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction SilentlyContinue
             $starttype = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.instance.sqlenginestart' }).Value
             $state = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.instance.sqlenginestate' }).Value
+            try {
+                $EngineAccounts = Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction Stop
+
+            } catch [System.Exception] {
+                if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                    $EngineAccounts = [PSCustomObject]@{
+                        InstanceName      = $Instance.Name
+                        State             = 'unknown'
+                        ExpectedState     = $state
+                        StartType         = 'unknown'
+                        ExpectedStartType = $starttype
+                        because           = 'Some sort of failure - No services found in relevant namespaces'
+                    }
+                } else {
+                    $EngineAccounts = [PSCustomObject]@{
+                        InstanceName      = $Instance.Name
+                        State             = 'unknown'
+                        ExpectedState     = $state
+                        StartType         = 'unknown'
+                        ExpectedStartType = $starttype
+                        because           = 'Some sort of failure'
+                    }
+                }
+            } catch {
+                $EngineAccounts = [PSCustomObject]@{
+                    InstanceName      = $Instance.Name
+                    State             = 'unknown'
+                    ExpectedState     = $state
+                    StartType         = 'unknown'
+                    ExpectedStartType = $starttype
+                    because           = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                }
+            }
+
             if ($Instance.IsClustered) {
                 $starttype = 'Manual'
                 $because = 'This is a clustered instance and Clustered Instances required that the SQL engine service is set to manual'
