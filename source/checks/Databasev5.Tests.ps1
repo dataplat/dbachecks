@@ -216,7 +216,7 @@ Describe "Query Store Disabled" -Tag QueryStoreDisabled, Medium, Database -ForEa
 Describe "Compatibility Level" -Tag CompatibilityLevel, High, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.compatibilitylevel').Value
 
-    Context "Compatibility level matches server compatibility level" {
+    Context "Compatibility level matches server compatibility level on <_.Name>" {
         It "Database <_.Name> has the expected compatibility level on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.compatexclude -notcontains $psitem.Name } } {
             $psitem.CompatibilityLevel | Should -Be $psitem.ServerLevel -Because "it means you are on the appropriate compatibility level for your SQL Server version to use all available features."
         }
@@ -226,7 +226,7 @@ Describe "Compatibility Level" -Tag CompatibilityLevel, High, Database -ForEach 
 Describe "Guest User" -Tag GuestUserConnect, Security, CIS, Medium, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.guestuserconnect').Value
 
-    Context "Testing Guest user has CONNECT permission" {
+    Context "Testing Guest user has CONNECT permission on <_.Name>" {
         It "Database Guest user should return no CONNECT permissions in <_.Name> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.guestuserexclude -notcontains $psitem.Name } } {
             $psitem.GuestUserConnect | Should -BeFalse -Because "we don't want the guest user to have connect access to our database."
         }
@@ -236,7 +236,7 @@ Describe "Guest User" -Tag GuestUserConnect, Security, CIS, Medium, Database -Fo
 Describe "Recovery Model" -Tag RecoveryModel, DISA, Medium, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.recoverymodel').Value
 
-    Context "Testing Recovery Model" {
+    Context "Testing Recovery Model on <_.Name>" {
         It "Database <_.Name> should be set to <_.ConfigValues.recoverymodeltype> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.recoverymodelexclude -notcontains $psitem.Name } } {
             $psitem.RecoveryModel | Should -Be $psitem.ConfigValues.recoverymodeltype -Because "You expect this recovery model."
         }
@@ -246,7 +246,7 @@ Describe "Recovery Model" -Tag RecoveryModel, DISA, Medium, Database -ForEach $I
 Describe "PseudoSimple Recovery Model" -Tag PseudoSimple, Medium, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.pseudosimple').Value
 
-    Context "Testing database is not in PseudoSimple recovery model" {
+    Context "Testing database is not in PseudoSimple recovery model on <_.Name>" {
         It "Database <_.Name> has PseudoSimple recovery model equal false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.RecoveryModel -eq 'Full' } else { $psitem.ConfigValues.pseudosimpleexclude -notcontains $psitem.Name -and $_.RecoveryModel -eq 'Full' } } {
             $psitem.PseudoSimple | Should -BeFalse -Because "PseudoSimple means that a FULL backup has not been taken and the database is still effectively in SIMPLE mode"
         }
@@ -256,7 +256,7 @@ Describe "PseudoSimple Recovery Model" -Tag PseudoSimple, Medium, Database -ForE
 Describe "Contained Database Auto Close" -Tag ContainedDBAutoClose, CIS, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.containedbautoclose').Value
 
-    Context "Testing contained database auto close option" {
+    Context "Testing contained database auto close option on <_.Name>" {
         It "Database <_.Name> should have auto close set to false on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.ContainmentType -ne "NONE" } else { $psitem.ConfigValues.contdbautocloseexclude -notcontains $psitem.Name -and $_.ContainmentType -ne "NONE" } } {
             $psitem.ContainedDbAutoClose | Should -BeFalse -Because "Contained Databases should have auto close set to false for CIS compliance."
         }
@@ -268,7 +268,7 @@ Describe "Contained Database SQL Authenticated Users" -Tag ContainedDBSQLAuth, C
 
     #if ($version -lt 13 ) { $skip = $true }
 
-    Context "Testing contained database to see if sql authenticated users exist" {
+    Context "Testing contained database to see if sql authenticated users exist on <_.Name>" {
         It "Database <_.Name> should have no sql authenticated users on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.ContainmentType -ne "NONE" } else { $psitem.ConfigValues.contdbsqlauthexclude -notcontains $psitem.Name -and $_.ContainmentType -ne "NONE" } } {
             $psitem.ContainedDbSqlAuthUsers | Should -Be 0 -Because "We expect there to be no sql authenticated users in contained database."
         }
