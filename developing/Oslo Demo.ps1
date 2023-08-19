@@ -98,3 +98,12 @@ Start-DbcPowerBi -FromDatabase
 # then use localhost,7401 tempdb and u:sqladmin p:dbatools.IO
 
 # question turn off a container adn talk about hte fails?
+
+
+## made some funky results for the Power Bi
+
+$CheckResults = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check Instance, Database -Show $show -legacy $false -PassThru
+
+$CheckResults | Convert-DbcResult -Label 'DatabaseInstance' | Write-DbcTable -SqlInstance dbachecks1 -SqlCredential $cred -Database tempdb -Verbose
+
+$CheckResults = Invoke-DbcCheck -SqlInstance $Sqlinstances -SqlCredential $cred -Check compatibilitylevel -Show $show -legacy $false -PassThru
