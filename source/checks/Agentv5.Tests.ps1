@@ -32,7 +32,12 @@ BeforeDiscovery {
         }
     }
 
+    #TODO : Clean this up
     Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Verbose
+
+    Write-PSFMessage -Message "JobOwner = $($InstancesToTest.JobOwner)" -Level Verbose
+    Write-PSFMessage -Message "JobOwner = $($InstancesToTest.JobOwner.JobName)" -Level Verbose
+
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
     # Get-DbcConfig is expensive so we call it once
@@ -105,14 +110,25 @@ Describe "Database Mail Profile" -Tag DatabaseMailProfile, Agent -ForEach $Insta
 }
 
 Describe "Agent Mail Profile" -Tag AgentMailProfile, Agent -ForEach $InstancesToTest {
-    $skipAgentMailProfile = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.agentmailprofile' }).Value
+    $skipAgentMailProfile = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.mailprofile' }).Value
 
-    Context "esting SQL Agent Alert System database mail profile is set on <_.Name>" {
+    Context "Testing SQL Agent Alert System database mail profile is set on <_.Name>" {
         It "The SQL Server Agent Alert System has the mail profile <_.AgentMailProfile.ExpectedAgentMailProfile> enabled as profile on <_.Name>." -Skip:$skipAgentMailProfile { #-ForEach ($PSItem.DatabaseMailProfile | Where-Object ExpectedDatabaseMailProfile -NE 'null') {
             $PSItem.AgentMailProfile.ActualAgentMailProfile | Should -Be $PSItem.AgentMailProfile.ExpectedAgentMailProfile -Because 'The SQL Agent Alert System needs an enabled database mail profile to send alert emails'
         }
     }
 }
+
+Describe "Valid Job Owner" -Tag ValidJobOwner, Agent -ForEach $InstancesToTest {
+    $skipAgentJobTargetOwner = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.jobowner' }).Value
+
+    Context "Testing SQL Agent Job Owner on <_.Name>" {
+        It "The Job <_.JobName> has the Job Owner <_.ActualJobOwnerName> that should exist in this list ($([String]::Join(', ', "<_.ExpectedJobOwnerName>"))) on <_.InstanceName>" -Skip:$skipAgentJobTargetOwner -ForEach ($PSItem.JobOwner) {
+            $PSItem.ActualJobOwnerName | Should -BeIn $PSItem.ExpectedJobOwnerName -Because 'The account that is the job owner is not what was expected'
+        }
+    }
+}
+
 
 
 
@@ -151,26 +167,6 @@ Describe "Agent Mail Profile" -Tag AgentMailProfile, Agent -ForEach $InstancesTo
 #     }
 # }
 
-# Describe "Valid Job Owner" -Tags ValidJobOwner, $filename {
-#     [string[]]$targetowner = Get-DbcConfigValue agent.validjobowner.name
-
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing job owners on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         Context "Testing job owners on $psitem" {
-#             @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
-#                 It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
-#                     $psitem.OwnerLoginName | Should -BeIn $TargetOwner -Because "The account that is the job owner is not what was expected"
-#                 }
-#             }
-#         }
-#     }
-# }
 # Describe "Invalid Job Owner" -Tags InValidJobOwner, $filename {
 #     [string[]]$targetowner = Get-DbcConfigValue agent.invalidjobowner.name
 

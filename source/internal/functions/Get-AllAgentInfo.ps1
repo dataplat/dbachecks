@@ -32,8 +32,11 @@ function Get-AllAgentInfo {
     # JobServer Initial fields
     $AgentMailProfileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer])
 
-
+    # Database Mail Profile Initial fields
     $DatabaseMailProfileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Mail.MailProfile])
+
+    # JobOwner Initial fields
+    $JobOwnerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
     # Database Initial Fields
     $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
@@ -160,6 +163,7 @@ function Get-AllAgentInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMailProfile' -Value (Get-DbcConfigValue agent.databasemailprofile)
 
             $agentMailProfile = $ConfigValues.AgentMailProfile.ForEach{
+
                 [PSCustomObject]@{
                     InstanceName             = $Instance.Name
                     ExpectedAgentMailProfile = $ConfigValues.AgentMailProfile
@@ -185,7 +189,21 @@ function Get-AllAgentInfo {
 
         }
         'ValidJobOwner' {
+            $JobOwnerInitFields.Add("OwnerLoginName") | Out-Null # so we can check Job Owner
+            $JobOwnerInitFields.Add("Name") | Out-Null # so we can check Job Name
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $JobOwnerInitFields)
+            $JobOwnerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TargetJobOwner' -Value (Get-DbcConfigValue agent.validjobowner.name)
+
+            $JobOwner = $Instance.JobServer.Jobs.ForEach{
+                [PSCustomObject]@{
+                    InstanceName          = $Instance.Name
+                    JobName               = $PSItem.Name
+                    ExpectedJobOwnerName  = $ConfigValues.TargetJobOwner #$PSItem
+                    ActualJobOwnerName    = $PSItem.OwnerLoginName
+                }
+            }
         }
         'InValidJobOwner' {
 
@@ -219,6 +237,7 @@ function Get-AllAgentInfo {
         FailSafeOperator    = @($failsafeOperator)
         DatabaseMailProfile = @($databaseMailProfile)
         AgentMailProfile    = @($agentMailProfile)
+        JobOwner            = $JobOwner
     }
     return $testInstanceObject
 }
