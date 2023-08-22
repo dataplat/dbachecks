@@ -41,28 +41,32 @@ function Get-AllAgentInfo {
     # Invalid JobOwner Initial fields
     $InvalidJobOwnerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
-    # Database Initial Fields
-    $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
+    # Failed Job Initial fields
+    $FailedJobInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
-    # Stored Procedure Initial Fields
-    $StoredProcedureInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure])
-
-    # Information Initial Fields
-
-    # Settings Initial Fields
-    $SettingsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings])
-
-    # Login Initial Fields
-    $LoginInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login])
-
-    # Log File Initial Fields
-    $LogFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile])
-
-    # Data File Initial Fields
-    $DataFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile])
+    #TODO: Clean up?
+    ## Database Initial Fields
+    #$DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
+#
+    ## Stored Procedure Initial Fields
+    #$StoredProcedureInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure])
+#
+    ## Information Initial Fields
+#
+    ## Settings Initial Fields
+    #$SettingsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings])
+#
+    ## Login Initial Fields
+    #$LoginInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login])
+#
+    ## Log File Initial Fields
+    #$LogFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile])
+#
+    ## Data File Initial Fields
+    #$DataFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile])
 
     # Configuration cannot have default init fields :-)
-    $configurations = $false
+    #$configurations = $false
 
     # Set up blank ConfigValues object for any config we need to use in the checks
     $ConfigValues = [PSCustomObject]@{}
@@ -189,7 +193,27 @@ function Get-AllAgentInfo {
             #Write-PSFMessage -Message "ActualDatabaseMailProfile instance : $($Instance.JobServer.DatabaseMailProfile)" -Level Verbose
         }
         'FailedJob' {
+            $FailedJobInitFields.Add("Name") | Out-Null # so we can check Job Name
+            $FailedJobInitFields.Add("IsEnabled") | Out-Null # so we can check Job status
+            $FailedJobInitFields.Add("LastRunDate") | Out-Null # so we can check Job LastRunDate
+            $FailedJobInitFields.Add("LastRunOutcome") | Out-Null # so we can check Job LastRunOutcome
 
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $FailedJobInitFields)
+            $FailedJobInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
+
+            $maxdays = Get-DbcConfigValue agent.failedjob.since
+            $startdate = (Get-Date).AddDays( - $maxdays)
+
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'FailedJob' -Value 'Succeeded'
+
+            $JobsFailed = ($Instance.JobServer.Jobs | Where-Object { $_.IsEnabled -and ($_.LastRunDate -gt $startdate) }).ForEach{
+                [PSCustomObject]@{
+                    InstanceName     = $Instance.Name
+                    JobName          = $PSItem.Name
+                    ExpectedOutcome  = $ConfigValues.FailedJob
+                    LastRunOutcome   = $PSItem.LastRunOutcome
+                }
+            }
         }
         'ValidJobOwner' {
             $JobOwnerInitFields.Add("OwnerLoginName") | Out-Null # so we can check Job Owner
@@ -359,6 +383,7 @@ function Get-AllAgentInfo {
         AgentMailProfile    = @($agentMailProfile)
         JobOwner            = $JobOwner
         InvalidJobOwner     = $InvalidJobOwner
+        JobsFailed          = $JobsFailed
         LastJobRuns         = $LastJobRuns
         LongRunningJobs     = $LongRunningJobs
     }

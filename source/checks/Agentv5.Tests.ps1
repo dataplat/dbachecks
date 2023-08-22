@@ -34,7 +34,7 @@ BeforeDiscovery {
 
     #TODO : Clean this up
     Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Verbose
-    
+
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
     # Get-DbcConfig is expensive so we call it once
@@ -159,76 +159,37 @@ Describe "Long Running Agent Jobs" -Tag LongRunningJob, Agent -ForEach $Instance
     }
 }
 
-# Describe "Long Running Agent Jobs" -Tags LongRunningJob, $filename {
 
-#     }
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing long running jobs on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         Context "Testing long running jobs on $psitem" {
-#             if ($runningjobs) {
-#                 foreach ($runningjob in $runningjobs | Where-Object { $_.AvgSec -ne 0 }) {
-#                     It "Running job $($runningjob.JobName) duration should not be more than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
-#                         Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
-#                     }
-#                 }
-#             }
-#             else {
-#                 It "There are no running jobs currently on $psitem" -Skip:$skip {
-#                     $True | SHould -BeTrue
-#                 }
-#             }
-#         }
-#     }
-# }
+Describe "SQL Agent Failed Jobs" -Tag FailedJob, Agent -ForEach $InstancesToTest {
+    $skipAgentFailedJobs = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.failedjobs' }).Value
+    $excludecancelled = ($__dbcconfig | Where-Object { $_.Name -eq 'agent.failedjob.excludecancelled' }).Value
 
+    Context "Checking for failed enabled jobs since $startdate on <_.Name>" {
+        ($PSItem.JobsFailed).ForEach{
+            Write-PSFMessage -Message "LastRunOutcome = $($PSItem)" -Level Verbose
+            if ($PSItem.LastRunOutcome -eq "Unknown") {
+                It "We chose to skip this as $($PSItem.JobName)'s last run outcome is unknown on $($PSItem.InstanceName)" -Skip {
+                    $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because 'All Agent Jobs should have succeed this one is unknown - you need to investigate the failed jobs'
+                }
+            }
+            elseif (($PSItem.LastRunOutcome -eq "Cancelled") -and ($excludecancelled -eq $true)) {
+                It "You chose to skip this as $($PSItem.JobName)'s last run outcome is cancelled on $($PSItem.InstanceName)" -Skip  {
+                    $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because 'All Agent Jobs should have succeed this one is Cancelled - you need to investigate the failed jobs'
+                }
+            }
+            else {
+                It "Job $($PSItem.JobName) last run outcome is $($PSItem.LastRunOutcome) on $($PSItem.InstanceName)" -Skip:$skipAgentFailedJobs {
+                    $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because "All Agent Jobs should have succeed - you need to investigate the failed jobs"
+                }
+            }
+        }
+    }
+}
 
 
 
 
 
-
-
-
-# Describe "Failed Jobs" -Tags FailedJob, $filename {
-
-#     if ($NotContactable -contains $psitem) {
-#         Context "Checking for failed enabled jobs on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         $maxdays = Get-DbcConfigValue agent.failedjob.since
-#         $startdate = (Get-Date).AddDays( - $maxdays)
-#         Context "Checking for failed enabled jobs since $startdate on $psitem" {
-#             $excludecancelled = Get-DbcConfigValue agent.failedjob.excludecancelled
-#             @(Get-DbaAgentJob -SqlInstance $psitem | Where-Object { $Psitem.IsEnabled -and ($psitem.LastRunDate -gt $startdate) }).ForEach{
-#                 if ($psitem.LastRunOutcome -eq "Unknown") {
-#                     It -Skip "We chose to skip this as $psitem's last run outcome is unknown on $($psitem.SqlInstance)" {
-#                         $psitem.LastRunOutcome | Should -Be "Succeeded" -Because 'All Agent Jobs should have succeed this one is unknown - you need to investigate the failed jobs'
-#                     }
-#                 }
-#                 elseif (($psitem.LastRunOutcome -eq "Cancelled") -and ($excludecancelled -eq $true)) {
-#                     It -Skip "We chose to skip this as $psitem's last run outcome is cancelled on $($psitem.SqlInstance)" {
-#                         $psitem.LastRunOutcome | Should -Be "Succeeded" -Because 'All Agent Jobs should have succeed this one is unknown - you need to investigate the failed jobs'
-#                     }
-#                 }
-#                 else {
-#                     It "$psitem's last run outcome is $($psitem.LastRunOutcome) on $($psitem.SqlInstance)" {
-#                         $psitem.LastRunOutcome | Should -Be "Succeeded" -Because 'All Agent Jobs should have succeed - you need to investigate the failed jobs'
-#                     }
-#                 }
-#             }
-#         }
-#     }
-# }
 
 
 # Describe "Agent Alerts" -Tags AgentAlert, $filename {
