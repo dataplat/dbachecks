@@ -233,7 +233,49 @@ function Get-AllAgentInfo {
 
         }
         'LongRunningJob' {
+            $query = "SELECT
+                JobName,
+                AvgSec,
+                start_execution_date as StartDate,
+                RunningSeconds,
+                RunningSeconds - AvgSec AS Diff
+                FROM
+                (
+                SELECT
+                j.name AS JobName,
+                start_execution_date,
+                AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000'
+                + CONVERT(VARCHAR(6),jh.run_duration),6),5,0,':'),3,0,':'))) AS AvgSec,
+                ja.start_execution_date as startdate,
+                DATEDIFF(second, ja.start_execution_date, GetDate()) AS RunningSeconds
+                FROM msdb.dbo.sysjobactivity ja
+                JOIN msdb.dbo.sysjobs j
+                ON ja.job_id = j.job_id
+                JOIN msdb.dbo.sysjobhistory jh
+                ON jh.job_id = j.job_id
+                WHERE start_execution_date is not null
+                AND stop_execution_date is null
+                AND run_duration < 235959
+                AND run_duration >= 0
+                AND ja.start_execution_date > DATEADD(day,-1,GETDATE())
+                GROUP BY j.name,j.job_id,start_execution_date,stop_execution_date,ja.job_id
+                ) AS t
+                ORDER BY JobName;"
+            $runningjobs = Invoke-DbaQuery -SqlInstance $Instance -Database msdb -Query $query
 
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'LongRunningJob' -Value (Get-DbcConfigValue agent.longrunningjob.percentage)
+
+            $LongRunningJobs = $($runningjobs | Where-Object { $_.AvgSec -ne 0 }).ForEach{
+                [PSCustomObject]@{
+                    InstanceName                        = $Instance.Name
+                    JobName                             = $PSItem.JobName
+                    RunningSeconds                      = $PSItem.RunningSeconds
+                    Average                             = $PSItem.AvgSec
+                    Diff                                = $PSItem.Diff
+                    ExpectedLongRunningJobPercentage    = $ConfigValues.LongRunningJob
+                    ActualLongRunningJobPercentage      = [math]::Round($PSItem.Diff / $PSItem.AvgSec * 100)
+                }
+            }
         }
         'LastJobRunTime' {
             $maxdays = Get-DbcConfigValue agent.failedjob.since
@@ -318,6 +360,7 @@ function Get-AllAgentInfo {
         JobOwner            = $JobOwner
         InvalidJobOwner     = $InvalidJobOwner
         LastJobRuns         = $LastJobRuns
+        LongRunningJobs     = $LongRunningJobs
     }
     return $testInstanceObject
 }

@@ -149,9 +149,43 @@ Describe "Last Agent Job Run" -Tag LastJobRunTime, Agent -ForEach $InstancesToTe
 }
 
 
+Describe "Long Running Agent Jobs" -Tag LongRunningJob, Agent -ForEach $InstancesToTest {
+    $skipAgentLongRunningJobs = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.longrunningjobs' }).Value
 
+    Context "Testing long running jobs on <_.Name>" {
+        It "Running job <_.JobName> duration should not be more than <_.ExpectedLongRunningJobPercentage>% extra of the average run time (<_.Average> seconds) on <_.InstanceName>" -Skip:$skipAgentLongRunningJobs -ForEach ($PSItem.LongRunningJobs) {
+            $PSItem.ActualLongRunningJobPercentage | Should -BeLessThan $PSItem.ExpectedLongRunningJobPercentage -Because "The current running job $($PSItem.JobName) has been running for $($PSItem.Diff) seconds longer than the average run time. This is more than the $($PSItem.ExpectedLongRunningJobPercentage)% specified as the maximum"
+        }
+    }
+}
 
+# Describe "Long Running Agent Jobs" -Tags LongRunningJob, $filename {
 
+#     }
+#     if ($NotContactable -contains $psitem) {
+#         Context "Testing long running jobs on $psitem" {
+#             It "Can't Connect to $Psitem" {
+#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
+#             }
+#         }
+#     }
+#     else {
+#         Context "Testing long running jobs on $psitem" {
+#             if ($runningjobs) {
+#                 foreach ($runningjob in $runningjobs | Where-Object { $_.AvgSec -ne 0 }) {
+#                     It "Running job $($runningjob.JobName) duration should not be more than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
+#                         Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
+#                     }
+#                 }
+#             }
+#             else {
+#                 It "There are no running jobs currently on $psitem" -Skip:$skip {
+#                     $True | SHould -BeTrue
+#                 }
+#             }
+#         }
+#     }
+# }
 
 
 
@@ -291,64 +325,7 @@ Describe "Last Agent Job Run" -Tag LastJobRunTime, Agent -ForEach $InstancesToTe
 #         }
 #     }
 # }
-# Describe "Long Running Agent Jobs" -Tags LongRunningJob, $filename {
-#     $skip = Get-DbcConfigValue skip.agent.longrunningjobs
-#     $runningjobpercentage = Get-DbcConfigValue agent.longrunningjob.percentage
-#     if (-not $skip) {
-#         $query = "SELECT
-# JobName,
-# AvgSec,
-# start_execution_date as StartDate,
-# RunningSeconds,
-# RunningSeconds - AvgSec AS Diff
-# FROM
-# (
-# SELECT
-# j.name AS JobName,
-# start_execution_date,
-# AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000'
-# + CONVERT(VARCHAR(6),jh.run_duration),6),5,0,':'),3,0,':'))) AS AvgSec,
-# ja.start_execution_date as startdate,
-# DATEDIFF(second, ja.start_execution_date, GetDate()) AS RunningSeconds
-# FROM msdb.dbo.sysjobactivity ja
-# JOIN msdb.dbo.sysjobs j
-# ON ja.job_id = j.job_id
-# JOIN msdb.dbo.sysjobhistory jh
-# ON jh.job_id = j.job_id
-# WHERE start_execution_date is not null
-# AND stop_execution_date is null
-# AND run_duration < 235959
-# AND run_duration >= 0
-# AND ja.start_execution_date > DATEADD(day,-1,GETDATE())
-# GROUP BY j.name,j.job_id,start_execution_date,stop_execution_date,ja.job_id
-# ) AS t
-# ORDER BY JobName;"
-#         $runningjobs = Invoke-DbaQuery -SqlInstance $PSItem -Database msdb -Query $query
-#     }
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing long running jobs on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         Context "Testing long running jobs on $psitem" {
-#             if ($runningjobs) {
-#                 foreach ($runningjob in $runningjobs | Where-Object { $_.AvgSec -ne 0 }) {
-#                     It "Running job $($runningjob.JobName) duration should not be more than $runningjobpercentage % extra of the average run time on $psitem" -Skip:$skip {
-#                         Assert-LongRunningJobs -runningjob $runningjob -runningjobpercentage $runningjobpercentage
-#                     }
-#                 }
-#             }
-#             else {
-#                 It "There are no running jobs currently on $psitem" -Skip:$skip {
-#                     $True | SHould -BeTrue
-#                 }
-#             }
-#         }
-#     }
-# }
+
 
 
 
