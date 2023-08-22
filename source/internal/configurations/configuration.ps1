@@ -346,6 +346,7 @@ Set-PSFConfig -Module dbachecks -Name skip.agent.mailprofile -Validation bool -V
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.jobowner -Validation bool -Value $false -Initialize -Description "Skip the Agent Job Owner check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.invalidjobowner.name -Validation bool -Value $false -Initialize -Description "Skip the Agent Job Invalid Owner check"
 
 
 

@@ -130,6 +130,23 @@ Describe "Valid Job Owner" -Tag ValidJobOwner, Agent -ForEach $InstancesToTest {
 }
 
 
+Describe "Invalid Job Owner" -Tag InvalidJobOwner, Agent -ForEach $InstancesToTest {
+    $skipAgentJobTargetInvalidOwner = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.invalidjobowner.name' }).Value
+
+    Context "Testing Invalid SQL Agent Job Owner on <_.Name>" {
+        It "The Job <_.JobName> has the Job Owner <_.ActualJobOwnerName> that shouldn't exist in this list ($([String]::Join(', ', "<_.InvalidJobOwnerName>"))) on <_.InstanceName>" -Skip:$skipAgentJobTargetOwner -ForEach ($PSItem.InvalidJobOwner) {
+            $PSItem.ActualJobOwnerName | Should -Not -BeIn $PSItem.InvalidJobOwnerName -Because 'The account that is the job owner has been defined as not valid'
+        }
+    }
+}
+
+
+
+
+
+
+
+
 
 
 # Describe "Failed Jobs" -Tags FailedJob, $filename {
@@ -167,26 +184,6 @@ Describe "Valid Job Owner" -Tag ValidJobOwner, Agent -ForEach $InstancesToTest {
 #     }
 # }
 
-# Describe "Invalid Job Owner" -Tags InValidJobOwner, $filename {
-#     [string[]]$targetowner = Get-DbcConfigValue agent.invalidjobowner.name
-
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing job owners on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         Context "Testing job owners on $psitem" {
-#             @(Get-DbaAgentJob -SqlInstance $psitem -EnableException:$false).ForEach{
-#                 It "Job $($psitem.Name)  - owner $($psitem.OwnerLoginName) should not be in this list ( $( [String]::Join(", ", $targetowner) ) ) on $($psitem.SqlInstance)" {
-#                     $psitem.OwnerLoginName | Should -Not -BeIn $TargetOwner -Because "The account that is the job owner has been defined as not valid"
-#                 }
-#             }
-#         }
-#     }
-# }
 
 # Describe "Agent Alerts" -Tags AgentAlert, $filename {
 #     $severity = Get-DbcConfigValue agent.alert.Severity

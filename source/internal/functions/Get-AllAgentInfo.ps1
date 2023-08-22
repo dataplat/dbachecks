@@ -38,6 +38,9 @@ function Get-AllAgentInfo {
     # JobOwner Initial fields
     $JobOwnerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
+    # Invalid JobOwner Initial fields
+    $InvalidJobOwnerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
+
     # Database Initial Fields
     $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
 
@@ -205,7 +208,22 @@ function Get-AllAgentInfo {
                 }
             }
         }
-        'InValidJobOwner' {
+        'InvalidJobOwner' {
+            $InvalidJobOwnerInitFields.Add("OwnerLoginName") | Out-Null # so we can check Job Owner
+            $InvalidJobOwnerInitFields.Add("Name") | Out-Null # so we can check Job Name
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $InvalidJobOwnerInitFields)
+            $InvalidJobOwnerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
+
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'InvalidJobOwner' -Value (Get-DbcConfigValue agent.invalidjobowner.name)
+
+            $InvalidJobOwner = $Instance.JobServer.Jobs.ForEach{
+                [PSCustomObject]@{
+                    InstanceName          = $Instance.Name
+                    JobName               = $PSItem.Name
+                    ExpectedJobOwnerName  = $ConfigValues.InvalidJobOwner
+                    ActualJobOwnerName    = $PSItem.OwnerLoginName
+                }
+            }
 
         }
         'AgentAlert' {
@@ -238,6 +256,7 @@ function Get-AllAgentInfo {
         DatabaseMailProfile = @($databaseMailProfile)
         AgentMailProfile    = @($agentMailProfile)
         JobOwner            = $JobOwner
+        InvalidJobOwner     = $InvalidJobOwner
     }
     return $testInstanceObject
 }
