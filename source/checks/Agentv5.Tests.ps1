@@ -164,24 +164,17 @@ Describe "SQL Agent Failed Jobs" -Tag FailedJob, Agent -ForEach $InstancesToTest
     $skipAgentFailedJobs = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.failedjobs' }).Value
     $excludecancelled = ($__dbcconfig | Where-Object { $_.Name -eq 'agent.failedjob.excludecancelled' }).Value
 
-    Context "Checking for failed enabled jobs since $startdate on <_.Name>" {
-        ($PSItem.JobsFailed).ForEach{
-            Write-PSFMessage -Message "LastRunOutcome = $($PSItem)" -Level Verbose
-            if ($PSItem.LastRunOutcome -eq "Unknown") {
-                It "We chose to skip this as $($PSItem.JobName)'s last run outcome is unknown on $($PSItem.InstanceName)" -Skip {
-                    $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because 'All Agent Jobs should have succeed this one is unknown - you need to investigate the failed jobs'
-                }
+    Context "Checking for failed enabled jobs since on <_.Name>" {
+        if (-not $skipAgentFailedJobs) {
+            It "We chose to skip this as <_.JobName>'s last run outcome is unknown on <_.InstanceName>" -Skip -ForEach ($PSItem.JobsFailed | Where-Object { $_.LastRunOutcome -eq "Unknown" }) {
+                $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because 'All Agent Jobs should have succeed this one is unknown - you need to investigate the failed jobs'
             }
-            elseif (($PSItem.LastRunOutcome -eq "Cancelled") -and ($excludecancelled -eq $true)) {
-                It "You chose to skip this as $($PSItem.JobName)'s last run outcome is cancelled on $($PSItem.InstanceName)" -Skip  {
-                    $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because 'All Agent Jobs should have succeed this one is Cancelled - you need to investigate the failed jobs'
-                }
+            It "You chose to skip this as <_.JobName>'s last run outcome is cancelled on <_.InstanceName>" -Skip -ForEach ($PSItem.JobsFailed | Where-Object { $_.LastRunOutcome -eq "Cancelled" -and ($excludecancelled -eq $true) }) {
+                $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because 'All Agent Jobs should have succeed this one is Cancelled - you need to investigate the failed jobs'
             }
-            else {
-                It "Job $($PSItem.JobName) last run outcome is $($PSItem.LastRunOutcome) on $($PSItem.InstanceName)" -Skip:$skipAgentFailedJobs {
-                    $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because "All Agent Jobs should have succeed - you need to investigate the failed jobs"
-                }
-            }
+        }
+        It "Job <_.JobName> last run outcome is <_.LastRunOutcome> on <_.InstanceName>" -Skip:$skipAgentFailedJobs -ForEach ($PSItem.JobsFailed | Where-Object { $_.LastRunOutcome -notin ("Cancelled", "Unknown") }) {
+            $PSItem.LastRunOutcome | Should -Be $PSItem.ExpectedOutcome -Because "All Agent Jobs should have succeed - you need to investigate the failed jobs"
         }
     }
 }
