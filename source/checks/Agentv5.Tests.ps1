@@ -138,7 +138,6 @@ Describe "Invalid Job Owner" -Tag InvalidJobOwner, Agent -ForEach $InstancesToTe
 }
 
 
-
 Describe "Last Agent Job Run" -Tag LastJobRunTime, Agent -ForEach $InstancesToTest {
     $skipAgentJobLastRun = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.lastjobruntime' }).Value
 
