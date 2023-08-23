@@ -58,7 +58,7 @@ function Get-AllAgentInfo {
 
         'DatabaseMailEnabled' {
             $configurations = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DatabaseMailEnabled' -Value (Get-DbcConfigValue policy.security.databasemailenabled)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DatabaseMailEnabled' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'policy.security.databasemailenabled' }).Value)
         }
         'AgentServiceAccount' {
             if (($Instance.VersionMajor -ge 14) -or $IsLinux -or $Instance.HostPlatform -eq 'Linux') {
@@ -78,8 +78,8 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Operator], $OperatorInitFields)
             $OperatorInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Operator])
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DbaOperatorName' -Value (Get-DbcConfigValue agent.dbaoperatorname)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DbaOperatorEmail' -Value (Get-DbcConfigValue agent.dbaoperatoremail)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DbaOperatorName' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.dbaoperatorname' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DbaOperatorEmail' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.dbaoperatoremail' }).Value)
 
             $Operator = $ConfigValues.DbaOperatorName.ForEach{
                 [PSCustomObject]@{
@@ -106,7 +106,7 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.AlertSystem], $FailsafeInitFields)
             $FailsafeInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.AlertSystem])
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'FailsafeOperator' -Value (Get-DbcConfigValue agent.failsafeoperator)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'FailsafeOperator' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.failsafeoperator' }).Value)
 
             $failsafeOperator = $ConfigValues.FailsafeOperator.ForEach{
                 [PSCustomObject]@{
@@ -121,7 +121,7 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Mail.MailProfile], $DatabaseMailProfileInitFields)
             $DatabaseMailProfileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Mail.MailProfile])
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DatabaseMailProfile' -Value (Get-DbcConfigValue agent.databasemailprofile)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'DatabaseMailProfile' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.databasemailprofile' }).Value)
 
             $databaseMailProfile = $ConfigValues.DatabaseMailProfile.ForEach{
                 [PSCustomObject]@{
@@ -136,7 +136,7 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer], $AgentMailProfileInitFields)
             $AgentMailProfileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer])
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMailProfile' -Value (Get-DbcConfigValue agent.databasemailprofile)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMailProfile' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.databasemailprofile' }).Value)
 
             $agentMailProfile = $ConfigValues.AgentMailProfile.ForEach{
 
@@ -156,7 +156,7 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $FailedJobInitFields)
             $FailedJobInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
-            $maxdays = Get-DbcConfigValue agent.failedjob.since
+            $maxdays = ($__dbcconfig | Where-Object { $_.Name -eq 'agent.failedjob.since' }).Value
             $startdate = (Get-Date).AddDays( - $maxdays)
 
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'FailedJob' -Value 'Succeeded'
@@ -176,7 +176,7 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $JobOwnerInitFields)
             $JobOwnerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TargetJobOwner' -Value (Get-DbcConfigValue agent.validjobowner.name)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'TargetJobOwner' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.validjobowner.name' }).Value)
 
             $JobOwner = $Instance.JobServer.Jobs.ForEach{
                 [PSCustomObject]@{
@@ -193,7 +193,7 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $InvalidJobOwnerInitFields)
             $InvalidJobOwnerInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'InvalidJobOwner' -Value (Get-DbcConfigValue agent.invalidjobowner.name)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'InvalidJobOwner' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.invalidjobowner.name' }).Value)
 
             $InvalidJobOwner = $Instance.JobServer.Jobs.ForEach{
                 [PSCustomObject]@{
@@ -214,8 +214,8 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Alert], $AgentAlertsInitFields)
             $AgentAlertsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Alert])
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentAlertSeverity' -Value (Get-DbcConfigValue agent.alert.Severity)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentAlertMessageId' -Value (Get-DbcConfigValue agent.alert.messageid)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentAlertSeverity' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.alert.Severity' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentAlertMessageId' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.alert.messageid' }).Value)
 
             $Severities = $ConfigValues.AgentAlertSeverity.ForEach{
                 $Severity = [int]($PSItem)
@@ -257,8 +257,8 @@ function Get-AllAgentInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer], $AgentJobHistory)
             $AgentJobHistory = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer])
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMaximumHistoryRows' -Value (Get-DbcConfigValue agent.history.maximumhistoryrows)
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMaximumJobHistoryRows' -Value (Get-DbcConfigValue agent.history.maximumjobhistoryrows)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMaximumHistoryRows' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.history.maximumhistoryrows' }).Value)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMaximumJobHistoryRows' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.history.maximumjobhistoryrows' }).Value)
 
             $JobHistory = [PSCustomObject]@{
                 InstanceName                  = $Instance.Name
@@ -299,7 +299,7 @@ function Get-AllAgentInfo {
                 ORDER BY JobName;"
             $runningjobs = Invoke-DbaQuery -SqlInstance $Instance -Database msdb -Query $query
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'LongRunningJob' -Value (Get-DbcConfigValue agent.longrunningjob.percentage)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'LongRunningJob' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.longrunningjob.percentage' }).Value)
 
             $LongRunningJobs = $($runningjobs | Where-Object { $_.AvgSec -ne 0 }).ForEach{
                 [PSCustomObject]@{
@@ -363,7 +363,7 @@ function Get-AllAgentInfo {
                 DROP Table #dbachecksAverageRunTime" -f $maxdays
             $lastagentjobruns = Invoke-DbaQuery -SqlInstance $Instance -Database msdb -Query $query
 
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'LastJobRuns' -Value (Get-DbcConfigValue agent.lastjobruntime.percentage)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'LastJobRuns' -Value (($__dbcconfig | Where-Object { $_.Name -eq 'agent.lastjobruntime.percentage' }).Value)
 
             $LastJobRuns = $($lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }).ForEach{
                 [PSCustomObject]@{
