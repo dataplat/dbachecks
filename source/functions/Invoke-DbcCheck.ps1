@@ -286,6 +286,7 @@ function Invoke-DbcCheck {
         }
     }
     process {
+
         if ($legacy) {
             try {
                 Write-PSFMessage 'Running in legacy mode, we need Version 4'
@@ -365,7 +366,7 @@ function Invoke-DbcCheck {
                 # cast from empty hashtable to get default
                 $configuration = New-PesterConfiguration
                 $configuration.Output.Verbosity = $NewShow
-                $configuration.Filter.Tag = $check
+                $configuration.Filter.Tag = $check + 'FailedConnections'
                 $configuration.Filter.ExcludeTag = $ExcludeCheck
                 if ($PassThru) {
                     $configuration.Run.PassThru = $true

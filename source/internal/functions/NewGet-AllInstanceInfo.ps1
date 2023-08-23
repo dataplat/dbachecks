@@ -416,6 +416,21 @@ function NewGet-AllInstanceInfo {
             $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $LoginInitFields)
         }
 
+        { 'PublicRolePermissions' -or 'PublicPermission' } {
+            #This needs to be done in query just in case the account had already been renamed
+            $query = "
+                     SELECT Count(*) AS [RowCount]
+                     FROM master.sys.server_permissions
+                     WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%')
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER')
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3)
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4)
+                             AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);
+                        "
+            $PublicRolePermsCount = $Instance.Query($query).RowCount
+        }
+
         'SuspectPageLimit' {
             $sql = "Select
             COUNT(file_id) as 'SuspectPageCount'
@@ -472,6 +487,79 @@ function NewGet-AllInstanceInfo {
 
         'LoginPasswordExpiration' {
             $LoginPasswordExpirationCount = ($Instance.Logins | Where-Object { $_.Name -in $Instance.Roles['sysadmin'].EnumMemberNames() } | Where-Object { $_.LoginType -eq 'SqlLogin' -and $_.PasswordExpirationEnabled -EQ $false -and $_.IsDisabled -EQ $false }).Count
+        }
+
+        'AgentServiceAdmin' {
+            try {
+                $SqlAgentService = Get-DbaService -ComputerName $Instance.ComputerName -InstanceName $Instance.DbaInstanceName -Type Agent -ErrorAction SilentlyContinue
+                $LocalAdmins = Invoke-Command -ComputerName $ComputerName -ScriptBlock { Get-LocalGroupMember -Group "Administrators" } -ErrorAction SilentlyContinue
+                $AgentServiceAdminExist = $localAdmins.Name.Contains($SqlAgentService.StartName)
+
+            } catch [System.Exception] {
+                if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                    $AgentServiceAdminExist = $false
+                } else {
+                    $AgentServiceAdminExist = 'Some sort of failure'
+                }
+            } catch {
+                $AgentServiceAdminExist = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+            }
+        }
+
+        'SqlEngineServiceAccount' {
+            $starttype = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.instance.sqlenginestart' }).Value
+            $state = ($__dbcconfig | Where-Object { $_.Name -eq 'policy.instance.sqlenginestate' }).Value
+            try {
+                $EngineAccounts = Get-DbaService -ComputerName $psitem -Type Engine -ErrorAction Stop
+
+            } catch [System.Exception] {
+                if ($_.Exception.Message -like '*No services found in relevant namespaces*') {
+                    $EngineAccounts = [PSCustomObject]@{
+                        InstanceName      = $Instance.Name
+                        State             = 'unknown'
+                        ExpectedState     = $state
+                        StartType         = 'unknown'
+                        ExpectedStartType = $starttype
+                        because           = 'Some sort of failure - No services found in relevant namespaces'
+                    }
+                } else {
+                    $EngineAccounts = [PSCustomObject]@{
+                        InstanceName      = $Instance.Name
+                        State             = 'unknown'
+                        ExpectedState     = $state
+                        StartType         = 'unknown'
+                        ExpectedStartType = $starttype
+                        because           = 'Some sort of failure'
+                    }
+                }
+            } catch {
+                $EngineAccounts = [PSCustomObject]@{
+                    InstanceName      = $Instance.Name
+                    State             = 'unknown'
+                    ExpectedState     = $state
+                    StartType         = 'unknown'
+                    ExpectedStartType = $starttype
+                    because           = 'We Could not Connect to $Instance $ComputerName , $InstanceName from catch'
+                }
+            }
+
+            if ($Instance.IsClustered) {
+                $starttype = 'Manual'
+                $because = 'This is a clustered instance and Clustered Instances required that the SQL engine service is set to manual'
+            } else {
+                $because = "The SQL Service Start Type was expected to be $starttype"
+            }
+
+            $SqlEngineServiceAccount = foreach ($EngineAccount in $EngineAccounts) {
+                [PSCustomObject]@{
+                    InstanceName      = $Instance.Name
+                    State             = $EngineAccount.State
+                    ExpectedState     = $state
+                    StartType         = $EngineAccount.StartType
+                    ExpectedStartType = $starttype
+                    because           = $because
+                }
+            }
         }
 
         Default { }
@@ -578,6 +666,9 @@ function NewGet-AllInstanceInfo {
         SupportedBuild               = $SupportedBuild
         LoginMustChangeCount         = $LoginMustChangeCount
         LoginPasswordExpirationCount = $LoginPasswordExpirationCount
+        AgentServiceAdminExist       = $AgentServiceAdminExist
+        SqlEngineServiceAccount      = $SqlEngineServiceAccount
+        PublicRolePermissions        = $PublicRolePermsCount
         # TempDbConfig          = [PSCustomObject]@{
         #     TF118EnabledCurrent     = $tempDBTest[0].CurrentSetting
         #     TF118EnabledRecommended = $tempDBTest[0].Recommended

@@ -34,7 +34,29 @@ BeforeDiscovery {
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
     # Get-DbcConfig is expensive so we call it once
     $__dbcconfig = Get-DbcConfig
+    $notcontactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
+    $Checks = Get-DbcCheck
+    $TestsNoGoBrrr = foreach ($Not in $notcontactable) {
+        foreach ($tag in $tags) {
+            [PSCustomObject]@{
+                Name = $Not
+                Tag  = $tag
+            }
+        }
+    }
 }
+
+BeforeAll {
+
+}
+Describe "<_.Tag> failed on <_.Name>" -Tag FailedConnections -ForEach $TestsNoGoBrrr {
+    Context "Checking <_.Tag> on <_.Name>" {
+        It "The instance <_.Name> is not connectable" -Skip:$skip {
+            $false | Should -BeTrue -Because "This instance is not connectable"
+        }
+    }
+}
+
 
 # Ordered alphabetically by unique tag please
 Describe "Ad Hoc Distributed Queries" -Tag AdHocDistributedQueriesEnabled, security, CIS, Medium, Instance -ForEach $InstancesToTest {
@@ -51,6 +73,16 @@ Describe "Ad Hoc Workload Optimization" -Tag AdHocWorkload, Medium, Instance -Fo
     Context "Checking Ad Hoc Workload Optimization on <_.Name>" {
         It "Ad Hoc Workload Optimization is enabled on <_.Name>" -Skip:($skip -or $psitem.VersionMajor -lt 10) {
             $PSItem.Configuration.OptimizeAdhocWorkloads.ConfigValue -eq 1 | Should -Be 1 -Because "Optimize for ad hoc workloads is a recommended setting"
+        }
+    }
+}
+
+Describe "SQL Agent Service Admin" -Tags AgentServiceAdmin, Security, CIS, Medium, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.AgentServiceAdmin' }).Value
+    Context "Testing whether SQL Agent account is a local administrator on <_.Name>" {
+        It "The SQL Agent service account should not be a local administrator on <_.Name>" -Skip:$skip {
+            # We don't make this -BeFalse because the possible results  are $true/$false/'Could not connect'
+            $psitem.AgentServiceAdminExist | Should -Be $false -Because "We expected the service account for the SQL Agent to not be a local administrator"
         }
     }
 }
@@ -357,6 +389,16 @@ Describe "Login SA cannot exist" -Tag SaExist, CIS, Medium, Instance -ForEach $I
     }
 }
 
+Describe "Public Role Permissions" -Tag PublicPermission, PublicRolePermission, Security, CIS, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.security.PublicPermission' }).Value
+
+    Context "Testing if the public role permissions don't have permissions  on <_.Name>" {
+        It "All permissions should be set to CIS standards on the public role on <_.Name>" -Skip:$skip {
+            $PsItem.PublicRolePermissions | Should -Be 0 -Because "We expected the public role to have no permissions for CIS compliance."
+        }
+    }
+}
+
 Describe "SA Login Renamed" -Tag SaRenamed, DISA, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.SaRenamed' }).Value
     Context "Checking that sa login has been renamed on <_.Name>" {
@@ -380,6 +422,18 @@ Describe "SQL and Windows names match" -Tag ServerNameMatch, Medium, Instance -F
     Context "Testing SQL and Windows names match on <_.Name>" {
         It "should have matching names on <_.Name>" -Skip:$skip {
             $Psitem.ServerNameMatch.renamerequired | Should -BeFalse -Because "SQL and Windows names should match but configured name $($Psitem.ServerNameMatch.configuredServerName) does not match $($Psitem.ServerNameMatch.netName)"
+        }
+    }
+}
+
+Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, Instance -ForEach $InstancesToTest {
+    $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.sqlengineserviceaccount' }).Value
+    Context "Testing SQL Engine Service on <_.Name>" -Skip:$skip {
+        It "SQL Engine service account should be <_.State> on <_.InstanceName>" -ForEach $PsItem.SqlEngineServiceAccount {
+            $PsItem.State | Should -Be $PsItem.ExpectedState -Because "We expected the SQL Engine service account to be $($PsItem.ExpectedState)"
+        }
+        It "SQL Engine service account should have a start mode of <_.ExpectedStartType> on instance <_.InstanceName>" -ForEach $PsItem.SqlEngineServiceAccount {
+            $PsItem.StartType | Should -Be $PsItem.ExpectedStartType -Because $Psitem.because
         }
     }
 }

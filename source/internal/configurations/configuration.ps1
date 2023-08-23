@@ -170,6 +170,9 @@ Set-PSFConfig -Module dbachecks -Name policy.database.filegrowthdaystocheck -Val
 Set-PSFConfig -Module dbachecks -Name policy.database.trustworthyexcludedb -Value @('msdb') -Initialize -Description "A List of databases that we do not want to check for Trustworthy being on"
 Set-PSFConfig -Module dbachecks -Name policy.database.duplicateindexexcludedb -Value @('msdb', 'ReportServer', 'ReportServerTempDB') -Initialize -Description "A List of databases we do not want to check for Duplicate Indexes"
 Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb -Value @() -Initialize -Description " A List of database what we do not want to check for SAFE CLR Assemblies"
+Set-PSFConfig -Module dbachecks -Name policy.database.pseudosimpleexcludedb -Value @('tempdb', 'model') -Initialize -Description "A List of databases that we do not want to check for pseudosimple recovery modelasd a"
+Set-PSFConfig -Module dbachecks -Name policy.database.contdbautocloseexclude -Value @('msdb') -Initialize -Description "A List of contained database that we we do not want to check for autoclose"
+Set-PSFConfig -Module dbachecks -Name policy.database.contdbsqlauthexclude -Value @() -Initialize -Description "A list of databases that we do not want to check for contained databases with SQL authenticated users"
 Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description " The % log used we should stay below"
 
 # Policy for Ola Hallengren Maintenance Solution
@@ -290,6 +293,13 @@ Set-PSFConfig -Module dbachecks -Name skip.instance.maxmemory -Validation bool -
 Set-PSFConfig -Module dbachecks -Name skip.instance.orphanedfile -Validation bool -Value $false -Initialize -Description "Skip the check for orphaned file"
 Set-PSFConfig -Module dbachecks -Name skip.instance.servernamematch -Validation bool -Value $false -Initialize -Description "Skip the check for server name match"
 Set-PSFConfig -Module dbachecks -Name skip.instance.supportedbuild -Validation bool -Value $false -Initialize -Description "Skip the checks for supported build"
+# becuase we can't run this on core
+if ($IsCoreCLR) {
+    $value = $true
+} {
+    $value = $false
+}
+Set-PSFConfig -Module dbachecks -Name skip.instance.sqlengineserviceaccount -Validation bool -Value $value -Initialize -Description "Skip the checks for sql engine service account"
 
 
 
@@ -325,7 +335,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.trustworthy -Validation bool
 Set-PSFConfig -Module dbachecks -Name skip.database.status -Validation bool -Value $false -Initialize -Description "Skip the database status test"
 Set-PSFConfig -Module dbachecks -Name skip.database.compatibilitylevel -Validation bool -Value $false -Initialize -Description "Skip the database compatibility test"
 Set-PSFConfig -Module dbachecks -Name skip.database.recoverymodel -Validation bool -Value $false -Initialize -Description "Skip the database recovery model test"
-
+Set-PSFConfig -Module dbachecks -Name skip.database.pseudosimple -Validation bool -Value $false -Initialize -Description "Skip the database PseudoSimple recovery model test"
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 

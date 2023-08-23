@@ -144,6 +144,18 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'recoverymodeltype' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.recoverymodel.type').Value
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'recoverymodelexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.recoverymodel.excludedb').Value
         }
+        'PseudoSimple' {
+            $pseudoSimple = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pseudosimpleexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.pseudosimpleexcludedb').Value
+        }
+        'ContainedDBAutoClose' {
+            $containedDbAutoClose = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'contdbautocloseexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbautocloseexclude').Value
+        }
+        'ContainedDBSQLAuth'{
+            $containedDbSqlAuthUsers = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'contdbsqlauthexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbsqlauthexclude').Value
+        }
         Default { }
     }
 
@@ -152,7 +164,7 @@ function Get-AllDatabaseInfo {
         ComputerName = $Instance.ComputerName
         InstanceName = $Instance.DbaInstanceName
         Name         = $Instance.Name
-        ConfigValues = $ConfigValues # can we move this out to here?
+        ConfigValues = $ConfigValues
         Databases    = $Instance.Databases.Foreach{
             [PSCustomObject]@{
                 Name                      = $psitem.Name
@@ -161,10 +173,9 @@ function Get-AllDatabaseInfo {
                 ServerCollation           = @(if ($collation) { $Instance.collation })
                 Collation                 = @(if ($collation) { $psitem.collation })
                 SuspectPage               = @(if ($suspectPage) { (Get-DbaSuspectPage -SqlInstance $Instance -Database $psitem.Name | Measure-Object).Count })
-                ConfigValues              = $ConfigValues # can we move this out?
+                ConfigValues              = $ConfigValues
                 AsymmetricKeySize         = @(if ($asymmetrickey) { ($psitem.AsymmetricKeys | Where-Object { $_.KeyLength -lt 2048 } | Measure-Object).Count })
-                #AsymmetricKeySize          = if ($asymmetrickey) { $psitem.AsymmetricKeys.KeyLength }  # doing this I got $null if there wasn't a key so counting ones that are too short
-                AutoClose                 = @(if ($autoclose) { $psitem.AutoClose })
+                AutoClose                 = @(if ($autoclose -or $containedDbAutoClose) { $psitem.AutoClose })
                 AutoCreateStatistics      = @(if ($autocreatestats) { $psitem.AutoCreateStatisticsEnabled })
                 AutoUpdateStatistics      = @(if ($autoupdatestats) { $psitem.AutoUpdateStatisticsEnabled })
                 AutoUpdateStatisticsAsync = @(if ($autoupdatestatsasync) { $psitem.AutoUpdateStatisticsAsync })
@@ -179,7 +190,11 @@ function Get-AllDatabaseInfo {
                 CompatibilityLevel        = @(if ($compatibilitylevel) { $psitem.CompatibilityLevel })
                 ServerLevel               = @(if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } })
                 GuestUserConnect          = @(if ($guestUserConnect) { if ($psitem.EnumDatabasePermissions('guest') | Where-Object { $_.PermissionState -eq 'Grant' -and $_.PermissionType.Connect }) { $true } } )
-                RecoveryModel             = @(if ($recoverymodel) { $psitem.RecoveryModel })
+                RecoveryModel             = @(if ($pseudoSimple -or $recoverymodel) { $psitem.RecoveryModel })
+                PseudoSimple              = @(if ($pseudoSimple) { '' -eq (($psitem.Query('Select last_log_backup_lsn from sys.database_recovery_status where database_id = DB_ID()')).last_log_backup_lsn) })
+                ContainmentType           = @(if ($containedDbAutoClose -or $containedDbSqlAuthUsers) { $psitem.ContainmentType })
+                ContainedDbAutoClose      = @(if ($containedDbAutoClose) { if (($psItem.ContainmentType -ne "NONE") -and ($null -ne $psItem.ContainmentType) -and $psitem.AutoClose) { $true } else { $false } } )
+                ContainedDbSqlAuthUsers   = @(if ($containedDbSqlAuthUsers) { if ($psItem.ContainmentType -ne "NONE" -and ($null -ne $psItem.ContainmentType)) { ($psitem.Users | Where-Object {$_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true } | Measure-Object ).Count}} )
             }
         }
     }
