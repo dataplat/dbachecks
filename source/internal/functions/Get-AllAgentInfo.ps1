@@ -62,7 +62,7 @@ function Get-AllAgentInfo {
         }
         'AgentServiceAccount' {
             if (($Instance.VersionMajor -ge 14) -or $IsLinux -or $Instance.HostPlatform -eq 'Linux') {
-                $Agent = @($Instance.Query("SELECT status_desc, startup_type_desc FROM sys.dm_server_services") | Where-Object servicename -Like '*Agent*').ForEach{
+                $Agent = @($Instance.Query("SELECT status_desc, startup_type_desc, servicename FROM sys.dm_server_services") | Where-Object servicename -Like '*Agent*').ForEach{
                     [PSCustomObject]@{
                         State     = $PSItem.status_desc
                         StartMode = $PSItem.startup_type_desc
@@ -163,10 +163,10 @@ function Get-AllAgentInfo {
 
             $JobsFailed = ($Instance.JobServer.Jobs | Where-Object { $_.IsEnabled -and ($_.LastRunDate -gt $startdate) }).ForEach{
                 [PSCustomObject]@{
-                    InstanceName     = $Instance.Name
-                    JobName          = $PSItem.Name
-                    ExpectedOutcome  = $ConfigValues.FailedJob
-                    LastRunOutcome   = $PSItem.LastRunOutcome
+                    InstanceName    = $Instance.Name
+                    JobName         = $PSItem.Name
+                    ExpectedOutcome = $ConfigValues.FailedJob
+                    LastRunOutcome  = $PSItem.LastRunOutcome
                 }
             }
         }
@@ -180,10 +180,10 @@ function Get-AllAgentInfo {
 
             $JobOwner = $Instance.JobServer.Jobs.ForEach{
                 [PSCustomObject]@{
-                    InstanceName          = $Instance.Name
-                    JobName               = $PSItem.Name
-                    ExpectedJobOwnerName  = $ConfigValues.TargetJobOwner #$PSItem
-                    ActualJobOwnerName    = $PSItem.OwnerLoginName
+                    InstanceName         = $Instance.Name
+                    JobName              = $PSItem.Name
+                    ExpectedJobOwnerName = $ConfigValues.TargetJobOwner #$PSItem
+                    ActualJobOwnerName   = $PSItem.OwnerLoginName
                 }
             }
         }
@@ -197,10 +197,10 @@ function Get-AllAgentInfo {
 
             $InvalidJobOwner = $Instance.JobServer.Jobs.ForEach{
                 [PSCustomObject]@{
-                    InstanceName          = $Instance.Name
-                    JobName               = $PSItem.Name
-                    ExpectedJobOwnerName  = $ConfigValues.InvalidJobOwner
-                    ActualJobOwnerName    = $PSItem.OwnerLoginName
+                    InstanceName         = $Instance.Name
+                    JobName              = $PSItem.Name
+                    ExpectedJobOwnerName = $ConfigValues.InvalidJobOwner
+                    ActualJobOwnerName   = $PSItem.OwnerLoginName
                 }
             }
 
@@ -303,13 +303,13 @@ function Get-AllAgentInfo {
 
             $LongRunningJobs = $($runningjobs | Where-Object { $_.AvgSec -ne 0 }).ForEach{
                 [PSCustomObject]@{
-                    InstanceName                        = $Instance.Name
-                    JobName                             = $PSItem.JobName
-                    RunningSeconds                      = $PSItem.RunningSeconds
-                    Average                             = $PSItem.AvgSec
-                    Diff                                = $PSItem.Diff
-                    ExpectedLongRunningJobPercentage    = $ConfigValues.LongRunningJob
-                    ActualLongRunningJobPercentage      = [math]::Round($PSItem.Diff / $PSItem.AvgSec * 100)
+                    InstanceName                     = $Instance.Name
+                    JobName                          = $PSItem.JobName
+                    RunningSeconds                   = $PSItem.RunningSeconds
+                    Average                          = $PSItem.AvgSec
+                    Diff                             = $PSItem.Diff
+                    ExpectedLongRunningJobPercentage = $ConfigValues.LongRunningJob
+                    ActualLongRunningJobPercentage   = [math]::Round($PSItem.Diff / $PSItem.AvgSec * 100)
                 }
             }
         }
@@ -367,12 +367,12 @@ function Get-AllAgentInfo {
 
             $LastJobRuns = $($lastagentjobruns | Where-Object { $_.AvgSec -ne 0 }).ForEach{
                 [PSCustomObject]@{
-                    InstanceName                    = $Instance.Name
-                    JobName                         = $PSItem.JobName
-                    Duration                        = $PSItem.Duration
-                    Average                         = $PSItem.AvgSec
-                    ExpectedRunningJobPercentage    = $ConfigValues.LastJobRuns
-                    ActualRunningJobPercentage      = [math]::Round($PSItem.Diff / $PSItem.AvgSec * 100)
+                    InstanceName                 = $Instance.Name
+                    JobName                      = $PSItem.JobName
+                    Duration                     = $PSItem.Duration
+                    Average                      = $PSItem.AvgSec
+                    ExpectedRunningJobPercentage = $ConfigValues.LastJobRuns
+                    ActualRunningJobPercentage   = [math]::Round($PSItem.Diff / $PSItem.AvgSec * 100)
                 }
             }
         }
