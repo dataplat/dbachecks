@@ -348,6 +348,7 @@ Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool
 Set-PSFConfig -Module dbachecks -Name skip.agent.jobowner -Validation bool -Value $false -Initialize -Description "Skip the Agent Job Owner check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.invalidjobowner.name -Validation bool -Value $false -Initialize -Description "Skip the Agent Job Invalid Owner check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.failedjobs -Validation bool -Value $false -Initialize -Description "Skip the Agent Failed Jobs check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.JobHistory -Validation bool -Value $false -Initialize -Description "Skip the Agent Job History check"
 
 
 

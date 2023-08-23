@@ -47,6 +47,9 @@ function Get-AllAgentInfo {
     # Agent Alerts Initial fields
     $AgentAlertsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Alert])
 
+    # Agent Job History Initial fields
+    $AgentJobHistory = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer])
+
     #TODO: Clean up?
     ## Database Initial Fields
     #$DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
@@ -299,7 +302,22 @@ function Get-AllAgentInfo {
             }
         }
         'JobHistory' {
+            $AgentJobHistory.Add("MaximumHistoryRows") | Out-Null # so we can check Alert Severity
+            $AgentJobHistory.Add("MaximumJobHistoryRows") | Out-Null # so we can check Alert status
 
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer], $AgentJobHistory)
+            $AgentJobHistory = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer])
+
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMaximumHistoryRows' -Value (Get-DbcConfigValue agent.history.maximumhistoryrows)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentMaximumJobHistoryRows' -Value (Get-DbcConfigValue agent.history.maximumjobhistoryrows)
+
+            $JobHistory = [PSCustomObject]@{
+                InstanceName                  = $Instance.Name
+                CurrentMaximumHistoryRows     = $Instance.JobServer.MaximumHistoryRows
+                ExpectedMaximumHistoryRows    = $ConfigValues.AgentMaximumHistoryRows
+                CurrentMaximumJobHistoryRows  = $Instance.JobServer.MaximumJobHistoryRows
+                ExpectedMaximumJobHistoryRows = $ConfigValues.AgentMaximumJobHistoryRows
+            }
         }
         'LongRunningJob' {
             $query = "SELECT
@@ -432,6 +450,7 @@ function Get-AllAgentInfo {
         LastJobRuns         = $LastJobRuns
         LongRunningJobs     = $LongRunningJobs
         AgentAlerts         = $AgentAlerts
+        JobHistory          = @($JobHistory)
     }
     return $testInstanceObject
 }
