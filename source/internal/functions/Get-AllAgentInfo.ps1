@@ -314,7 +314,7 @@ function Get-AllAgentInfo {
             }
         }
         'LastJobRunTime' {
-            $maxdays = Get-DbcConfigValue agent.failedjob.since
+            $maxdays = ($__dbcconfig | Where-Object { $_.Name -eq 'agent.failedjob.since' }).Value
             $query = "IF OBJECT_ID('tempdb..#dbachecksLastRunTime') IS NOT NULL DROP Table #dbachecksLastRunTime
                 SELECT * INTO #dbachecksLastRunTime
                 FROM
@@ -335,7 +335,7 @@ function Get-AllAgentInfo {
                     msdb.dbo.sysjobhistory AS jh
                     ON jh.job_id = h.job_id
                     AND jh.instance_id = h.instance_id
-                    WHERE msdb.dbo.agent_datetime(jh.run_date, jh.run_time) > DATEADD(DAY,- $maxdays,GETDATE())
+                    WHERE msdb.dbo.agent_datetime(jh.run_date, jh.run_time) > DATEADD(DAY,- {0},GETDATE())
                     AND jh.step_id = 0
                 ) AS lrt
                             IF OBJECT_ID('tempdb..#dbachecksAverageRunTime') IS NOT NULL DROP Table #dbachecksAverageRunTime
@@ -346,7 +346,7 @@ function Get-AllAgentInfo {
                 job_id,
                 AVG(DATEDIFF(SECOND, 0, STUFF(STUFF(RIGHT('000000' + CONVERT(VARCHAR(6),run_duration),6),5,0,':'),3,0,':'))) AS AvgSec
                 FROM msdb.dbo.sysjobhistory hist
-                WHERE msdb.dbo.agent_datetime(run_date, run_time) > DATEADD(DAY,- $maxdays,GETDATE())
+                WHERE msdb.dbo.agent_datetime(run_date, run_time) > DATEADD(DAY,- {0},GETDATE())
                 AND Step_id = 0
                 AND run_duration >= 0
                 GROUP BY job_id
@@ -360,7 +360,7 @@ function Get-AllAgentInfo {
                 JOIN #dbachecksAverageRunTime avgrun
                 ON lastrun.job_id = avgrun.job_id
                             DROP Table #dbachecksLastRunTime
-                DROP Table #dbachecksAverageRunTime"
+                DROP Table #dbachecksAverageRunTime" -f $maxdays
             $lastagentjobruns = Invoke-DbaQuery -SqlInstance $Instance -Database msdb -Query $query
 
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'LastJobRuns' -Value (Get-DbcConfigValue agent.lastjobruntime.percentage)
