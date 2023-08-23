@@ -2311,7 +2311,7 @@ Uh-Oh - The Tag filters between v4 and v5 are not the same somehow.
 For v4 We returned
 {0}
 and
-For v5 we returned
+for v4 we returned
 {1}
 " -f ($v4code.TagFilter | Out-String), ($v5code.Configuration.Filter.Tag.Value | Out-String)
       Write-PSFMessage -Message $Message -Level Warning
@@ -2324,46 +2324,53 @@ The Tags are the same"
   $changedTags = @(
       @{
           Name          = 'TraceFlagsExpected'
-          RunChange     = 3 # + or - the number of tests run for v5
-          PassedChange  = 3 # + or - the number of tests passed for v5
-          FailedChange  = 0 # + or - the number of tests failed for v5
-          SkippedChange = 0 # + or - the number of tests skipped for v5
+          RunChange     = 3 # + or - the number of tests run for v4
+          PassedChange  = 3 # + or - the number of tests passed for v4
+          FailedChange  = 0 # + or - the number of tests failed for v4
+          SkippedChange = 0 # + or - the number of tests skipped for v4
 
       },
       @{
           Name          = 'TraceFlagsNotExpected'
-          RunChange     = 3 # + or - the number of tests for v5
-          PassedChange  = 3 # + or - the number of tests passed for v5
-          FailedChange  = 0 # + or - the number of tests failed for v5
-          SkippedChange = 0 # + or - the number of tests skipped for v5
+          RunChange     = 3 # + or - the number of tests for v4
+          PassedChange  = 3 # + or - the number of tests passed for v4
+          FailedChange  = 0 # + or - the number of tests failed for v4
+          SkippedChange = 0 # + or - the number of tests skipped for v4
       },
       @{
           Name          = 'XESessionRunningAllowed'
-          RunChange     = -12 # + or - the number of tests for v5
-          PassedChange  = 0 # + or - the number of tests passed for v5
-          FailedChange  = -12 # + or - the number of tests failed for v5
-          SkippedChange = 0 # + or - the number of tests skipped for v5
+          RunChange     = -12 # + or - the number of tests for v4
+          PassedChange  = 0 # + or - the number of tests passed for v4
+          FailedChange  = -12 # + or - the number of tests failed for v4
+          SkippedChange = 0 # + or - the number of tests skipped for v4
       },
       @{
           Name          = 'LinkedServerConnection'
-          RunChange     = -3 # + or - the number of tests for v5
-          PassedChange  = -3 # + or - the number of tests passed for v5
-          FailedChange  = 0 # + or - the number of tests failed for v5
-          SkippedChange = 0 # + or - the number of tests skipped for v5
+          RunChange     = -3 # + or - the number of tests for v4
+          PassedChange  = -3 # + or - the number of tests passed for v4
+          FailedChange  = 0 # + or - the number of tests failed for v4
+          SkippedChange = 0 # + or - the number of tests skipped for v4
       },
       @{
           Name          = 'SupportedBuild'
-          RunChange     = -3 # + or - the number of tests run for v5
-          PassedChange  = -3 # + or - the number of tests passed for v5
-          FailedChange  = 0 # + or - the number of tests failed for v5
-          SkippedChange = 0 # + or - the number of tests skipped for v5
+          RunChange     = -3 # + or - the number of tests run for v4
+          PassedChange  = -3 # + or - the number of tests passed for v4
+          FailedChange  = 0 # + or - the number of tests failed for v4
+          SkippedChange = 0 # + or - the number of tests skipped for v4
       },
       @{
           Name          = 'GuestUserConnect'
-          RunChange     = 0 # + or - the number of tests run for v5
-          PassedChange  = +2 # + or - the number of tests passed for v5
-          FailedChange  = -2 # + or - the number of tests failed for v5
-          SkippedChange = 0 # + or - the number of tests skipped for v5
+          RunChange     = 0 # + or - the number of tests run for v4
+          PassedChange  = +2 # + or - the number of tests passed for v4
+          FailedChange  = -2 # + or - the number of tests failed for v4
+          SkippedChange = 0 # + or - the number of tests skipped for v4
+      },
+      @{
+          Name          = 'AgentServiceAccount'
+          RunChange     = -3 # + or - the number of tests run for v4
+          PassedChange  = -5 # + or - the number of tests passed for v4
+          FailedChange  = -1 # + or - the number of tests failed for v4
+          SkippedChange = +3 # + or - the number of tests skipped for v4
       }
   )
   $runchange = 0
@@ -2399,7 +2406,7 @@ Uh-Oh - The total tests run between v4 and v5 are not the same somehow.
 For v4 We ran
 {0} tests
 and
-For v5 we ran
+for v4 we ran
 {1} tests
 The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block {2}
 " -f $v4code.TotalCount, $v5run, $messageAppend
@@ -2418,7 +2425,7 @@ Uh-Oh - The total tests Passed between v4 and v5 are not the same somehow.
 For v4 We Passed
 {0} tests
 and
-For v5 we Passed
+for v4 we Passed
 {1} tests
 {2}" -f $v4code.PassedCount, $v5Passed, $messageAppend
       Write-PSFMessage -Message $Message -Level Warning
@@ -2435,7 +2442,7 @@ Uh-Oh - The total tests Failed between v4 and v5 are not the same somehow.
 For v4 We Failed
 {0} tests
 and
-For v5 we Failed
+for v4 we Failed
 {1} tests
 " -f $v4code.FailedCount, $v5failed
       Write-PSFMessage -Message $Message -Level Warning
@@ -2452,7 +2459,7 @@ Uh-Oh - The total tests Skipped between v4 and v5 are not the same somehow.
 For v4 We Skipped
 {0} tests
 and
-For v5 we Skipped
+for v4 we Skipped
 {1} tests
 {2}" -f $v4code.SkippedCount, $v5skipped, $messageAppend
       Write-PSFMessage -Message $Message -Level Warning
