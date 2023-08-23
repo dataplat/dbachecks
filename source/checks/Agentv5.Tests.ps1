@@ -181,72 +181,55 @@ Describe "SQL Agent Failed Jobs" -Tag FailedJob, Agent -ForEach $InstancesToTest
 
 
 
+Describe "Agent Alerts" -Tag AgentAlert, Agent -ForEach $InstancesToTest {
+    $skipAgentAlerts = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.alert' }).Value
+    $AgentAlertJob = ($__dbcconfig | Where-Object { $_.Name -eq 'agent.alert.Job' }).Value
+    $AgentAlertNotification = ($__dbcconfig | Where-Object { $_.Name -eq 'agent.alert.Notification' }).Value 
+
+    Write-PSFMessage -Message "Instances = $($PSItem.Severity)" -Level Verbose
+
+    Context "Testing Agent Alerts Severity exists on <_.Name>" {
+        It "Severity <_.AgentAlertSeverity> Alert should exist on <_.InstanceName>" -Skip:$skipAgentAlerts -ForEach ($PSItem.AgentAlerts.Severities) { #| Where-Object { $_.Severity -NE $null }) {
+            $PSItem.Severity | Should -Be $PSItem.AgentAlertSeverity -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
+        }
+
+        It "Severity <_.AgentAlertSeverity> Alert should be enabled on <_.InstanceName>" -Skip:$skipAgentAlerts -ForEach ($PSItem.AgentAlerts.Severities) {
+            $PSItem.IsEnabled | Should -Be $true -Because "Configured alerts should be enabled"
+        }
+        if ($AgentAlertJob) {
+            It "A job name for Severity <_.AgentAlertSeverity> Alert on <_.InstanceName>" -Skip:$skipAgentAlerts -ForEach ($PSItem.AgentAlerts.Severities) {
+                $PSItem.JobName -ne $null | Should -Be $true -Because "Should notify by SQL Agent Job"
+            }
+        }
+        if ($AgentAlertNotification) {
+            It "Severity <_.AgentAlertSeverity> Alert should have a notification on <_.InstanceName>" -Skip:$skipAgentAlerts -ForEach ($PSItem.AgentAlerts.Severities) {
+                $PSItem.HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -Be $true -Because "Should notify by Agent notifications"
+            }
+        }
+
+    }
+
+    Context "Testing Agent Alerts MessageID exists on <_.Name>" {
+        It "MessageID <_.AgentMessageID> Alert should exist on <_.InstanceName>" -Skip:$skipAgentAlerts -ForEach ($PSItem.AgentAlerts.MessageIDs) {
+            $PSItem.MessageID | Should -Be $PSItem.AgentMessageID -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
+        }
+        It "MessageID <_.AgentMessageID> Alert should be enabled on <_.InstanceName>" -Skip:$skipAgentAlerts -ForEach ($PSItem.AgentAlerts.MessageIDs) {
+            $PSItem.IsEnabled | Should -Be $true -Because "Configured alerts should be enabled"
+        }
+        if ($AgentAlertJob) {
+            It "A job name for MessageID <_.AgentMessageID> on <_.InstanceName>" -Skip:$skipAgentAlerts -ForEach ($PSItem.AgentAlerts.MessageIDs) {
+                $PSItem.JobName -ne $null | Should -Be $true -Because "Should notify by SQL Agent Job"
+            }
+        }
+        if ($AgentAlertNotification) {
+            It "MessageID <_.AgentMessageID> Alert should have a notification on <_.InstanceName>" -Skip:$skipAgentAlerts -ForEach ($PSItem.AgentAlerts.MessageIDs) {
+                $PSItem.HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -Be $true -Because "Should notify by Agent notifications"
+            }
+        }
+    }
+}
 
 
-
-
-# Describe "Agent Alerts" -Tags AgentAlert, $filename {
-#     $severity = Get-DbcConfigValue agent.alert.Severity
-#     $messageid = Get-DbcConfigValue agent.alert.messageid
-#     $AgentAlertJob = Get-DbcConfigValue agent.alert.Job
-#     $AgentAlertNotification = Get-DbcConfigValue agent.alert.Notification
-#     $skip = Get-DbcConfigValue skip.agent.alert
-#     if ($NotContactable -contains $psitem) {
-#         Context "Testing Agent Alerts Severity exists on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#         Context "Testing Agent Alerts MessageID exists on $psitem" {
-#             It "Can't Connect to $Psitem" {
-#                 $false | Should -BeTrue -Because "The instance should be available to be connected to!"
-#             }
-#         }
-#     }
-#     else {
-#         $alerts = Get-DbaAgentAlert -SqlInstance $psitem
-#         Context "Testing Agent Alerts Severity exists on $psitem" {
-#             ForEach ($sev in $severity) {
-#                 It "Severity $sev Alert should exist on $psitem" -Skip:$skip {
-#                     ($alerts.Where{ $psitem.Severity -eq $sev }) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
-#                 }
-#                 It "Severity $sev Alert should be enabled on $psitem" -Skip:$skip {
-#                     ($alerts.Where{ $psitem.Severity -eq $sev }).IsEnabled | Should -be $true -Because "Configured alerts should be enabled"
-#                 }
-#                 if ($AgentAlertJob) {
-#                     It "A job name for Severity $sev Alert on $psitem" -Skip:$skip {
-#                         ($alerts.Where{ $psitem.Severity -eq $sev }).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
-#                     }
-#                 }
-#                 if ($AgentAlertNotification) {
-#                     It "Severity $sev Alert should have a notification on $psitem" -Skip:$skip {
-#                         ($alerts.Where{ $psitem.Severity -eq $sev }).HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -be $true -Because "Should notify by Agent notifications"
-#                     }
-#                 }
-#             }
-#         }
-#         Context "Testing Agent Alerts MessageID exists on $psitem" {
-#             ForEach ($mid in $messageid) {
-#                 It "Message_ID $mid Alert should exist on $psitem" -Skip:$skip {
-#                     ($alerts.Where{ $psitem.messageid -eq $mid }) | Should -be $true -Because "Recommended Agent Alerts to exists http://blog.extreme-advice.com/2013/01/29/list-of-errors-and-severity-level-in-sql-server-with-catalog-view-sysmessages/"
-#                 }
-#                 It "Message_ID $mid Alert should be enabled on $psitem" -Skip:$skip {
-#                     ($alerts.Where{ $psitem.messageid -eq $mid }) | Should -be $true -Because "Configured alerts should be enabled"
-#                 }
-#                 if ($AgentAlertJob) {
-#                     It "A Job name for Message_ID $mid Alert should be on $psitem" -Skip:$skip {
-#                         ($alerts.Where{ $psitem.messageid -eq $mid }).jobname -ne $null | Should -be $true -Because "Should notify by SQL Agent Job"
-#                     }
-#                 }
-#                 if ($AgentAlertNotification) {
-#                     It "Message_ID $mid Alert should have a notification on $psitem" -Skip:$skip {
-#                         ($alerts.Where{ $psitem.messageid -eq $mid }).HasNotification -in 1, 2, 3, 4, 5, 6, 7 | Should -be $true -Because "Should notify by Agent notifications"
-#                     }
-#                 }
-#             }
-#         }
-#     }
-# }
 
 # Describe "Job History Configuration" -Tags JobHistory, $filename {
 #     if ($NotContactable -contains $psitem) {

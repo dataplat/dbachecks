@@ -44,6 +44,9 @@ function Get-AllAgentInfo {
     # Failed Job Initial fields
     $FailedJobInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job])
 
+    # Agent Alerts Initial fields
+    $AgentAlertsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Alert])
+
     #TODO: Clean up?
     ## Database Initial Fields
     #$DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
@@ -251,7 +254,49 @@ function Get-AllAgentInfo {
 
         }
         'AgentAlert' {
+            $AgentAlertsInitFields.Add("Severity") | Out-Null # so we can check Alert Severity
+            $AgentAlertsInitFields.Add("IsEnabled") | Out-Null # so we can check Alert status
+            $AgentAlertsInitFields.Add("JobName") | Out-Null # so we can check Alert job
+            $AgentAlertsInitFields.Add("HasNotification") | Out-Null # so we can check Alert notification
 
+            $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Alert], $AgentAlertsInitFields)
+            $AgentAlertsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Alert])
+
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentAlertSeverity' -Value (Get-DbcConfigValue agent.alert.Severity)
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'AgentAlertMessageId' -Value (Get-DbcConfigValue agent.alert.messageid)
+
+            $Severities = $ConfigValues.AgentAlertSeverity.ForEach{
+                $Severity = [int]($PSItem)
+                $sev = $Instance.JobServer.Alerts.Where{ $_.Severity -eq $Severity }
+                [PSCustomObject]@{
+                    InstanceName       = $Instance.Name
+                    AlertName          = $sev.Name
+                    Severity           = $sev.Severity
+                    IsEnabled          = $sev.IsEnabled
+                    JobName            = $sev.JobName
+                    HasNotification    = $sev.HasNotification
+                    AgentAlertSeverity = $Severity
+                }
+            }
+
+            $MessageIDs = $ConfigValues.AgentAlertMessageId.ForEach{
+                $MessageID = [int]($PSItem)
+                $msgID = $Instance.JobServer.Alerts.Where{ $_.MessageID -eq $MessageID }
+                [PSCustomObject]@{
+                    InstanceName    = $Instance.Name
+                    AlertName       = $msgID.Name
+                    MessageID       = $msgID.MessageID
+                    IsEnabled       = $msgID.IsEnabled
+                    JobName         = $msgID.JobName
+                    HasNotification = $msgID.HasNotification
+                    AgentMessageID  = $MessageID
+                }
+            }
+
+            $AgentAlerts = [PSCustomObject]@{
+                Severities = $Severities
+                MessageIDs = $MessageIDs
+            }
         }
         'JobHistory' {
 
@@ -386,6 +431,7 @@ function Get-AllAgentInfo {
         JobsFailed          = $JobsFailed
         LastJobRuns         = $LastJobRuns
         LongRunningJobs     = $LongRunningJobs
+        AgentAlerts         = $AgentAlerts
     }
     return $testInstanceObject
 }
