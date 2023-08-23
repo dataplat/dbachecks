@@ -50,30 +50,6 @@ function Get-AllAgentInfo {
     # Agent Job History Initial fields
     $AgentJobHistory = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.JobServer])
 
-    #TODO: Clean up?
-    ## Database Initial Fields
-    #$DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database])
-#
-    ## Stored Procedure Initial Fields
-    #$StoredProcedureInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure])
-#
-    ## Information Initial Fields
-#
-    ## Settings Initial Fields
-    #$SettingsInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings])
-#
-    ## Login Initial Fields
-    #$LoginInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login])
-#
-    ## Log File Initial Fields
-    #$LogFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile])
-#
-    ## Data File Initial Fields
-    #$DataFileInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile])
-
-    # Configuration cannot have default init fields :-)
-    #$configurations = $false
-
     # Set up blank ConfigValues object for any config we need to use in the checks
     $ConfigValues = [PSCustomObject]@{}
 
@@ -154,19 +130,6 @@ function Get-AllAgentInfo {
                     ActualDatabaseMailProfile   = $Instance.Mail.Profiles.Name
                 }
             }
-
-            ##TODO: Clean up
-            #$databaseMailProfile += [PSCustomObject]@{
-            #    InstanceName                = $Instance.Name
-            #    ExpectedDatabaseMailProfile = 'null'
-            #    ActualDatabaseMailProfile   = 'null'
-            #}
-#
-            #Write-PSFMessage -Message "InstanceName : $($databaseMailProfile.InstanceName)" -Level Verbose
-            #Write-PSFMessage -Message "ExpectedDatabaseMailProfile : $($databaseMailProfile.ExpectedDatabaseMailProfile)" -Level Verbose
-            #Write-PSFMessage -Message "ActualDatabaseMailProfile : $($databaseMailProfile.ActualDatabaseMailProfile)" -Level Verbose
-            #Write-PSFMessage -Message "ActualDatabaseMailProfile instance : $($Instance.Mail.Profiles.Name)" -Level Verbose
-
         }
         'AgentMailProfile' {
             $AgentMailProfileInitFields.Add("DatabaseMailProfile") | Out-Null # so we can check failsafe operators
@@ -183,20 +146,6 @@ function Get-AllAgentInfo {
                     ActualAgentMailProfile   = $Instance.JobServer.DatabaseMailProfile
                 }
             }
-
-            #TODO: Clean up
-            #$databaseMailProfile = $ConfigValues.DatabaseMailProfile.ForEach{
-            #    [PSCustomObject]@{
-            #        InstanceName                = $Instance.Name
-            #        ExpectedDatabaseMailProfile = 'null'
-            #        ActualDatabaseMailProfile   = 'null'
-            #    }
-            #}
-#
-            #Write-PSFMessage -Message "InstanceName : $($databaseMailProfile.InstanceName)" -Level Verbose
-            #Write-PSFMessage -Message "ExpectedDatabaseMailProfile : $($databaseMailProfile.ExpectedDatabaseMailProfile)" -Level Verbose
-            #Write-PSFMessage -Message "ActualDatabaseMailProfile : $($databaseMailProfile.ActualDatabaseMailProfile)" -Level Verbose
-            #Write-PSFMessage -Message "ActualDatabaseMailProfile instance : $($Instance.JobServer.DatabaseMailProfile)" -Level Verbose
         }
         'FailedJob' {
             $FailedJobInitFields.Add("Name") | Out-Null # so we can check Job Name

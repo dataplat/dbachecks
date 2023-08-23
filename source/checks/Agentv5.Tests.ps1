@@ -34,7 +34,6 @@ BeforeDiscovery {
 
     #TODO : Clean this up
     Write-PSFMessage -Message "Instances = $($InstancesToTest.Name)" -Level Verbose
-    Write-PSFMessage -Message "Instances = $($InstancesToTest.JobHistory)" -Level Verbose
 
     Set-PSFConfig -Module dbachecks -Name global.notcontactable -Value $NotContactable
 
