@@ -386,7 +386,7 @@ function Invoke-DbcCheck {
             $null = $PSBoundParameters.Remove('legacy')
             $null = $PSBoundParameters.Remove('Show')
             $null = $PSBoundParameters.Remove('PassThru')
-            Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Significant
+            Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Verbose
             Invoke-DbcCheckv5 @PSBoundParameters -configuration $configuration
         }
     }
