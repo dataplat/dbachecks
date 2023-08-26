@@ -426,7 +426,7 @@ Describe "SQL and Windows names match" -Tag ServerNameMatch, Medium, Instance -F
     }
 }
 
-Describe "SQL Engine Service" -Tags SqlEngineServiceAccount, ServiceAccount, High, Instance -ForEach $InstancesToTest {
+Describe "SQL Engine Service" -Tag SqlEngineServiceAccount, ServiceAccount, High, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.sqlengineserviceaccount' }).Value
     Context "Testing SQL Engine Service on <_.Name>" -Skip:$skip {
         It "SQL Engine service account should be <_.State> on <_.InstanceName>" -ForEach $PsItem.SqlEngineServiceAccount {
