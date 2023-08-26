@@ -2372,6 +2372,13 @@ The Tags are the same"
           PassedChange  = -5 # + or - the number of tests passed for v4
           FailedChange  = -1 # + or - the number of tests failed for v4
           SkippedChange = +3 # + or - the number of tests skipped for v4
+          },
+      @{
+          Name          = 'SqlEngineServiceAccount'
+          RunChange     = -3 # + or - the number of tests run for v5
+          PassedChange  = 0 # + or - the number of tests passed for v5
+          FailedChange  = 0 # + or - the number of tests failed for v5
+          SkippedChange = -3 # + or - the number of tests skipped for v5
       }
   )
   $runchange = 0
@@ -2421,6 +2428,7 @@ The Total Tests Run are the same {0} {1}
 
   #total passed checks
   If ($v5Passed -ne $v4code.PassedCount) {
+
       $Message = "
 Uh-Oh - The total tests Passed between v4 and v5 are not the same somehow.
 For v4 We Passed
@@ -2429,11 +2437,16 @@ and
 for v4 we Passed
 {1} tests
 {2}
+
+" -f $v4code.PassedCount, $v5Passed, $messageAppend
+        if($MessageAppend){
+          $Message += "
 v4 TestNames
-{3}
+{0}
 v5 TestNames
-{4}
-" -f $v4code.PassedCount, $v5Passed, $messageAppend, ($v4code.TestResult.Where{$_.Result -eq 'Passed'}.Name |Out-String),($v5code.Passed.ExpandedName |Out-String)
+{1}
+          " -f ($v4code.TestResult.Where{$_.Result -eq 'Passed'}.Name |Out-String),($v5code.Passed.ExpandedName |Out-String)
+        }
       Write-PSFMessage -Message $Message -Level Warning
   } else {
       $message = "
@@ -2450,11 +2463,16 @@ For v4 We Failed
 and
 for v4 we Failed
 {1} tests
+
+" -f $v4code.FailedCount, $v5Failed, $messageAppend
+        if($MessageAppend){
+          $Message += "
 v4 TestNames
-{2}
+{0}
 v5 TestNames
-{3}
-" -f $v4code.FailedCount, $v5failed,($v4code.TestResult.Where{$_.Result -eq 'Failed'}.Name |Out-String),($v5code.Failed.ExpandedName |Out-String)
+{1}
+          " -f ($v4code.TestResult.Where{$_.Result -eq 'Failed'}.Name |Out-String),($v5code.Failed.ExpandedName |Out-String)
+        }
       Write-PSFMessage -Message $Message -Level Warning
   } else {
       $message = "
@@ -2471,11 +2489,16 @@ For v4 We Skipped
 and
 For v5 we Skipped
 {1}
+
+" -f $v4code.SkippedCount, $v5Skipped, $messageAppend
+        if($MessageAppend){
+          $Message += "
 v4 TestNames
-{3}
+{0}
 v5 TestNames
-{4}
-{2}" -f $v4code.SkippedCount, $v5skipped, $messageAppend,($v4code.TestResult.Where{$_.Result -eq 'Skipped'}.Name |Out-String),($v5code.Skipped.ExpandedName |Out-String)
+{1}
+          " -f ($v4code.TestResult.Where{$_.Result -eq 'Skipped'}.Name |Out-String),($v5code.Skipped.ExpandedName |Out-String)
+        }
       Write-PSFMessage -Message $Message -Level Warning
   } else {
       $message = "

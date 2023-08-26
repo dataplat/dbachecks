@@ -367,9 +367,17 @@ function Invoke-DbcCheck {
                 $configuration = New-PesterConfiguration
                 $configuration.Output.Verbosity = $NewShow
                 $configuration.Filter.Tag = $check + 'FailedConnections'
-                $configuration.Filter.ExcludeTag = $ExcludeCheck
+                # Exclude the excluded checks and the not converted checks
+                $notv5 = (Get-PSFConfigValue -FullName 'dbachecks.checks.notv5ready')
+                $configuration.Filter.ExcludeTag = $ExcludeCheck + $notv5
+
                 if ($PassThru) {
                     $configuration.Run.PassThru = $true
+                }
+                # So that if the only check passed in is not yet converted - so that we dont get red.
+                if ($check -in $notv5) {
+                    Write-PSFMessage -Message "You are running a single check that is not yet converted to v5." -Level Warning
+                    Return
                 }
             } catch {
                 Write-PSFMessage -Message 'Something Went wrong' -Level Warning -ErrorRecord $_
@@ -378,7 +386,7 @@ function Invoke-DbcCheck {
             $null = $PSBoundParameters.Remove('legacy')
             $null = $PSBoundParameters.Remove('Show')
             $null = $PSBoundParameters.Remove('PassThru')
-            Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Significant
+            Write-PSFMessage -Message ($PSBoundParameters | Out-String) -Level Verbose
             Invoke-DbcCheckv5 @PSBoundParameters -configuration $configuration
         }
     }

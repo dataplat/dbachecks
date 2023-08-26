@@ -18,6 +18,10 @@ $EmailValidationSb = {
 }
 Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $EmailValidationSb
 
+$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration'',CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent', 'DatabaseMailEnabled', 'DatabaseMailProfile', 'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FKCKTrusted', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastFullBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'PageVerify', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'DatabaseMailEnabled', 'AgentServiceAccount', 'DbaOperator', 'FailsafeOperator', 'DatabaseMailProfile', 'AgentMailProfile', 'FailedJob', 'ValidJobOwner', 'InValidJobOwner', 'AgentAlert', 'JobHistory', 'LongRunningJob', 'LastJobRunTime', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
+
+Set-PSFConfig -Module dbachecks -Name checks.notv5ready -Value @($__dbachecksNotv5) -Initialize -Description "Checks that have not been converted to v5 yet"
+
 
 # some configs to help with autocompletes and other module level stuff
 #apps
