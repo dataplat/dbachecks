@@ -266,11 +266,40 @@ Describe "Contained Database Auto Close" -Tag ContainedDBAutoClose, CIS, Databas
 Describe "Contained Database SQL Authenticated Users" -Tag ContainedDBSQLAuth, CIS, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.ContainedDBSQLAuth').Value
 
+    #TODO: something with this?
     #if ($version -lt 13 ) { $skip = $true }
 
     Context "Testing contained database to see if sql authenticated users exist" {
         It "Database <_.Name> should have no sql authenticated users on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database -and $_.ContainmentType -ne "NONE" } else { $psitem.ConfigValues.contdbsqlauthexclude -notcontains $psitem.Name -and $_.ContainmentType -ne "NONE" } } {
             $psitem.ContainedDbSqlAuthUsers | Should -Be 0 -Because "We expect there to be no sql authenticated users in contained database."
+        }
+    }
+}
+
+Describe "Page Verify" -Tag PageVerify, Medium, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.pageverify').Value
+    Context "Testing page verify on $psitem" {
+        
+        if($psitem.MajorVersion -eq 8) {
+            It "Database Page verify is not available on SQL 2000 on <_.SqlInstance>" {
+                $true | Should -BeTrue
+            }
+        } elseif ($psitem.MajorVersion -eq 9) {
+            It "Database <_.Name> should have page verify set to <_.ConfigValues.pageverify> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.pageverifyexclude -notcontains $psitem.Name } } {
+                if($psitem.Name -ne 'tempdb') {
+                    $psitem.PageVerify | Should -Be $psitem.ConfigValues.PageVerify -Because "Page verify helps SQL Server to detect corruption"
+                } else {
+                    $true | Should -BeTrue
+                }
+            }
+        } else {
+            It "Database <_.Name> should have page verify set to <_.ConfigValues.pageverify> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.pageverifyexclude -notcontains $psitem.Name -and $_.Name -ne 'tempdb'} } {
+                $psitem.PageVerify | Should -Be $psitem.ConfigValues.PageVerify -Because "Page verify helps SQL Server to detect corruption."
+            }
+            #tempdb handled like v4
+            It "Database Page verify is not available on tempdb on SQL 2005 on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ $_.Name -eq 'tempdb' } {
+                $psitem.PageVerify | Should -Be $psitem.ConfigValues.PageVerify -Because "Page verify helps SQL Server to detect corruption."
+            }
         }
     }
 }

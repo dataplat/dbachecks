@@ -133,6 +133,7 @@ Set-PSFConfig -Module dbachecks -Name policy.cluster.registerallprovidersIP -Val
 Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize -Description "Maximum number of expected dumps"
 
 #pageverify
+#TODO: Only 2 part name - should we fix this?
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 
 # InstanceMaxDop
@@ -329,6 +330,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.status -Validation bool -Val
 Set-PSFConfig -Module dbachecks -Name skip.database.compatibilitylevel -Validation bool -Value $false -Initialize -Description "Skip the database compatibility test"
 Set-PSFConfig -Module dbachecks -Name skip.database.recoverymodel -Validation bool -Value $false -Initialize -Description "Skip the database recovery model test"
 Set-PSFConfig -Module dbachecks -Name skip.database.pseudosimple -Validation bool -Value $false -Initialize -Description "Skip the database PseudoSimple recovery model test"
+Set-PSFConfig -Module dbachecks -Name skip.database.pageverify -Validation bool -Value $false -Initialize -Description "Skip the database page verify test"
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 
