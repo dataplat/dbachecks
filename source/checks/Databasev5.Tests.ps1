@@ -278,7 +278,7 @@ Describe "Contained Database SQL Authenticated Users" -Tag ContainedDBSQLAuth, C
 
 Describe "Page Verify" -Tag PageVerify, Medium, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.pageverify').Value
-    Context "Testing page verify on $psitem" {
+    Context "Testing page verify on <_.Name>" {
         
         if($psitem.MajorVersion -eq 8) {
             It "Database Page verify is not available on SQL 2000 on <_.SqlInstance>" {
