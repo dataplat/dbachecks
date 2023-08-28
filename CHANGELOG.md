@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Pester v5 support for agent checks.
+
 ## [3.0.1-preview0025] - 2023-08-28
 
 ### Added
