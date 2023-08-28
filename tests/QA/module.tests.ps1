@@ -124,7 +124,6 @@ Describe 'Quality for module' -Tags 'TestQuality' {
             "some rule triggered.`r`n`r`n $report"
     }
 }
-#>
 
 Describe 'Help for module' -Tags 'helpQuality' {
     It 'Should have .SYNOPSIS for <Name>' -ForEach $testCases {
@@ -212,3 +211,4 @@ Describe 'Help for module' -Tags 'helpQuality' {
         }
     }
 }
+#>
