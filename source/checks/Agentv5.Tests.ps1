@@ -228,18 +228,18 @@ Describe "Agent Alerts" -Tag AgentAlert, Agent -ForEach $InstancesToTest {
 }
 
 Describe "Job History Configuration" -Tag JobHistory, Agent -ForEach $InstancesToTest {
-    $skipAgetJobHistory = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.JobHistory' }).Value
+    $skipAgentJobHistory = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.agent.JobHistory' }).Value
     [int]$minimumJobHistoryRows = ($__dbcconfig | Where-Object { $_.Name -eq 'agent.history.maximumhistoryrows' }).Value
 
     if ($minimumJobHistoryRows -eq -1) {
-        It "The maximum job history configuration should be set to disabled on <_.InstanceName>" -Skip:$skipAgetJobHistory -ForEach ($PSItem.JobHistory) {
+        It "The maximum job history configuration should be set to disabled on <_.InstanceName>" -Skip:$skipAgentJobHistory -ForEach ($PSItem.JobHistory) {
             $PSItem.CurrentMaximumHistoryRows | Should -Be $PSItem.ExpectedMaximumHistoryRows -Because "Maximum job history configuration should be disabled"
         }
     } else {
-        It "The maximum job history number of rows configuration should be greater or equal to <_.ExpectedMaximumHistoryRows> on <_.InstanceName>" -Skip:$skipAgetJobHistory -ForEach ($PSItem.JobHistory) {
+        It "The maximum job history number of rows configuration should be greater or equal to <_.ExpectedMaximumHistoryRows> on <_.InstanceName>" -Skip:$skipAgentJobHistory -ForEach ($PSItem.JobHistory) {
             $PSItem.CurrentMaximumHistoryRows | Should -BeGreaterOrEqual $PSItem.ExpectedMaximumHistoryRows -Because "We expect the maximum job history row configuration to be greater than the configured setting <_.ExpectedMaximumHistoryRows>"
         }
-        It "The maximum job history rows per job configuration should be greater or equal to <_.ExpectedMaximumJobHistoryRows> on <_.InstanceName>" -Skip:$skipAgetJobHistory -ForEach ($PSItem.JobHistory) {
+        It "The maximum job history rows per job configuration should be greater or equal to <_.ExpectedMaximumJobHistoryRows> on <_.InstanceName>" -Skip:$skipAgentJobHistory -ForEach ($PSItem.JobHistory) {
             $PSItem.CurrentMaximumJobHistoryRows | Should -BeGreaterOrEqual $PSItem.ExpectedMaximumJobHistoryRows -Because "We expect the maximum job history row configuration per agent job to be greater than the configured setting <_.ExpectedMaximumJobHistoryRows>"
         }
     }
