@@ -18,7 +18,7 @@ $EmailValidationSb = {
 }
 Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $EmailValidationSb
 
-$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration'',CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent', 'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FKCKTrusted', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastFullBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
+$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration','CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent', 'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastFullBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
 
 Set-PSFConfig -Module dbachecks -Name checks.notv5ready -Value @($__dbachecksNotv5) -Initialize -Description "Checks that have not been converted to v5 yet"
 
@@ -254,6 +254,7 @@ Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @(
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously.excludedb -Value @() -Initialize -Description "Databases to exclude from the auto update stats asynchronously checks"
 Set-PSFConfig -Module dbachecks -Name policy.database.statusexcludedb -Value @() -Initialize -Description "Databases to exclude from the database status checks"
 Set-PSFConfig -Module dbachecks -Name policy.database.symmetrickeyencryptionlevelexcludedb -Value @('master', 'msdb', 'tempdb') -Initialize -Description "Databases to exclude from the Symmetric Key Encryption Level checks"
+Set-PSFConfig -Module dbachecks -Name policy.database.fkcktrustedexclude -Value @() -Initialize -Description "Databases to exclude from the foreign key and constraints trusted checks"
 
 
 
@@ -342,6 +343,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.compatibilitylevel -Validati
 Set-PSFConfig -Module dbachecks -Name skip.database.recoverymodel -Validation bool -Value $false -Initialize -Description "Skip the database recovery model test"
 Set-PSFConfig -Module dbachecks -Name skip.database.pseudosimple -Validation bool -Value $false -Initialize -Description "Skip the database PseudoSimple recovery model test"
 Set-PSFConfig -Module dbachecks -Name skip.database.pageverify -Validation bool -Value $false -Initialize -Description "Skip the database page verify test"
+Set-PSFConfig -Module dbachecks -Name skip.database.fkcktrusted -Validation bool -Value $false -Initialize -Description "Skip the check for foreign keys and constraints being trusted"
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 

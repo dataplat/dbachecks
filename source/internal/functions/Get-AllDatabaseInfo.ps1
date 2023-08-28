@@ -161,6 +161,10 @@ function Get-AllDatabaseInfo {
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pageverifyexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbsqlauthexclude').Value
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pageverify' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.pageverify').Value
         }
+        'FKCKTrusted' {
+            $trusted = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'fkcktrustedexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.fkcktrustedexclude').Value
+        }
         Default { }
     }
 
@@ -202,6 +206,8 @@ function Get-AllDatabaseInfo {
                 ContainedDbAutoClose      = @(if ($containedDbAutoClose) { if (($psItem.ContainmentType -ne "NONE") -and ($null -ne $psItem.ContainmentType) -and $psitem.AutoClose) { $true } else { $false } } )
                 ContainedDbSqlAuthUsers   = @(if ($containedDbSqlAuthUsers) { if ($psItem.ContainmentType -ne "NONE" -and ($null -ne $psItem.ContainmentType)) { ($psitem.Users | Where-Object { $_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true } | Measure-Object ).Count } } )
                 PageVerify                = @(if ($pageverify) { $psitem.PageVerify })
+                ForeignKeys               = @(if ($trusted) {$psitem.Tables.ForeignKeys | Where-Object {-not $_.NotForReplication} | Select-Object Name, Parent, @{l='Database';e={$_.Parent.Parent.Name}}, IsChecked } )
+                Constraints               = @(if ($trusted) {$psitem.Tables.Checks | Where-Object {(-not $_.NotForReplication) -and $_.IsEnabled} | Select-Object Name, Parent, @{l='Database';e={$_.Parent.Parent.Name}}, IsChecked } )
             }
         }
     }
