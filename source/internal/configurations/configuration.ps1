@@ -18,7 +18,7 @@ $EmailValidationSb = {
 }
 Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $EmailValidationSb
 
-$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration'',CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent', 'DatabaseMailEnabled', 'DatabaseMailProfile', 'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FKCKTrusted', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastFullBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'PageVerify', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'DatabaseMailEnabled', 'AgentServiceAccount', 'DbaOperator', 'FailsafeOperator', 'DatabaseMailProfile', 'AgentMailProfile', 'FailedJob', 'ValidJobOwner', 'InValidJobOwner', 'AgentAlert', 'JobHistory', 'LongRunningJob', 'LastJobRunTime', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
+$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration','CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent', 'DatabaseMailEnabled', 'DatabaseMailProfile', 'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FKCKTrusted', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastFullBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'DatabaseMailEnabled', 'AgentServiceAccount', 'DbaOperator', 'FailsafeOperator', 'DatabaseMailProfile', 'AgentMailProfile', 'FailedJob', 'ValidJobOwner', 'InValidJobOwner', 'AgentAlert', 'JobHistory', 'LongRunningJob', 'LastJobRunTime', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
 
 Set-PSFConfig -Module dbachecks -Name checks.notv5ready -Value @($__dbachecksNotv5) -Initialize -Description "Checks that have not been converted to v5 yet"
 
@@ -137,6 +137,7 @@ Set-PSFConfig -Module dbachecks -Name policy.cluster.registerallprovidersIP -Val
 Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize -Description "Maximum number of expected dumps"
 
 #pageverify
+#TODO: Only 2 part name - should we fix this?
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 
 # InstanceMaxDop
@@ -340,6 +341,7 @@ Set-PSFConfig -Module dbachecks -Name skip.database.status -Validation bool -Val
 Set-PSFConfig -Module dbachecks -Name skip.database.compatibilitylevel -Validation bool -Value $false -Initialize -Description "Skip the database compatibility test"
 Set-PSFConfig -Module dbachecks -Name skip.database.recoverymodel -Validation bool -Value $false -Initialize -Description "Skip the database recovery model test"
 Set-PSFConfig -Module dbachecks -Name skip.database.pseudosimple -Validation bool -Value $false -Initialize -Description "Skip the database PseudoSimple recovery model test"
+Set-PSFConfig -Module dbachecks -Name skip.database.pageverify -Validation bool -Value $false -Initialize -Description "Skip the database page verify test"
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 
