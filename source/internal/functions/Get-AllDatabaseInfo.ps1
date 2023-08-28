@@ -152,9 +152,14 @@ function Get-AllDatabaseInfo {
             $containedDbAutoClose = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'contdbautocloseexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbautocloseexclude').Value
         }
-        'ContainedDBSQLAuth'{
+        'ContainedDBSQLAuth' {
             $containedDbSqlAuthUsers = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'contdbsqlauthexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbsqlauthexclude').Value
+        }
+        'PageVerify' {
+            $pageverify = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pageverifyexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbsqlauthexclude').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pageverify' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.pageverify').Value
         }
         Default { }
     }
@@ -165,6 +170,7 @@ function Get-AllDatabaseInfo {
         InstanceName = $Instance.DbaInstanceName
         Name         = $Instance.Name
         ConfigValues = $ConfigValues
+        MajorVersion = $Instance.VersionMajor
         Databases    = $Instance.Databases.Foreach{
             [PSCustomObject]@{
                 Name                      = $psitem.Name
@@ -194,7 +200,8 @@ function Get-AllDatabaseInfo {
                 PseudoSimple              = @(if ($pseudoSimple) { '' -eq (($psitem.Query('Select last_log_backup_lsn from sys.database_recovery_status where database_id = DB_ID()')).last_log_backup_lsn) })
                 ContainmentType           = @(if ($containedDbAutoClose -or $containedDbSqlAuthUsers) { $psitem.ContainmentType })
                 ContainedDbAutoClose      = @(if ($containedDbAutoClose) { if (($psItem.ContainmentType -ne "NONE") -and ($null -ne $psItem.ContainmentType) -and $psitem.AutoClose) { $true } else { $false } } )
-                ContainedDbSqlAuthUsers   = @(if ($containedDbSqlAuthUsers) { if ($psItem.ContainmentType -ne "NONE" -and ($null -ne $psItem.ContainmentType)) { ($psitem.Users | Where-Object {$_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true } | Measure-Object ).Count}} )
+                ContainedDbSqlAuthUsers   = @(if ($containedDbSqlAuthUsers) { if ($psItem.ContainmentType -ne "NONE" -and ($null -ne $psItem.ContainmentType)) { ($psitem.Users | Where-Object { $_.LoginType -eq "SqlLogin" -and $_.HasDbAccess -eq $true } | Measure-Object ).Count } } )
+                PageVerify                = @(if ($pageverify) { $psitem.PageVerify })
             }
         }
     }
