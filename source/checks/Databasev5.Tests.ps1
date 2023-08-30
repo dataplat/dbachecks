@@ -304,3 +304,18 @@ Describe "Page Verify" -Tag PageVerify, Medium, Database -ForEach $InstancesToTe
         }
     }
 }
+
+Describe  "Foreign keys and check constraints not trusted" -Tag FKCKTrusted, Low, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.fkcktrusted').Value
+        Context "Testing Foreign Keys and Check Constraints are not trusted  <_.Name>" {
+
+        It "Database <_.Database> Foreign Key <_.Name> on table <_.Parent> should be trusted on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.fkcktrustedexclude -notcontains $psitem.Name } }.ForeignKeys {
+            $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
+        }
+
+        It "Database <_.Database> Foreign Key <_.Name> on table <_.Parent> should be trusted on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.fkcktrustedexclude -notcontains $psitem.Name } }.Constraints {
+            $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
+        }
+    }
+}
+
