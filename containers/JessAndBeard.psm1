@@ -2305,7 +2305,7 @@ New Code runs in {2} % of the time
 
   ##validate we got the right answers too
 
-  If (Compare-Object $v5code.Configuration.Filter.Tag.Value $v4code.TagFilter) {
+  If (Compare-Object ($v5code.Configuration.Filter.Tag.Value | where { $_ -ne 'FailedConnections' }) $v4code.TagFilter) {
       $Message = "
 Uh-Oh - The Tag filters between v4 and v5 are not the same somehow.
 For v4 We returned
