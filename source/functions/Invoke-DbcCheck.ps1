@@ -374,11 +374,19 @@ function Invoke-DbcCheck {
                 if ($PassThru) {
                     $configuration.Run.PassThru = $true
                 }
-                # So that if the only check passed in is not yet converted - so that we dont get red.
-                if ($check -in $notv5) {
-                    Write-PSFMessage -Message "You are running a single check that is not yet converted to v5." -Level Warning
+                # So that if all of the checks passed in are not yet converted so that we stop
+
+                # Compare the two arrays
+                $comparisonResult = Compare-Object -ReferenceObject $check -DifferenceObject $notv5
+
+                # If all elements of $check are in $notv5, then $comparisonResult will be either $null or only contain differences where SideIndicator is '=>'
+
+                if (($comparisonResult | Where-Object SideIndicator -EQ '<=').Count -eq 0) {
+                    $Message = "The checks that you are running {0} are yet to be converted to v5 unfortunately. We cannot continue. Please use the legacy switch"
+                    Write-PSFMessage -Message $Message -Level Warning
                     Return
                 }
+
                 foreach ($c in $Check) {
                     # So that if the only check passed in is not yet converted
                     if ($c -in $notv5) {
