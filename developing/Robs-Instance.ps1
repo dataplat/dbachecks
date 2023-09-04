@@ -23,6 +23,13 @@ $Checks = 'LoginAuditSuccessful', 'LoginAuditFailed'
 Set-DbcConfig -Name skip.security.PublicPermission -Value $false
 $Checks = 'PublicRolePermission'
 $Checks = 'PUblicPermission'
+$Checks = 'Database'
+$Checks = 'AgentServiceAccount', 'DbaOperator', 'DatabaseMailProfile', 'AgentMailProfile'
+
+$DatabaseTags = (Get-DbcCheck -Group Database).UniqueTag
+
+$Checks = $DatabaseTags[1..5]
+
 
 Invoke-PerfAndValidateCheck -Checks $Checks
 Invoke-PerfAndValidateCheck -Checks $Checks -PerfDetail
