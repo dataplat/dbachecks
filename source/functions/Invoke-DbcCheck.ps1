@@ -379,6 +379,13 @@ function Invoke-DbcCheck {
                     Write-PSFMessage -Message "You are running a single check that is not yet converted to v5." -Level Warning
                     Return
                 }
+                foreach ($c in $Check) {
+                    # So that if the only check passed in is not yet converted
+                    if ($c -in $notv5) {
+                        $Message = "You are running a check {0} that is not yet converted to v5." -f $c
+                        Write-PSFMessage -Message $Message -Level Warning
+                    }
+                }
             } catch {
                 Write-PSFMessage -Message 'Something Went wrong' -Level Warning -ErrorRecord $_
                 Return
@@ -391,7 +398,13 @@ function Invoke-DbcCheck {
         }
     }
     end {
-
+        foreach ($c in $Check) {
+            # So that if the only check passed in is not yet converted
+            if ($c -in $notv5) {
+                $Message = "You are running a check {0} that is not yet converted to v5." -f $c
+                Write-PSFMessage -Message $Message -Level Warning
+            }
+        }
     }
 
 
