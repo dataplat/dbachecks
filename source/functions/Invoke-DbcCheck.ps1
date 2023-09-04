@@ -382,7 +382,7 @@ function Invoke-DbcCheck {
                 # If all elements of $check are in $notv5, then $comparisonResult will be either $null or only contain differences where SideIndicator is '=>'
 
                 if (($comparisonResult | Where-Object SideIndicator -EQ '<=').Count -eq 0) {
-                    $Message = "The checks that you are running {0} are yet to be converted to v5 unfortunately. We cannot continue. Please use the legacy switch"
+                    $Message = "The checks that you are running are yet to be converted to v5 unfortunately. We cannot continue. Please use the legacy switch"
                     Write-PSFMessage -Message $Message -Level Warning
                     Return
                 }
