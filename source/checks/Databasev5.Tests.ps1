@@ -266,6 +266,7 @@ Describe "Contained Database Auto Close" -Tag ContainedDBAutoClose, CIS, Databas
 Describe "Contained Database SQL Authenticated Users" -Tag ContainedDBSQLAuth, CIS, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.security.ContainedDBSQLAuth').Value
 
+    #TODO: something with this?
     #if ($version -lt 13 ) { $skip = $true }
 
     Context "Testing contained database to see if sql authenticated users exist on <_.Name>" {
@@ -274,3 +275,47 @@ Describe "Contained Database SQL Authenticated Users" -Tag ContainedDBSQLAuth, C
         }
     }
 }
+
+Describe "Page Verify" -Tag PageVerify, Medium, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.pageverify').Value
+    Context "Testing page verify on <_.Name>" {
+
+        # handle differently depending on major version - not available at all in SQL 2000. 2005 not available on tempdb.
+        if($psitem.MajorVersion -eq 8) {
+            It "Database Page verify is not available on SQL 2000 on <_.SqlInstance>" {
+                $true | Should -BeTrue
+            }
+        } elseif ($psitem.MajorVersion -eq 9) {
+            It "Database <_.Name> should have page verify set to <_.ConfigValues.pageverify> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.pageverifyexclude -notcontains $psitem.Name } } {
+                if($psitem.Name -ne 'tempdb') {
+                    $psitem.PageVerify | Should -Be $psitem.ConfigValues.PageVerify -Because "Page verify helps SQL Server to detect corruption"
+                } else {
+                    $true | Should -BeTrue
+                }
+            }
+        } else {
+            It "Database <_.Name> should have page verify set to <_.ConfigValues.pageverify> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.pageverifyexclude -notcontains $psitem.Name -and $_.Name -ne 'tempdb'} } {
+                $psitem.PageVerify | Should -Be $psitem.ConfigValues.PageVerify -Because "Page verify helps SQL Server to detect corruption."
+            }
+            #tempdb handled like v4
+            It "Database Page verify is not available on tempdb on SQL 2005 on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ $_.Name -eq 'tempdb' } {
+                $psitem.PageVerify | Should -Be $psitem.ConfigValues.PageVerify -Because "Page verify helps SQL Server to detect corruption."
+            }
+        }
+    }
+}
+
+Describe  "Foreign keys and check constraints not trusted" -Tag FKCKTrusted, Low, Database -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.fkcktrusted').Value
+        Context "Testing Foreign Keys and Check Constraints are not trusted  <_.Name>" {
+
+        It "Database <_.Database> Foreign Key <_.Name> on table <_.Parent> should be trusted on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.fkcktrustedexclude -notcontains $psitem.Name } }.ForeignKeys {
+            $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
+        }
+
+        It "Database <_.Database> Foreign Key <_.Name> on table <_.Parent> should be trusted on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.fkcktrustedexclude -notcontains $psitem.Name } }.Constraints {
+            $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
+        }
+    }
+}
+
