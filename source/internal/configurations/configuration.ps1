@@ -18,7 +18,7 @@ $EmailValidationSb = {
 }
 Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $EmailValidationSb
 
-$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration', 'CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent', 'DatabaseMailEnabled', 'DatabaseMailProfile', 'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FKCKTrusted', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastFullBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'PageVerify', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'DatabaseMailEnabled', 'AgentServiceAccount', 'DbaOperator', 'FailsafeOperator', 'DatabaseMailProfile', 'AgentMailProfile', 'FailedJob', 'ValidJobOwner', 'InValidJobOwner', 'AgentAlert', 'JobHistory', 'LongRunningJob', 'LastJobRunTime', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
+$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration','CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent',  'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastFullBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
 
 Set-PSFConfig -Module dbachecks -Name checks.notv5ready -Value @($__dbachecksNotv5) -Initialize -Description "Checks that have not been converted to v5 yet"
 
@@ -137,6 +137,7 @@ Set-PSFConfig -Module dbachecks -Name policy.cluster.registerallprovidersIP -Val
 Set-PSFConfig -Module dbachecks -Name policy.dump.maxcount -Value 1 -Initialize -Description "Maximum number of expected dumps"
 
 #pageverify
+#TODO: Only 2 part name - should we fix this?
 Set-PSFConfig -Module dbachecks -Name policy.pageverify -Value "Checksum" -Initialize -Description "Page verify option should be set to this value"
 
 # InstanceMaxDop
@@ -253,6 +254,7 @@ Set-PSFConfig -Module dbachecks -Name policy.autoupdatestats.excludedb -Value @(
 Set-PSFConfig -Module dbachecks -Name policy.autoupdatestatisticsasynchronously.excludedb -Value @() -Initialize -Description "Databases to exclude from the auto update stats asynchronously checks"
 Set-PSFConfig -Module dbachecks -Name policy.database.statusexcludedb -Value @() -Initialize -Description "Databases to exclude from the database status checks"
 Set-PSFConfig -Module dbachecks -Name policy.database.symmetrickeyencryptionlevelexcludedb -Value @('master', 'msdb', 'tempdb') -Initialize -Description "Databases to exclude from the Symmetric Key Encryption Level checks"
+Set-PSFConfig -Module dbachecks -Name policy.database.fkcktrustedexclude -Value @() -Initialize -Description "Databases to exclude from the foreign key and constraints trusted checks"
 
 
 
@@ -340,6 +342,8 @@ Set-PSFConfig -Module dbachecks -Name skip.database.status -Validation bool -Val
 Set-PSFConfig -Module dbachecks -Name skip.database.compatibilitylevel -Validation bool -Value $false -Initialize -Description "Skip the database compatibility test"
 Set-PSFConfig -Module dbachecks -Name skip.database.recoverymodel -Validation bool -Value $false -Initialize -Description "Skip the database recovery model test"
 Set-PSFConfig -Module dbachecks -Name skip.database.pseudosimple -Validation bool -Value $false -Initialize -Description "Skip the database PseudoSimple recovery model test"
+Set-PSFConfig -Module dbachecks -Name skip.database.pageverify -Validation bool -Value $false -Initialize -Description "Skip the database page verify test"
+Set-PSFConfig -Module dbachecks -Name skip.database.fkcktrusted -Validation bool -Value $false -Initialize -Description "Skip the check for foreign keys and constraints being trusted"
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 
@@ -352,10 +356,18 @@ Set-PSFConfig -Module dbachecks -Name skip.hadr.listener.pingcheck -Validation b
 Set-PSFConfig -Module dbachecks -Name skip.agent.databasemailenabled -Validation bool -Value $false -Initialize -Description "Skip the Database Mail Enabled agent check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.servicestartmode -Validation bool -Value $false -Initialize -Description "Skip the Agent Service State check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.servicestate -Validation bool -Value $false -Initialize -Description "Skip the Agent Service Start Mode check"
-Set-PSFConfig -Module dbachecks -Name skip.agent.operatorname -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Name check"
-Set-PSFConfig -Module dbachecks -Name skip.agent.operatoremail -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Email check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.dbaoperatorname -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Name check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.dbaoperatoremail -Validation bool -Value $false -Initialize -Description "Skip the Agent Operator Email check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.failsafeoperator -Validation bool -Value $false -Initialize -Description "Skip the Agent Failsafe Operator check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.databasemailprofile -Validation bool -Value $false -Initialize -Description "Skip the Database Mail Profile check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.mailprofile -Validation bool -Value $false -Initialize -Description "Skip the SQL Server Agent Mail Profile check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.longrunningjobs -Validation bool -Value $false -Initialize -Description "Skip the long running agent jobs check"
 Set-PSFConfig -Module dbachecks -Name skip.agent.lastjobruntime -Validation bool -Value $false -Initialize -Description "Skip the last agent job time check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.jobowner -Validation bool -Value $false -Initialize -Description "Skip the Agent Job Owner check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.invalidjobowner.name -Validation bool -Value $false -Initialize -Description "Skip the Agent Job Invalid Owner check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.failedjobs -Validation bool -Value $false -Initialize -Description "Skip the Agent Failed Jobs check"
+Set-PSFConfig -Module dbachecks -Name skip.agent.JobHistory -Validation bool -Value $false -Initialize -Description "Skip the Agent Job History check"
+
 
 
 Set-PSFConfig -Module dbachecks -Name skip.security.containedbautoclose -Validation bool -Value $true -Initialize -Description "Skips the scan for contained databases should have auto close enabled"
@@ -387,8 +399,10 @@ Set-PSFConfig -Module dbachecks -Name skip.security.serverprotocol -Validation b
 #agent
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatorname -Value $null -Initialize -Description "Name of the DBA Operator in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.dbaoperatoremail -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
-Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the DBA Operator in SQL Agent"
+Set-PSFConfig -Module dbachecks -Name agent.failsafeoperator -Value $null -Initialize -Description "Email address of the Failsafe Operator in SQL Agent"
+# TODO: Should this be instance instead of agent?
 Set-PSFConfig -Module dbachecks -Name agent.databasemailprofile -Value $null -Initialize -Description "Name of the Database Mail Profile in SQL Agent"
+Set-PSFConfig -Module dbachecks -Name agent.mailprofile -Value $null -Initialize -Description "Name of the SQL Server Agent Mail Profile in SQL Agent"
 Set-PSFConfig -Module dbachecks -Name agent.validjobowner.name -Value "sa" -Initialize -Description "Agent job owner account should be this user"
 Set-PSFConfig -Module dbachecks -Name agent.invalidjobowner.name -Value $null -Initialize -Description "Agent job owner account should not be this user"
 Set-PSFConfig -Module dbachecks -Name agent.alert.messageid -Value @('823', '824', '825') -Initialize -Description "Agent alert messageid to validate; https://www.brentozar.com/blitz/configure-sql-server-alerts/"

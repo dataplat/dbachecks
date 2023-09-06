@@ -1,4 +1,4 @@
-<#
+
 BeforeDiscovery {
     $script:moduleName = $ProjectName
 
@@ -76,6 +76,7 @@ Describe 'General module control' -Tags 'FunctionalQuality' {
     }
 }
 
+
 BeforeDiscovery {
     # Must use the imported module to build test cases.
     $allModuleFunctions = & $mut { Get-Command -Module $args[0] -CommandType Function } $script:moduleName
@@ -90,7 +91,7 @@ BeforeDiscovery {
         }
     }
 }
-
+<#
 Describe 'Quality for module' -Tags 'TestQuality' {
     BeforeDiscovery {
         if (Get-Command -Name Invoke-ScriptAnalyzer -ErrorAction SilentlyContinue)
@@ -210,5 +211,4 @@ Describe 'Help for module' -Tags 'helpQuality' {
         }
     }
 }
-
 #>
