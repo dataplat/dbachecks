@@ -24,11 +24,11 @@ Have questions about development? Please visit our [Wiki](https://github.com/sql
     </tr>
     <tr>
       <td><a href-"https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=2&_a=completed"><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/badge"></a></td>
-      <td>Master Branch Build - Module version update and Code Signing <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=2&_a=completed" target="_blank">Click Here</a></td>
+      <td>Main Branch Build - Module version update and Code Signing <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=2&_a=completed" target="_blank">Click Here</a></td>
     </tr>
         <tr>
       <td><a href = "https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases"><img align="left" src="https://sqlcollaborative.vsrm.visualstudio.com/_apis/public/Release/badge/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/2"></a></td>
-          <td>Master Branch Release - Release to PowerShell Gallery <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases" target="_blank">Click Here</a></td>
+          <td>Main Branch Release - Release to PowerShell Gallery <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases" target="_blank">Click Here</a></td>
     </tr>
   </tbody>
 </table>
