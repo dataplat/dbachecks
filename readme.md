@@ -35,17 +35,17 @@ This open source module allows us to crowd-source our checklists using [Pester](
 
 You can find a set of interactive PowerShell Notebooks which will introduce you to all of the core concepts in Robs GitHub. There is a set of .NET interactive Jupyter Notebooks
 
-https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/master/notebooks/dotNETNotebooks/dbachecks
+https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/main/notebooks/dotNETNotebooks/dbachecks
 
 and a set of Jupyter Notebooks that will run in Azure Data Studio
 
-https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/master/notebooks/NotDotNet/dbachecks
+https://github.com/SQLDBAWithABeard/JupyterNotebooks/tree/main/notebooks/NotDotNet/dbachecks
 
 Both will use a docker container to show you how dbachecks works.
 
 There is a zip file containing the Notebooks here
 
-https://github.com/SQLDBAWithABeard/Presentations/raw/master/Notebooks/dbachecks/Notebooks.zip
+https://github.com/SQLDBAWithABeard/Presentations/raw/main/Notebooks/dbachecks/Notebooks.zip
 
 Have questions about development? Please visit our [Wiki](https://github.com/sqlcollaborative/dbachecks/wiki). **Anyone developing this module** should visit that Wiki page (after fully reading this readme) for a brief overview.
 
@@ -58,11 +58,11 @@ Have questions about development? Please visit our [Wiki](https://github.com/sql
     </tr>
     <tr>
       <td><a href-"https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=2&_a=completed"><img align="left" src="https://sqlcollaborative.visualstudio.com/_apis/public/build/definitions/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/badge"></a></td>
-      <td>Master Branch Build - Module version update and Code Signing <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=2&_a=completed" target="_blank">Click Here</a></td>
+      <td>Main Branch Build - Module version update and Code Signing <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_build/index?context=mine&path=%5C&definitionId=2&_a=completed" target="_blank">Click Here</a></td>
     </tr>
         <tr>
       <td><a href = "https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases"><img align="left" src="https://sqlcollaborative.vsrm.visualstudio.com/_apis/public/Release/badge/a0deae7b-ae38-4ecc-a836-5f79cc561140/2/2"></a></td>
-          <td>Master Branch Release - Release to PowerShell Gallery <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases" target="_blank">Click Here</a></td>
+          <td>Main Branch Release - Release to PowerShell Gallery <a href="https://sqlcollaborative.visualstudio.com/dbachecks/_releases2?definitionId=3&view=mine&_a=releases" target="_blank">Click Here</a></td>
     </tr>
   </tbody>
 </table>
