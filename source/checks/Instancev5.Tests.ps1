@@ -3,7 +3,7 @@
 # Gather the instances we know are not contactable
 
 BeforeDiscovery {
-    # Gather the instances we know are not contactable
+    # Gather the instances we know are not  contactable
     [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
     # Get all the tags in use in this run
     $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
