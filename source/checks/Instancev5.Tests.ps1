@@ -7,7 +7,6 @@ BeforeDiscovery {
     [string[]]$NotContactable = (Get-PSFConfig -Module dbachecks -Name global.notcontactable).Value
     # Get all the tags in use in this run
     $Tags = Get-CheckInformation -Check $Check -Group Instance -AllChecks $AllChecks -ExcludeCheck $ChecksToExclude
-
     $InstancesToTest = @(Get-Instance).ForEach{
         # just add it to the Not Contactable list
         if ($NotContactable -notcontains $psitem) {
@@ -57,7 +56,6 @@ Describe "<_.Tag> failed on <_.Name>" -Tag FailedConnections -ForEach $TestsNoGo
     }
 }
 
-
 # Ordered alphabetically by unique tag please
 Describe "Ad Hoc Distributed Queries" -Tag AdHocDistributedQueriesEnabled, security, CIS, Medium, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.AdHocDistributedQueriesEnabled' }).Value
@@ -95,7 +93,6 @@ Describe "Backup Path Access" -Tag BackupPathAccess, Storage, DISA, Medium, Inst
         }
     }
 }
-
 
 Describe "CLR Enabled" -Tag CLREnabled, security, CIS, High, Instance -ForEach $InstancesToTest {
     $skip = ($__dbcconfig | Where-Object { $_.Name -eq 'skip.instance.CLREnabled' }).Value
