@@ -1,7 +1,7 @@
 site_name: dbachecks
 repo_url: https://github.com/sqlcollaborative/dbachecks
 site_author: The Beard
-edit_uri: edit/master/docs/
+edit_uri: edit/main/docs/
 theme: readthedocs
 copyright: "dbachecks is licensed under the <a href='https://github.com/sqlcollaborative/dbachecks/raw/master/LICENSE'>MIT license"
 pages:
