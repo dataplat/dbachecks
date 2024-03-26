@@ -284,11 +284,14 @@ function NewGet-AllInstanceInfo {
                     $authscheme = 'skipped'
                 }
             }
-
-            if (-not(($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.ping' }).Value)) {
-                $pingu = New-Object System.Net.NetworkInformation.Ping
-                $timeout = 1000 #milliseconds
-                $ping = ($pingu.Send($instance.ComputerName, $timeout)).Status
+            if ($IsWindows) {
+                if (-not(($__dbcconfig | Where-Object { $_.Name -eq 'skip.connection.ping' }).Value)) {
+                    $pingu = New-Object System.Net.NetworkInformation.Ping
+                    $timeout = 1000 #milliseconds
+                    $ping = ($pingu.Send($instance.ComputerName, $timeout)).Status
+                } else {
+                    $ping = 'skipped'
+                }
             } else {
                 $ping = 'skipped'
             }
