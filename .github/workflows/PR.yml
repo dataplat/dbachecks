@@ -53,7 +53,7 @@ jobs:
         repository: ${{github.event.pull_request.head.repo.full_name}}   # checkout the correct branch name
         fetch-depth: 0
     - name: Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}
@@ -79,7 +79,7 @@ jobs:
         repository: ${{github.event.pull_request.head.repo.full_name}}   # checkout the correct branch name
         fetch-depth: 0
     - name: Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}
@@ -106,7 +106,7 @@ jobs:
         repository: ${{github.event.pull_request.head.repo.full_name}}   # checkout the correct branch name
         fetch-depth: 0
     - name: Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}
@@ -137,17 +137,17 @@ jobs:
         fetch-depth: 0
 
     - name: Download Test Artifact Linux
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: CodeCoverageLinux
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
     - name: Download Test Artifact Windows (PS 5.1)
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: CodeCoverageWinPS51
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/
     - name: Download Test Artifact Windows (PS7)
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: CodeCoverageWinPS7
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS7/
