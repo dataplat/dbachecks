@@ -37,7 +37,7 @@ jobs:
       env:
         ModuleVersion: ${{ env.gitVersion.NuGetVersionV2 }}
     - name: Publish Build Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}/
@@ -53,7 +53,7 @@ jobs:
         ref: ${{ github.head_ref }}   # checkout the correct branch name
         fetch-depth: 0
     - name: Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}
@@ -61,7 +61,7 @@ jobs:
       shell: pwsh
       run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
     - name: Publish Test Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
         name: CodeCoverageLinux
@@ -78,7 +78,7 @@ jobs:
         ref: ${{ github.head_ref }}   # checkout the correct branch name
         fetch-depth: 0
     - name: Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}
@@ -87,7 +87,7 @@ jobs:
       run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get around dbatools failing to load XE.core.dll if
 
     - name: Publish Test Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
         name: CodeCoverageWinPS7
@@ -104,7 +104,7 @@ jobs:
         ref: ${{ github.head_ref }}   # checkout the correct branch name
         fetch-depth: 0
     - name: Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}
@@ -112,7 +112,7 @@ jobs:
       shell: pwsh
       run: ./build.ps1 -ResolveDependency -tasks test
     - name: Publish Test Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
         name: CodeCoverageWinPS51
@@ -129,7 +129,7 @@ jobs:
 #         ref: ${{ github.head_ref }}   # checkout the correct branch name
 #         fetch-depth: 0
 #     - name: Download Build Artifact
-#       uses: actions/download-artifact@v3
+#       uses: actions/download-artifact@v4
 #       with:
 #         name: ${{ env.buildArtifactName }}
 #         path: ${{ env.buildFolderName }}
@@ -138,7 +138,7 @@ jobs:
 #       run: ./build.ps1 -tasks noop; ipmo dbatools ; ./build.ps1 -tasks test # to get # around dbatools failing to load XE.core.dll if
 #
 #     - name: Publish Test Artifact
-#       uses: actions/upload-artifact@v3
+#       uses: actions/upload-artifact@v4
 #       with:
 #         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
 #         name: CodeCoverageMacOS
@@ -160,22 +160,22 @@ jobs:
         ref: ${{ github.head_ref }}   # checkout the correct branch name
         fetch-depth: 0
 #    - name: Download Test Artifact macOS
-#      uses: actions/download-artifact@v3
+#      uses: actions/download-artifact@v4
 #      with:
 #        name: CodeCoverageMacOS
 #        path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
     - name: Download Test Artifact Linux
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: CodeCoverageLinux
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
     - name: Download Test Artifact Windows (PS 5.1)
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: CodeCoverageWinPS51
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/
     - name: Download Test Artifact Windows (PS7)
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: CodeCoverageWinPS7
         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS7/
@@ -341,7 +341,7 @@ jobs:
      - Test_Stage_test_windows_ps
 #     - Test_Stage_test_macos
      - Test_Stage_Code_Coverage
-    if: success() && (github.ref == 'refs/heads/main')
+    if: ${{ success() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -349,7 +349,7 @@ jobs:
         ref: ${{ github.head_ref }}   # checkout the correct branch name
         fetch-depth: 0
     - name: Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ env.buildArtifactName }}
         path: ${{ env.buildFolderName }}
