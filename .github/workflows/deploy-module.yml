@@ -341,7 +341,7 @@ jobs:
      - Test_Stage_test_windows_ps
 #     - Test_Stage_test_macos
      - Test_Stage_Code_Coverage
-    if: success() && (github.ref == 'refs/heads/main')
+    if: ${{ success() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
