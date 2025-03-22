@@ -168,7 +168,12 @@
                         "icon": "terminal-powershell"
                     }
                 },
-                "terminal.integrated.defaultProfile.linux": "pwsh"
+                "terminal.integrated.defaultProfile.linux": "pwsh",
+                "github.copilot.chat.commitMessageGeneration.instructions": [
+                    {
+                        "file": ".github/copilot-commit-message-instructions.md"
+                    }
+                ]
             }
         }
     },
