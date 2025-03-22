@@ -2414,7 +2414,7 @@ Uh-Oh - The total tests run between v4 and v5 are not the same somehow.
 For v4 We ran
 {0} tests
 and
-for v4 we ran
+for v5 we ran
 {1} tests
 The MOST COMMON REASON IS you have used Tags instead of Tag in your Describe block {2}
 " -f $v4code.TotalCount, $v5run, $messageAppend
@@ -2434,7 +2434,7 @@ Uh-Oh - The total tests Passed between v4 and v5 are not the same somehow.
 For v4 We Passed
 {0} tests
 and
-for v4 we Passed
+for v5 we Passed
 {1} tests
 {2}
 
@@ -2461,7 +2461,7 @@ Uh-Oh - The total tests Failed between v4 and v5 are not the same somehow.
 For v4 We Failed
 {0} tests
 and
-for v4 we Failed
+for v5 we Failed
 {1} tests
 
 " -f $v4code.FailedCount, $v5Failed, $messageAppend
