@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- fixed typo in Invoke-PerfAndValidateCheck so we know which version we're looking at
+- Updated HADR checks to use dbatools new outputs
+
+## [3.0.2] - 2025-03-10
+
 ### Added
  
 - added pester tests to check that changelog is edited.
