@@ -353,32 +353,32 @@ foreach ($clustervm in $clusters) {
             Context "Database availability group status for $($AG.Name) on $clustername" {
                 @($ag.AvailabilityReplicas.Where{ $_.AvailabilityMode -eq 'SynchronousCommit' }).ForEach{
                     @(Get-DbaAgDatabase -SqlInstance $psitem.Name -AvailabilityGroup $Ag.Name).ForEach{
-                        It "Database $($psitem.DatabaseName) should be synchronised on the replica $($psitem.Replica)" {
+                        It "Database $($psitem.Name) should be synchronised on the replica $($psitem.sqlInstance)" {
                             $psitem.SynchronizationState | Should -Be 'Synchronized'  -Because 'The database on the synchronous replica should be synchronised'
                         }
-                        It "Database $($psitem.DatabaseName) should be failover ready on the replica $($psitem.Replica)" {
+                        It "Database $($psitem.Name) should be failover ready on the replica $($psitem.sqlInstance)" {
                             $psitem.IsFailoverReady | Should -BeTrue -Because 'The database on the synchronous replica should be ready to failover'
                         }
-                        It "Database $($psitem.DatabaseName) should be joined on the  replica $($psitem.Replica)" {
+                        It "Database $($psitem.Name) should be joined on the  replica $($psitem.sqlInstance)" {
                             $psitem.IsJoined | Should -BeTrue -Because 'The database on the synchronous replica should be joined to the availability group'
                         }
-                        It "Database $($psitem.DatabaseName) should not be suspended on the replica $($psitem.Replica)" {
+                        It "Database $($psitem.Name) should not be suspended on the replica $($psitem.sqlInstance)" {
                             $psitem.IsSuspended | Should -Be  $False -Because 'The database on the synchronous replica should not be suspended'
                         }
                     }
                 }
                 @($ag.AvailabilityReplicas.Where{ $_.AvailabilityMode -eq 'AsynchronousCommit' }).ForEach{
                     @(Get-DbaAgDatabase -SqlInstance $PSItem.Name -AvailabilityGroup $Ag.Name).ForEach{
-                        It "Database $($psitem.DatabaseName) should be synchronising as it is Async on the secondary replica $($psitem.Replica)" {
+                        It "Database $($psitem.Name) should be synchronising as it is Async on the secondary replica $($psitem.sqlInstance)" {
                             $psitem.SynchronizationState | Should -Be 'Synchronizing' -Because 'The database on the asynchronous secondary replica should be synchronising'
                         }
-                        It "Database $($psitem.DatabaseName) should not be failover ready on the secondary replica $($psitem.Replica)" {
+                        It "Database $($psitem.Name) should not be failover ready on the secondary replica $($psitem.sqlInstance)" {
                             $psitem.IsFailoverReady | Should -BeFalse -Because 'The database on the asynchronous secondary replica should be ready to failover'
                         }
-                        It "Database $($psitem.DatabaseName) should be joined on the secondary replica $($psitem.Replica)" {
+                        It "Database $($psitem.Name) should be joined on the secondary replica $($psitem.sqlInstance)" {
                             $psitem.IsJoined | Should -BeTrue -Because 'The database on the asynchronous secondary replica should be joined to the availability group'
                         }
-                        It "Database $($psitem.DatabaseName) should not be suspended on the secondary replica $($psitem.Replica)" {
+                        It "Database $($psitem.Name) should not be suspended on the secondary replica $($psitem.sqlInstance)" {
                             $psitem.IsSuspended | Should -Be  $False -Because 'The database on the asynchronous secondary replica should not be suspended'
                         }
                     }
