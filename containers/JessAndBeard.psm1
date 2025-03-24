@@ -2379,6 +2379,13 @@ The Tags are the same"
           PassedChange  = 0 # + or - the number of tests passed for v5
           FailedChange  = 0 # + or - the number of tests failed for v5
           SkippedChange = -3 # + or - the number of tests skipped for v5
+          },
+      @{
+          Name          = 'LastFullBackup'
+          RunChange     = +1 # + or - the number of tests run for v5
+          PassedChange  = 0 # + or - the number of tests passed for v5
+          FailedChange  = 0 # + or - the number of tests failed for v5
+          SkippedChange = +1 # + or - the number of tests skipped for v5
       }
   )
   $runchange = 0

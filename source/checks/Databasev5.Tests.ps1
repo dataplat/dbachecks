@@ -307,7 +307,7 @@ Describe "Page Verify" -Tag PageVerify, Medium, Database -ForEach $InstancesToTe
 
 Describe  "Foreign keys and check constraints not trusted" -Tag FKCKTrusted, Low, Database -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.fkcktrusted').Value
-        Context "Testing Foreign Keys and Check Constraints are not trusted  <_.Name>" {
+        Context "Testing Foreign Keys and Check Constraints are not trusted <_.Name>" {
 
         It "Database <_.Database> Foreign Key <_.Name> on table <_.Parent> should be trusted on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.fkcktrustedexclude -notcontains $psitem.Name } }.ForeignKeys {
             $psitem.IsChecked | Should -Be $true -Because "This can have a huge performance impact on queries. SQL Server won't use untrusted constraints to build better execution plans. It will also avoid data violation"
@@ -319,3 +319,37 @@ Describe  "Foreign keys and check constraints not trusted" -Tag FKCKTrusted, Low
     }
 }
 
+Describe  "Last Full Backup Times" -Tag LastFullBackup, LastBackup, Backup, DISA, Varied -ForEach $InstancesToTest {
+    $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.lastfullbackup').Value
+    #TODO: also skip secondaries? and read only?    
+    Context "Testing last full backups on <_.Name>" {
+        It "Database <_.Name> should have full backups less than <_.ConfigValues.fullmaxdays> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.fullbackupexclude -notcontains $psitem.Name } }.Where{if ($psitem.ConfigValues.skipreadonly) { -not $psitem.readonly } else {$psitem} }.Where{if ($psitem.ConfigValues.skipsecondaries) { $psitem.AGReplicaRole -ne 'Secondary' } else {$psitem} } { #TODO: secondary? is that right
+            $psitem.LastFullBackup.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddDays( - ($psitem.ConfigValues.fullmaxdays)) -Because "Taking regular backups is extraordinarily important"
+        }
+    }
+}
+
+
+#TODO: convert checks
+# TestLastBackup
+# TestLastBackupVerifyOnly
+# LastGoodCheckDb
+# IdentityUsage
+# DuplicateIndex
+# UnusedIndex
+# DisabledIndex
+# DatabaseGrowthEvent
+# LastFullBackup
+# LastDiffBackup
+# LastLogBackup
+# LogfilePercentUsed
+# LogfileSize
+# FutureFileGrowth
+# FileGroupBalanced
+# CertificateExpiration
+# DatafileAutoGrowthType
+# OrphanedUser
+# MaxDopDatabase
+# DatabaseExists
+# CLRAssembliesSafe
+# SymmetricKeyEncryptionLevel

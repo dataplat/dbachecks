@@ -158,12 +158,20 @@ function Get-AllDatabaseInfo {
         }
         'PageVerify' {
             $pageverify = $true
-            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pageverifyexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbsqlauthexclude').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pageverifyexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.contdbsqlauthexclude').Value #TODO: fix that config name
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'pageverify' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.pageverify').Value
         }
         'FKCKTrusted' {
             $trusted = $true
             $ConfigValues | Add-Member -MemberType NoteProperty -Name 'fkcktrustedexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.fkcktrustedexclude').Value
+        }
+        'LastFullBackup' {
+            $lastFullBackup = $true
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'fullbackupexclude' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.database.fullbackupexclude').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'fullmaxdays' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.backup.fullmaxdays').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'graceperiod' -Value ($__dbcconfig | Where-Object Name -EQ 'policy.backup.newdbgraceperiod').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'skipreadonly' -Value ($__dbcconfig | Where-Object Name -EQ 'skip.backup.readonly').Value
+            $ConfigValues | Add-Member -MemberType NoteProperty -Name 'skipsecondaries' -Value ($__dbcconfig | Where-Object Name -EQ 'skip.backup.secondaries').Value
         }
         Default { }
     }
@@ -195,7 +203,7 @@ function Get-AllDatabaseInfo {
                 Trustworthy               = @(if ($trustworthy) { $psitem.Trustworthy })
                 Status                    = @(if ($status) { $psitem.Status })
                 IsDatabaseSnapshot        = @(if ($status) { $psitem.IsDatabaseSnapshot }) # needed for status test
-                Readonly                  = @(if ($status) { $psitem.Readonly }) # needed for status test
+                Readonly                  = @(if ($status -or $lastFullBackup) { $psitem.Readonly }) # needed for status test & lastfullbackup
                 QueryStore                = @(if ($qs) { $psitem.QueryStoreOptions.ActualState })
                 CompatibilityLevel        = @(if ($compatibilitylevel) { $psitem.CompatibilityLevel })
                 ServerLevel               = @(if ($compatibilitylevel) { [Enum]::GetNames('Microsoft.SqlServer.Management.Smo.CompatibilityLevel').Where{ $psitem -match $Instance.VersionMajor } })
@@ -208,6 +216,8 @@ function Get-AllDatabaseInfo {
                 PageVerify                = @(if ($pageverify) { $psitem.PageVerify })
                 ForeignKeys               = @(if ($trusted) {$psitem.Tables.ForeignKeys | Where-Object {-not $_.NotForReplication} | Select-Object Name, Parent, @{l='Database';e={$_.Parent.Parent.Name}}, IsChecked } )
                 Constraints               = @(if ($trusted) {$psitem.Tables.Checks | Where-Object {(-not $_.NotForReplication) -and $_.IsEnabled} | Select-Object Name, Parent, @{l='Database';e={$_.Parent.Parent.Name}}, IsChecked } )
+                LastFullBackup            = @(if ($lastFullBackup) {$psitem.LastBackupDate})
+                AGReplicaRole             = @(if ($lastFullBackup) { if ($psitem.AvailabilityGroupName) {$psitem.parent.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole}}) # TODO: this needs testing!   
             }
         }
     }
