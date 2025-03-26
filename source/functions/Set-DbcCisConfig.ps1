@@ -32,7 +32,7 @@ function Set-DbcCisConfig {
         Set-DbcConfig -Name policy.dacallowed -Value $false
         Set-DbcConfig -Name policy.errorlog.logcount -Value 12
         Set-DbcConfig -Name policy.security.oleautomationproceduresdisabled -Value $false
-        Set-DbcConfig -Name policy.oleautomation -Value 0
+        Set-DbcConfig -Name policy.oleautomation -Value $false
         Set-DbcConfig -Name policy.security.adhocdistributedqueriesenabled -Value $false
         Set-DbcConfig -Name policy.security.clrenabled -Value $false
         Set-DbcConfig -Name policy.security.databasemailenabled -Value $false
