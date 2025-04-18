@@ -217,7 +217,7 @@ function Get-AllDatabaseInfo {
                 ForeignKeys               = @(if ($trusted) {$psitem.Tables.ForeignKeys | Where-Object {-not $_.NotForReplication} | Select-Object Name, Parent, @{l='Database';e={$_.Parent.Parent.Name}}, IsChecked } )
                 Constraints               = @(if ($trusted) {$psitem.Tables.Checks | Where-Object {(-not $_.NotForReplication) -and $_.IsEnabled} | Select-Object Name, Parent, @{l='Database';e={$_.Parent.Parent.Name}}, IsChecked } )
                 LastFullBackup            = @(if ($lastFullBackup) {$psitem.LastBackupDate})
-                AGReplicaRole             = @(if ($lastFullBackup) { if ($psitem.AvailabilityGroupName) {$psitem.parent.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole}}) # TODO: this needs testing!   
+                AGReplicaRole             = @(if ($lastFullBackup) { if ($psitem.AvailabilityGroupName) {$psitem.parent.AvailabilityGroups[$psitem.AvailabilityGroupName].LocalReplicaRole} else { 'N\A' }}) # TODO: this needs testing!   
             }
         }
     }

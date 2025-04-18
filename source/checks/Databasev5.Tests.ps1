@@ -319,11 +319,12 @@ Describe  "Foreign keys and check constraints not trusted" -Tag FKCKTrusted, Low
     }
 }
 
+#TODO: test if database is offline or not `IsAccessible` 
 Describe  "Last Full Backup Times" -Tag LastFullBackup, LastBackup, Backup, DISA, Varied -ForEach $InstancesToTest {
     $Skip = ($__dbcconfig | Where-Object Name -EQ 'skip.database.lastfullbackup').Value
     #TODO: also skip secondaries? and read only?    
     Context "Testing last full backups on <_.Name>" {
-        It "Database <_.Name> should have full backups less than <_.ConfigValues.fullmaxdays> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{ if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.fullbackupexclude -notcontains $psitem.Name } }.Where{if ($psitem.ConfigValues.skipreadonly) { -not $psitem.readonly } else {$psitem} }.Where{if ($psitem.ConfigValues.skipsecondaries) { $psitem.AGReplicaRole -ne 'Secondary' } else {$psitem} } { #TODO: secondary? is that right
+        It "Database <_.Name> should have full backups less than <_.ConfigValues.fullmaxdays> on <_.SqlInstance>" -Skip:$skip -ForEach $psitem.Databases.Where{if ($Database) { $_.Name -in $Database } else { $psitem.ConfigValues.fullbackupexclude -notcontains $psitem.Name } }.Where{if ($psitem.ConfigValues.skipreadonly) { -not $psitem.readonly } else {$psitem} }.Where{if ($psitem.ConfigValues.skipsecondaries) { $psitem.AGReplicaRole -ne 'Secondary' } else {$psitem} } { #TODO: secondary? is that right
             $psitem.LastFullBackup.ToUniversalTime() | Should -BeGreaterThan (Get-Date).ToUniversalTime().AddDays( - ($psitem.ConfigValues.fullmaxdays)) -Because "Taking regular backups is extraordinarily important"
         }
     }
