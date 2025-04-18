@@ -18,7 +18,7 @@ $EmailValidationSb = {
 }
 Register-PSFConfigValidation -Name validation.EmailValidation -ScriptBlock $EmailValidationSb
 
-$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration','CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent',  'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastFullBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
+$__dbachecksNotv5 = 'ADUser', 'BuiltInAdmin', 'EngineServiceAdmin', 'FullTextServiceAdmin', 'LocalWindowsGroup', 'PublicPermission', 'SqlBrowserServiceAccount', 'TempDbConfiguration','CertificateExpiration', 'DatabaseExists', 'DatabaseGrowthEvent',  'DatafileAutoGrowthType', 'DisabledIndex', 'DuplicateIndex', 'FileGroupBalanced', 'FutureFileGrowth', 'IdentityUsage', 'LastDiffBackup', 'LastGoodCheckDb', 'LastLogBackup', 'LogfilePercentUsed', 'LogfileSize', 'MaxDopDatabase', 'OrphanedUser', 'SymmetricKeyEncryptionLevel', 'TestLastBackup', 'TestLastBackupVerifyOnly', 'UnusedIndex', 'PowerPlan', 'SPN', 'DiskCapacity', 'PingComputer', 'CPUPrioritisation', 'DiskAllocationUnit', 'NonStandardPort', 'ServerProtocol', 'OlaInstalled', 'SystemFull', 'UserFull', 'UserDiff', 'UserLog', 'CommandLog', 'SystemIntegrityCheck', 'UserIntegrityCheck', 'UserIndexOptimize', 'OutputFileCleanup', 'DeleteBackupHistory', 'PurgeJobHistory', 'DomainName', 'OrganizationalUnit', 'ClusterHealth', 'LogShippingPrimary', 'LogShippingSecondary'
 
 Set-PSFConfig -Module dbachecks -Name checks.notv5ready -Value @($__dbachecksNotv5) -Initialize -Description "Checks that have not been converted to v5 yet"
 
@@ -178,7 +178,9 @@ Set-PSFConfig -Module dbachecks -Name policy.database.clrassembliessafeexcludedb
 Set-PSFConfig -Module dbachecks -Name policy.database.pseudosimpleexcludedb -Value @('tempdb', 'model') -Initialize -Description "A List of databases that we do not want to check for pseudosimple recovery modelasd a"
 Set-PSFConfig -Module dbachecks -Name policy.database.contdbautocloseexclude -Value @('msdb') -Initialize -Description "A List of contained database that we we do not want to check for autoclose"
 Set-PSFConfig -Module dbachecks -Name policy.database.contdbsqlauthexclude -Value @() -Initialize -Description "A list of databases that we do not want to check for contained databases with SQL authenticated users"
-Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description " The % log used we should stay below"
+Set-PSFConfig -Module dbachecks -Name policy.database.logfilepercentused -Value 75 -Initialize -Description "The % log used we should stay below"
+Set-PSFConfig -Module dbachecks -Name policy.database.fullbackupexclude -Value @('tempdb') -Initialize -Description "The list of databases that we do not want to check the date of the last full backup of."
+
 
 # Policy for Ola Hallengren Maintenance Solution
 Set-PSFConfig -Module dbachecks -Name policy.ola.installed -Validation bool -Value $true -Initialize -Description "Checks to see if Ola Hallengren solution is installed"
@@ -344,6 +346,8 @@ Set-PSFConfig -Module dbachecks -Name skip.database.recoverymodel -Validation bo
 Set-PSFConfig -Module dbachecks -Name skip.database.pseudosimple -Validation bool -Value $false -Initialize -Description "Skip the database PseudoSimple recovery model test"
 Set-PSFConfig -Module dbachecks -Name skip.database.pageverify -Validation bool -Value $false -Initialize -Description "Skip the database page verify test"
 Set-PSFConfig -Module dbachecks -Name skip.database.fkcktrusted -Validation bool -Value $false -Initialize -Description "Skip the check for foreign keys and constraints being trusted"
+Set-PSFConfig -Module dbachecks -Name skip.database.lastfullbackup -Validation bool -Value $false -Initialize -Description "Skip the check for last full backup"
+
 
 Set-PSFConfig -Module dbachecks -Name skip.logshiptesting -Validation bool -Value $false -Initialize -Description "Skip the logshipping test"
 
