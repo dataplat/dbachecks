@@ -37,7 +37,7 @@ function Get-ClusterObject {
                 $PreviousClusterNode = $AGResource.OwnerNode.Name
                 # We get cluster node owner first ...
                 # We need then for each owner to find out the corresponding replicas => SQL Instance Name + Port
-                $Replicas = Find-DbaInstance -ComputerName $AGResource.OwnerNode.Name
+                $Replicas = Find-DbaInstance -ComputerName $AGResource.OwnerNode.Name | Where-Object {$_.Services.ServiceName -ne $null }
             }
 
             # Finally for each replica detected (SQL Server + Port)
