@@ -53,7 +53,7 @@ function Get-ClusterObject {
             }
         }
         catch {
-            $return = $null
+            $return.AvailabilityGroups[$AGResource.Name] = 'FailedToConnect'
         }
     }
 
