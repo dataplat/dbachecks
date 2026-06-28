@@ -10,7 +10,12 @@
     'dbatools.library'    = 'latest'
     InvokeBuild           = 'latest'
     PSScriptAnalyzer      = 'latest'
-    Pester                = 'latest'
+    Pester                = @{
+        Version    = '6.0.0-rc1'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
     Plaster               = 'latest'
     ModuleBuilder         = 'latest'
     ChangelogManagement   = 'latest'
