@@ -70,6 +70,11 @@ Pester:
       Path: tests
         
       ExcludePath:
+      # Pester 6 throws on an empty -ForEach; several meta-tests here iterate
+      # over collections that are legitimately empty on a fresh/PR checkout
+      # (e.g. an empty git diff, or a check group with no tags). Opt back into
+      # the v5 behaviour of skipping instead of failing.
+      FailOnNullOrEmptyForEach: false
     Filter:
       Tag:
       ExcludeTag:

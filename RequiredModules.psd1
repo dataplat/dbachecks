@@ -11,7 +11,7 @@
     InvokeBuild           = 'latest'
     PSScriptAnalyzer      = 'latest'
     Pester                = @{
-        Version    = '6.0.0-rc1'
+        Version    = '6.0.0-rc4'
         Parameters = @{
             AllowPrerelease = $true
         }
